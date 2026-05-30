@@ -32,9 +32,28 @@ Pages should expose or organize content around semantic regions:
 
 The shell decides where those regions appear.
 
-## Global Preferences
+## Global Control Center
 
-Theme, light/dark/system mode, layout, density, workspace tab preferences, and AI status belong in a persistent header popover/sheet. Do not hide these only inside a Settings page.
+Theme, light/dark/system mode, layout, density, workspace tools, and AI status belong in a persistent global Control Center. Do not hide these only inside a Settings page.
+
+The first-phase shell uses a large live configuration modal, not a small popover. Primary choices should be direct controls: segmented choices, highlighted option cards, icon toggles, switches, and visual layout thumbnails. Avoid default select dropdowns for the main appearance/layout/workspace decisions.
+
+Changes apply immediately. The Control Center is not a save/cancel form for shell appearance; selecting a profile, color mode, layout, density, Workspace Tabs toggle, or Stage Manager toggle updates the active UI at once.
+
+**Contract**:
+
+```ts
+type ShellAppearancePreferences = {
+  profileId: DesignProfileId
+  colorMode: ColorMode
+  layoutPreset: LayoutPresetId
+  density: Density
+  workspaceTabs: { enabled: boolean }
+  stageManager: { enabled: boolean }
+}
+```
+
+**Check**: Open Control Center, change each appearance/workspace option, and confirm the shell updates without closing the modal or losing open routes.
 
 ### Control Center Placement Contract
 
