@@ -136,9 +136,104 @@ type AppearanceState = {
 
 **Check**: Open several routes, confirm tabs are visible, open Stage Manager, then switch layout/theme or toggle either workspace tool in Control Center. The route list and eligible keep-alive state must survive.
 
+### Scenario: Workspace Tab Lifecycle Controls
+
+#### 1. Scope / Trigger
+
+- Trigger: workspace tab pin, close, refresh, and restore behavior affects `packages/core` tab contracts, Pinia shell state, Vue Router view keys, local UI persistence, and Stage Manager controls.
+
+#### 2. Signatures
+
+```ts
+type WorkspaceTab = {
+  id: string
+  title: string
+  routePath: string
+  pinned: boolean
+  keepAlive: KeepAlivePolicy
+  refreshKey: number
+  openedAt: number
+  activatedAt: number
+}
+
+type WorkspaceTabCloseStrategy = 'activate-left' | 'activate-right' | 'activate-nearest'
+
+function closeWorkspaceTab(
+  state: WorkspaceTabsState,
+  tabId: WorkspaceTabId,
+  closeStrategy?: WorkspaceTabCloseStrategy
+): WorkspaceTabsState
+
+function toggleWorkspaceTabPin(state: WorkspaceTabsState, tabId: WorkspaceTabId): WorkspaceTabsState
+
+function refreshWorkspaceTab(
+  state: WorkspaceTabsState,
+  tabId: WorkspaceTabId,
+  now: number
+): WorkspaceTabsState
+```
+
+#### 3. Contracts
+
+- `refreshKey` starts at `0` for every new or restored tab.
+- Refreshing a tab increments only that tab's `refreshKey`; it must not remove the tab or rebuild the router.
+- Route view keys include the route identity plus the tab `refreshKey`.
+- Pinned tabs are protected from normal close; users must unpin before close.
+- Pinning a tab moves it to the front of the tab list so pinned workspaces form a left-aligned group.
+- Unpinning a tab moves it after any remaining pinned tabs so pinned and unpinned workspaces do not interleave.
+- The compact tab bar must not repeat refresh controls per tab. Place current-workspace refresh and pin/unpin actions in a workspace header next to the breadcrumb.
+- Persist only safe pinned tab metadata in local storage under `super-admin:workspace-tabs`.
+- Restore pinned tabs only when `workspaceTabs.restorePinnedTabs` is enabled.
+- Stage Manager uses the same tab store and must reflect pin/refresh/close behavior from Workspace Tabs.
+
+#### 4. Validation & Error Matrix
+
+- Missing persisted tab storage -> start with no restored pinned tabs.
+- Invalid persisted tab JSON -> ignore persisted data and continue with no restored pinned tabs.
+- Close a pinned tab -> return unchanged tab list and active tab.
+- Refresh an unknown tab -> return unchanged tab list.
+- Pin a tab -> tab becomes pinned and moves to index `0` while active tab identity is preserved.
+- Unpin a tab -> tab becomes unpinned and moves immediately after the remaining pinned group.
+- Refresh active workspace from workspace header -> increment only the active tab `refreshKey`.
+- Close active unpinned tab -> select next active tab according to `workspaceTabs.closeStrategy`.
+
+#### 5. Good/Base/Bad Cases
+
+- Good: Users tab has local filter state, switching away and back preserves it, refreshing Users clears only Users state.
+- Base: Open Dashboard and Users, pin Users, reload, and Users reappears as pinned.
+- Bad: Changing theme/layout changes route-view keys and resets every kept-alive tab.
+
+#### 6. Tests Required
+
+- Unit test `closeWorkspaceTab` for pinned protection and close strategies.
+- Unit test `toggleWorkspaceTabPin` for explicit pin state changes and pinned-first ordering.
+- Unit test `refreshWorkspaceTab` for `refreshKey` increments without tab removal.
+- Browser check workspace header refresh against a page with local state.
+- Browser check pinned tab restore after reload.
+- Browser check Stage Manager shows the same pinned/refresh controls.
+
+#### 7. Wrong vs Correct
+
+**Wrong**:
+
+```ts
+const key = `${route.fullPath}:${profileId}:${layoutPreset}`
+```
+
+This flushes route state whenever appearance changes.
+
+**Correct**:
+
+```ts
+const key = `${routeIdentity}:${workspaceTab.refreshKey}`
+```
+
+This keeps appearance changes separate from explicit user refresh.
+
 ## Anti-Patterns
 
 - Building separate page implementations for each layout preset.
 - Placing global theme/layout controls inside a module-only Settings page.
 - Making feature pages import shell presets directly.
 - Reintroducing a `workspacePresentation` union that forces Stage Manager and tabs to replace each other.
+- Turning every workspace tab into a multi-action toolbar with repeated refresh and pin controls.
