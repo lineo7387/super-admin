@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@super-admin/core": ["../../packages/core/src/index.ts"],
+      "@super-admin/theme": ["../../packages/theme/src/index.ts"],
+      "@super-admin/ui": ["../../packages/ui/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue", "src/**/*.d.ts"]
+}
