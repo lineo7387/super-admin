@@ -42,3 +42,37 @@ Built and closed the first frontend foundation milestone: Vue admin shell, runti
 ### Next Steps
 
 - None - task complete
+
+
+## Session 2: Workspace tabs polish
+
+**Date**: 2026-05-30
+**Task**: Workspace tabs polish
+**Branch**: `main`
+
+### Summary
+
+Polished workspace tab lifecycle with pinned ordering, protected close, active workspace refresh, pinned restore, Stage Manager consistency, and documented app-shell contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `725c9f1` | (see git log) |
+| `a67d45b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
