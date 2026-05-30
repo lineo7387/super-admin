@@ -16,7 +16,7 @@ packages/core
   shared TypeScript contracts for design profiles, shell layouts, modules, workspace tabs, AI status
 
 packages/theme
-  built-in Crypto and Industrial profiles, each with light/dark token sets
+  built-in Crypto, Industrial, and Cyberpunk profiles, each with light/dark token sets
 
 packages/ui
   reusable shadcn-vue-compatible admin primitives and shared utility wrappers
@@ -42,7 +42,7 @@ Page -> query composable -> module service -> mock data or user API
 
 - Create the monorepo and admin app foundation.
 - Implement shared contracts for design profiles, shell presets, modules, preferences, tabs, and mock provider mode.
-- Implement Crypto and Industrial profiles with light/dark variants.
+- Implement Crypto, Industrial, and Cyberpunk profiles with light/dark variants.
 - Implement `tri-column`, `dual-column`, and `top-header` layouts.
 - Implement global preferences popover for profile, color mode, layout, density, tabs, and AI status.
 - Implement workspace tabs and route-level keep-alive metadata.
@@ -63,7 +63,7 @@ After the first runnable checkpoint, the next implementation pass should priorit
   - top-header + Stage Manager
   - traditional tabs
   - Control Center modal
-  - Crypto/Industrial theme contrast
+  - Crypto/Industrial/Cyberpunk theme contrast
 
 ## Out Of Scope For This Plan
 
@@ -124,12 +124,15 @@ After the first runnable checkpoint, the next implementation pass should priorit
   - Add:
     - `src/profiles/crypto.ts`
     - `src/profiles/industrial.ts`
+    - `src/profiles/cyberpunk.ts`
     - `src/apply-profile.ts`
   - Each profile must define:
     - `crypto.light`
     - `crypto.dark`
     - `industrial.light`
     - `industrial.dark`
+    - `cyberpunk.light`
+    - `cyberpunk.dark`
   - Token groups:
     - semantic colors
     - shell colors
@@ -293,13 +296,25 @@ After the first runnable checkpoint, the next implementation pass should priorit
     - Capture `top-header + Stage Manager`.
     - Capture `traditional tabs`.
     - Capture `Control Center modal`.
-    - Capture `Crypto/Industrial theme contrast`.
+    - Capture `Crypto/Industrial/Cyberpunk theme contrast`.
   - Verification:
     - `pnpm lint`
     - `pnpm typecheck`
     - `pnpm test`
     - `pnpm build`
     - Browser visual check for all states in the acceptance matrix.
+
+- [x] 11B. Add Cyberpunk as a third built-in design profile.
+  - Source design document: `designer/Cyberpunk.md`.
+  - Add `cyberpunk.light` and `cyberpunk.dark` token variants.
+  - Register Cyberpunk in `builtInDesignProfiles` so the Control Center renders it automatically.
+  - Keep the implementation token-driven; do not add Cyberpunk-specific feature page branches.
+  - Verification:
+    - `pnpm lint`
+    - `pnpm typecheck`
+    - `pnpm test`
+    - `pnpm build`
+    - Browser check: Control Center shows Cyberpunk; light/dark mode updates `data-profile`, `data-mode`, and theme CSS variables.
 
 - [ ] 12. Implement Dashboard module.
   - Add:
