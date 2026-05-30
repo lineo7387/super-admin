@@ -44,7 +44,7 @@ Page -> query composable -> module service -> mock data or user API
 - Implement shared contracts for design profiles, shell presets, modules, preferences, tabs, and mock provider mode.
 - Implement Crypto, Industrial, and Cyberpunk profiles with light/dark variants.
 - Implement `tri-column`, `dual-column`, and `top-header` layouts.
-- Implement global preferences popover for profile, color mode, layout, density, tabs, and AI status.
+- Implement global Control Center for profile, color mode, layout, density, workspace tools, and AI status.
 - Implement workspace tabs and route-level keep-alive metadata.
 - Implement Dashboard, Workbench, Users, and Access modules with small mock datasets.
 - Document how users replace mock services with their own API calls.
@@ -400,16 +400,43 @@ After the first runnable checkpoint, the next implementation pass should priorit
   - Start the admin app and visually verify:
     - Crypto light/dark
     - Industrial light/dark
+    - Cyberpunk light/dark
     - tri-column, dual-column, top-header
-    - global preferences popover
+    - global Control Center modal
     - workspace tabs and keep-alive
     - Dashboard, Workbench, Users, Access
   - Fix layout/text overlap issues before completion.
 
+## Task Closure Scope Decision
+
+This task is ready to close as the first executable frontend foundation and shell-redesign milestone. The accepted completion boundary is:
+
+- Monorepo + app/package foundation.
+- Shared contracts for profiles, shell layouts, modules, preferences, workspace tabs, and AI status.
+- Built-in Crypto, Industrial, and Cyberpunk profiles with light/dark token variants.
+- Runtime Control Center modal with live profile/mode/layout/density/workspace-tool switching.
+- Three built-in shell layouts with distinct brand/nav composition.
+- Workspace Tabs and Stage Manager enabled as independent additive shell tools.
+- Lightweight Dashboard, Workbench, Users, and Access routes as validation surfaces.
+- Verified quality and browser checks for the shell/profile milestone.
+
+The remaining unchecked tasks are intentionally deferred rather than considered part of this task's completion boundary:
+
+- Task 10 follow-up: refresh and pin controls for workspace tabs. Open, activate, close, route-level keep-alive, and Stage Manager overlay behavior are in place; refresh/pin polish should move to a focused workspace-polish task.
+- Tasks 12-15 follow-up: full module service/query/mock/type files and deeper Dashboard, Workbench, Users, and Access content. Current pages remain lightweight validation surfaces until the shell model is accepted.
+- Task 16 follow-up: user-facing integration README files and mock-service replacement documentation. This should become a documentation/integration task after module service contracts are expanded.
+- Task 17 follow-up: full release-style browser acceptance across every module scenario. This task already ran `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, and targeted browser checks for the completed shell/profile scope.
+
+Recommended follow-up tasks:
+
+- `workspace-tabs-polish`: add refresh/pin controls, pinned restore behavior, and focused keep-alive regression tests.
+- `module-service-examples`: expand Dashboard, Workbench, Users, and Access into typed service/query/mock examples.
+- `template-integration-docs`: add README guidance for running the app, replacing mock services, profile customization, and optional backend/auth/AI integration.
+
 ## Visual Checkpoints
 
 - Checkpoint 1: minimal app shell boots with one placeholder route.
-- Checkpoint 2: profile switcher changes Crypto/Industrial and light/dark tokens.
+- Checkpoint 2: profile switcher changes Crypto/Industrial/Cyberpunk and light/dark tokens.
 - Checkpoint 3: layout switcher changes tri-column, dual-column, and top-header shells.
 - Checkpoint 4: workspace tabs open and preserve eligible route state.
 - Checkpoint 5: Dashboard and Workbench show the differentiated admin direction.
