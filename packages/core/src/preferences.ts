@@ -1,10 +1,11 @@
 import type { ColorMode, Density, DesignProfileId } from './design-profile'
 import type { LayoutPresetId } from './shell'
+import type { WorkspaceTabCloseStrategy } from './workspace-tabs'
 
 export type WorkspaceTabPreferences = {
   enabled: boolean
   restorePinnedTabs: boolean
-  closeStrategy: 'activate-left' | 'activate-right' | 'activate-nearest'
+  closeStrategy: WorkspaceTabCloseStrategy
 }
 
 export type StageManagerPreferences = {

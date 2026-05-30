@@ -2,7 +2,6 @@
 import { Pin, X } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { AdminButton } from '@super-admin/ui'
 import { usePreferencesStore } from '@/app/preferences.store'
 import { useWorkspaceTabsStore } from './workspace-tabs.store'
 
@@ -38,6 +37,7 @@ function close(tabId: string): void {
     void router.push('/dashboard')
   }
 }
+
 </script>
 
 <template>
@@ -59,14 +59,15 @@ function close(tabId: string): void {
         <Pin v-if="tab.pinned" class="size-3" />
         <span class="truncate">{{ tab.title }}</span>
       </button>
-      <AdminButton
-        variant="ghost"
-        size="icon"
-        class="mr-1 size-5 rounded-[var(--radius-xs)] opacity-60 group-hover:opacity-100"
-        @click="close(tab.id)"
+      <button
+        v-if="!tab.pinned"
+        type="button"
+        class="mr-1 grid size-4 place-items-center rounded-[var(--radius-xs)] text-[var(--muted-foreground)] opacity-60 transition hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] group-hover:opacity-100 focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
+        title="Close workspace tab"
+        @click.stop="close(tab.id)"
       >
-        <X class="size-3" />
-      </AdminButton>
+        <X class="size-2.5" />
+      </button>
     </div>
   </div>
 </template>

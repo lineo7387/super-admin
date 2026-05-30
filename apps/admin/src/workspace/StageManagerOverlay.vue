@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Layers3, X } from 'lucide-vue-next'
+import { Layers3, Pin, PinOff, RotateCw, X } from 'lucide-vue-next'
 import type { Component } from 'vue'
 import { computed, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -52,6 +52,14 @@ function closeStage(tabId: string): void {
   if (route.fullPath === tabId) {
     void router.push('/dashboard')
   }
+}
+
+function toggleStagePin(tabId: string): void {
+  tabs.pinTab(tabId)
+}
+
+function refreshStage(tabId: string): void {
+  tabs.refreshTab(tabId)
 }
 </script>
 
@@ -121,11 +129,32 @@ function closeStage(tabId: string): void {
                 </div>
               </div>
               <div class="mt-2 truncate text-xs font-semibold text-[var(--foreground)]">{{ stage.tab.title }}</div>
-              <div v-if="stage.isActive" class="mt-1 text-[10px] uppercase tracking-[0.16em] text-[var(--primary)]">Current</div>
+              <div class="mt-1 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em]">
+                <span v-if="stage.isActive" class="text-[var(--primary)]">Current</span>
+                <span v-if="stage.tab.pinned" class="text-[var(--accent)]">Pinned</span>
+              </div>
             </button>
             <button
               type="button"
-              class="stage-close opacity-0 transition group-hover:opacity-100"
+              class="stage-action stage-action--pin opacity-0 transition group-hover:opacity-100"
+              :title="stage.tab.pinned ? 'Unpin stage' : 'Pin stage'"
+              @click.stop="toggleStagePin(stage.tab.id)"
+            >
+              <PinOff v-if="stage.tab.pinned" class="size-3" />
+              <Pin v-else class="size-3" />
+            </button>
+            <button
+              type="button"
+              class="stage-action stage-action--refresh opacity-0 transition group-hover:opacity-100"
+              title="Refresh stage"
+              @click.stop="refreshStage(stage.tab.id)"
+            >
+              <RotateCw class="size-3" />
+            </button>
+            <button
+              v-if="!stage.tab.pinned"
+              type="button"
+              class="stage-action stage-action--close opacity-0 transition group-hover:opacity-100"
               title="Close stage"
               @click.stop="closeStage(stage.tab.id)"
             >
@@ -222,9 +251,8 @@ function closeStage(tabId: string): void {
   transform: scale(0.21);
 }
 
-.stage-close {
+.stage-action {
   position: absolute;
-  right: 0.4rem;
   top: 0.4rem;
   display: grid;
   width: 1.35rem;
@@ -234,6 +262,18 @@ function closeStage(tabId: string): void {
   border-radius: 999px;
   background: var(--surface-raised);
   color: var(--foreground);
+}
+
+.stage-action--close {
+  right: 0.4rem;
+}
+
+.stage-action--refresh {
+  right: 1.95rem;
+}
+
+.stage-action--pin {
+  right: 3.5rem;
 }
 
 @media (max-width: 760px) {
