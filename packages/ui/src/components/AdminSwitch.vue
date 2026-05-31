@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue'
-import { computed } from 'vue'
-
 const model = defineModel<boolean>({ required: true })
 
 withDefaults(
@@ -14,25 +11,6 @@ withDefaults(
     disabled: false
   }
 )
-
-const knobStyle = computed<CSSProperties>(() => ({
-  backgroundColor: 'var(--surface)',
-  borderColor: 'var(--border)',
-  height: '20px',
-  left: '1px',
-  position: 'absolute',
-  top: '1px',
-  transform: model.value ? 'translateX(20px)' : 'translateX(0)',
-  width: '20px'
-}))
-
-const trackStyle = computed<CSSProperties>(() => ({
-  backgroundColor: model.value ? 'var(--primary)' : 'var(--surface-sunken)',
-  borderColor: model.value ? 'var(--primary)' : 'var(--border-strong)',
-  boxShadow: model.value ? 'var(--glow)' : 'none',
-  height: '24px',
-  width: '44px'
-}))
 </script>
 
 <template>
@@ -45,12 +23,12 @@ const trackStyle = computed<CSSProperties>(() => ({
     @click="model = !model"
   >
     <span
-      class="relative inline-flex shrink-0 rounded-full border transition"
-      :style="trackStyle"
+      class="relative inline-flex h-6 w-11 shrink-0 rounded-full border transition"
+      :class="model ? 'border-[var(--primary)] bg-[var(--primary)] shadow-[var(--glow)]' : 'border-[var(--border-strong)] bg-[var(--surface-sunken)]'"
     >
       <span
-        class="rounded-full border shadow-[var(--card-shadow)] transition"
-        :style="knobStyle"
+        class="absolute left-px top-px size-5 rounded-full border border-[var(--border)] bg-[var(--surface)] shadow-[var(--card-shadow)] transition-transform"
+        :class="model ? 'translate-x-5' : 'translate-x-0'"
       />
     </span>
     <span>{{ label }}</span>
