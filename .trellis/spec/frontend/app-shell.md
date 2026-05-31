@@ -86,6 +86,101 @@ The Control Center trigger and modal must be mounted above layout preset compone
 
 **Check**: Open Control Center, switch `tri-column` -> `dual-column` -> `top-header`, and confirm the modal remains open and all controls still update immediately.
 
+## Module Navigation Tree
+
+### Convention: Template Showcase IA Uses The Same Manifest Tree
+
+**What**: The template-default information architecture should be showcase-oriented:
+
+```text
+Examples
+  Users
+    All Users
+    Pending Review
+    Invites
+    Activity
+  Access
+  Form Drawer
+  Table States
+
+UI Kit
+  Foundations
+  Inputs
+  Forms
+  Tables
+  Overlays
+  Feedback
+```
+
+Real projects may promote example domains into first-level business modules:
+
+```text
+Dashboard
+Users
+Orders
+Products
+Access
+Settings
+```
+
+**Why**: The template should teach users what they can copy (`Examples`) and which theme-aware primitives they can use (`UI Kit`) without implying that demo domains such as Users or Access must remain top-level app modules. The shell must support both template showcase mode and real project mode through manifest configuration, not through separate renderers.
+
+**Check**: Moving `Users` from `Examples.children` to a first-level manifest entry should not require changing shell rendering code.
+
+### Convention: Layouts Decide Where The Same Tree Appears
+
+**What**: Layout presets choose placement for the normalized nav tree:
+
+- `top-header`: top nav shows only first-level entries, such as `Examples` and `UI Kit`; the active or selected first-level entry's children render in a left subnav.
+- `dual-column`: the sidebar renders the full normalized tree directly, without a separate primary-nav column.
+- `tri-column`: the navigation column renders the configured tree for the template or active module; it must not rely on module-specific local nav.
+
+**Why**: A UI Kit can contain many sections, so top-header dropdowns do not scale as the primary way to browse nested component directories. Dual-column is clearest when the left sidebar is the full app tree rather than a split primary/module nav.
+
+**Check**: `Examples`, `UI Kit`, and promoted real-project modules use the same `ModuleManifest.nav` shape. There should be no Users-only, UI-Kit-only, or layout-local directory component that bypasses the manifest tree.
+
+### Convention: Child Pages Stay Inside The Module Item
+
+**What**: Module child pages are declared as `ModuleManifest.nav.children` and rendered inside the original module navigation item.
+
+**Why**: A separate module-local block such as "Users Pages" creates a second navigation system and breaks the mental model that the manifest describes one normalized tree.
+
+**Correct shape**:
+
+```ts
+export const usersManifest = {
+  nav: {
+    label: 'Users',
+    path: '/users/all',
+    icon: 'users',
+    order: 30,
+    children: [
+      { label: 'All Users', path: '/users/all' },
+      { label: 'Pending Review', path: '/users/pending-review' }
+    ]
+  }
+}
+```
+
+**Wrong shape**:
+
+```vue
+<PrimaryNav />
+<ActiveModuleNav title="Users Pages" />
+```
+
+This splits one module tree into two visual systems. Prefer a single tree renderer that expands active children under `Users`.
+
+**Check**: Open a module child route and confirm the child page appears nested under the active module item, not in a separate module-specific directory block.
+
+### Convention: Parents With Children Expand First
+
+**What**: When a navigation item has `children`, the visible nav control expands/collapses the children first. Its `path` remains the default target and active-matching target, not a guarantee that clicking the parent navigates immediately.
+
+**Why**: Multi-level admin navigation should make structure discoverable. Jumping away when the user is trying to open a group makes top-header dropdowns and sidebar trees feel unpredictable.
+
+**Check**: In vertical and horizontal navigation, clicking a parent with children reveals its children. Selecting a child route still keeps the parent active.
+
 ## Workspace Tabs
 
 - Tabs are shell-level state.

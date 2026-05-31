@@ -2,6 +2,7 @@
 import { ChevronRight, Pin, PinOff, RotateCw } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { findActiveModule } from '@super-admin/core'
 import { AdminButton } from '@super-admin/ui'
 import { registeredModules } from '@/modules/module-registry'
 import { useWorkspaceTabsStore } from './workspace-tabs.store'
@@ -12,9 +13,7 @@ const tabs = useWorkspaceTabsStore()
 const activeTab = computed(() => tabs.activeTab)
 const activePath = computed(() => activeTab.value?.routePath ?? route.fullPath)
 const activeTitle = computed(() => activeTab.value?.title ?? route.meta.workspaceTitle ?? route.meta.title ?? 'Workspace')
-const activeModule = computed(() =>
-  registeredModules.find((item) => activePath.value === item.nav.path || activePath.value.startsWith(`${item.nav.path}/`))
-)
+const activeModule = computed(() => findActiveModule(registeredModules, activePath.value))
 const isPinned = computed(() => activeTab.value?.pinned ?? false)
 
 function refreshActiveWorkspace(): void {

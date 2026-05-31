@@ -3,6 +3,7 @@ import { Layers3, Pin, PinOff, RotateCw, X } from 'lucide-vue-next'
 import type { Component } from 'vue'
 import { computed, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { findActiveModule, findModuleRoute } from '@super-admin/core'
 import { AdminButton } from '@super-admin/ui'
 import { usePreferencesStore } from '@/app/preferences.store'
 import { registeredModules } from '@/modules/module-registry'
@@ -16,8 +17,8 @@ const isOpen = shallowRef(false)
 
 const stages = computed(() =>
   tabs.state.tabs.map((tab) => {
-    const module = registeredModules.find((item) => tab.routePath === item.nav.path || tab.routePath.startsWith(`${item.nav.path}/`))
-    const moduleRoute = module?.routes.find((item) => tab.routePath === item.path)
+    const module = findActiveModule(registeredModules, tab.routePath)
+    const moduleRoute = findModuleRoute(module, tab.routePath)
     const isActive = tab.routePath === route.fullPath
 
     return {
