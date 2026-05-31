@@ -1,14 +1,32 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
-import { AdminButton, AdminCard, AdminDrawer, AdminField, AdminFormFooter, AdminTextInput } from '@super-admin/ui'
+import { computed, shallowRef } from 'vue'
+import { AdminAlert, AdminButton, AdminCard, AdminCheckbox, AdminDrawer, AdminField, AdminFormFooter, AdminTextInput, AdminValidationSummary } from '@super-admin/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
 const isDrawerOpen = shallowRef(false)
 const workspaceName = shallowRef('North Star Review')
+const confirmOwner = shallowRef(false)
+
+const validationErrors = computed(() => {
+  const errors: string[] = []
+  if (!workspaceName.value.trim()) {
+    errors.push('Workspace name is required.')
+  }
+  if (!confirmOwner.value) {
+    errors.push('Confirm the workspace owner before saving.')
+  }
+  return errors
+})
 </script>
 
 <template>
   <UiKitPage title="Overlays" description="Drawer surfaces for focused create/edit tasks without leaving the current workspace route.">
+    <AdminAlert
+      tone="warning"
+      title="Drawer workflows keep page context visible"
+      description="Use them for short create/edit tasks where the table or dashboard behind the overlay still matters."
+    />
+
     <AdminCard>
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -27,12 +45,18 @@ const workspaceName = shallowRef('North Star Review')
       @close="isDrawerOpen = false"
     >
       <form class="grid gap-4" @submit.prevent>
+        <AdminValidationSummary :errors="validationErrors" />
         <AdminField label="Workspace name" for="overlay-name">
           <AdminTextInput id="overlay-name" v-model="workspaceName" />
         </AdminField>
+        <AdminCheckbox
+          v-model="confirmOwner"
+          label="Owner reviewed"
+          description="Confirmation state is local to this workflow; shared UI only renders the control."
+        />
       </form>
       <template #footer>
-        <AdminFormFooter dirty @cancel="isDrawerOpen = false" @submit="isDrawerOpen = false" />
+        <AdminFormFooter dirty submit-label="Save workspace" @cancel="isDrawerOpen = false" @submit="isDrawerOpen = false" />
       </template>
     </AdminDrawer>
   </UiKitPage>

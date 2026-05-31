@@ -18,6 +18,20 @@ const selectedUser = shallowRef<UserRecord | undefined>()
 const isDrawerOpen = shallowRef(false)
 const lastSavedName = shallowRef('')
 
+const statusOptions = [
+  { value: 'all', label: 'All statuses' },
+  { value: 'active', label: 'Active' },
+  { value: 'review', label: 'Review' },
+  { value: 'paused', label: 'Paused' }
+]
+
+const scenarioOptions = [
+  { value: 'normal', label: 'Normal' },
+  { value: 'loading', label: 'Loading' },
+  { value: 'empty', label: 'Empty' },
+  { value: 'error', label: 'Error' }
+]
+
 const queryParams = computed<UserListParams>(() => ({
   page: page.value,
   pageSize,
@@ -88,18 +102,8 @@ function handleSaved(input: { name: string }): void {
                 @input="resetPage"
               />
             </label>
-            <AdminSelect v-model="status" class="w-40" :fluid="false" @change="resetPage">
-              <option value="all">All statuses</option>
-              <option value="active">Active</option>
-              <option value="review">Review</option>
-              <option value="paused">Paused</option>
-            </AdminSelect>
-            <AdminSelect v-model="scenario" class="w-36" :fluid="false" @change="resetPage">
-              <option value="normal">Normal</option>
-              <option value="loading">Loading</option>
-              <option value="empty">Empty</option>
-              <option value="error">Error</option>
-            </AdminSelect>
+            <AdminSelect v-model="status" class="w-40" :fluid="false" :options="statusOptions" @change="resetPage" />
+            <AdminSelect v-model="scenario" class="w-36" :fluid="false" :options="scenarioOptions" @change="resetPage" />
           </template>
           <template #actions>
             <AdminButton variant="secondary" size="sm" @click="density = density === 'compact' ? 'comfortable' : 'compact'">

@@ -20,13 +20,14 @@ Route/page components should compose sections and query hooks. They should not c
 
 ## Shared vs Module Components
 
-Put in shared UI / future `packages/ui`:
+Put in shared UI / `packages/ui`:
 
 - App shell primitives.
 - Preferences popover primitives.
 - Workspace tabs.
 - Design-profile-aware button/card/input/table wrappers.
 - Generic empty/loading/error states.
+- Domain-neutral admin primitives such as alerts, validation summaries, skeletons, selects, checkboxes, radio groups, pagination, drawer carriers, and bulk-action bars.
 
 Keep in modules:
 
@@ -35,6 +36,15 @@ Keep in modules:
 - Access permission matrix.
 - Dashboard metric arrangements.
 
+## UI Kit and Shared Primitive Contracts
+
+- Export shared primitives explicitly from `packages/ui/src/index.ts`.
+- Keep pure shared behavior helpers in `packages/ui/src/lib/` and add unit tests next to the helper, such as `admin-table.test.ts`.
+- Keep UI Kit pages under `apps/admin/src/modules/ui-kit/` as composed examples. They may use realistic admin copy, but business rules, table columns, and workflow semantics must not move into `packages/ui`.
+- Shared table/form primitives should render generic states and slots: loading, empty, error, validation, selection, pagination, and recovery actions.
+- Shared select, checkbox, radio, and switch controls should be custom/styled primitives rather than relying on browser-native visual chrome. Preserve keyboard access and typed `v-model` contracts.
+- Module pages own field rules, service replacement copy, and domain-specific labels; shared primitives own accessible structure, focus states, and profile-aware styling.
+
 ## Accessibility
 
 - Use semantic HTML before custom roles.
@@ -42,4 +52,3 @@ Keep in modules:
 - Buttons must be buttons, not clickable divs.
 - Popovers/sheets/dialogs must be keyboard accessible.
 - Do not hide essential controls behind hover-only UI.
-

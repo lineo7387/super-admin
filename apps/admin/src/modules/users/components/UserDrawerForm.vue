@@ -41,6 +41,21 @@ const title = computed(() => (props.user ? `Edit ${props.user.name}` : 'Create u
 const description = computed(() => (props.user ? 'Update this mock user profile.' : 'Create a mock user profile for the template.'))
 const isDirty = computed(() => JSON.stringify(form) !== JSON.stringify(initial))
 
+const roleOptions = [
+  { value: '', label: 'Select role' },
+  { value: 'Owner', label: 'Owner' },
+  { value: 'Operator', label: 'Operator' },
+  { value: 'Auditor', label: 'Auditor' },
+  { value: 'Analyst', label: 'Analyst' }
+]
+
+const statusOptions = [
+  { value: '', label: 'Select status' },
+  { value: 'active', label: 'Active' },
+  { value: 'review', label: 'Review' },
+  { value: 'paused', label: 'Paused' }
+]
+
 function toInput(user?: UserRecord): UserFormInput {
   return {
     name: user?.name ?? '',
@@ -109,21 +124,10 @@ watch(
       </AdminField>
       <div class="grid gap-4 sm:grid-cols-2">
         <AdminField label="Role" for="user-role" :error="errors.role">
-          <AdminSelect id="user-role" v-model="form.role" :invalid="Boolean(errors.role)">
-            <option value="">Select role</option>
-            <option value="Owner">Owner</option>
-            <option value="Operator">Operator</option>
-            <option value="Auditor">Auditor</option>
-            <option value="Analyst">Analyst</option>
-          </AdminSelect>
+          <AdminSelect id="user-role" v-model="form.role" :invalid="Boolean(errors.role)" :options="roleOptions" />
         </AdminField>
         <AdminField label="Status" for="user-status" :error="errors.status">
-          <AdminSelect id="user-status" v-model="form.status" :invalid="Boolean(errors.status)">
-            <option value="">Select status</option>
-            <option value="active">Active</option>
-            <option value="review">Review</option>
-            <option value="paused">Paused</option>
-          </AdminSelect>
+          <AdminSelect id="user-status" v-model="form.status" :invalid="Boolean(errors.status)" :options="statusOptions" />
         </AdminField>
       </div>
       <AdminField label="Region" for="user-region" help="Keep this module-owned; your backend can provide the allowed regions.">

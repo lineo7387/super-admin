@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AdminCard, AdminScrollArea, StatusPill } from '@super-admin/ui'
+import { AdminAlert, AdminCard, AdminScrollArea, MetricTile, StatusPill } from '@super-admin/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
 const swatches = [
@@ -23,6 +23,17 @@ const scrollItems = [
 
 <template>
   <UiKitPage title="Foundations" description="Theme tokens, typography, radius, and status language used by the reusable primitives.">
+    <AdminAlert
+      title="Primitives consume semantic tokens"
+      description="Shared components should adapt to the active design profile through CSS variables, not profile-specific branches in feature pages."
+    />
+
+    <section class="grid gap-3 md:grid-cols-3">
+      <MetricTile label="Profile coverage" value="3" meta="Crypto, Industrial, Cyberpunk" tone="success" />
+      <MetricTile label="Modes" value="2" meta="Light and dark required" tone="neutral" />
+      <MetricTile label="Layouts" value="3" meta="Tri, dual, top-header QA" tone="warning" />
+    </section>
+
     <section class="grid gap-4 lg:grid-cols-[1fr_1fr]">
       <AdminCard>
         <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">Type Scale</h2>

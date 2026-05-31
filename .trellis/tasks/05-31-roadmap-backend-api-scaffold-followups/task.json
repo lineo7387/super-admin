@@ -18,7 +18,9 @@
   "commit": null,
   "pr_url": null,
   "subtasks": [],
-  "children": [],
+  "children": [
+    "05-31-ui-kit-admin-console-primitives"
+  ],
   "parent": null,
   "relatedFiles": [],
   "notes": "",

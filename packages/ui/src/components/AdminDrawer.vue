@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { X } from 'lucide-vue-next'
+import { onBeforeUnmount, onMounted, watch } from 'vue'
 import AdminButton from './AdminButton.vue'
 import AdminScrollArea from './AdminScrollArea.vue'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     open: boolean
     title: string
@@ -17,6 +18,25 @@ withDefaults(
 const emit = defineEmits<{
   close: []
 }>()
+
+function handleKeydown(event: KeyboardEvent): void {
+  if (event.key === 'Escape') {
+    emit('close')
+  }
+}
+
+function syncKeydownListener(open: boolean): void {
+  if (open) {
+    window.addEventListener('keydown', handleKeydown)
+    return
+  }
+  window.removeEventListener('keydown', handleKeydown)
+}
+
+watch(() => props.open, syncKeydownListener)
+
+onMounted(() => syncKeydownListener(props.open))
+onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
 import { computed } from 'vue'
 import { cn } from '../lib/cn'
 
@@ -31,13 +32,22 @@ const classes = computed(() =>
     props.variant === 'ghost' &&
       'border-transparent bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]',
     props.variant === 'danger' &&
-      'border-transparent bg-[var(--danger)] text-white'
+      'bg-transparent hover:bg-[var(--surface-raised)]'
   )
+)
+
+const style = computed<CSSProperties | undefined>(() =>
+  props.variant === 'danger'
+    ? {
+        borderColor: 'var(--danger)',
+        color: 'var(--danger)'
+      }
+    : undefined
 )
 </script>
 
 <template>
-  <button :type="props.type" :disabled="props.disabled" :class="classes">
+  <button :type="props.type" :disabled="props.disabled" :class="classes" :style="style">
     <slot />
   </button>
 </template>

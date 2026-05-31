@@ -34,6 +34,27 @@ Prefer static variants and CSS variables:
 <div class="bg-[var(--surface)] text-[var(--foreground)]" />
 ```
 
+For shared primitives, do not rely on arbitrary Tailwind utilities for critical
+geometry or semantic state colors when those primitives are consumed across
+packages. If a missing utility would make the control disappear, collapse, or
+lose a required state color, bind the CSS property directly with a typed style:
+
+```vue
+<script setup lang="ts">
+import type { CSSProperties } from 'vue'
+import { computed } from 'vue'
+
+const dangerStyle = computed<CSSProperties>(() => ({
+  borderColor: 'var(--danger)',
+  color: 'var(--danger)'
+}))
+</script>
+
+<template>
+  <button class="border bg-transparent" :style="dangerStyle">Delete</button>
+</template>
+```
+
 ## Layout Stability
 
 - Define stable dimensions for shell regions, tabs, icon buttons, tables, and toolbars.
