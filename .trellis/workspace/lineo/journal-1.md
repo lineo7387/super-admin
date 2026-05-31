@@ -76,3 +76,36 @@ Polished workspace tab lifecycle with pinned ordering, protected close, active w
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Admin UI primitives
+
+**Date**: 2026-05-31
+**Task**: Admin UI primitives
+**Branch**: `main`
+
+### Summary
+
+Added reusable admin table and form primitives, refactored Users into mock-backed nested routes, and documented normalized navigation conventions.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `baf1cf1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
