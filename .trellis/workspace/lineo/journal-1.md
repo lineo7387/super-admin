@@ -109,3 +109,36 @@ Added reusable admin table and form primitives, refactored Users into mock-backe
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: Showcase IA and UI Kit navigation
+
+**Date**: 2026-05-31
+**Task**: Showcase IA and UI Kit navigation
+**Branch**: `main`
+
+### Summary
+
+Implemented the showcase-oriented Examples/UI Kit manifest navigation, shared AdminScrollArea, workspace tab overflow controls, shell layout updates, tests, specs, and Chrome CDP QA.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fb76431` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

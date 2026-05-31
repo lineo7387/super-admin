@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 3
+- **Total Sessions**: 4
 - **Last Active**: 2026-05-31
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~111 | Active |
+| `journal-1.md` | ~144 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 4 | 2026-05-31 | Showcase IA and UI Kit navigation | `fb76431` | `main` |
 | 3 | 2026-05-31 | Admin UI primitives | `baf1cf1` | `main` |
 | 2 | 2026-05-30 | Workspace tabs polish | `725c9f1`, `a67d45b` | `main` |
 | 1 | 2026-05-30 | Super Admin frontend foundation | `b6306c0`, `710ba26`, `c4aaf87`, `dcb3fbf`, `4b64ad5` | `main` |
