@@ -34,25 +34,24 @@ Prefer static variants and CSS variables:
 <div class="bg-[var(--surface)] text-[var(--foreground)]" />
 ```
 
-For shared primitives, do not rely on arbitrary Tailwind utilities for critical
-geometry or semantic state colors when those primitives are consumed across
-packages. If a missing utility would make the control disappear, collapse, or
-lose a required state color, bind the CSS property directly with a typed style:
+When an app consumes shared primitives from `packages/ui`, include the shared
+source path in the app CSS entry so Tailwind v4 scans those component class
+names too:
+
+```css
+@import "tailwindcss";
+@source "../../../../packages/ui/src";
+```
+
+Prefer this over per-component inline style fallbacks for token colors. Inline
+styles are appropriate for component-specific geometry or measured positions,
+but semantic colors should stay consistent with the rest of the Tailwind token
+class pattern.
 
 ```vue
-<script setup lang="ts">
-import type { CSSProperties } from 'vue'
-import { computed } from 'vue'
-
-const dangerStyle = computed<CSSProperties>(() => ({
-  borderColor: 'var(--danger)',
-  color: 'var(--danger)'
-}))
-</script>
-
-<template>
-  <button class="border bg-transparent" :style="dangerStyle">Delete</button>
-</template>
+<button class="border border-[var(--danger)] text-[var(--danger)]">
+  Delete
+</button>
 ```
 
 ## Layout Stability
