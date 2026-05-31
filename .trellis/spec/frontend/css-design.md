@@ -38,7 +38,7 @@ Prefer static variants and CSS variables:
 
 - Define stable dimensions for shell regions, tabs, icon buttons, tables, and toolbars.
 - Use `minmax`, `clamp`, `aspect-ratio`, and explicit overflow behavior where needed.
-- Use `scrollbar-gutter: stable` for scrollable panels when layout shift matters.
+- Use the shared `AdminScrollArea` primitive for custom scrollable panels. Do not reserve native scrollbar gutter space for themed scroll feedback; the component paints non-layout overlay bars.
 
 ## Responsive Rules
 
@@ -46,4 +46,3 @@ Prefer static variants and CSS variables:
 - Ensure button and tab labels do not overflow.
 - Keep global preferences accessible on desktop and mobile.
 - Context panels should degrade to sheet/drawer/inline on narrow layouts.
-

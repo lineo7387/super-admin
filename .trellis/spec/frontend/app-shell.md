@@ -16,7 +16,7 @@ Pages own content regions and feature UI.
 
 ## Built-In Layouts
 
-- `tri-column`: dock + module nav + workspace + context panel.
+- `tri-column`: first-level dock + active tree nav + workspace + context panel.
 - `dual-column`: sidebar + workspace; context becomes drawer/sheet/inline.
 - `top-header`: header navigation + workspace; context becomes sheet/popover/below content.
 
@@ -94,6 +94,8 @@ The Control Center trigger and modal must be mounted above layout preset compone
 
 ```text
 Examples
+  Dashboard
+  Workbench
   Users
     All Users
     Pending Review
@@ -127,13 +129,37 @@ Settings
 
 **Check**: Moving `Users` from `Examples.children` to a first-level manifest entry should not require changing shell rendering code.
 
+### Convention: Existing Template Pages Live Under Examples
+
+**What**: In the default template IA, existing business-looking pages such as Dashboard, Workbench, Users, and Access are `Examples` children. Keep their page names and domain demo copy stable unless the task explicitly includes copy refinement.
+
+**Why**: The default app is a template showcase, not an opinionated production business domain. The `Examples` parent communicates that these pages are copyable patterns while preserving concise, familiar labels.
+
+**Check**: The default module registry should expose `Examples` and `UI Kit` as first-level entries. Dashboard, Workbench, Users, and Access should not appear as first-level modules unless a real-project registry promotes them.
+
+### Convention: Reusable UI Flows Through UI Kit First
+
+**What**: When an Example needs reusable UI, implement or refine the primitive in `packages/ui`, showcase it in `UI Kit`, then import it into the Example page. Keep domain-specific copy, mock data, table columns, validation rules, and workflow state inside Examples.
+
+**Why**: Examples should demonstrate realistic composition without hiding reusable component APIs inside business-looking demo pages.
+
+**Check**: A reusable component used by an Example should have a visible UI Kit route or section showing its default states.
+
+### Convention: Scroll Containers Use Shared Styling
+
+**What**: Main shell surfaces, drawers, tables, context panels, and settings surfaces should use the shared scroll area primitive. The primitive uses a component structure: outer container for dimensions/borders, inner wrap for native scrolling, view for content layout, and absolute bar/thumb overlays for scroll feedback. Native scrollbar tracks are hidden, and overlay bars must not reserve layout space.
+
+**Why**: Native default scrollbars vary sharply by browser and platform. A shared primitive keeps scrolling surfaces visually consistent across Crypto/Industrial and light/dark profiles.
+
+**Check**: New scrollable regions should not introduce raw `overflow-auto` without considering `AdminScrollArea`; pass content layout and padding through `view-class` rather than mixing them with outer sizing classes. When a scrollbar appears, it must not change the content box size.
+
 ### Convention: Layouts Decide Where The Same Tree Appears
 
 **What**: Layout presets choose placement for the normalized nav tree:
 
 - `top-header`: top nav shows only first-level entries, such as `Examples` and `UI Kit`; the active or selected first-level entry's children render in a left subnav.
 - `dual-column`: the sidebar renders the full normalized tree directly, without a separate primary-nav column.
-- `tri-column`: the navigation column renders the configured tree for the template or active module; it must not rely on module-specific local nav.
+- `tri-column`: the left dock renders first-level entries such as `Examples` and `UI Kit`; the adjacent navigation column renders the active first-level entry's children.
 
 **Why**: A UI Kit can contain many sections, so top-header dropdowns do not scale as the primary way to browse nested component directories. Dual-column is clearest when the left sidebar is the full app tree rather than a split primary/module nav.
 
@@ -190,6 +216,7 @@ This splits one module tree into two visual systems. Prefer a single tree render
 - Traditional workspace tabs and Stage Manager are independent shell tools, not mutually exclusive presentations.
 - `layoutPreset`, `workspaceTabs.enabled`, and `stageManager.enabled` must remain independent so changing layout, toggling tabs, or opening the Stage Manager overlay does not close routes or change route-view keys.
 - Traditional tabs render as conventional horizontal tabs above the workspace surface in every layout when enabled.
+- When traditional tabs overflow horizontally, keep them on one row, preserve horizontal scrolling through `AdminScrollArea`, hide the scroll area's own bar, show left/right arrow controls on hover or focus as overlays that do not reserve tab-list width, translate mouse-wheel movement over the tab strip into horizontal scrolling, and automatically scroll the active tab into view. Disabled overlay arrows should still block pointer passthrough to tabs underneath.
 - Stage Manager is a global overlay launched from a stable top-right button when `stageManager.enabled` is true. It should float above all layouts, show real workspace previews where possible, and avoid being embedded into sidebars or layout-owned rails.
 - Stage Manager may use layout/theme tokens for visual language, but the open route model and keep-alive cache remain owned by the workspace tab store.
 

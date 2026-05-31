@@ -7,10 +7,12 @@ withDefaults(
   defineProps<{
     brand?: 'none' | 'full'
     nav?: 'none' | 'horizontal'
+    navDepth?: number
   }>(),
   {
     brand: 'none',
-    nav: 'none'
+    nav: 'none',
+    navDepth: 3
   }
 )
 </script>
@@ -31,7 +33,7 @@ withDefaults(
       Runtime Shell
     </div>
 
-    <PrimaryNav v-if="nav === 'horizontal'" orientation="horizontal" />
+    <PrimaryNav v-if="nav === 'horizontal'" orientation="horizontal" :max-depth="navDepth" />
     <div v-else class="hidden h-9 min-w-80 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3 text-sm text-[var(--muted-foreground)] md:flex">
       <Search class="size-4" />
       <span>Search modules, jobs, users</span>

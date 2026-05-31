@@ -34,6 +34,93 @@ select {
   background: color-mix(in srgb, var(--primary) 28%, transparent);
 }
 
+.super-scroll {
+  overflow: hidden;
+  position: relative;
+}
+
+.super-scroll__wrap {
+  height: 100%;
+  max-height: inherit;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.super-scroll__wrap::-webkit-scrollbar {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+.super-scroll__wrap[data-axis="vertical"] {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.super-scroll__wrap[data-axis="horizontal"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.super-scroll__wrap[data-axis="both"] {
+  overflow: auto;
+}
+
+.super-scroll__view {
+  min-height: 100%;
+}
+
+.super-scroll__bar {
+  border-radius: 999px;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 140ms ease;
+  z-index: 20;
+}
+
+.super-scroll__bar--vertical {
+  bottom: 2px;
+  right: 2px;
+  top: 2px;
+  width: 6px;
+}
+
+.super-scroll__bar--horizontal {
+  bottom: 2px;
+  height: 6px;
+  left: 2px;
+  right: 2px;
+}
+
+.super-scroll__thumb {
+  background: color-mix(in srgb, var(--primary) 48%, var(--muted-foreground));
+  border-radius: inherit;
+  display: block;
+  height: 0;
+  position: relative;
+  transition: opacity 140ms ease, background-color 140ms ease;
+  width: 0;
+}
+
+.super-scroll__bar--vertical > .super-scroll__thumb {
+  width: 100%;
+}
+
+.super-scroll__bar--horizontal > .super-scroll__thumb {
+  height: 100%;
+}
+
+.super-scroll:hover > .super-scroll__bar,
+.super-scroll:focus-within > .super-scroll__bar,
+.super-scroll[data-always="true"] > .super-scroll__bar,
+.super-scroll[data-scrolling="true"] > .super-scroll__bar {
+  opacity: 0.78;
+}
+
+.super-scroll__thumb:hover {
+  background: color-mix(in srgb, var(--primary) 72%, var(--foreground));
+}
+
 .super-texture {
   background-image: var(--texture);
   background-size: 28px 28px;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { X } from 'lucide-vue-next'
 import AdminButton from './AdminButton.vue'
+import AdminScrollArea from './AdminScrollArea.vue'
 
 withDefaults(
   defineProps<{
@@ -37,9 +38,9 @@ const emit = defineEmits<{
             <X class="size-4" />
           </AdminButton>
         </header>
-        <div class="min-h-0 flex-1 overflow-auto p-4">
+        <AdminScrollArea class="flex-1" view-class="p-4">
           <slot />
-        </div>
+        </AdminScrollArea>
         <slot name="footer" />
       </section>
     </div>

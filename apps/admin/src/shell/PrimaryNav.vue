@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Boxes, ChevronDown, ChevronRight, Circle, Gauge, ShieldCheck, Users } from 'lucide-vue-next'
+import { BookOpen, Boxes, ChevronDown, ChevronRight, Circle, Gauge, Palette, ShieldCheck, Users } from 'lucide-vue-next'
 import { computed, onMounted, onUnmounted, reactive, shallowRef, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { getVisibleModuleNavTree, isModuleNavItemActive } from '@super-admin/core'
@@ -10,23 +10,33 @@ const props = withDefaults(
   defineProps<{
     orientation?: 'vertical' | 'horizontal'
     iconOnly?: boolean
+    items?: ModuleNavItem[]
+    maxDepth?: number
   }>(),
   {
     orientation: 'vertical',
-    iconOnly: false
+    iconOnly: false,
+    items: undefined,
+    maxDepth: 3
   }
 )
 
 const route = useRoute()
 
 const icons = {
+  examples: BookOpen,
+  'ui-kit': Palette,
   dashboard: Gauge,
   workbench: Boxes,
   users: Users,
   access: ShieldCheck
 }
 
-const navItems = computed(() => registeredModules.map((module) => getVisibleModuleNavTree(module.nav, 3)))
+const navItems = computed(() => {
+  const sourceItems = props.items ?? registeredModules.map((module) => module.nav)
+
+  return sourceItems.map((item) => getVisibleModuleNavTree(item, props.maxDepth))
+})
 
 const openDropdownPath = shallowRef<string | null>(null)
 const expandedPaths = reactive<Record<string, boolean>>({})

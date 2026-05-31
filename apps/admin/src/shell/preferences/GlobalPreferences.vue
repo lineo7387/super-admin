@@ -9,7 +9,7 @@ import {
   type LayoutPresetId
 } from '@super-admin/core'
 import { builtInDesignProfiles } from '@super-admin/theme'
-import { AdminButton, StatusPill } from '@super-admin/ui'
+import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin/ui'
 import { usePreferencesStore } from '@/app/preferences.store'
 
 const preferences = usePreferencesStore()
@@ -86,7 +86,7 @@ function selectDensity(density: Density): void {
             </AdminButton>
           </header>
 
-          <div class="grid max-h-[calc(88vh-92px)] gap-5 overflow-auto p-5 md:grid-cols-[1fr_1.15fr]">
+          <AdminScrollArea class="max-h-[calc(88vh-92px)]" view-class="grid gap-5 p-5 md:grid-cols-[1fr_1.15fr]">
             <section class="grid gap-4">
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
                 <div class="flex items-center justify-between gap-3">
@@ -242,7 +242,7 @@ function selectDensity(density: Density): void {
                 </div>
               </div>
             </section>
-          </div>
+          </AdminScrollArea>
         </section>
       </div>
     </Teleport>

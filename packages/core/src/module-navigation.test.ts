@@ -49,6 +49,67 @@ const accessManifest: ModuleManifest = {
   permissions: []
 }
 
+const examplesManifest: ModuleManifest = {
+  id: 'examples',
+  name: 'Examples',
+  nav: {
+    label: 'Examples',
+    path: '/examples/dashboard',
+    icon: 'examples',
+    order: 10,
+    children: [
+      { label: 'Dashboard', path: '/examples/dashboard' },
+      { label: 'Workbench', path: '/examples/workbench' },
+      {
+        label: 'Users',
+        path: '/examples/users/all',
+        children: [
+          { label: 'All Users', path: '/examples/users/all' },
+          { label: 'Pending Review', path: '/examples/users/pending-review' }
+        ]
+      },
+      { label: 'Access', path: '/examples/access' }
+    ]
+  },
+  routes: [
+    {
+      path: '/examples/dashboard',
+      name: 'examples-dashboard',
+      component: {},
+      meta: { title: 'Dashboard', keepAlive: { enabled: true } }
+    },
+    {
+      path: '/examples/users/all',
+      name: 'examples-users-all',
+      component: {},
+      meta: { title: 'All Users', keepAlive: { enabled: true } }
+    }
+  ]
+}
+
+const uiKitManifest: ModuleManifest = {
+  id: 'ui-kit',
+  name: 'UI Kit',
+  nav: {
+    label: 'UI Kit',
+    path: '/ui-kit/foundations',
+    icon: 'ui-kit',
+    order: 20,
+    children: [
+      { label: 'Foundations', path: '/ui-kit/foundations' },
+      { label: 'Forms', path: '/ui-kit/forms' }
+    ]
+  },
+  routes: [
+    {
+      path: '/ui-kit/foundations',
+      name: 'ui-kit-foundations',
+      component: {},
+      meta: { title: 'Foundations', keepAlive: { enabled: true } }
+    }
+  ]
+}
+
 describe('module navigation helpers', () => {
   it('finds the active module from child routes outside the parent default path', () => {
     const manifest: ModuleManifest = {
@@ -111,6 +172,29 @@ describe('module navigation helpers', () => {
       '3:All Users',
       '3:Pending Review',
       '2:Invites'
+    ])
+  })
+
+  it('treats template showcase groups as real first-level modules', () => {
+    expect(findActiveModule([examplesManifest, uiKitManifest], '/examples/users/pending-review')?.id).toBe('examples')
+    expect(findActiveModule([examplesManifest, uiKitManifest], '/ui-kit/forms')?.id).toBe('ui-kit')
+    expect(findModuleRoute(examplesManifest, '/examples/users/all?density=compact')?.name).toBe('examples-users-all')
+  })
+
+  it('keeps example domain child routes nested under the Examples tree', () => {
+    const users = examplesManifest.nav.children?.find((item) => item.label === 'Users')
+
+    expect(users).toBeDefined()
+    expect(isModuleNavItemActive(examplesManifest.nav, '/examples/users/all')).toBe(true)
+    expect(isModuleNavItemActive(users, '/examples/users/pending-review')).toBe(true)
+    expect(flattenModuleNav(examplesManifest.nav, 3).map((entry) => `${entry.level}:${entry.item.label}`)).toEqual([
+      '1:Examples',
+      '2:Dashboard',
+      '2:Workbench',
+      '2:Users',
+      '3:All Users',
+      '3:Pending Review',
+      '2:Access'
     ])
   })
 })

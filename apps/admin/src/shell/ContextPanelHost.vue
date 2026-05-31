@@ -2,7 +2,7 @@
 import { Bot, PanelRight } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { AdminCard, StatusPill } from '@super-admin/ui'
+import { AdminCard, AdminScrollArea, StatusPill } from '@super-admin/ui'
 import { usePreferencesStore } from '@/app/preferences.store'
 
 const route = useRoute()
@@ -22,7 +22,7 @@ const aiStatusMessage = computed(() => {
 </script>
 
 <template>
-  <aside class="h-full overflow-auto p-3">
+  <AdminScrollArea as="aside" class="h-full" view-class="p-3">
     <AdminCard class="space-y-4">
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-2">
@@ -45,5 +45,5 @@ const aiStatusMessage = computed(() => {
         </p>
       </div>
     </AdminCard>
-  </aside>
+  </AdminScrollArea>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdminScrollArea from './AdminScrollArea.vue'
 import EmptyState from './EmptyState.vue'
 
 const props = withDefaults(
@@ -23,7 +24,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div class="overflow-auto">
+  <AdminScrollArea axis="both">
     <table class="w-full min-w-[760px] border-collapse text-left text-sm">
       <thead class="bg-[var(--surface-raised)] text-xs uppercase text-[var(--muted-foreground)]">
         <slot name="head" />
@@ -51,5 +52,5 @@ const props = withDefaults(
         <slot v-else />
       </tbody>
     </table>
-  </div>
+  </AdminScrollArea>
 </template>
