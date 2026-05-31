@@ -3,7 +3,7 @@ import { Bot, PanelRight } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { AdminCard, AdminScrollArea, StatusPill } from '@super-admin/ui'
-import { usePreferencesStore } from '@/app/preferences.store'
+import { usePreferencesStore } from '@/stores/preferences.store'
 
 const route = useRoute()
 const preferences = usePreferencesStore()

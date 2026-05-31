@@ -18,7 +18,7 @@ from pathlib import Path
 CONTEXT_FILES: dict[str, str] = {
     ".trellis/spec/guides/trellis-lake-workflow.md": "Project workflow guard and artifact locations.",
     ".trellis/spec/guides/pre-implementation-checklist.md": "Pre-code product and architecture checks.",
-    ".trellis/spec/guides/cross-layer-thinking-guide.md": "Layer boundary checks for shell, modules, services, and queries.",
+    ".trellis/spec/guides/cross-layer-thinking-guide.md": "Layer boundary checks for shell, modules, API adapters, and queries.",
     ".trellis/spec/shared/typescript.md": "Strict TypeScript and exported contract rules.",
     ".trellis/spec/shared/code-quality.md": "Shared code quality expectations.",
     ".trellis/spec/shared/monorepo.md": "Workspace package boundaries and root script conventions.",
@@ -30,7 +30,7 @@ CONTEXT_FILES: dict[str, str] = {
     ".trellis/spec/frontend/css-design.md": "Tailwind, CSS variables, and layout stability rules.",
     ".trellis/spec/frontend/state-management.md": "Pinia and persisted preference boundaries.",
     ".trellis/spec/frontend/data-and-query.md": "TanStack Query and server-state ownership rules.",
-    ".trellis/spec/frontend/module-services.md": "Mock service and user API replacement pattern.",
+    ".trellis/spec/frontend/api-adapters.md": "Mock API and user API adapter pattern.",
     ".trellis/spec/frontend/type-safety.md": "Frontend contract and route meta typing rules.",
     ".trellis/spec/frontend/quality.md": "Frontend verification and visual QA checklist.",
     ".trellis/spec/big-question/dynamic-tailwind-classes.md": "Avoid runtime-generated Tailwind classes.",
@@ -86,10 +86,10 @@ KEYWORD_RULES: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
         ),
     ),
     (
-        ("service", "queries", "mock", "api", "tanstack"),
+        ("adapter", "queries", "mock", "api", "tanstack"),
         (
             ".trellis/spec/frontend/data-and-query.md",
-            ".trellis/spec/frontend/module-services.md",
+            ".trellis/spec/frontend/api-adapters.md",
             ".trellis/spec/big-question/server-state-in-pinia.md",
         ),
     ),
@@ -97,7 +97,7 @@ KEYWORD_RULES: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
         ("manifest", "module", "dashboard", "workbench", "users", "access"),
         (
             ".trellis/spec/frontend/directory-structure.md",
-            ".trellis/spec/frontend/module-services.md",
+            ".trellis/spec/frontend/api-adapters.md",
             ".trellis/spec/frontend/type-safety.md",
         ),
     ),

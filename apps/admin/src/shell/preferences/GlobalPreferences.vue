@@ -10,7 +10,7 @@ import {
 } from '@super-admin/core'
 import { builtInDesignProfiles } from '@super-admin/theme'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin/ui'
-import { usePreferencesStore } from '@/app/preferences.store'
+import { usePreferencesStore } from '@/stores/preferences.store'
 
 const preferences = usePreferencesStore()
 const open = shallowRef(false)

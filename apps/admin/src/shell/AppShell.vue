@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { usePreferencesStore } from '@/app/preferences.store'
+import { usePreferencesStore } from '@/stores/preferences.store'
 import StageManagerOverlay from '@/workspace/StageManagerOverlay.vue'
 import WorkspaceRouterView from '@/workspace/WorkspaceRouterView.vue'
-import { useWorkspaceTabsStore } from '@/workspace/workspace-tabs.store'
+import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 import ContextPanelHost from './ContextPanelHost.vue'
 import DualColumnLayout from './layouts/DualColumnLayout.vue'
 import TopHeaderLayout from './layouts/TopHeaderLayout.vue'

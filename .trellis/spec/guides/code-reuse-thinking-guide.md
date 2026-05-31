@@ -33,6 +33,5 @@ Keep module-specific code inside modules:
 
 - Generic adapters before two real modules need them.
 - Moving business/demo-specific UI into `packages/ui`.
-- Creating a universal CRUD/provider abstraction for simple module services.
+- Creating a universal CRUD/provider abstraction for simple API adapters.
 - Duplicating theme-specific effects in feature pages.
-

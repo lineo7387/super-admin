@@ -1,28 +1,46 @@
 <script setup lang="ts">
 import { Activity, AlertTriangle, Database, RadioTower } from 'lucide-vue-next'
-import { AdminCard, MetricTile, StatusPill } from '@super-admin/ui'
+import { computed, shallowRef } from 'vue'
+import { AdminAlert, AdminCard, AdminSkeleton, MetricTile, StatusPill } from '@super-admin/ui'
+import { useDashboardOverviewQuery } from './dashboard.queries'
+import type { DashboardOverviewParams, DashboardSignalIcon } from './dashboard.types'
 
-const metrics = [
-  { label: 'Revenue Flow', value: '$847K', meta: '+12.8% today', tone: 'success' },
-  { label: 'Open Jobs', value: '128', meta: '14 need review', tone: 'warning' },
-  { label: 'Audit Events', value: '2.4K', meta: 'normal drift', tone: 'neutral' },
-  { label: 'Risk Holds', value: '7', meta: '3 high priority', tone: 'danger' }
-] as const
+const scenario = shallowRef<DashboardOverviewParams['scenario']>('normal')
+const queryParams = computed<DashboardOverviewParams>(() => ({
+  scenario: scenario.value
+}))
+const overviewQuery = useDashboardOverviewQuery(queryParams)
+const overview = computed(() => overviewQuery.data.value)
+const metrics = computed(() => overview.value?.metrics ?? [])
+const signals = computed(() => overview.value?.signals ?? [])
+const activity = computed(() => overview.value?.activity ?? [])
+const isLoading = computed(() => overviewQuery.isLoading.value)
+const isError = computed(() => overviewQuery.isError.value)
+const isEmpty = computed(() => !isLoading.value && !isError.value && metrics.value.length === 0)
 
-const activity = [
-  'Settlement job completed across 12 regions',
-  'Access policy updated for finance operators',
-  'New workspace tab cache warmed for Users',
-  'AI provider remains unconfigured by default'
-] as const
+function signalIcon(icon: DashboardSignalIcon) {
+  if (icon === 'signal-routing') {
+    return RadioTower
+  }
+  if (icon === 'api-boundary') {
+    return Database
+  }
+  return AlertTriangle
+}
 </script>
 
 <template>
   <div class="grid gap-4">
     <section class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <template v-if="isLoading">
+        <AdminCard v-for="index in 4" :key="index">
+          <AdminSkeleton :lines="3" />
+        </AdminCard>
+      </template>
       <MetricTile
+        v-else
         v-for="metric in metrics"
-        :key="metric.label"
+        :key="metric.id"
         :label="metric.label"
         :value="metric.value"
         :meta="metric.meta"
@@ -30,34 +48,48 @@ const activity = [
       />
     </section>
 
+    <AdminAlert
+      v-if="isError"
+      tone="danger"
+      title="Unable to load dashboard overview"
+      description="The API adapter produced this mock error state."
+    />
+    <AdminAlert
+      v-else-if="isEmpty"
+      tone="warning"
+      title="No dashboard signals"
+      description="The API adapter returned an empty mock overview."
+    />
+
     <section class="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.55fr)]">
       <AdminCard>
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 class="[font-family:var(--font-display)] text-2xl text-[var(--foreground)]">Command Surface</h1>
             <p class="mt-1 max-w-2xl text-sm text-[var(--muted-foreground)]">
-              A frontend-only operations view powered by mock data and replaceable module services.
+              A frontend-only example module: keep this screen if it fits, or reshape the page, types, queries, and API adapter together.
             </p>
           </div>
-          <StatusPill label="Mock mode" tone="success" />
+          <StatusPill :label="overview?.statusLabel ?? 'Mock mode'" tone="success" />
         </div>
 
-        <div class="mt-6 grid gap-3 lg:grid-cols-3">
-          <div class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
-            <RadioTower class="size-5 text-[var(--primary)]" />
-            <div class="mt-5 text-sm font-medium text-[var(--foreground)]">Signal routing</div>
-            <p class="mt-2 text-sm text-[var(--muted-foreground)]">Layouts can change without rewriting feature pages.</p>
-          </div>
-          <div class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
-            <Database class="size-5 text-[var(--primary)]" />
-            <div class="mt-5 text-sm font-medium text-[var(--foreground)]">Service boundary</div>
-            <p class="mt-2 text-sm text-[var(--muted-foreground)]">Pages stay behind queries and module service files.</p>
-          </div>
-          <div class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
-            <AlertTriangle class="size-5 text-[var(--warning)]" />
-            <div class="mt-5 text-sm font-medium text-[var(--foreground)]">Provider safety</div>
-            <p class="mt-2 text-sm text-[var(--muted-foreground)]">AI starts unavailable instead of pretending to be connected.</p>
-          </div>
+        <div v-if="isLoading" class="mt-6">
+          <AdminSkeleton :lines="4" />
+        </div>
+        <div v-else class="mt-6 grid gap-1 divide-y divide-[var(--border)] lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+          <article
+            v-for="signal in signals"
+            :key="signal.id"
+            class="px-1 py-4 lg:px-4 lg:py-1"
+          >
+            <component
+              :is="signalIcon(signal.id)"
+              class="size-5"
+              :class="signal.tone === 'warning' ? 'text-[var(--warning)]' : 'text-[var(--primary)]'"
+            />
+            <div class="mt-5 text-sm font-medium text-[var(--foreground)]">{{ signal.title }}</div>
+            <p class="mt-2 text-sm text-[var(--muted-foreground)]">{{ signal.description }}</p>
+          </article>
         </div>
       </AdminCard>
 
@@ -69,11 +101,12 @@ const activity = [
         <div class="mt-4 grid gap-3">
           <div
             v-for="item in activity"
-            :key="item"
+            :key="item.id"
             class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] p-3 text-sm text-[var(--foreground)]"
           >
-            {{ item }}
+            {{ item.message }}
           </div>
+          <AdminSkeleton v-if="isLoading" :lines="4" />
         </div>
       </AdminCard>
     </section>

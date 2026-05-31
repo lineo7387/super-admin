@@ -9,7 +9,7 @@ Use after fixing a non-trivial bug.
 - Shell/layout state issue.
 - Workspace tab/keep-alive issue.
 - Pinia vs TanStack Query ownership issue.
-- Module service/mock data issue.
+- API adapter/mock data issue.
 - Vue reactivity/component boundary issue.
 - Accessibility/focus management issue.
 
@@ -20,7 +20,7 @@ Use after fixing a non-trivial bug.
 - Did a dynamic Tailwind class disappear from built CSS?
 - Did theme/layout switching remount a route unexpectedly?
 - Did server/cache state end up in Pinia?
-- Did a module service become hard to replace?
+- Did an API adapter become hard to replace?
 
 ## Prevention
 
@@ -28,7 +28,6 @@ If the bug reveals a repeatable rule, update the relevant spec file:
 
 - `frontend/app-shell.md`
 - `frontend/design-profiles.md`
-- `frontend/module-services.md`
+- `frontend/api-adapters.md`
 - `frontend/state-management.md`
 - `big-question/*.md`
-

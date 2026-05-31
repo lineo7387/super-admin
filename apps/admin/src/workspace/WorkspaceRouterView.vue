@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { RouterView } from 'vue-router'
-import { useWorkspaceTabsStore } from './workspace-tabs.store'
+import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 
 const tabs = useWorkspaceTabsStore()
 

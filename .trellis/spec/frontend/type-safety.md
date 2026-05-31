@@ -7,7 +7,7 @@ Use explicit types for exported contracts:
 - `ModuleManifest`
 - `PageShellMeta`
 - `DesignProfile`
-- module service types
+- module API adapter params/results
 - query params/results
 - Pinia store state
 
@@ -26,4 +26,3 @@ Exported functions should have explicit return types.
 - Non-null assertions.
 - Unvalidated `unknown` external data.
 - Leaking optional backend/example types into frontend modules.
-

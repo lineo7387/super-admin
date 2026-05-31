@@ -89,7 +89,7 @@ function handleSaved(input: { name: string }): void {
 
 <template>
   <div class="grid gap-4">
-    <AdminTableFrame title="All Users" description="Mock-backed CRUD list with replaceable service/query boundaries.">
+    <AdminTableFrame title="All Users" description="Mock-backed CRUD example with module-owned page, query, API adapter, and type boundaries.">
       <template #toolbar>
         <AdminTableToolbar>
           <template #filters>

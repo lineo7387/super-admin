@@ -43,7 +43,7 @@ Keep in modules:
 - Keep UI Kit pages under `apps/admin/src/modules/ui-kit/` as composed examples. They may use realistic admin copy, but business rules, table columns, and workflow semantics must not move into `packages/ui`.
 - Shared table/form primitives should render generic states and slots: loading, empty, error, validation, selection, pagination, and recovery actions.
 - Shared select, checkbox, radio, and switch controls should be custom/styled primitives rather than relying on browser-native visual chrome. Preserve keyboard access and typed `v-model` contracts.
-- Module pages own field rules, service replacement copy, and domain-specific labels; shared primitives own accessible structure, focus states, and profile-aware styling.
+- Module pages own field rules, API adapter copy, and domain-specific labels; shared primitives own accessible structure, focus states, and profile-aware styling.
 
 ## Accessibility
 

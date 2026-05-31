@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import { ShieldCheck } from 'lucide-vue-next'
-import { AdminCard, StatusPill } from '@super-admin/ui'
+import { computed, shallowRef } from 'vue'
+import { AdminAlert, AdminCard, AdminSkeleton, StatusPill } from '@super-admin/ui'
+import { useAccessMatrixQuery } from './access.queries'
+import type { AccessMatrixParams } from './access.types'
 
-const roles = [
-  { name: 'Owner', scope: 'All modules', level: 'Full', tone: 'success' },
-  { name: 'Operator', scope: 'Workbench, Users', level: 'Scoped', tone: 'warning' },
-  { name: 'Auditor', scope: 'Dashboard, Access', level: 'Read only', tone: 'neutral' }
-] as const
+const scenario = shallowRef<AccessMatrixParams['scenario']>('normal')
+const queryParams = computed<AccessMatrixParams>(() => ({
+  scenario: scenario.value
+}))
+const matrixQuery = useAccessMatrixQuery(queryParams)
+const roles = computed(() => matrixQuery.data.value?.roles ?? [])
+const integrationNote = computed(() => matrixQuery.data.value?.integrationNote ?? '')
+const isLoading = computed(() => matrixQuery.isLoading.value)
+const isError = computed(() => matrixQuery.isError.value)
+const isEmpty = computed(() => !isLoading.value && !isError.value && roles.value.length === 0)
 </script>
 
 <template>
@@ -23,9 +31,22 @@ const roles = [
       </div>
 
       <div class="mt-5 grid gap-3">
+        <AdminSkeleton v-if="isLoading" :lines="5" />
+        <AdminAlert
+          v-else-if="isError"
+          tone="danger"
+          title="Unable to load access matrix"
+          description="The Access API adapter produced this mock error state."
+        />
+        <AdminAlert
+          v-else-if="isEmpty"
+          tone="warning"
+          title="No roles in this matrix"
+          description="The Access API adapter returned an empty mock role list."
+        />
         <div
           v-for="role in roles"
-          :key="role.name"
+          :key="role.id"
           class="grid gap-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-raised)] p-4 md:grid-cols-[1fr_1fr_auto]"
         >
           <div class="font-medium text-[var(--foreground)]">{{ role.name }}</div>
@@ -38,7 +59,7 @@ const roles = [
     <AdminCard>
       <h2 class="[font-family:var(--font-display)] text-lg text-[var(--foreground)]">Integration note</h2>
       <p class="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">
-        Replace module services and permission checks with your own backend when needed. The default template remains mock-data based.
+        {{ integrationNote }}
       </p>
     </AdminCard>
   </div>

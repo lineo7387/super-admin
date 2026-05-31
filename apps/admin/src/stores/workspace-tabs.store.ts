@@ -10,7 +10,7 @@ import {
 } from '@super-admin/core'
 import { defineStore } from 'pinia'
 import { computed, reactive } from 'vue'
-import { usePreferencesStore } from '@/app/preferences.store'
+import { usePreferencesStore } from '@/stores/preferences.store'
 
 const STORAGE_KEY = 'super-admin:workspace-tabs'
 

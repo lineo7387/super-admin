@@ -190,7 +190,7 @@ function setAllSelected(selected: boolean): void {
         </AdminDataTable>
       </AdminTableFrame>
       <AdminTableFrame title="Error" description="Recovery actions slot into the error state.">
-        <AdminDataTable state="error" density="compact" :column-count="4" error-title="Unable to load views" error-description="The service replacement point can surface retry actions here.">
+        <AdminDataTable state="error" density="compact" :column-count="4" error-title="Unable to load views" error-description="The API adapter can surface retry actions here.">
           <template #head>
             <tr>
               <th class="px-3 py-3 font-medium">Name</th>

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import type { Ref } from 'vue'
-import { listUsers } from './users.service'
+import { listUsers } from '@/api/users.api'
 import type { UserListParams, UserListResult } from './users.types'
 
 export function useUsersQuery(params: Ref<UserListParams>) {

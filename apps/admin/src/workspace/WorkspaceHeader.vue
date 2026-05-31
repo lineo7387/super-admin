@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router'
 import { findActiveModule } from '@super-admin/core'
 import { AdminButton } from '@super-admin/ui'
 import { registeredModules } from '@/modules/module-registry'
-import { useWorkspaceTabsStore } from './workspace-tabs.store'
+import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 
 const route = useRoute()
 const tabs = useWorkspaceTabsStore()

@@ -10,7 +10,7 @@ Use when changing what a shared concept means.
 - `PageShellMeta`
 - `WorkspaceTab`
 - `ModuleManifest`
-- Module service params/results.
+- API adapter params/results.
 - Demo permission keys.
 
 ## Checklist
@@ -25,4 +25,3 @@ Use when changing what a shared concept means.
 ## Anti-Pattern
 
 Do not silently change the meaning of a field such as `layoutPreset`, `colorMode`, or `keepAlive` without checking every consumer.
-

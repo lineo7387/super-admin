@@ -2,7 +2,7 @@
 
 ## Goal
 
-Turn the archived Super Admin architecture decisions into an executable follow-up roadmap for backend/API validation, module service examples, integration documentation, and scaffold/CLI work. The outcome of this task is a planning artifact, not implementation code: a clear sequence of future Trellis tasks with boundaries, dependencies, and acceptance criteria.
+Turn the archived Super Admin architecture decisions into an executable follow-up roadmap for backend/API validation, module API adapter examples, integration documentation, and scaffold/CLI work. The outcome of this task is a planning artifact, not implementation code: a clear sequence of future Trellis tasks with boundaries, dependencies, and acceptance criteria.
 
 ## What I Already Know
 
@@ -12,10 +12,10 @@ Turn the archived Super Admin architecture decisions into an executable follow-u
 - The intended integration path is:
 
 ```text
-Page -> query/composable -> module service -> mock data or user API
+Page -> query/composable -> API adapter -> api/mock data or user API
 ```
 
-- Users should be able to connect real APIs by editing small module service files, such as `users.service.ts`.
+- Users should be able to connect real APIs by editing small API adapter files, such as `apps/admin/src/api/users.api.ts`, when the example screen semantics still fit.
 - Archived research already recommends a monorepo with:
   - `apps/admin` for the Vue admin app
   - optional `apps/api` for real API validation
@@ -46,11 +46,11 @@ Page -> query/composable -> module service -> mock data or user API
 
 - Consolidate archived architecture decisions into a current roadmap.
 - Preserve the frontend-first product boundary:
-  - default scaffold uses mock data and replaceable services
+  - default scaffold uses mock data and replaceable API adapters
   - backend/database/auth/AI are optional/reference validation only
 - Define a staged task sequence covering:
   - UI Kit/admin console primitives
-  - typed module service/query/mock examples
+  - typed API adapter/query/mock examples
   - integration documentation
   - API contract validation
   - optional reference backend validation
@@ -74,7 +74,7 @@ Page -> query/composable -> module service -> mock data or user API
 
 The next implementation task should be `ui-kit-admin-console-primitives`.
 
-This means the project should continue strengthening the backend/admin UI foundation before moving into module service examples, API contracts, reference backend validation, or CLI scaffolding. UI Kit work is not a backend/API phase; it is the admin-console primitive layer that Examples and later API-backed screens will consume.
+This means the project should continue strengthening the backend/admin UI foundation before moving into module API adapter examples, API contracts, reference backend validation, or CLI scaffolding. UI Kit work is not a backend/API phase; it is the admin-console primitive layer that Examples and later API-backed screens will consume.
 
 ## Proposed Roadmap Shape
 
@@ -85,7 +85,7 @@ This means the project should continue strengthening the backend/admin UI founda
 | Admin UI shell, layouts, profiles | Yes | Yes | This is the product's primary value. |
 | UI Kit/admin primitives | Yes | Yes | Users need copyable table/form/drawer/status primitives before API integration. |
 | Examples pages | Yes | Yes | Examples teach composition and realistic backend-console patterns. |
-| Module services with mock data | Yes | Yes | This is the default integration seam users replace with their own APIs. |
+| API adapters with mock data | Yes | Yes | This is the default integration seam users replace with their own APIs when example screens fit. |
 | API contract normalization | Yes, as frontend-facing types/helpers/docs | Yes, with optional live API checks | Contracts must guide integration without forcing one backend. |
 | Reference backend | No | Yes | It validates replacement seams for maintainers but should not ship as required scaffold. |
 | Database/ORM | No | Optional | Useful only if backend validation needs persistence. |
@@ -97,7 +97,7 @@ This means the project should continue strengthening the backend/admin UI founda
 
 ```text
 UI Kit/admin primitives
-  -> Module service examples
+  -> Module API adapter examples
     -> Integration docs
       -> API contract validation
         -> Optional reference API validation
@@ -108,9 +108,9 @@ UI Kit/admin primitives
 Why this order:
 
 - UI Kit comes first because Examples should consume showcased reusable primitives instead of inventing local UI.
-- Module service examples come before docs/API validation because docs and contracts need concrete module seams to describe.
+- Module API adapter examples come before docs/API validation because docs and contracts need concrete module seams to describe.
 - API contract validation comes before reference backend so the backend validates existing frontend-facing contracts instead of driving them.
-- CLI comes after runtime/module/theme/service contracts stabilize, so it does not invent a parallel schema.
+- CLI comes after runtime/module/theme/API adapter contracts stabilize, so it does not invent a parallel schema.
 - Release acceptance QA becomes more valuable after the major user-facing and optional validation surfaces exist.
 
 ### 1. `ui-kit-admin-console-primitives`
@@ -133,7 +133,7 @@ Expected scope:
 
 Definition of done:
 
-- UI Kit demonstrates the reusable primitives needed by the next Examples/module-service work.
+- UI Kit demonstrates the reusable primitives needed by the next Examples/API adapter work.
 - The admin UI system has enough table/form/drawer/feedback coverage for realistic backend management screens.
 - Browser QA covers the affected UI Kit routes across relevant layout/theme combinations.
 
@@ -143,17 +143,17 @@ Purpose: make Examples modules demonstrate the intended replaceable data seam.
 
 Expected scope:
 
-- Expand Dashboard, Workbench, Users, and Access into typed service/query/mock examples.
+- Expand Dashboard, Workbench, Users, and Access into typed API adapter/query/mock examples.
 - Keep feature pages calling query/composable layers, not raw mock data or direct network calls.
 - Keep module-owned business copy, table columns, validation rules, and workflow state inside Examples.
 - Ensure reusable UI used by examples flows through `packages/ui` and UI Kit first.
 
 Definition of done:
 
-- Example modules have clear type/service/mock/query boundaries.
-- Replacing a module service with a real API call is obvious from code shape.
-- Tests cover module service/query behavior where useful.
-- Relevant frontend specs are updated if service boundaries change.
+- Example modules have clear type/API adapter/mock/query boundaries.
+- Replacing an API adapter with a real API call is obvious when the example screen fits.
+- Tests cover API adapter/query behavior where useful.
+- Relevant frontend specs are updated if API adapter boundaries change.
 
 ### 3. `template-integration-docs`
 
@@ -164,7 +164,7 @@ Expected scope:
 - Add README guidance for:
   - running the admin app
   - switching theme/profile/layout
-  - replacing mock module services
+  - replacing mock API adapters
   - connecting REST/RPC/GraphQL/custom APIs
   - why backend/auth/AI are optional
   - where future CLI work fits
@@ -193,11 +193,11 @@ Expected scope:
 Definition of done:
 
 - Contracts are documented in `.trellis/spec/` and represented in code/tests where appropriate.
-- Module services can normalize real API responses without leaking backend framework details into pages.
+- API adapters can normalize real API responses without leaking backend framework details into pages.
 
 ### 5. `reference-api-validation`
 
-Purpose: build an optional maintainer-side backend reference to prove that module services can be replaced with real API calls.
+Purpose: build an optional maintainer-side backend reference to prove that API adapters can be replaced with real API calls.
 
 Expected scope:
 
@@ -236,7 +236,7 @@ Expected scope:
 
 - Browser QA for layout/profile/theme combinations.
 - Module scenario checks for Examples and UI Kit.
-- Contract tests for module service replacement and API normalization.
+- Contract tests for API adapter replacement and API normalization.
 - CLI scaffold smoke test once CLI exists.
 
 Definition of done:
@@ -250,12 +250,12 @@ Definition of done:
 Keep it active while:
 
 - Backend specs are still mostly placeholders or intentionally light.
-- The frontend specs are still changing due to UI Kit, Examples, and service boundary work.
+- The frontend specs are still changing due to UI Kit, Examples, and API adapter boundary work.
 - There are not enough real backend/reference examples to document backend conventions honestly.
 
 Archive it only after:
 
-- Frontend specs reflect the actual UI Kit, shell, module service, and theme conventions.
+- Frontend specs reflect the actual UI Kit, shell, API adapter, and theme conventions.
 - Backend specs either document the intentional "no default backend" boundary, or a reference backend exists with real conventions.
 - Shared specs cover monorepo, TypeScript, quality, and git/session expectations.
 
@@ -285,7 +285,7 @@ Do not archive `00-bootstrap-guidelines` as part of this roadmap task.
 - Do not implement `apps/api`.
 - Do not add CLI code.
 - Do not add or rewrite README files.
-- Do not refactor module services.
+- Do not refactor API adapters from this roadmap planning task.
 - Do not archive `00-bootstrap-guidelines`.
 - Do not introduce backend/database/auth dependencies into the default scaffold.
 - Do not create Superpowers artifacts.

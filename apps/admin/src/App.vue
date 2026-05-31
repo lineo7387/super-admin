@@ -2,7 +2,7 @@
 import { computed, onMounted, watch } from 'vue'
 import { resolveColorMode } from '@super-admin/core'
 import { applyDesignProfile, getBuiltInDesignProfile } from '@super-admin/theme'
-import { usePreferencesStore } from './app/preferences.store'
+import { usePreferencesStore } from './stores/preferences.store'
 import AppShell from './shell/AppShell.vue'
 
 const preferences = usePreferencesStore()

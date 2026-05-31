@@ -3,8 +3,8 @@ import { ChevronLeft, ChevronRight, Pin, X } from 'lucide-vue-next'
 import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { AdminScrollArea } from '@super-admin/ui'
-import { usePreferencesStore } from '@/app/preferences.store'
-import { useWorkspaceTabsStore } from './workspace-tabs.store'
+import { usePreferencesStore } from '@/stores/preferences.store'
+import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 
 type ScrollAreaHandle = {
   getScrollElement: () => HTMLElement | null

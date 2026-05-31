@@ -1,5 +1,6 @@
-import { mockUsers } from './users.mock'
-import type { UserListParams, UserListResult, UserRecord } from './users.types'
+import { mockUsers } from '@/api/mock/users.mock'
+import type { MockUser } from '@/api/mock/users.mock'
+import type { UserListParams, UserListResult, UserRecord } from '@/modules/users/users.types'
 
 const LOADING_DELAY_MS = 700
 
@@ -18,8 +19,20 @@ function matchesKeyword(user: UserRecord, keyword: string): boolean {
   return [user.name, user.email, user.role, user.status, user.region].some((value) => value.toLowerCase().includes(term))
 }
 
+function normalizeUser(user: MockUser): UserRecord {
+  return {
+    id: user.userId,
+    name: user.displayName,
+    email: user.emailAddress,
+    role: user.roleName,
+    status: user.state,
+    region: user.regionName,
+    notes: user.profileNotes
+  }
+}
+
 function filterUsers(params: UserListParams): UserRecord[] {
-  return mockUsers.filter((user) => {
+  return mockUsers.map(normalizeUser).filter((user) => {
     const matchesStatus = params.status === 'all' || user.status === params.status
 
     return matchesStatus && matchesKeyword(user, params.keyword ?? '')

@@ -5,9 +5,9 @@ import { computed, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { findActiveModule, findModuleRoute } from '@super-admin/core'
 import { AdminButton } from '@super-admin/ui'
-import { usePreferencesStore } from '@/app/preferences.store'
+import { usePreferencesStore } from '@/stores/preferences.store'
 import { registeredModules } from '@/modules/module-registry'
-import { useWorkspaceTabsStore } from './workspace-tabs.store'
+import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 
 const preferences = usePreferencesStore()
 const route = useRoute()

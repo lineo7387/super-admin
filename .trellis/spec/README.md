@@ -11,7 +11,7 @@ This repository builds an open-source web admin UI template. The default user-fa
 - Pinia for app/client state.
 - TanStack Query for server/cache state.
 - Runtime theme, mode, layout, density, and workspace controls.
-- Small mock datasets and replaceable module service files.
+- Small mock datasets and replaceable API adapter files.
 
 The published scaffold must not require a backend, database, auth provider, or AI provider. Optional backend/auth/AI examples may exist only to validate that the frontend can integrate with real systems.
 
@@ -27,7 +27,7 @@ Vue admin UI development patterns:
 - [Components](./frontend/components.md)
 - [State Management](./frontend/state-management.md)
 - [Data and Query](./frontend/data-and-query.md)
-- [Module Services](./frontend/module-services.md)
+- [API Adapters](./frontend/api-adapters.md)
 - [Type Safety](./frontend/type-safety.md)
 - [CSS and Tailwind](./frontend/css-design.md)
 - [Quality](./frontend/quality.md)
@@ -70,5 +70,5 @@ Known pitfalls for this template:
 
 1. Read the frontend index and the specific topic files for the layer you will touch.
 2. Confirm the change respects the frontend-first product boundary.
-3. Prefer mock/module service integration over adding backend assumptions.
+3. Prefer mock/API adapter integration over adding backend assumptions.
 4. Run lint, typecheck, and relevant tests before claiming completion.

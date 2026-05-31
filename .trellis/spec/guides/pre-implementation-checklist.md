@@ -6,11 +6,11 @@ Use before writing code.
 
 - [ ] Does this keep the default scaffold frontend-first?
 - [ ] Does it avoid requiring a backend/database/auth/AI provider?
-- [ ] If it touches API integration, is the user-facing path still a simple module service file?
+- [ ] If it touches API integration, is the user-facing path still a simple API adapter file?
 
 ## Architecture
 
-- [ ] Which layer is changing: theme, shell, module, component, query, service, CLI?
+- [ ] Which layer is changing: theme, shell, module, component, query, API adapter, CLI?
 - [ ] Is there an existing pattern/spec for that layer?
 - [ ] Does this change belong in shared UI/theme/core or inside one module?
 - [ ] Does it affect runtime theme/layout switching?
@@ -33,4 +33,3 @@ Use before writing code.
 
 - [ ] What lint/typecheck/test command will verify this?
 - [ ] What browser states need visual checking?
-

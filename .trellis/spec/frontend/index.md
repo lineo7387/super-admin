@@ -23,7 +23,7 @@ Guidelines for the Vue 3 + shadcn-vue + Tailwind admin template.
 | [components.md](./components.md) | Building reusable UI or module sections |
 | [state-management.md](./state-management.md) | Adding Pinia state, persistence, runtime preferences |
 | [data-and-query.md](./data-and-query.md) | Adding list/detail queries, mutations, cache behavior |
-| [module-services.md](./module-services.md) | Adding or changing mock data/API replacement points |
+| [api-adapters.md](./api-adapters.md) | Adding or changing mock data/API adapter points |
 | [type-safety.md](./type-safety.md) | Defining types, route meta, manifests, exported APIs |
 | [css-design.md](./css-design.md) | Tailwind/CSS variable/profile styling |
 | [quality.md](./quality.md) | Before finishing frontend work |
@@ -31,10 +31,9 @@ Guidelines for the Vue 3 + shadcn-vue + Tailwind admin template.
 ## Core Rules
 
 - Keep the project frontend-first. Do not require a backend for default scaffold behavior.
-- Feature pages call module query composables, not `fetch`, Axios, Prisma, or backend clients directly.
+- Feature pages call module query composables, not `fetch`, Axios, Prisma, backend clients, or API adapters directly.
 - Use Pinia for app/client state and TanStack Query for server/cache state.
 - Use Tailwind utilities and CSS variables for styling; avoid runtime-generated Tailwind class names.
 - Runtime profile/mode/layout switching must not unnecessarily destroy tabs or kept-alive route state.
 - Pages expose semantic regions; shell presets decide placement.
 - Keep route/page components as composition surfaces. Move reusable UI into components and stateful logic into composables.
-

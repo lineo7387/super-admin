@@ -2,7 +2,7 @@
 
 ## Scope
 
-Finalize a durable roadmap from archived Super Admin decisions. This task does not implement UI Kit, module services, backend APIs, docs, or CLI code. It prepares the next task sequence and preserves the product boundary between the default frontend scaffold and optional maintainer/reference validation.
+Finalize a durable roadmap from archived Super Admin decisions. This task does not implement UI Kit, API adapters, backend APIs, docs, or CLI code. It prepares the next task sequence and preserves the product boundary between the default frontend scaffold and optional maintainer/reference validation.
 
 ## Steps
 

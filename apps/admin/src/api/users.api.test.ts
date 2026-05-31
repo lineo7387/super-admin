@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { listUsers } from './users.service'
-import { validateUserInput } from './users.validation'
+import { listUsers } from './users.api'
+import { validateUserInput } from '@/modules/users/users.validation'
 
-describe('users service', () => {
+describe('users api adapter', () => {
   it('filters and paginates normal mock users', async () => {
     const result = await listUsers({
       page: 1,
@@ -31,7 +31,7 @@ describe('users service', () => {
     expect(result.total).toBe(0)
   })
 
-  it('throws service errors through a mock data scenario', async () => {
+  it('throws API adapter errors through a mock data scenario', async () => {
     await expect(
       listUsers({
         page: 1,

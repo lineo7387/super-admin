@@ -10,10 +10,10 @@ Use TanStack Query for server/cache state:
 - Cache invalidation.
 - Background refetch when intentionally enabled.
 
-Feature pages should call module query composables, not services or transport directly.
+Feature pages should call module query composables, not API adapters or transport directly.
 
 ```text
-Page -> module query composable -> module service -> mock data or user API
+Page -> module query composable -> API adapter -> api/mock data or user API
 ```
 
 ## Query Keys
@@ -27,15 +27,15 @@ Use stable, serializable keys:
 
 Normalize params before passing them into query keys when order or defaults could vary.
 
-## Module Services
+## API Adapters
 
-Query composables call module services such as `usersService.list(params)`.
+Query composables call API adapter functions such as `listUsers(params)`.
 
-The service is the user replacement point for real APIs.
+The API adapter is the replacement point when the module's page semantics still fit. It should normalize `api/mock` or user API responses into the module's frontend types. If the user's business screen is different, reshape the module page/components, types, query params, and API adapter together instead of forcing the API into the example shape.
 
 ## Anti-Patterns
 
 - Calling `fetch`, Axios, Alova, Hono clients, or backend SDKs directly in Vue components.
 - Duplicating server cache in Pinia.
 - Making one global data-provider DSL mandatory for all modules.
-
+- Treating example module types as a universal backend API contract.

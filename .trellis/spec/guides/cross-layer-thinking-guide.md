@@ -10,7 +10,7 @@ Shell/layout/tabs
 Route + ModuleManifest
 Page/component
 Query composable
-Module service
+API adapter
 Mock data or user API
 ```
 
@@ -20,7 +20,7 @@ Mock data or user API
 - Does the shell need a new region/state, or can the page compose existing regions?
 - Does a route need manifest metadata for navigation, tabs, layout, or keep-alive?
 - Should data live in Pinia, TanStack Query, or local component state?
-- Is the module service still easy for users to replace?
+- Is the API adapter still easy for users to replace or reshape?
 - Does the change accidentally require a backend?
 
 ## Data Flow
@@ -28,7 +28,7 @@ Mock data or user API
 Read flow:
 
 ```text
-mock/user API -> module service -> query composable -> page -> shell region
+api/mock or user API -> API adapter -> query composable -> page -> shell region
 ```
 
 Preference flow:
@@ -44,4 +44,3 @@ header preferences -> Pinia shell state -> CSS variables/layout preset -> UI
 - Adding theme-specific classes to one feature page.
 - Adding a backend/client SDK directly to a component.
 - Forgetting keep-alive behavior when changing route keys.
-

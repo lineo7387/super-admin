@@ -4,7 +4,7 @@
 
 The next implementation task should be `ui-kit-admin-console-primitives`.
 
-UI Kit/admin primitives are part of the backend/admin console UI foundation. They should be implemented before module service examples, API contracts, reference backend validation, or CLI scaffold work.
+UI Kit/admin primitives are part of the backend/admin console UI foundation. They should be implemented before module API adapter examples, API contracts, reference backend validation, or CLI scaffold work.
 
 ## Product Boundary
 
@@ -14,7 +14,7 @@ Default scaffold:
 - Runtime layout/profile/theme switching.
 - UI Kit/admin primitives.
 - Examples pages.
-- Mock data through replaceable module services.
+- Mock data through replaceable API adapters.
 - Frontend-facing integration contracts and docs.
 
 Reference validation only:
@@ -33,8 +33,8 @@ Reference validation must prove the frontend seams work without making backend/a
    - Cover forms, validation, tables, table states, overlays, feedback states, and profile/mode QA.
 
 2. `module-service-examples`
-   - Expand Examples into typed service/query/mock/page patterns.
-   - Make replacing mock services with real APIs obvious.
+   - Expand Examples into typed API adapter/query/mock/page patterns.
+   - Make replacing mock API adapters with real APIs obvious when the example screen fits.
 
 3. `template-integration-docs`
    - Document how users run, customize, and connect the template to their own APIs.
@@ -53,4 +53,4 @@ Reference validation must prove the frontend seams work without making backend/a
 
 ## Bootstrap Guidelines
 
-Do not archive `00-bootstrap-guidelines` yet. It remains useful until specs reflect the actual frontend UI/service conventions and either intentionally-light backend boundaries or real reference backend conventions.
+Do not archive `00-bootstrap-guidelines` yet. It remains useful until specs reflect the actual frontend UI/API adapter conventions and either intentionally-light backend boundaries or real reference backend conventions.

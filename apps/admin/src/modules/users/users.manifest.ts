@@ -38,7 +38,7 @@ export const usersManifest: ModuleManifest = {
       component: UsersAllPage,
       meta: {
         title: 'All Users',
-        description: 'Demo user administration with table primitives, drawer forms, and mock service scenarios.',
+        description: 'Demo user administration with table primitives, drawer forms, and mock API scenarios.',
         regions: ['tools', 'primary', 'context'],
         keepAlive: { enabled: true }
       }

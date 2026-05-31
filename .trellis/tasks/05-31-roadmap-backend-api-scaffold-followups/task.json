@@ -19,7 +19,8 @@
   "pr_url": null,
   "subtasks": [],
   "children": [
-    "05-31-ui-kit-admin-console-primitives"
+    "05-31-ui-kit-admin-console-primitives",
+    "05-31-module-service-examples"
   ],
   "parent": null,
   "relatedFiles": [],

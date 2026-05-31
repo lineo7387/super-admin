@@ -34,7 +34,7 @@ const invites = [
     <EmptyState
       v-if="invites.length === 0"
       title="No pending invites"
-      description="Invite state can be replaced by the users service later."
+      description="Invite state can be wired through the users API adapter later."
       class="mt-5"
     />
   </AdminCard>
