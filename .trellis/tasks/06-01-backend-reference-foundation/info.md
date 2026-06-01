@@ -57,4 +57,11 @@ Before implementation, produce:
 
 Do not optimize for the fastest API demo.
 
-Prefer a foundation that supports future auth/RBAC and module expansion. Hono can still be viable if paired with explicit layering, but NestJS deserves a fair comparison because its structure may match the long-term backend requirements better.
+Prefer a foundation that supports future auth/RBAC and module expansion. The current direction is **Hono-first, architecture-strict**:
+
+- Use Hono as the lightweight HTTP/runtime layer.
+- Do not write route-heavy demo code.
+- Bring our own standards for modules, services/use cases, repositories, validation, response/error shape, auth/session/RBAC context, and tests.
+- Keep NestJS as the fallback if research or implementation proves that Hono requires too much custom convention to stay maintainable.
+
+Research is captured in `research/backend-framework-direction.md`.

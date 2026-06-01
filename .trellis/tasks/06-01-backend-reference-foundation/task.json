@@ -3,7 +3,7 @@
   "name": "backend-reference-foundation",
   "title": "Backend reference foundation",
   "description": "Plan a standard, extensible optional reference backend foundation for auth, RBAC, real API validation, and future CLI scaffolding.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "backend",
   "package": null,

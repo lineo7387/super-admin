@@ -15,20 +15,20 @@ Plan the optional reference backend foundation for Super Admin. This task should
 
 ## Phase 2: Research And Architecture
 
-- [ ] Research and compare backend options:
-  - [ ] Hono
-  - [ ] NestJS
-  - [ ] Fastify or another structured lightweight option if useful
-- [ ] Compare options against:
-  - [ ] auth/session/RBAC readiness
-  - [ ] module boundaries
-  - [ ] validation and error handling
-  - [ ] testing ergonomics
-  - [ ] OpenAPI/schema story
-  - [ ] deploy/runtime flexibility
-  - [ ] fit for open-source template users
-- [ ] Persist research under `research/`.
-- [ ] Recommend one backend foundation approach.
+- [x] Research and compare backend options:
+  - [x] Hono
+  - [x] NestJS
+  - [x] Fastify or another structured lightweight option if useful
+- [x] Compare options against:
+  - [x] auth/session/RBAC readiness
+  - [x] module boundaries
+  - [x] validation and error handling
+  - [x] testing ergonomics
+  - [x] OpenAPI/schema story
+  - [x] deploy/runtime flexibility
+  - [x] fit for open-source template users
+- [x] Persist research under `research/`.
+- [x] Recommend one backend foundation approach.
 
 ## Phase 3: Backend Foundation Design
 
