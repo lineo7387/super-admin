@@ -10,6 +10,7 @@ The exact package layout can evolve, but the project should keep these boundarie
 
 ```text
 apps/admin/          # Vue admin app
+docs/                # VitePress documentation site
 packages/ui/         # shared shadcn-vue-based UI primitives/compositions
 packages/theme/      # design profiles and token helpers
 packages/core/       # shared frontend contracts when needed
@@ -34,7 +35,18 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm dev
+pnpm docs:dev
+pnpm docs:build
+pnpm docs:preview
 ```
 
 Do not document commands as mandatory until they exist in `package.json`.
 
+## Documentation Site
+
+The project documentation lives under `docs/` and uses VitePress.
+
+- Keep VitePress config in `docs/.vitepress/config.ts`.
+- Keep user-facing template docs in Markdown under `docs/` and `docs/guide/`.
+- Document current capabilities as available and future roadmap items as planned.
+- Do not document CLI commands, backend setup, auth providers, databases, or AI providers as required unless they exist in code and `package.json` scripts.

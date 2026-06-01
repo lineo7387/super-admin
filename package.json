@@ -7,6 +7,9 @@
   "scripts": {
     "dev": "pnpm --filter @super-admin/admin dev",
     "build": "pnpm -r build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint"
@@ -17,6 +20,7 @@
     "@vitejs/plugin-vue": "^6.0.0",
     "typescript": "^5.0.0",
     "vite": "^7.0.0",
+    "vitepress": "^1.6.4",
     "vitest": "^4.0.0",
     "vue-tsc": "^3.0.0"
   }
