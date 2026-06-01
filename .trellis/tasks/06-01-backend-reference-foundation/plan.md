@@ -33,25 +33,25 @@ Plan the optional reference backend foundation for Super Admin. This task should
 
 ## Phase 3: Backend Foundation Design
 
-- [ ] Define proposed Hono-native `apps/api` directory structure.
-- [ ] Define route/handler conventions without Nest-like controllers.
-- [ ] Define service/use-case conventions.
-- [ ] Define repository/data access boundary.
-- [ ] Define config/env boundary.
-- [ ] Define validation/schema boundary.
-- [ ] Define response envelope and error shape.
-- [ ] Define auth/session context boundary.
-- [ ] Define RBAC/permission boundary.
-- [ ] Define test strategy.
-- [ ] Define how frontend API adapters connect to reference API.
-- [ ] Define what stays optional/reference-only.
+- [x] Define proposed Hono-native `apps/api` directory structure.
+- [x] Define route/handler conventions without Nest-like controllers.
+- [x] Define service/use-case conventions.
+- [x] Define repository/data access boundary.
+- [x] Define config/env boundary.
+- [x] Define validation/schema boundary.
+- [x] Define response envelope and error shape.
+- [x] Define auth/session context boundary.
+- [x] Define RBAC/permission boundary.
+- [x] Define test strategy.
+- [x] Define how frontend API adapters connect to reference API.
+- [x] Define what stays optional/reference-only.
 
 ## Phase 4: First Vertical Slice Plan
 
-- [ ] Choose the first vertical slice.
-- [ ] Define acceptance criteria for the slice.
-- [ ] Decide whether the first slice needs database persistence or can use a proper repository abstraction with a temporary implementation.
-- [ ] Decide how the admin app can switch from mock adapter to reference API without making it mandatory.
+- [x] Choose the first vertical slice.
+- [x] Define acceptance criteria for the slice.
+- [x] Decide whether the first slice needs database persistence or can use a proper repository abstraction with a temporary implementation.
+- [x] Decide how the admin app can switch from mock adapter to reference API without making it mandatory.
 
 ## Phase 5: CLI Strategy
 
@@ -62,8 +62,8 @@ Plan the optional reference backend foundation for Super Admin. This task should
 
 ## Phase 6: Spec And Handoff
 
-- [ ] Identify `.trellis/spec/backend/` updates needed before implementation.
-- [ ] Update planning docs with final recommendation.
+- [x] Identify `.trellis/spec/backend/` updates needed before implementation.
+- [x] Update planning docs with final recommendation.
 - [ ] Validate task context files.
 - [ ] Keep task in planning until the user confirms the architecture.
 

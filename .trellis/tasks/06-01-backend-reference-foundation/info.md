@@ -53,6 +53,16 @@ Before implementation, produce:
 6. first vertical slice definition
 7. CLI testing strategy
 
+## Proposed First Vertical Slice
+
+Recommended first implementation slice after this planning task:
+
+```text
+health -> session/current user -> users list -> admin adapter normalization
+```
+
+This is intentionally small, but not throwaway. It should exercise app composition, request-scoped session context, permission checks, validation/error conventions, data-access boundaries, route tests, and a frontend API adapter switch path.
+
 ## Current Bias
 
 Do not optimize for the fastest API demo.

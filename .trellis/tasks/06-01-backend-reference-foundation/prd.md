@@ -109,6 +109,24 @@ backend-reference-foundation
           -> additional backend/frontend template gaps
 ```
 
+## Proposed First Vertical Slice
+
+Start with a narrow but real auth-aware slice:
+
+```text
+health -> session/current user -> users list -> admin adapter normalization
+```
+
+This slice should prove:
+
+- the API app boots and can be tested without starting a server
+- session context has a real place in Hono middleware
+- RBAC/permission checks have a real place even if the first policy is small
+- users list can be served by the reference API
+- the admin app can switch one adapter from mock data to reference API without making the backend mandatory
+
+The first implementation may use a temporary data source only if it still goes through the planned data-access boundary. Do not hide data access inside routes.
+
 ## Out of Scope
 
 - Implementing `apps/api` code in this planning pass.
