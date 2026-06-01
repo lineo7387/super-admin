@@ -243,3 +243,36 @@ Added a frontend-first Template Guide entry under Examples, documented mock/API 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 8: VitePress template integration docs
+
+**Date**: 2026-06-01
+**Task**: VitePress template integration docs
+**Branch**: `main`
+
+### Summary
+
+Added a VitePress documentation site for the frontend-first template, documented setup, structure, API adapters, themes, examples, and optional backend boundaries, and archived the completed docs task.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `527e4bd` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
