@@ -24,6 +24,7 @@ Guidelines for the Vue 3 + shadcn-vue + Tailwind admin template.
 | [state-management.md](./state-management.md) | Adding Pinia state, persistence, runtime preferences |
 | [data-and-query.md](./data-and-query.md) | Adding list/detail queries, mutations, cache behavior |
 | [api-adapters.md](./api-adapters.md) | Adding or changing mock data/API adapter points |
+| [api-contracts.md](./api-contracts.md) | Defining frontend-facing adapter contracts and optional helpers |
 | [type-safety.md](./type-safety.md) | Defining types, route meta, manifests, exported APIs |
 | [css-design.md](./css-design.md) | Tailwind/CSS variable/profile styling |
 | [quality.md](./quality.md) | Before finishing frontend work |
@@ -31,6 +32,7 @@ Guidelines for the Vue 3 + shadcn-vue + Tailwind admin template.
 ## Core Rules
 
 - Keep the project frontend-first. Do not require a backend for default scaffold behavior.
+- Keep open-source adoption flexible; users may adopt only the UI, examples, or adapter pattern.
 - Feature pages call module query composables, not `fetch`, Axios, Prisma, backend clients, or API adapters directly.
 - Use Pinia for app/client state and TanStack Query for server/cache state.
 - Use Tailwind utilities and CSS variables for styling; avoid runtime-generated Tailwind class names.

@@ -47,6 +47,8 @@ export async function listUsers(params: UserListParams): Promise<UserListResult>
 
 The exact transport is your choice. REST, RPC, GraphQL, or a custom SDK can all sit behind the adapter as long as pages keep calling module queries.
 
+Super Admin is designed for open-source, partial adoption. You can use only the UI primitives, copy one example module, or replace every API adapter without adopting future backend, CLI, auth, database, or provider work.
+
 ## Full Module Reshape
 
 If your business workflow is different, do not force your API into the example shape. Reshape these together:
@@ -58,6 +60,17 @@ If your business workflow is different, do not force your API into the example s
 - API adapter
 
 Example module types are frontend example contracts, not universal backend schemas.
+
+## Contract Helpers
+
+`@super-admin/core` exposes small TypeScript-first contract helpers for common adapter shapes:
+
+- `createPageListResult` for page-based admin tables
+- `createCursorListResult` for stream-like lists
+- `createMutationSuccess` and `createMutationFailure` for structured mutation feedback
+- `normalizeAdapterError` for small UI-facing error payloads
+
+These helpers are optional. They do not add a runtime schema library and they do not require your backend to match the example modules.
 
 ## Mock Data
 

@@ -6,6 +6,8 @@ API adapters keep data access localized without introducing a separate service l
 
 When the page semantics stay the same and only the data source changes, replacing mock data can be as small as editing one API adapter file. When the business workflow or UI shape changes, update the module's types, page/components, queries, and API adapter together.
 
+For shared contract vocabulary such as list results, pagination, mutation results, field errors, adapter errors, and capability states, read [api-contracts.md](./api-contracts.md). Those contracts are optional frontend interoperability helpers, not a requirement to adopt the full Super Admin stack.
+
 ## Pattern
 
 Each data-backed module should define:
@@ -42,6 +44,7 @@ export async function listUsers(params: UserListParams): Promise<UserListResult>
 - Do not make `api/mock` import module types. Mock data is allowed to have its own shape; API adapters adapt it.
 - Do not force every module into a generic CRUD interface.
 - Do not require universal filter operator types.
+- Do not require users to adopt Super Admin backend, CLI, auth, provider, or module conventions.
 - Use page pagination for ordinary CRUD modules.
 - Use cursor pagination only for stream-like modules such as logs/events/jobs.
 - Keep comments clear about scope: "If this screen fits your business, connect your backend here; if not, reshape the module page, types, and API adapter together."

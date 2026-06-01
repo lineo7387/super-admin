@@ -1,3 +1,4 @@
+import { createPageListResult } from '@super-admin/core'
 import { mockUsers } from '@/api/mock/users.mock'
 import type { MockUser } from '@/api/mock/users.mock'
 import type { UserListParams, UserListResult, UserRecord } from '@/modules/users/users.types'
@@ -52,10 +53,5 @@ export async function listUsers(params: UserListParams): Promise<UserListResult>
   const start = (params.page - 1) * params.pageSize
   const end = start + params.pageSize
 
-  return {
-    items: filteredUsers.slice(start, end),
-    total: filteredUsers.length,
-    page: params.page,
-    pageSize: params.pageSize
-  }
+  return createPageListResult(filteredUsers.slice(start, end), filteredUsers.length, params)
 }
