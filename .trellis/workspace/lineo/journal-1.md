@@ -210,3 +210,36 @@ Implemented frontend-first module API adapter examples, centralized mock API dat
 ### Next Steps
 
 - None - task complete
+
+
+## Session 7: Frontend example template guide
+
+**Date**: 2026-06-01
+**Task**: Frontend example template guide
+**Branch**: `main`
+
+### Summary
+
+Added a frontend-first Template Guide entry under Examples, documented mock/API adapter/query/type replacement boundaries, verified routes and profile/layout combinations, and archived the completed Trellis task.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `99279e9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

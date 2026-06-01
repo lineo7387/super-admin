@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 6
+- **Total Sessions**: 7
 - **Last Active**: 2026-06-01
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~212 | Active |
+| `journal-1.md` | ~245 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 7 | 2026-06-01 | Frontend example template guide | `99279e9` | `main` |
 | 6 | 2026-06-01 | Module API adapter examples | `37c43db` | `main` |
 | 5 | 2026-05-31 | UI Kit admin console primitives | `b97113a`, `7ccd69c`, `69360bc` | `main` |
 | 4 | 2026-05-31 | Showcase IA and UI Kit navigation | `fb76431` | `main` |
