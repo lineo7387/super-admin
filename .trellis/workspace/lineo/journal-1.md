@@ -177,3 +177,36 @@ Implemented and refined frontend-only admin console UI primitives, custom inputs
 ### Next Steps
 
 - None - task complete
+
+
+## Session 6: Module API adapter examples
+
+**Date**: 2026-06-01
+**Task**: Module API adapter examples
+**Branch**: `main`
+
+### Summary
+
+Implemented frontend-first module API adapter examples, centralized mock API data under apps/admin/src/api/mock, moved global Pinia stores under apps/admin/src/stores, removed module service-layer examples, updated frontend Trellis specs, and verified tests, typecheck, lint, build, and browser smoke checks.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `37c43db` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
