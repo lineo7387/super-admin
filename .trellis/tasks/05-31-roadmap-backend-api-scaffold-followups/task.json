@@ -20,7 +20,8 @@
   "subtasks": [],
   "children": [
     "05-31-ui-kit-admin-console-primitives",
-    "05-31-module-service-examples"
+    "05-31-module-service-examples",
+    "06-01-frontend-example-template-polish"
   ],
   "parent": null,
   "relatedFiles": [],

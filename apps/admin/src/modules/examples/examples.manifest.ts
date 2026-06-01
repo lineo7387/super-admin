@@ -1,6 +1,7 @@
 import type { ModuleManifest } from '@super-admin/core'
 import AccessPage from '../access/AccessPage.vue'
 import DashboardPage from '../dashboard/DashboardPage.vue'
+import TemplateGuidePage from './TemplateGuidePage.vue'
 import UsersActivityPage from '../users/UsersActivityPage.vue'
 import UsersAllPage from '../users/UsersAllPage.vue'
 import UsersInvitesPage from '../users/UsersInvitesPage.vue'
@@ -12,10 +13,14 @@ export const examplesManifest: ModuleManifest = {
   name: 'Examples',
   nav: {
     label: 'Examples',
-    path: '/examples/dashboard',
+    path: '/examples/template-guide',
     icon: 'examples',
     order: 10,
     children: [
+      {
+        label: 'Template Guide',
+        path: '/examples/template-guide'
+      },
       {
         label: 'Dashboard',
         path: '/examples/dashboard'
@@ -53,6 +58,17 @@ export const examplesManifest: ModuleManifest = {
     ]
   },
   routes: [
+    {
+      path: '/examples/template-guide',
+      name: 'examples-template-guide',
+      component: TemplateGuidePage,
+      meta: {
+        title: 'Template Guide',
+        description: 'Frontend-first map for mock data, API adapters, queries, and module reshaping.',
+        regions: ['summary', 'primary', 'context'],
+        keepAlive: { enabled: true }
+      }
+    },
     {
       path: '/examples/dashboard',
       name: 'examples-dashboard',
