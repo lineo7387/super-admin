@@ -67,6 +67,20 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [ ] Validate task context files.
 - [ ] Keep task in planning until the user confirms the architecture.
 
+## Phase 7: First Vertical Slice Implementation
+
+- [x] User confirmed the Hono-native lightweight layered architecture and requested implementation.
+- [x] Add `apps/api` as an optional reference backend workspace package.
+- [x] Implement Hono-native app composition with route files mounted through `app.route()`.
+- [x] Implement `GET /health`.
+- [x] Implement `GET /session/current-user` with request-scoped session context.
+- [x] Implement `GET /users` with `users:read` permission middleware and query validation.
+- [x] Keep temporary reference user/session data behind `lib/session.ts` and `db/queries/users.ts`.
+- [x] Add shared `lib/http`, `lib/errors`, `lib/validation`, `lib/env`, `lib/permissions`, and `lib/testing` helpers.
+- [x] Add `app.request()` route tests for the first slice.
+- [x] Add optional admin reference users normalizer without changing the default mock-backed admin adapter.
+- [x] Update `.trellis/spec/backend/hono-reference.md` with concrete first-slice API contracts.
+
 ## Non-Goals
 
 - Do not implement `apps/api` in this planning pass.

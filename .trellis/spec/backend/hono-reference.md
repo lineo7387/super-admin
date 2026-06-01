@@ -192,6 +192,157 @@ Minimum first-slice tests:
 - session/current-user route handles anonymous and authenticated states
 - users route returns a shape the admin adapter can normalize
 
+## Scenario: First Reference API Vertical Slice
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing the optional Hono reference API's first auth-aware endpoints.
+- Scope: `apps/api/src/app.ts`, route files under `apps/api/src/routes/`, backend helpers under `apps/api/src/lib/`, data access under `apps/api/src/db/queries/`, and optional frontend adapter examples under `apps/admin/src/api/reference/`.
+- Boundary: this validates the reference backend and adapter-normalization path only. The default admin app must keep using mock adapters unless a future task explicitly switches it.
+
+### 2. Signatures
+
+Backend endpoints:
+
+```text
+GET /health
+GET /session/current-user
+GET /users?page=<number>&pageSize=<number>&keyword=<string?>&status=all|active|review|paused
+```
+
+Reference authentication for tests and local validation:
+
+```text
+Authorization: Bearer reference-admin-token
+```
+
+Frontend optional normalizer:
+
+```ts
+normalizeReferenceUsersResponse(response: ReferenceUsersResponse, params: UserListParams): UserListResult
+```
+
+### 3. Contracts
+
+Success responses use the shared envelope:
+
+```ts
+type ApiSuccess<T> = {
+  data: T
+  meta?: Record<string, unknown>
+}
+```
+
+`GET /health` returns:
+
+```ts
+{
+  data: {
+    service: 'super-admin-api'
+    status: 'ok'
+  }
+}
+```
+
+`GET /session/current-user` returns:
+
+```ts
+{
+  data: {
+    authenticated: boolean
+    user: null | {
+      id: string
+      name: string
+      email: string
+      role: 'Owner' | 'Operator' | 'Auditor' | 'Analyst'
+    }
+    permissions: Array<'users:read'>
+  }
+}
+```
+
+`GET /users` returns a page-list payload that the admin users adapter can normalize:
+
+```ts
+{
+  data: {
+    items: Array<{
+      id: string
+      name: string
+      email: string
+      role: 'Owner' | 'Operator' | 'Auditor' | 'Analyst'
+      status: 'active' | 'review' | 'paused'
+      region: string
+      notes?: string
+    }>
+    total: number
+    page: number
+    pageSize: number
+  }
+}
+```
+
+The first implementation may use temporary reference data, but it must still flow through `db/queries/users.ts` and `lib/session.ts`. Do not hide temporary data directly inside route handlers.
+
+### 4. Validation & Error Matrix
+
+| Condition | Response |
+| --- | --- |
+| Unknown route | `404 { error: { code: 'not_found', message: 'Route not found.' } }` |
+| Unexpected server error | `500 { error: { code: 'internal_server_error', message: 'Internal server error.' } }` |
+| Anonymous request to `GET /users` | `401 { error: { code: 'unauthorized', message: 'Authentication is required.' } }` |
+| Authenticated request without `users:read` | `403 { error: { code: 'forbidden', message: 'Permission is required.' } }` |
+| Invalid users query | `400 { error: { code: 'validation_failed', message: 'Request validation failed.', fields } }` |
+
+Validation details:
+
+- `page` must be an integer at least `1`.
+- `pageSize` must be an integer between `1` and `100`.
+- `status` must be `all`, `active`, `review`, or `paused`.
+- `keyword` is optional and trimmed at the route boundary.
+
+### 5. Good/Base/Bad Cases
+
+- Good: `/users` is protected by permission middleware, validates query params with a Hono validator, calls `services/users.ts`, and reads reference data through `db/queries/users.ts`.
+- Base: `/health` can keep an inline route handler because there is no business logic.
+- Bad: `routes/users.ts` imports mock frontend data, embeds session token maps in the route handler, or makes `apps/admin/src/api/users.api.ts` depend on `@super-admin/api`.
+
+### 6. Tests Required
+
+- Use `app.request()` for all route behavior.
+- Assert `/health` success envelope.
+- Assert anonymous and authenticated `/session/current-user` behavior.
+- Assert `/users` rejects anonymous requests with the shared error shape.
+- Assert `/users` rejects authenticated sessions without `users:read`.
+- Assert invalid users query params return field-level validation errors.
+- Assert `/users` returns the page-list shape expected by the optional admin reference normalizer.
+- Add admin adapter tests only under optional reference adapter files; do not change default mock adapter behavior unless explicitly scoped.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```ts
+usersRoutes.get('/', (context) => {
+  return context.json(mockUsers)
+})
+```
+
+This bypasses the response envelope, permission middleware, validation, service/data boundary, and adapter-normalizable page-list contract.
+
+#### Correct
+
+```ts
+usersRoutes.get(
+  '/',
+  requirePermission('users:read'),
+  zValidator('query', usersListQuerySchema, validationHook),
+  async (context) => context.json(apiSuccess(await listUsers(context.req.valid('query'))))
+)
+```
+
+This keeps Hono routing first-class while preserving validation, auth, response, and data-access boundaries.
+
 ## Wrong Vs Correct
 
 ### Wrong: Nest-like Hono
