@@ -20,7 +20,7 @@ Page -> module query composable -> API adapter -> api/mock data or user API
 - API contracts are TypeScript-first and frontend-facing. They help adapters normalize real API shapes without defining a mandatory backend schema.
 - The archived roadmap originally placed optional reference API validation before CLI scaffold.
 - The user clarified that the backend should be designed according to standard long-term backend architecture because future work will include login/auth and real integrations.
-- The user prefers avoiding NestJS heaviness if possible, and is open to Hono only if the project enforces strict backend best practices for directories, boundaries, and coding style.
+- The user prefers avoiding NestJS heaviness if possible, but does not want a fake NestJS implemented with Hono. Hono should follow Hono community/official best practices, not an imagined enterprise structure.
 - The user proposed a sound long-term path:
   - connect the backend properly
   - develop CLI after validated runtime structure exists
@@ -75,14 +75,15 @@ or an equivalent structure that keeps generated artifacts separate from hand-aut
 
 ## Recommended Direction
 
-Use this task as a planning and architecture task first. The current recommendation is **Hono-first, architecture-strict**.
+Use this task as a planning and architecture task first. The current recommendation is **Hono-native lightweight layered architecture**.
 
-Do not choose Hono because it is fast to demo. Choose it only if Super Admin supplies the missing architecture through project specs and code review expectations:
+Do not choose Hono because it is fast to demo. Also do not recreate NestJS by hand. Choose Hono only if Super Admin follows Hono's own style and supplies the missing project conventions:
 
-- feature modules
-- route/controller/handler boundaries
-- service/use-case layer
-- repository/data access boundary
+- route files mounted with `app.route()`
+- inline route handlers where they preserve Hono type inference
+- `createFactory<Env>()` when shared Env typing is needed
+- service extraction only when business logic deserves it
+- data access in `db/queries/` first, with repositories/ports introduced only when real abstraction is needed
 - validation/schema boundary
 - response/error helpers
 - auth/session/RBAC middleware/context
@@ -132,3 +133,4 @@ backend-reference-foundation
 - Backend specs are expected to become more real during or after this planning task.
 - Framework research:
   - `.trellis/tasks/06-01-backend-reference-foundation/research/backend-framework-direction.md`
+  - `.trellis/tasks/06-01-backend-reference-foundation/research/hono-architecture-practices.md`

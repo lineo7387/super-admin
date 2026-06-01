@@ -29,11 +29,12 @@ Plan the optional reference backend foundation for Super Admin. This task should
   - [x] fit for open-source template users
 - [x] Persist research under `research/`.
 - [x] Recommend one backend foundation approach.
+- [x] Re-check Hono official/community practices before finalizing architecture.
 
 ## Phase 3: Backend Foundation Design
 
-- [ ] Define proposed `apps/api` directory structure.
-- [ ] Define route/controller/handler conventions.
+- [ ] Define proposed Hono-native `apps/api` directory structure.
+- [ ] Define route/handler conventions without Nest-like controllers.
 - [ ] Define service/use-case conventions.
 - [ ] Define repository/data access boundary.
 - [ ] Define config/env boundary.
