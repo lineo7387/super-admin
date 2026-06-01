@@ -276,3 +276,36 @@ Added a VitePress documentation site for the frontend-first template, documented
 ### Next Steps
 
 - None - task complete
+
+
+## Session 9: API contract validation
+
+**Date**: 2026-06-01
+**Task**: API contract validation
+**Branch**: `main`
+
+### Summary
+
+Added TypeScript-first API contract helpers, documented frontend adapter contracts, preserved open-source UI-only adoption, and updated API adapter docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2a4d6ec` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
