@@ -127,18 +127,19 @@ Plan the optional reference backend foundation for Super Admin. This task should
 
 ## Phase 11: Maintainer Reference Integration Smoke
 
-- [ ] Add a maintainer-only smoke script or test target that starts `apps/api` and `apps/admin` together.
-- [ ] Run admin with `VITE_SUPER_ADMIN_USERS_API=reference` and `VITE_SUPER_ADMIN_API_BASE_URL=<local api url>`.
-- [ ] Verify the real browser/API flow:
-  - [ ] logged-out `/examples/users/all` redirects to `/auth/login?redirect=...`
-  - [ ] reference login posts to `POST /auth/login`
-  - [ ] backend returns the opaque Bearer session token
-  - [ ] login redirects back to the original users page
-  - [ ] users page calls `GET /users` with the runtime login token, not only the env fallback token
-  - [ ] users page renders reference backend data
-  - [ ] logout clears the runtime session and returns to login
-- [ ] Keep this smoke target out of the default scaffold path; it is maintainer validation, not a user requirement.
-- [ ] Treat failure here as a release blocker for any claim that the template can connect to real APIs.
+- [x] Add a maintainer-only smoke script or test target that starts `apps/api` and `apps/admin` together.
+- [x] Run admin with `VITE_SUPER_ADMIN_USERS_API=reference` and `VITE_SUPER_ADMIN_API_BASE_URL=<local api url>`.
+- [x] Add configurable narrow CORS for smoke-only local admin origins via `SUPER_ADMIN_API_ALLOWED_ORIGINS`.
+- [x] Verify the real browser/API flow:
+  - [x] logged-out `/examples/users/all` redirects to `/auth/login?redirect=...`
+  - [x] reference login posts to `POST /auth/login`
+  - [x] backend returns the opaque Bearer session token
+  - [x] login redirects back to the original users page
+  - [x] users page calls `GET /users` with the runtime login token, not only the env fallback token
+  - [x] users page renders reference backend data
+  - [x] logout clears the runtime session and returns to login
+- [x] Keep this smoke target out of the default scaffold path; it is maintainer validation, not a user requirement.
+- [x] Treat failure here as a release blocker for any claim that the template can connect to real APIs.
 
 ## Phase 12: CLI MVP For Frontend-First Template Delivery
 

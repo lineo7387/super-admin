@@ -10,4 +10,5 @@ docs/.vitepress/cache
 coverage
 playwright-report
 test-results
+output
 *.tsbuildinfo

@@ -12,12 +12,14 @@
     "docs:preview": "vitepress preview docs",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
+    "test:reference": "vitest run scripts/reference-integration-smoke.test.mjs && node scripts/reference-integration-smoke.mjs",
     "lint": "pnpm -r lint"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^24.0.0",
     "@vitejs/plugin-vue": "^6.0.0",
+    "playwright": "^1.60.0",
     "typescript": "^5.0.0",
     "vite": "^7.0.0",
     "vitepress": "^1.6.4",

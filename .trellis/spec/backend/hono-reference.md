@@ -313,7 +313,7 @@ For the temporary reference auth boundary, valid credentials return a bearer tok
 
 The first implementation may use temporary reference data, but it must still flow through `db/queries/users.ts` and `lib/session.ts`. Do not hide temporary data directly inside route handlers.
 
-Local browser verification requires CORS for the Vite admin dev server. Keep this narrow to known local admin origins unless a future task adds configurable allowed origins.
+Local browser verification requires CORS for the Vite admin dev server. Keep this narrow to known local admin origins. Use `SUPER_ADMIN_API_ALLOWED_ORIGINS` for maintainer smoke checks that start Vite on an ephemeral port.
 
 ### 4. Validation & Error Matrix
 
@@ -380,6 +380,87 @@ usersRoutes.get(
 ```
 
 This keeps Hono routing first-class while preserving validation, auth, response, and data-access boundaries.
+
+## Scenario: Maintainer Reference Integration Smoke
+
+### 1. Scope / Trigger
+
+- Trigger: maintainers need real evidence that the frontend adapter/auth flow can connect to a running reference backend.
+- Scope: root `pnpm test:reference`, `scripts/reference-integration-smoke.mjs`, `apps/api` CORS/env config, and the optional admin reference adapter mode.
+- Boundary: this is release/maintainer validation. It must not become a default scaffold requirement for users.
+
+### 2. Signatures
+
+Command:
+
+```bash
+pnpm test:reference
+```
+
+Runtime env:
+
+```text
+SUPER_ADMIN_API_ALLOWED_ORIGINS=http://127.0.0.1:<admin-port>
+VITE_SUPER_ADMIN_USERS_API=reference
+VITE_SUPER_ADMIN_API_BASE_URL=http://127.0.0.1:<api-port>
+```
+
+### 3. Contracts
+
+- The smoke starts `apps/api` and `apps/admin` on local ports.
+- The API allows only the current admin origin through `SUPER_ADMIN_API_ALLOWED_ORIGINS`.
+- The admin app runs in reference mode without `VITE_SUPER_ADMIN_REFERENCE_TOKEN`; this proves the browser login token is used.
+- The browser flow must:
+  - visit `/examples/users/all` while logged out
+  - land on `/auth/login?redirect=...`
+  - post to `POST /auth/login`
+  - receive the opaque Bearer session token
+  - return to the original users route
+  - call `GET /users` with `Authorization: Bearer <login-token>`
+  - render reference users
+  - logout and return to `/auth/login`
+- Artifacts may be written under `output/playwright/reference-smoke/` and should not be committed.
+
+### 4. Validation & Error Matrix
+
+| Condition | Correct behavior |
+| --- | --- |
+| Admin origin omitted from `SUPER_ADMIN_API_ALLOWED_ORIGINS` | Browser preflight fails, smoke fails. |
+| Login does not post to `/auth/login` | Smoke fails. |
+| Login token missing or empty | Smoke fails. |
+| `/users` uses env fallback token instead of login token | Smoke fails. |
+| `/users` returns no reference data | Smoke fails. |
+| Logout does not return to login | Smoke fails. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `pnpm test:reference` is explicit, maintainer-only, and proves a real browser/API/token chain.
+- Base: unit tests still cover adapter normalization, route behavior, and CORS/env parsing without starting servers.
+- Bad: putting this smoke in default `pnpm test`, requiring users to run `apps/api`, or allowing wildcard CORS to make the smoke pass.
+
+### 6. Tests Required
+
+- Unit-test CORS allowed-origin parsing and preflight behavior.
+- Unit-test smoke helper logic for token/header request matching.
+- Run `pnpm test:reference` before claiming real API connectivity.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+Access-Control-Allow-Origin: *
+```
+
+This hides local integration mistakes and weakens the reference backend boundary.
+
+#### Correct
+
+```text
+SUPER_ADMIN_API_ALLOWED_ORIGINS=http://127.0.0.1:<admin-port>
+```
+
+The smoke explicitly grants the current local admin origin while keeping default CORS narrow.
 
 ## Wrong Vs Correct
 

@@ -17,6 +17,41 @@ describe('reference api app', () => {
     })
   })
 
+  it('allows explicitly configured local admin origins for browser smoke checks', async () => {
+    const app = createApiApp({
+      allowedOrigins: ['http://127.0.0.1:19002']
+    })
+
+    const response = await app.request('/auth/login', {
+      method: 'OPTIONS',
+      headers: {
+        'Access-Control-Request-Headers': 'content-type',
+        'Access-Control-Request-Method': 'POST',
+        Origin: 'http://127.0.0.1:19002'
+      }
+    })
+
+    expect(response.status).toBe(204)
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://127.0.0.1:19002')
+  })
+
+  it('keeps unknown browser origins out of the local CORS allow list', async () => {
+    const app = createApiApp({
+      allowedOrigins: ['http://127.0.0.1:19002']
+    })
+
+    const response = await app.request('/auth/login', {
+      method: 'OPTIONS',
+      headers: {
+        'Access-Control-Request-Headers': 'content-type',
+        'Access-Control-Request-Method': 'POST',
+        Origin: 'http://evil.localhost:19002'
+      }
+    })
+
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull()
+  })
+
   it('returns an anonymous current-user session by default', async () => {
     const app = createApiApp()
 

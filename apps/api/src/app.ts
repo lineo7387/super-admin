@@ -8,15 +8,22 @@ import { sessionRoutes } from './routes/session'
 import { usersRoutes } from './routes/users'
 import type { ApiEnv } from './types'
 
-export function createApiApp(): Hono<ApiEnv> {
+const DEFAULT_LOCAL_ADMIN_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173']
+
+export type ApiAppOptions = {
+  allowedOrigins?: string[]
+}
+
+export function createApiApp(options: ApiAppOptions = {}): Hono<ApiEnv> {
   const app = new Hono<ApiEnv>()
+  const allowedOrigins = options.allowedOrigins && options.allowedOrigins.length > 0 ? options.allowedOrigins : DEFAULT_LOCAL_ADMIN_ORIGINS
 
   app.use(
     '*',
     cors({
       allowHeaders: ['Authorization', 'Content-Type'],
       allowMethods: ['GET', 'POST', 'OPTIONS'],
-      origin: ['http://localhost:5173', 'http://127.0.0.1:5173']
+      origin: allowedOrigins
     })
   )
   app.use('*', sessionMiddleware)

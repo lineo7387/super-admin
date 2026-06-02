@@ -1,8 +1,11 @@
 import { serve } from '@hono/node-server'
-import { app } from './app'
+import { createApiApp } from './app'
 import { readApiRuntimeEnv } from './lib/env'
 
 const env = readApiRuntimeEnv()
+const app = createApiApp({
+  allowedOrigins: env.allowedOrigins
+})
 
 serve({
   fetch: app.fetch,
