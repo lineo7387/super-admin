@@ -106,6 +106,7 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Update frontend design profile spec with auth portal contracts.
 - [x] Replace the standalone auth appearance switcher with the shared `GlobalPreferences` Control Center trigger.
 - [x] Keep the auth `GlobalPreferences` trigger mounted once in a stable root position so profile switching does not close the Control Center.
+- [x] Align the auth preferences trigger to the auth layout container and move the Industrial title into the left control composition.
 
 ## Non-Goals
 

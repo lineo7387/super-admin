@@ -114,7 +114,7 @@ Logged-out preferences entry:
 <GlobalPreferences trigger="auth" />
 ```
 
-`AuthLayout` must mount this trigger exactly once outside `v-if` / `v-else-if` profile branches.
+`AuthLayout` must mount this trigger exactly once outside `v-if` / `v-else-if` profile branches, inside a stable max-width auth alignment slot.
 
 ### 3. Contracts
 
@@ -122,6 +122,7 @@ Logged-out preferences entry:
 - Auth pages follow the currently selected profile and mode from `preferences.store`.
 - The unauthenticated appearance control must reuse the shared `GlobalPreferences` Control Center. Auth pages may change profile and light/dark/system mode before sign-in, but they must not introduce a separate theme/profile switcher UI.
 - `GlobalPreferences` must stay mounted while the active profile recipe changes. Keep the auth trigger in a stable root position so switching `crypto` / `industrial` / `cyberpunk` does not close the Control Center.
+- The auth preferences trigger should align to the auth layout container, not the viewport edge, so it reads as part of the login/register composition.
 - Profile differences must include layout recipe differences, not only color or text changes.
 - Registration can be a template-only flow when no backend registration API exists, but the page must clearly report that registration is not configured.
 
@@ -129,6 +130,7 @@ Profile recipes:
 
 - `crypto`: vault/ledger composition, account-safety signals, and treasury-like panels.
 - `industrial`: access checkpoint composition, mechanical rails, status rows, and audit-control tone.
+  - The title and control-gate mark belong with the left checkpoint composition, above the mechanical rails, rather than as a detached top banner.
 - `cyberpunk`: terminal/command-gate composition, high-contrast signal panels, and command-access tone.
 
 ### 4. Validation & Error Matrix

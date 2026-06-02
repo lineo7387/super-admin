@@ -41,21 +41,22 @@ const metrics = computed(() => {
 <template>
   <main class="auth-shell min-h-screen overflow-hidden bg-[var(--app-background)] text-[var(--foreground)]" :data-auth-profile="profile">
     <div class="auth-shell__texture absolute inset-0" aria-hidden="true" />
-    <GlobalPreferences trigger="auth" />
+    <div class="auth-preferences-slot pointer-events-none absolute inset-x-0 top-4 z-[70] mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-end">
+        <GlobalPreferences trigger="auth" class="pointer-events-auto" />
+      </div>
+    </div>
 
-    <section v-if="profile === 'industrial'" class="auth-industrial relative mx-auto grid min-h-screen w-full max-w-7xl grid-rows-[auto_1fr] gap-6 px-4 py-4 sm:px-6 lg:px-8">
-      <header class="grid gap-3 border-b border-[var(--border-strong)] pb-4 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <div class="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-[var(--muted-foreground)]">
-            <Factory class="size-4 text-[var(--primary)]" />
-            Control Gate
-          </div>
-          <h1 class="mt-3 [font-family:var(--font-display)] text-4xl leading-none md:text-6xl">{{ props.title }}</h1>
-        </div>
-      </header>
-
+    <section v-if="profile === 'industrial'" class="auth-industrial relative mx-auto grid min-h-screen w-full max-w-7xl px-4 pb-4 pt-20 sm:px-6 lg:px-8">
       <div class="grid min-h-0 gap-5 lg:grid-cols-[1fr_minmax(360px,440px)] lg:items-center">
         <aside class="grid gap-4">
+          <div class="auth-industrial__intro border-b border-[var(--border-strong)] pb-5">
+            <div class="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-[var(--muted-foreground)]">
+              <Factory class="size-4 text-[var(--primary)]" />
+              Control Gate
+            </div>
+            <h1 class="mt-4 max-w-4xl [font-family:var(--font-display)] text-4xl leading-none md:text-6xl">{{ props.title }}</h1>
+          </div>
           <div class="auth-industrial__rail grid gap-3">
             <div v-for="metric in metrics" :key="metric.label" class="grid grid-cols-[120px_1fr] items-center gap-4 border border-[var(--border)] bg-[var(--surface)] p-3">
               <span class="text-xs uppercase tracking-[0.2em] text-[var(--muted-foreground)]">{{ metric.label }}</span>
