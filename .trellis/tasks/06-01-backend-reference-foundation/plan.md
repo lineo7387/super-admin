@@ -81,6 +81,17 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Add optional admin reference users normalizer without changing the default mock-backed admin adapter.
 - [x] Update `.trellis/spec/backend/hono-reference.md` with concrete first-slice API contracts.
 
+## Phase 8: Reference Login And Admin Adapter Verification
+
+- [x] Implement `POST /auth/login` as a temporary reference credential flow.
+- [x] Keep login credential checks in `services/auth.ts` and session token resolution in `lib/session.ts`.
+- [x] Return the same bearer token shape consumed by `/session/current-user` and `/users`.
+- [x] Add narrow local CORS support so `apps/admin` can call `apps/api` during dev verification.
+- [x] Add optional admin reference auth adapter under `apps/admin/src/api/reference/`.
+- [x] Add `VITE_SUPER_ADMIN_USERS_API=reference` users adapter switch without changing default mock behavior.
+- [x] Add admin adapter tests for reference users fetch, error handling, and reference login.
+- [x] Update backend and frontend specs with the new login/API switch contracts.
+
 ## Non-Goals
 
 - Do not implement `apps/api` in this planning pass.

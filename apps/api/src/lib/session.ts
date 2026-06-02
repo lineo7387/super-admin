@@ -1,6 +1,6 @@
 import { createMiddleware } from 'hono/factory'
 import { findReferenceUserById } from '../db/queries/users'
-import type { ApiEnv, CurrentUser, Permission, SessionContext } from '../types'
+import type { ApiEnv, CurrentUser, LoginResult, Permission, SessionContext } from '../types'
 
 const referenceSessions: Record<string, { userId: string; permissions: Permission[] }> = {
   'reference-admin-token': {
@@ -64,6 +64,27 @@ export async function resolveSession(authorizationHeader: string | undefined): P
   return {
     authenticated: true,
     permissions: referenceSession.permissions,
+    user
+  }
+}
+
+export async function createReferenceSessionResult(token: string): Promise<LoginResult | null> {
+  const referenceSession = referenceSessions[token]
+
+  if (!referenceSession) {
+    return null
+  }
+
+  const user = toCurrentUser(await findReferenceUserById(referenceSession.userId))
+
+  if (!user) {
+    return null
+  }
+
+  return {
+    permissions: referenceSession.permissions,
+    token,
+    tokenType: 'Bearer',
     user
   }
 }

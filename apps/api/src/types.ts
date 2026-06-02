@@ -24,6 +24,13 @@ export type SessionContext = {
   permissions: Permission[]
 }
 
+export type LoginResult = {
+  token: string
+  tokenType: 'Bearer'
+  user: CurrentUser
+  permissions: Permission[]
+}
+
 export type ApiEnv = {
   Variables: {
     session: SessionContext

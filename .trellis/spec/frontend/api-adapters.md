@@ -56,3 +56,98 @@ export async function listUsers(params: UserListParams): Promise<UserListResult>
 - Include enough rows to show table, empty/loading/error, and detail states.
 - Do not make mock data feel like a production backend.
 - If changing mock field names or data structure, update the API adapter normalizer and relevant adapter tests.
+
+## Scenario: Optional Reference Backend Adapter Switch
+
+### 1. Scope / Trigger
+
+- Trigger: a frontend module can be locally pointed at the optional reference backend while default scaffold behavior remains mock-backed.
+- Scope: module API adapters under `apps/admin/src/api/*.api.ts`, optional reference helpers under `apps/admin/src/api/reference/`, and Vite env declarations in `apps/admin/src/env.d.ts`.
+- Boundary: this is a maintainer validation path and an example integration path. Do not import `@super-admin/api` or Hono types into `apps/admin`.
+
+### 2. Signatures
+
+For the users module:
+
+```ts
+listUsers(params: UserListParams): Promise<UserListResult>
+normalizeReferenceUsersResponse(response: ReferenceUsersResponse, params: UserListParams): UserListResult
+```
+
+For optional reference auth:
+
+```ts
+loginReferenceSession(input: ReferenceLoginInput, config: ReferenceAuthApiConfig): Promise<ReferenceSessionPayload>
+```
+
+### 3. Contracts
+
+Default behavior:
+
+- If `VITE_SUPER_ADMIN_USERS_API` is unset or `mock`, `listUsers()` must use `apps/admin/src/api/mock/users.mock.ts`.
+- Mock scenarios such as `loading`, `empty`, and `error` apply only in mock mode.
+
+Reference behavior:
+
+```text
+VITE_SUPER_ADMIN_USERS_API=reference
+VITE_SUPER_ADMIN_API_BASE_URL=http://localhost:8787
+VITE_SUPER_ADMIN_REFERENCE_TOKEN=reference-admin-token
+```
+
+- In reference mode, `listUsers()` calls `GET <baseUrl>/users`.
+- Send `Authorization: Bearer <VITE_SUPER_ADMIN_REFERENCE_TOKEN>`.
+- Normalize the backend `data` payload into the module's `UserListResult`.
+- Keep backend error bodies inside the adapter and throw a normal `Error` with a useful message.
+
+### 4. Validation & Error Matrix
+
+| Condition | Correct behavior |
+| --- | --- |
+| Env mode absent or `mock` | Use mock adapter path. |
+| Env mode `reference` without base URL or token | Throw a configuration error from the adapter. |
+| Reference backend returns success | Normalize `data.items`, `total`, `page`, and `pageSize`. |
+| Reference backend returns `{ error: { message } }` | Throw `Error(message)`. |
+| Reference backend returns non-JSON error | Throw a status-based fallback error. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `users.api.ts` owns the mode switch and still exposes only `listUsers(params)`.
+- Base: optional reference helpers under `api/reference/` may model backend response shapes because they are adapter-local.
+- Bad: Vue pages import `fetch`, `@super-admin/api`, or backend response types directly.
+
+### 6. Tests Required
+
+- Assert the default mock path remains unchanged.
+- Assert reference mode calls the expected URL and Authorization header.
+- Assert backend success payloads normalize to module result types.
+- Assert backend error payloads throw normal errors.
+- Assert optional auth helper posts to `/auth/login` and returns the reference session payload.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```ts
+// UsersAllPage.vue
+const response = await fetch('http://localhost:8787/users')
+```
+
+This bypasses query composables and makes the page depend on one backend.
+
+#### Correct
+
+```ts
+// users.api.ts
+export async function listUsers(params: UserListParams): Promise<UserListResult> {
+  const referenceConfig = readReferenceUsersApiConfig()
+
+  if (referenceConfig) {
+    return listReferenceUsers(params, referenceConfig)
+  }
+
+  return listMockUsers(params)
+}
+```
+
+The page still calls the query composable, and the adapter owns the transport switch.

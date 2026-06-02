@@ -1,6 +1,7 @@
 import { createPageListResult } from '@super-admin/core'
 import { mockUsers } from '@/api/mock/users.mock'
 import type { MockUser } from '@/api/mock/users.mock'
+import { listReferenceUsers, type ReferenceUsersApiConfig } from '@/api/reference/users-reference.api'
 import type { UserListParams, UserListResult, UserRecord } from '@/modules/users/users.types'
 
 const LOADING_DELAY_MS = 700
@@ -40,7 +41,31 @@ function filterUsers(params: UserListParams): UserRecord[] {
   })
 }
 
+function readReferenceUsersApiConfig(env: ImportMetaEnv = import.meta.env): ReferenceUsersApiConfig | null {
+  if (env.VITE_SUPER_ADMIN_USERS_API !== 'reference') {
+    return null
+  }
+
+  const baseUrl = env.VITE_SUPER_ADMIN_API_BASE_URL?.trim()
+  const token = env.VITE_SUPER_ADMIN_REFERENCE_TOKEN?.trim()
+
+  if (!baseUrl || !token) {
+    throw new Error('Reference users API requires VITE_SUPER_ADMIN_API_BASE_URL and VITE_SUPER_ADMIN_REFERENCE_TOKEN.')
+  }
+
+  return {
+    baseUrl,
+    token
+  }
+}
+
 export async function listUsers(params: UserListParams): Promise<UserListResult> {
+  const referenceConfig = readReferenceUsersApiConfig()
+
+  if (referenceConfig) {
+    return listReferenceUsers(params, referenceConfig)
+  }
+
   if (params.scenario === 'error') {
     throw new Error('Unable to load users')
   }

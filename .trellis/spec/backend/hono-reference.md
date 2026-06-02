@@ -205,6 +205,7 @@ Minimum first-slice tests:
 Backend endpoints:
 
 ```text
+POST /auth/login
 GET /health
 GET /session/current-user
 GET /users?page=<number>&pageSize=<number>&keyword=<string?>&status=all|active|review|paused
@@ -220,6 +221,7 @@ Frontend optional normalizer:
 
 ```ts
 normalizeReferenceUsersResponse(response: ReferenceUsersResponse, params: UserListParams): UserListResult
+loginReferenceSession(input: ReferenceLoginInput, config: ReferenceAuthApiConfig): Promise<ReferenceSessionPayload>
 ```
 
 ### 3. Contracts
@@ -261,6 +263,33 @@ type ApiSuccess<T> = {
 }
 ```
 
+`POST /auth/login` accepts:
+
+```ts
+{
+  email: string
+  password: string
+}
+```
+
+For the temporary reference auth boundary, valid credentials return a bearer token payload:
+
+```ts
+{
+  data: {
+    token: string
+    tokenType: 'Bearer'
+    permissions: Array<'users:read'>
+    user: {
+      id: string
+      name: string
+      email: string
+      role: 'Owner' | 'Operator' | 'Auditor' | 'Analyst'
+    }
+  }
+}
+```
+
 `GET /users` returns a page-list payload that the admin users adapter can normalize:
 
 ```ts
@@ -284,18 +313,24 @@ type ApiSuccess<T> = {
 
 The first implementation may use temporary reference data, but it must still flow through `db/queries/users.ts` and `lib/session.ts`. Do not hide temporary data directly inside route handlers.
 
+Local browser verification requires CORS for the Vite admin dev server. Keep this narrow to known local admin origins unless a future task adds configurable allowed origins.
+
 ### 4. Validation & Error Matrix
 
 | Condition | Response |
 | --- | --- |
 | Unknown route | `404 { error: { code: 'not_found', message: 'Route not found.' } }` |
 | Unexpected server error | `500 { error: { code: 'internal_server_error', message: 'Internal server error.' } }` |
+| Invalid login body | `400 { error: { code: 'validation_failed', message: 'Request validation failed.', fields } }` |
+| Invalid login credentials | `401 { error: { code: 'invalid_credentials', message: 'Email or password is incorrect.' } }` |
 | Anonymous request to `GET /users` | `401 { error: { code: 'unauthorized', message: 'Authentication is required.' } }` |
 | Authenticated request without `users:read` | `403 { error: { code: 'forbidden', message: 'Permission is required.' } }` |
 | Invalid users query | `400 { error: { code: 'validation_failed', message: 'Request validation failed.', fields } }` |
 
 Validation details:
 
+- Login `email` must be a valid email address.
+- Login `password` must be non-empty.
 - `page` must be an integer at least `1`.
 - `pageSize` must be an integer between `1` and `100`.
 - `status` must be `all`, `active`, `review`, or `paused`.
@@ -304,12 +339,15 @@ Validation details:
 ### 5. Good/Base/Bad Cases
 
 - Good: `/users` is protected by permission middleware, validates query params with a Hono validator, calls `services/users.ts`, and reads reference data through `db/queries/users.ts`.
+- Good: `/auth/login` validates JSON at the route boundary, delegates credential checking to `services/auth.ts`, and returns the same token/session shape consumed by `lib/session.ts`.
 - Base: `/health` can keep an inline route handler because there is no business logic.
 - Bad: `routes/users.ts` imports mock frontend data, embeds session token maps in the route handler, or makes `apps/admin/src/api/users.api.ts` depend on `@super-admin/api`.
+- Bad: implementing login directly in `routes/auth.ts` with inline credential maps and no service/session boundary.
 
 ### 6. Tests Required
 
 - Use `app.request()` for all route behavior.
+- Assert `/auth/login` success, validation failure, and invalid-credential failure.
 - Assert `/health` success envelope.
 - Assert anonymous and authenticated `/session/current-user` behavior.
 - Assert `/users` rejects anonymous requests with the shared error shape.
