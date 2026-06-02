@@ -92,6 +92,19 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Add admin adapter tests for reference users fetch, error handling, and reference login.
 - [x] Update backend and frontend specs with the new login/API switch contracts.
 
+## Phase 9: Profile-Aware Auth Portal
+
+- [x] User selected Auth Portal With Profile Recipes.
+- [x] Add standalone `/auth/login` and `/auth/register` routes outside `AppShell`.
+- [x] Keep auth pages bound to the currently selected design profile and mode.
+- [x] Add logged-out appearance switching for profile and light/dark/system mode.
+- [x] Implement profile-specific auth layout recipes for `crypto`, `industrial`, and `cyberpunk`.
+- [x] Implement reference login form using `loginReferenceSession`.
+- [x] Persist reference auth sessions in a focused Pinia store.
+- [x] Implement register as a template-only flow with validation and explicit not-configured notice.
+- [x] Add auth validation, session, and route metadata tests.
+- [x] Update frontend design profile spec with auth portal contracts.
+
 ## Non-Goals
 
 - Do not implement `apps/api` in this planning pass.

@@ -69,3 +69,106 @@ and as a concrete `DesignProfile` file under `packages/theme/src/profiles/<id>.t
 **Why**: The Control Center renders installed profiles from `builtInDesignProfiles`, while persisted preferences use `DesignProfileId`. Updating both keeps runtime switching, local storage, tests, and UI selection in sync.
 
 **Tests Required**: Extend `packages/theme/src/profiles.test.ts` so the new profile is resolved by `getBuiltInDesignProfile('<id>')`, exposes both light/dark variants, and has at least one profile-specific token assertion for its visual signature.
+
+## Scenario: Auth Portal Profile Recipes
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing login, registration, invite, reset-password, or other unauthenticated auth surfaces.
+- Scope: auth pages under `apps/admin/src/modules/auth/`, auth route metadata under `apps/admin/src/router/`, auth session state under `apps/admin/src/stores/`, and current-profile appearance controls used before sign-in.
+- Boundary: auth screens are part of the frontend template experience. They may call optional reference auth adapters, but they must not make the default scaffold require a backend, database, or auth provider.
+
+### 2. Signatures
+
+Route metadata:
+
+```ts
+{
+  path: '/auth/login' | '/auth/register'
+  meta: {
+    authLayout: true
+    workspaceTitle: string
+  }
+}
+```
+
+Auth validation:
+
+```ts
+validateLoginInput(input: LoginInput): AuthFieldErrors<keyof LoginInput>
+validateRegisterInput(input: RegisterInput): AuthFieldErrors<keyof RegisterInput>
+```
+
+Auth session store:
+
+```ts
+setReferenceSession(session: AuthSession): void
+clearSession(): void
+authorizationHeader: string | undefined
+isAuthenticated: boolean
+```
+
+### 3. Contracts
+
+- Auth pages render outside `AppShell`; the shell should not wrap standalone auth routes.
+- Auth pages follow the currently selected profile and mode from `preferences.store`.
+- The unauthenticated appearance control may change profile and light/dark/system mode before sign-in.
+- Profile differences must include layout recipe differences, not only color or text changes.
+- Registration can be a template-only flow when no backend registration API exists, but the page must clearly report that registration is not configured.
+
+Profile recipes:
+
+- `crypto`: vault/ledger composition, account-safety signals, and treasury-like panels.
+- `industrial`: access checkpoint composition, mechanical rails, status rows, and audit-control tone.
+- `cyberpunk`: terminal/command-gate composition, high-contrast signal panels, and command-access tone.
+
+### 4. Validation & Error Matrix
+
+| Condition | Correct behavior |
+| --- | --- |
+| Invalid login email or empty password | Show field errors before calling the backend. |
+| Reference login fails | Show a normal form error from the adapter message. |
+| Successful reference login | Persist the reference session and navigate into the admin app. |
+| Invalid register input | Show field errors. |
+| Valid register input without register backend | Show a "registration not configured" template notice, not fake success. |
+| Theme profile changes on auth page | Auth layout recomposes to the active profile recipe. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `AuthLayout` owns profile-specific composition while `LoginPage` and `RegisterPage` own form state.
+- Good: appearance switching reuses `preferences.store` so logged-out and logged-in surfaces share the same design system.
+- Base: registration is a high-fidelity template example until a real provider/database flow exists.
+- Bad: three separate login implementations that duplicate validation, submit behavior, and session handling.
+- Bad: one generic login card where profile changes only alter colors and copy.
+
+### 6. Tests Required
+
+- Unit-test login and registration validation.
+- Unit-test auth session persistence and clearing.
+- Unit-test auth route metadata without importing a browser-history router in Node tests.
+- Run `vue-tsc`, app tests, and production build.
+- Visually inspect each built-in profile in light/dark modes before claiming UI polish.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```vue
+<template>
+  <div class="login-card">
+    <form>...</form>
+  </div>
+</template>
+```
+
+This gives every design profile the same structure and turns profiles into superficial skins.
+
+#### Correct
+
+```vue
+<AuthLayout title="Enter the control surface">
+  <LoginForm />
+</AuthLayout>
+```
+
+`AuthLayout` can render vault, checkpoint, or terminal compositions from the active profile while the form flow stays shared and testable.

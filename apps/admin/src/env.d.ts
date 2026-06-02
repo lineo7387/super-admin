@@ -19,6 +19,7 @@ import type { PageShellMeta } from '@super-admin/core'
 
 declare module 'vue-router' {
   interface RouteMeta extends Partial<PageShellMeta> {
+    authLayout?: boolean
     workspaceTitle?: string
   }
 }
