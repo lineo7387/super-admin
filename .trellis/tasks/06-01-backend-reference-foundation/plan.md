@@ -55,7 +55,10 @@ Plan the optional reference backend foundation for Super Admin. This task should
 
 ## Phase 5: CLI Strategy
 
-- [ ] Define when CLI foundation should begin.
+- [x] Define when CLI foundation should begin.
+  - Decision: do not build a large domain-specific "real project backend" before CLI.
+  - Decision: do not wait until the full CLI flow is done before validating real backend integration.
+  - Sequence: first add a maintainer-only reference integration smoke for the current monorepo admin + api, then start the CLI MVP, then run the same backend integration against a CLI-generated admin project.
 - [ ] Define `tests/cli` layout.
 - [ ] Define generated-project smoke checks.
 - [ ] Define how CLI output should reveal missing backend/frontend template pieces.
@@ -121,6 +124,51 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Stop persisting bearer session payloads to local storage; keep tokens in runtime Pinia state only.
 - [x] Add/adjust tests for guard redirects, login redirect wiring, shell logout wiring, runtime-only auth sessions, mock auth helper, and reference users token priority.
 - [x] Run browser verification for logged-out redirect, login redirect, current-user shell display, and logout redirect.
+
+## Phase 11: Maintainer Reference Integration Smoke
+
+- [ ] Add a maintainer-only smoke script or test target that starts `apps/api` and `apps/admin` together.
+- [ ] Run admin with `VITE_SUPER_ADMIN_USERS_API=reference` and `VITE_SUPER_ADMIN_API_BASE_URL=<local api url>`.
+- [ ] Verify the real browser/API flow:
+  - [ ] logged-out `/examples/users/all` redirects to `/auth/login?redirect=...`
+  - [ ] reference login posts to `POST /auth/login`
+  - [ ] backend returns the opaque Bearer session token
+  - [ ] login redirects back to the original users page
+  - [ ] users page calls `GET /users` with the runtime login token, not only the env fallback token
+  - [ ] users page renders reference backend data
+  - [ ] logout clears the runtime session and returns to login
+- [ ] Keep this smoke target out of the default scaffold path; it is maintainer validation, not a user requirement.
+- [ ] Treat failure here as a release blocker for any claim that the template can connect to real APIs.
+
+## Phase 12: CLI MVP For Frontend-First Template Delivery
+
+- [ ] Begin CLI foundation only after Phase 11 proves the current repo has a real reference backend integration path.
+- [ ] Implement the minimum CLI flow that creates/downloads a runnable frontend-first admin template.
+- [ ] Generated output must default to mock data and must not require backend, database, auth provider, AI provider, or CLI-only hidden services.
+- [ ] Add generated-project smoke checks for install, typecheck, test, build, and default app startup.
+- [ ] Define `tests/cli` layout and generated-project fixture cleanup rules.
+
+## Phase 13: CLI-Generated Reference Integration Smoke
+
+- [ ] Begin immediately after the CLI MVP generated-project default smoke passes.
+- [ ] Generate a fresh admin project through the CLI.
+- [ ] Start the internal reference backend or a maintainer-only reference API fixture.
+- [ ] Configure only env switches in the generated admin project:
+  - [ ] `VITE_SUPER_ADMIN_USERS_API=reference`
+  - [ ] `VITE_SUPER_ADMIN_API_BASE_URL=<local api url>`
+- [ ] Re-run the same login/session/users/logout browser flow from Phase 11 against the CLI-generated project.
+- [ ] This phase must pass before documenting or marketing real API connectivity.
+
+## Phase 14: Backend Platform Coverage Strategy
+
+- [ ] Start after Phase 13, not before the CLI MVP.
+- [ ] Keep backend platform tests maintainer-only; do not ship them as required user dependencies.
+- [ ] Add one platform/backend fixture at a time only when it validates a real template integration concern:
+  - [ ] auth/session token contract
+  - [ ] list API pagination/error contract
+  - [ ] CORS/env/base-url behavior
+  - [ ] generated-project adapter replacement ergonomics
+- [ ] Do not let multi-platform backend fixtures redefine the default scaffold architecture; the default remains frontend-first and mock-backed.
 
 ## Non-Goals
 
