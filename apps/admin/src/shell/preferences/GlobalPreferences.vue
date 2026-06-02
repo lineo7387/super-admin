@@ -12,6 +12,15 @@ import { builtInDesignProfiles } from '@super-admin/theme'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin/ui'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
+const props = withDefaults(
+  defineProps<{
+    trigger?: 'floating' | 'auth'
+  }>(),
+  {
+    trigger: 'floating'
+  }
+)
+
 const preferences = usePreferencesStore()
 const open = shallowRef(false)
 
@@ -28,6 +37,18 @@ const densityOptions: { id: Density; label: string; detail: string }[] = [
 
 const activeProfileName = computed(
   () => builtInDesignProfiles.find((profile) => profile.id === preferences.profileId)?.name ?? preferences.profileId
+)
+const activeModeName = computed(
+  () => modeOptions.find((mode) => mode.id === preferences.colorMode)?.label ?? preferences.colorMode
+)
+const triggerTitle = computed(() =>
+  props.trigger === 'auth' ? `Open Control Center: ${activeProfileName.value} / ${activeModeName.value}` : 'Control Center'
+)
+const triggerSize = computed(() => (props.trigger === 'auth' ? 'md' : 'icon'))
+const triggerClass = computed(() =>
+  props.trigger === 'auth'
+    ? 'shadow-[var(--card-shadow)]'
+    : 'fixed right-4 top-3 z-[70] shadow-[var(--panel-shadow)]'
 )
 
 function selectProfile(profileId: DesignProfileId): void {
@@ -52,12 +73,15 @@ function selectDensity(density: Density): void {
   <div>
     <AdminButton
       variant="secondary"
-      size="icon"
-      class="fixed right-4 top-3 z-[70] shadow-[var(--panel-shadow)]"
-      title="Control Center"
+      :size="triggerSize"
+      :class="triggerClass"
+      :title="triggerTitle"
       @click="open = true"
     >
       <Settings2 class="size-4" />
+      <span v-if="props.trigger === 'auth'" class="text-xs">
+        {{ activeProfileName }} / {{ activeModeName }}
+      </span>
     </AdminButton>
 
     <Teleport to="body">
@@ -75,7 +99,7 @@ function selectDensity(density: Density): void {
                 <span class="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">Control Center</span>
               </div>
               <h2 id="control-center-title" class="mt-2 [font-family:var(--font-display)] text-2xl text-[var(--foreground)]">
-                {{ activeProfileName }} shell configuration
+                {{ activeProfileName }} workspace configuration
               </h2>
               <p class="mt-1 text-sm text-[var(--muted-foreground)]">
                 Theme, layout, density, tabs, and Stage Manager update immediately.

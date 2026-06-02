@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Activity, Boxes, CircuitBoard, Command, Factory, KeyRound, Landmark, ShieldCheck } from 'lucide-vue-next'
+import { Boxes, Command, Factory, Landmark, ShieldCheck } from 'lucide-vue-next'
 import { computed } from 'vue'
-import AuthAppearanceMenu from './AuthAppearanceMenu.vue'
+import GlobalPreferences from '@/shell/preferences/GlobalPreferences.vue'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
 const props = defineProps<{
@@ -51,7 +51,7 @@ const metrics = computed(() => {
           </div>
           <h1 class="mt-3 [font-family:var(--font-display)] text-4xl leading-none md:text-6xl">{{ props.title }}</h1>
         </div>
-        <AuthAppearanceMenu class="md:w-[360px]" />
+        <GlobalPreferences trigger="auth" class="justify-self-start md:justify-self-end" />
       </header>
 
       <div class="grid min-h-0 gap-5 lg:grid-cols-[1fr_minmax(360px,440px)] lg:items-center">
@@ -82,7 +82,7 @@ const metrics = computed(() => {
           <Command class="size-5" />
           <span>Command Access</span>
         </div>
-        <AuthAppearanceMenu class="w-full max-w-[420px]" />
+        <GlobalPreferences trigger="auth" />
       </header>
 
       <div class="grid min-h-0 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(360px,440px)] lg:items-center">
@@ -117,7 +117,7 @@ const metrics = computed(() => {
             <Landmark class="size-5 text-[var(--primary)]" />
             <span>Vault Session</span>
           </div>
-          <AuthAppearanceMenu class="w-full max-w-[420px] lg:hidden" />
+          <GlobalPreferences trigger="auth" />
         </div>
         <div class="auth-crypto__ledger">
           <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-5">
@@ -136,7 +136,6 @@ const metrics = computed(() => {
       </aside>
 
       <div class="grid gap-4">
-        <AuthAppearanceMenu class="hidden lg:block" />
         <section class="auth-panel auth-panel--crypto">
           <slot />
         </section>

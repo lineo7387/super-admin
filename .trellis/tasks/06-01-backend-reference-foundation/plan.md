@@ -104,6 +104,7 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Implement register as a template-only flow with validation and explicit not-configured notice.
 - [x] Add auth validation, session, and route metadata tests.
 - [x] Update frontend design profile spec with auth portal contracts.
+- [x] Replace the standalone auth appearance switcher with the shared `GlobalPreferences` Control Center trigger.
 
 ## Non-Goals
 
