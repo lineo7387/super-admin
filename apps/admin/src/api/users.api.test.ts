@@ -1,8 +1,14 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
 import { listUsers } from './users.api'
 import { validateUserInput } from '@/modules/users/users.validation'
+import { useAuthSessionStore } from '@/stores/auth-session.store'
 
 describe('users api adapter', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   afterEach(() => {
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
@@ -112,6 +118,59 @@ describe('users api adapter', () => {
       page: 2,
       pageSize: 5,
       total: 1
+    })
+  })
+
+  it('prefers the runtime auth session token over the reference env token', async () => {
+    vi.stubEnv('VITE_SUPER_ADMIN_USERS_API', 'reference')
+    vi.stubEnv('VITE_SUPER_ADMIN_API_BASE_URL', 'http://localhost:8787')
+    vi.stubEnv('VITE_SUPER_ADMIN_REFERENCE_TOKEN', 'reference-env-token')
+
+    const session = useAuthSessionStore()
+    session.setReferenceSession({
+      permissions: ['users:read'],
+      token: 'runtime-login-token',
+      tokenType: 'Bearer',
+      user: {
+        email: 'mira.owner@example.com',
+        id: 'u-1001',
+        name: 'Mira Chen',
+        role: 'Owner'
+      }
+    })
+
+    const fetchMock = vi.fn((): Promise<Response> =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            data: {
+              items: [],
+              page: 1,
+              pageSize: 10,
+              total: 0
+            }
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            status: 200
+          }
+        )
+      )
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    await listUsers({
+      page: 1,
+      pageSize: 10,
+      status: 'all'
+    })
+
+    expect(fetchMock).toHaveBeenCalledWith('http://localhost:8787/users?page=1&pageSize=10&status=all', {
+      headers: {
+        Authorization: 'Bearer runtime-login-token'
+      }
     })
   })
 

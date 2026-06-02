@@ -55,6 +55,77 @@ type ShellAppearancePreferences = {
 
 **Check**: Open Control Center, change each appearance/workspace option, and confirm the shell updates without closing the modal or losing open routes.
 
+## Auth Guard And Session Controls
+
+### Scenario: Frontend-First Auth Guard
+
+#### 1. Scope / Trigger
+
+- Trigger: admin workspace routes need a logged-in session while the default scaffold must remain usable without a backend.
+- Scope: `apps/admin/src/router/`, `apps/admin/src/modules/auth/`, `apps/admin/src/stores/auth-session.store.ts`, and shared shell header controls.
+- Boundary: the guard is an app-shell concern. Feature pages still call query composables and must not import auth providers or backend clients directly.
+
+#### 2. Signatures
+
+```ts
+resolveAuthRedirect(to, isAuthenticated): RouteLocationRaw | null
+resolvePostLoginPath(redirect): string
+createTemplateAuthSession(): AuthSession
+shouldUseReferenceAuth(env?): boolean
+```
+
+#### 3. Contracts
+
+- Logged-out access to a workspace route redirects to `/auth/login?redirect=<original fullPath>`.
+- Successful login redirects to the sanitized `redirect` query value, otherwise `/examples/dashboard`.
+- Authenticated access to `/auth/login` or `/auth/register` redirects to the sanitized `redirect` query value, otherwise `/examples/dashboard`.
+- In mock/default mode, login creates a local template session and must not require `apps/api`.
+- In `VITE_SUPER_ADMIN_USERS_API=reference` mode, login calls the optional reference `/auth/login` helper.
+- `ShellHeader` shows the current user and provides a logout action in every layout preset.
+- Logout clears the runtime auth session and routes to `/auth/login?redirect=<current fullPath>`.
+
+#### 4. Validation & Error Matrix
+
+| Condition | Correct behavior |
+| --- | --- |
+| Redirect query is an internal non-auth path | Use it after login or auth-route redirect. |
+| Redirect query is external, protocol-relative, missing, or auth-local | Use `/examples/dashboard`. |
+| Default mock mode login | Set a template runtime session without network access. |
+| Reference mode login returns an error | Show the normal login error message. |
+| Logout from workspace | Clear session and preserve the workspace path as login redirect. |
+
+#### 5. Good/Base/Bad Cases
+
+- Good: router guard owns route access, `LoginPage` owns form submission, `ShellHeader` owns global logout, and `auth-session.store` owns runtime session state.
+- Base: raw source tests may guard shell wiring when full component interaction tests are not yet installed.
+- Bad: requiring `apps/api` for default login, persisting bearer tokens in local storage, or putting auth checks inside feature pages.
+
+#### 6. Tests Required
+
+- Assert logged-out workspace routes redirect to login with the original path.
+- Assert authenticated auth routes redirect back into the workspace.
+- Assert successful login uses the redirect query.
+- Assert default login can create a template session without backend config.
+- Assert shell header includes current user and logout wiring.
+
+#### 7. Wrong vs Correct
+
+#### Wrong
+
+```ts
+await router.push('/examples/dashboard')
+```
+
+This drops the user's original guarded destination.
+
+#### Correct
+
+```ts
+await router.push(resolvePostLoginPath(route.query.redirect))
+```
+
+The route guard and login page share the same redirect sanitization.
+
 ### Control Center Placement Contract
 
 The Control Center trigger and modal must be mounted above layout preset components, not inside `TriColumnLayout`, `DualColumnLayout`, `TopHeaderLayout`, or a header that is recreated by changing `layoutPreset`.

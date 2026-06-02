@@ -8,28 +8,8 @@ function getStorage(): Storage | null {
   return typeof window === 'undefined' ? null : window.localStorage
 }
 
-function readStoredSession(): AuthSession | null {
-  const raw = getStorage()?.getItem(STORAGE_KEY)
-
-  if (!raw) {
-    return null
-  }
-
-  try {
-    const parsed: unknown = JSON.parse(raw)
-
-    if (typeof parsed === 'object' && parsed !== null && 'token' in parsed) {
-      return parsed as AuthSession
-    }
-  } catch {
-    return null
-  }
-
-  return null
-}
-
 export const useAuthSessionStore = defineStore('authSession', () => {
-  const session = shallowRef<AuthSession | null>(readStoredSession())
+  const session = shallowRef<AuthSession | null>(null)
 
   const isAuthenticated = computed(() => session.value !== null)
   const authorizationHeader = computed(() => (session.value ? `${session.value.tokenType} ${session.value.token}` : undefined))
@@ -37,7 +17,7 @@ export const useAuthSessionStore = defineStore('authSession', () => {
 
   function setReferenceSession(nextSession: AuthSession): void {
     session.value = nextSession
-    getStorage()?.setItem(STORAGE_KEY, JSON.stringify(nextSession))
+    getStorage()?.removeItem(STORAGE_KEY)
   }
 
   function clearSession(): void {

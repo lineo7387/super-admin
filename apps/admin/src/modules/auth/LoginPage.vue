@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { ArrowRight, KeyRound } from 'lucide-vue-next'
 import { computed, reactive, shallowRef } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { AdminAlert, AdminButton, AdminField, AdminTextInput, AdminValidationSummary } from '@super-admin/ui'
 import { loginReferenceSession } from '@/api/reference/auth-reference.api'
+import { resolvePostLoginPath } from '@/router/auth-guard'
+import { useAuthSessionStore } from '@/stores/auth-session.store'
+import { createTemplateAuthSession, shouldUseReferenceAuth } from './auth-session'
 import AuthLayout from './components/AuthLayout.vue'
 import { validateLoginInput } from './auth.validation'
 import type { AuthFieldErrors, LoginInput } from './auth.types'
-import { useAuthSessionStore } from '@/stores/auth-session.store'
 
 const router = useRouter()
+const route = useRoute()
 const session = useAuthSessionStore()
 const form = reactive<LoginInput>({
   email: 'mira.owner@example.com',
@@ -21,6 +24,7 @@ const isSubmitting = shallowRef(false)
 
 const validationMessages = computed(() => Object.values(fieldErrors.value).filter((message) => message !== undefined))
 const apiBaseUrl = computed(() => import.meta.env.VITE_SUPER_ADMIN_API_BASE_URL?.trim() || 'http://localhost:8787')
+const isReferenceAuth = computed(() => shouldUseReferenceAuth())
 
 async function submitLogin(): Promise<void> {
   fieldErrors.value = validateLoginInput(form)
@@ -33,17 +37,20 @@ async function submitLogin(): Promise<void> {
   isSubmitting.value = true
 
   try {
-    const nextSession = await loginReferenceSession(
-      {
-        email: form.email,
-        password: form.password
-      },
-      {
-        baseUrl: apiBaseUrl.value
-      }
-    )
+    const nextSession = isReferenceAuth.value
+      ? await loginReferenceSession(
+          {
+            email: form.email,
+            password: form.password
+          },
+          {
+            baseUrl: apiBaseUrl.value
+          }
+        )
+      : createTemplateAuthSession()
+
     session.setReferenceSession(nextSession)
-    await router.push('/examples/dashboard')
+    await router.push(resolvePostLoginPath(route.query.redirect))
   } catch (error) {
     submitError.value = error instanceof Error ? error.message : 'Unable to sign in.'
   } finally {
@@ -65,7 +72,7 @@ async function submitLogin(): Promise<void> {
         </div>
         <h2 class="mt-4 [font-family:var(--font-display)] text-3xl leading-tight">Sign in</h2>
         <p class="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
-          Use the reference account to test backend-backed session and users data.
+          Use the template account to enter the frontend-first workspace, or enable the optional reference API to validate backend-backed sessions.
         </p>
       </div>
 

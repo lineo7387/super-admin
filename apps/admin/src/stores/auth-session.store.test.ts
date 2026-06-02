@@ -26,7 +26,7 @@ describe('auth session store', () => {
     window.localStorage.clear()
   })
 
-  it('persists reference login sessions', () => {
+  it('keeps reference login sessions in runtime state only', () => {
     const session = useAuthSessionStore()
 
     session.setReferenceSession({
@@ -43,20 +43,10 @@ describe('auth session store', () => {
 
     expect(session.isAuthenticated).toBe(true)
     expect(session.authorizationHeader).toBe('Bearer reference-admin-token')
-    expect(JSON.parse(window.localStorage.getItem('super-admin:auth-session') ?? '{}')).toEqual({
-      permissions: ['users:read'],
-      token: 'reference-admin-token',
-      tokenType: 'Bearer',
-      user: {
-        email: 'mira.owner@example.com',
-        id: 'u-1001',
-        name: 'Mira Chen',
-        role: 'Owner'
-      }
-    })
+    expect(window.localStorage.getItem('super-admin:auth-session')).toBeNull()
   })
 
-  it('clears stored sessions', () => {
+  it('clears runtime sessions', () => {
     const session = useAuthSessionStore()
 
     session.setReferenceSession({

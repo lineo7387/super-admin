@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthSessionStore } from '@/stores/auth-session.store'
+import { resolveAuthRedirect } from './auth-guard'
 import { authRoutes } from './auth-routes'
 import { moduleRoutes } from './routes'
 
@@ -44,4 +46,10 @@ export const router = createRouter({
     },
     ...moduleRoutes
   ]
+})
+
+router.beforeEach((to) => {
+  const session = useAuthSessionStore()
+
+  return resolveAuthRedirect(to, session.isAuthenticated) ?? undefined
 })

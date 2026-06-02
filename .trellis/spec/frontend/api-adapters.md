@@ -74,6 +74,13 @@ listUsers(params: UserListParams): Promise<UserListResult>
 normalizeReferenceUsersResponse(response: ReferenceUsersResponse, params: UserListParams): UserListResult
 ```
 
+For reference-mode token resolution:
+
+```ts
+useAuthSessionStore().session?.token
+VITE_SUPER_ADMIN_REFERENCE_TOKEN
+```
+
 For optional reference auth:
 
 ```ts
@@ -96,7 +103,8 @@ VITE_SUPER_ADMIN_REFERENCE_TOKEN=reference-admin-token
 ```
 
 - In reference mode, `listUsers()` calls `GET <baseUrl>/users`.
-- Send `Authorization: Bearer <VITE_SUPER_ADMIN_REFERENCE_TOKEN>`.
+- Send `Authorization: Bearer <token>`, where `<token>` is the runtime login token from `auth-session.store` when present, otherwise `VITE_SUPER_ADMIN_REFERENCE_TOKEN`.
+- The env token is a maintainer validation fallback; a browser login session should take precedence so `/auth/login` and `/users` validate the same bearer-session path.
 - Normalize the backend `data` payload into the module's `UserListResult`.
 - Keep backend error bodies inside the adapter and throw a normal `Error` with a useful message.
 
@@ -105,7 +113,9 @@ VITE_SUPER_ADMIN_REFERENCE_TOKEN=reference-admin-token
 | Condition | Correct behavior |
 | --- | --- |
 | Env mode absent or `mock` | Use mock adapter path. |
-| Env mode `reference` without base URL or token | Throw a configuration error from the adapter. |
+| Env mode `reference` with runtime login session | Use the runtime session token for `Authorization`. |
+| Env mode `reference` without runtime session but with env token | Use `VITE_SUPER_ADMIN_REFERENCE_TOKEN` as the fallback `Authorization` token. |
+| Env mode `reference` without base URL or any token | Throw a configuration error from the adapter. |
 | Reference backend returns success | Normalize `data.items`, `total`, `page`, and `pageSize`. |
 | Reference backend returns `{ error: { message } }` | Throw `Error(message)`. |
 | Reference backend returns non-JSON error | Throw a status-based fallback error. |
@@ -120,6 +130,7 @@ VITE_SUPER_ADMIN_REFERENCE_TOKEN=reference-admin-token
 
 - Assert the default mock path remains unchanged.
 - Assert reference mode calls the expected URL and Authorization header.
+- Assert the runtime login session token takes precedence over `VITE_SUPER_ADMIN_REFERENCE_TOKEN`.
 - Assert backend success payloads normalize to module result types.
 - Assert backend error payloads throw normal errors.
 - Assert optional auth helper posts to `/auth/login` and returns the reference session payload.

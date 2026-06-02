@@ -24,6 +24,14 @@ Persist only safe preferences:
 
 Do not persist sensitive tokens or full form contents by default.
 
+### Runtime Auth Sessions
+
+- `auth-session.store` may hold the current login session in runtime Pinia state so router guards, shell user controls, and optional reference API adapters can share one session source.
+- Do not hydrate auth sessions from local storage by default.
+- Do not write bearer tokens, reference session payloads, passwords, or full auth forms to local storage.
+- Clearing the session should remove any old `super-admin:auth-session` key so earlier experimental persisted sessions do not survive.
+- A full page reload may clear the runtime auth session. That is acceptable for the frontend-first scaffold until a real auth provider/storage strategy is explicitly added.
+
 ## Runtime Switching
 
 Theme/profile/mode/layout changes should update shell state and CSS variables without destroying kept-alive page state unless a route explicitly opts out.
@@ -33,4 +41,4 @@ Theme/profile/mode/layout changes should update shell state and CSS variables wi
 - Putting API response caches into Pinia.
 - Rebuilding the router or remounting the whole app for theme changes.
 - Persisting user secrets in local UI preference stores.
-
+- Treating a local template session token as a durable credential.

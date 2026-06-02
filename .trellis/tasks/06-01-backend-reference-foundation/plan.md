@@ -108,6 +108,20 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Keep the auth `GlobalPreferences` trigger mounted once in a stable root position so profile switching does not close the Control Center.
 - [x] Align the auth preferences trigger to the auth layout container and move the Industrial title into the left control composition.
 
+## Phase 10: Auth Guard, Logout, And Session Token Wiring
+
+- [x] Add router auth guard helpers for logged-out workspace redirects and authenticated auth-route redirects.
+- [x] Redirect logged-out workspace access to `/auth/login` with the original full path as `redirect`.
+- [x] Redirect successful login back to the sanitized `redirect` target.
+- [x] Keep default mock/frontend-first login backend-free by creating a runtime template session outside reference mode.
+- [x] Keep optional reference login enabled when `VITE_SUPER_ADMIN_USERS_API=reference`.
+- [x] Add current user and logout controls to the shared shell header across layout presets.
+- [x] Clear runtime auth session on logout and return to `/auth/login` with the current route as `redirect`.
+- [x] Update the users reference adapter to prefer the runtime auth-session token over `VITE_SUPER_ADMIN_REFERENCE_TOKEN`.
+- [x] Stop persisting bearer session payloads to local storage; keep tokens in runtime Pinia state only.
+- [x] Add/adjust tests for guard redirects, login redirect wiring, shell logout wiring, runtime-only auth sessions, mock auth helper, and reference users token priority.
+- [x] Run browser verification for logged-out redirect, login redirect, current-user shell display, and logout redirect.
+
 ## Non-Goals
 
 - Do not implement `apps/api` in this planning pass.

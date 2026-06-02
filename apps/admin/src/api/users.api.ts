@@ -3,6 +3,7 @@ import { mockUsers } from '@/api/mock/users.mock'
 import type { MockUser } from '@/api/mock/users.mock'
 import { listReferenceUsers, type ReferenceUsersApiConfig } from '@/api/reference/users-reference.api'
 import type { UserListParams, UserListResult, UserRecord } from '@/modules/users/users.types'
+import { useAuthSessionStore } from '@/stores/auth-session.store'
 
 const LOADING_DELAY_MS = 700
 
@@ -47,10 +48,11 @@ function readReferenceUsersApiConfig(env: ImportMetaEnv = import.meta.env): Refe
   }
 
   const baseUrl = env.VITE_SUPER_ADMIN_API_BASE_URL?.trim()
-  const token = env.VITE_SUPER_ADMIN_REFERENCE_TOKEN?.trim()
+  const session = useAuthSessionStore()
+  const token = session.session?.token ?? env.VITE_SUPER_ADMIN_REFERENCE_TOKEN?.trim()
 
   if (!baseUrl || !token) {
-    throw new Error('Reference users API requires VITE_SUPER_ADMIN_API_BASE_URL and VITE_SUPER_ADMIN_REFERENCE_TOKEN.')
+    throw new Error('Reference users API requires VITE_SUPER_ADMIN_API_BASE_URL and a login session or VITE_SUPER_ADMIN_REFERENCE_TOKEN.')
   }
 
   return {
