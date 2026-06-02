@@ -7,4 +7,15 @@ describe('auth layout preferences entry', () => {
     expect(authLayoutSource).toContain('<GlobalPreferences')
     expect(authLayoutSource).not.toContain('AuthAppearanceMenu')
   })
+
+  it('mounts the auth preferences trigger once outside profile-specific branches', () => {
+    const preferenceTriggerMatches = authLayoutSource.match(/<GlobalPreferences trigger="auth"/g) ?? []
+    const firstPreferenceTriggerIndex = authLayoutSource.indexOf('<GlobalPreferences trigger="auth"')
+    const firstProfileBranchIndex = authLayoutSource.indexOf('v-if="profile ===')
+
+    expect(preferenceTriggerMatches).toHaveLength(1)
+    expect(firstPreferenceTriggerIndex).toBeGreaterThan(-1)
+    expect(firstProfileBranchIndex).toBeGreaterThan(-1)
+    expect(firstPreferenceTriggerIndex).toBeLessThan(firstProfileBranchIndex)
+  })
 })

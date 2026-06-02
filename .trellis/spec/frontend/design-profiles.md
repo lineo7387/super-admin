@@ -114,11 +114,14 @@ Logged-out preferences entry:
 <GlobalPreferences trigger="auth" />
 ```
 
+`AuthLayout` must mount this trigger exactly once outside `v-if` / `v-else-if` profile branches.
+
 ### 3. Contracts
 
 - Auth pages render outside `AppShell`; the shell should not wrap standalone auth routes.
 - Auth pages follow the currently selected profile and mode from `preferences.store`.
 - The unauthenticated appearance control must reuse the shared `GlobalPreferences` Control Center. Auth pages may change profile and light/dark/system mode before sign-in, but they must not introduce a separate theme/profile switcher UI.
+- `GlobalPreferences` must stay mounted while the active profile recipe changes. Keep the auth trigger in a stable root position so switching `crypto` / `industrial` / `cyberpunk` does not close the Control Center.
 - Profile differences must include layout recipe differences, not only color or text changes.
 - Registration can be a template-only flow when no backend registration API exists, but the page must clearly report that registration is not configured.
 
@@ -143,7 +146,7 @@ Profile recipes:
 
 - Good: `AuthLayout` owns profile-specific composition while `LoginPage` and `RegisterPage` own form state.
 - Good: appearance switching reuses `preferences.store` so logged-out and logged-in surfaces share the same design system.
-- Good: `AuthLayout` uses `<GlobalPreferences trigger="auth" />` to show the current profile/mode and open the same Control Center used inside the app.
+- Good: `AuthLayout` uses one root-level `<GlobalPreferences trigger="auth" />` to show the current profile/mode and open the same Control Center used inside the app.
 - Base: registration is a high-fidelity template example until a real provider/database flow exists.
 - Bad: three separate login implementations that duplicate validation, submit behavior, and session handling.
 - Bad: one generic login card where profile changes only alter colors and copy.
@@ -154,7 +157,7 @@ Profile recipes:
 - Unit-test login and registration validation.
 - Unit-test auth session persistence and clearing.
 - Unit-test auth route metadata without importing a browser-history router in Node tests.
-- Unit-test the auth layout preference boundary so `AuthLayout` keeps using shared `GlobalPreferences` and does not reintroduce an auth-only appearance menu.
+- Unit-test the auth layout preference boundary so `AuthLayout` keeps using one shared root-level `GlobalPreferences` trigger and does not reintroduce an auth-only appearance menu.
 - Run `vue-tsc`, app tests, and production build.
 - Visually inspect each built-in profile in light/dark modes before claiming UI polish.
 

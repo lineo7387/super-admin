@@ -105,6 +105,7 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Add auth validation, session, and route metadata tests.
 - [x] Update frontend design profile spec with auth portal contracts.
 - [x] Replace the standalone auth appearance switcher with the shared `GlobalPreferences` Control Center trigger.
+- [x] Keep the auth `GlobalPreferences` trigger mounted once in a stable root position so profile switching does not close the Control Center.
 
 ## Non-Goals
 

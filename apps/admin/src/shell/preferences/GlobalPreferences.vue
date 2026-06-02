@@ -47,7 +47,7 @@ const triggerTitle = computed(() =>
 const triggerSize = computed(() => (props.trigger === 'auth' ? 'md' : 'icon'))
 const triggerClass = computed(() =>
   props.trigger === 'auth'
-    ? 'shadow-[var(--card-shadow)]'
+    ? 'fixed right-4 top-4 z-[70] max-w-[calc(100vw-2rem)] shadow-[var(--card-shadow)] sm:right-6 sm:top-5'
     : 'fixed right-4 top-3 z-[70] shadow-[var(--panel-shadow)]'
 )
 

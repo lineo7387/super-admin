@@ -41,6 +41,7 @@ const metrics = computed(() => {
 <template>
   <main class="auth-shell min-h-screen overflow-hidden bg-[var(--app-background)] text-[var(--foreground)]" :data-auth-profile="profile">
     <div class="auth-shell__texture absolute inset-0" aria-hidden="true" />
+    <GlobalPreferences trigger="auth" />
 
     <section v-if="profile === 'industrial'" class="auth-industrial relative mx-auto grid min-h-screen w-full max-w-7xl grid-rows-[auto_1fr] gap-6 px-4 py-4 sm:px-6 lg:px-8">
       <header class="grid gap-3 border-b border-[var(--border-strong)] pb-4 md:grid-cols-[1fr_auto] md:items-end">
@@ -51,7 +52,6 @@ const metrics = computed(() => {
           </div>
           <h1 class="mt-3 [font-family:var(--font-display)] text-4xl leading-none md:text-6xl">{{ props.title }}</h1>
         </div>
-        <GlobalPreferences trigger="auth" class="justify-self-start md:justify-self-end" />
       </header>
 
       <div class="grid min-h-0 gap-5 lg:grid-cols-[1fr_minmax(360px,440px)] lg:items-center">
@@ -82,7 +82,6 @@ const metrics = computed(() => {
           <Command class="size-5" />
           <span>Command Access</span>
         </div>
-        <GlobalPreferences trigger="auth" />
       </header>
 
       <div class="grid min-h-0 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(360px,440px)] lg:items-center">
@@ -117,7 +116,6 @@ const metrics = computed(() => {
             <Landmark class="size-5 text-[var(--primary)]" />
             <span>Vault Session</span>
           </div>
-          <GlobalPreferences trigger="auth" />
         </div>
         <div class="auth-crypto__ledger">
           <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-5">
