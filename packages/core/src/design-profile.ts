@@ -1,4 +1,4 @@
-export type DesignProfileId = 'crypto' | 'industrial' | 'cyberpunk' | (string & {})
+export type DesignProfileId = 'crypto' | 'industrial' | 'cyberpunk' | 'newsprint' | (string & {})
 
 export type ColorMode = 'light' | 'dark' | 'system'
 

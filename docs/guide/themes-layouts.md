@@ -9,6 +9,7 @@ Built-in profiles live in `packages/theme/`.
 - Crypto
 - Industrial
 - Cyberpunk
+- Newsprint
 
 Profiles define token sets and visual recipes. Feature modules should not hard-code profile-specific classes. Use shared primitives and CSS variables so profile switching remains global.
 

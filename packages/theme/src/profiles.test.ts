@@ -18,4 +18,15 @@ describe('built-in design profiles', () => {
     expect(profile.modes.light.colors.primary).toBe('#006a7a')
     expect(profile.modes.light.colors.background).not.toBe(profile.modes.dark.colors.background)
   })
+
+  it('includes Newsprint with editorial light and dark modes', () => {
+    const profile = getBuiltInDesignProfile('newsprint')
+
+    expect(profile.id).toBe('newsprint')
+    expect(profile.modes.light.shape.radiusMd).toBe('0px')
+    expect(profile.modes.light.colors.primary).toBe('#111111')
+    expect(profile.modes.light.colors.accent).toBe('#cc0000')
+    expect(profile.modes.dark.colors.background).not.toBe(profile.modes.light.colors.background)
+    expect(profile.modes.dark.effects.texture).toContain('radial-gradient')
+  })
 })

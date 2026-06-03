@@ -7,6 +7,7 @@ Initial profiles:
 - `crypto`
 - `industrial`
 - `cyberpunk`
+- `newsprint`
 
 Each profile must provide:
 
@@ -44,13 +45,14 @@ Use Tailwind with variables:
 - Keep profile-specific decorations in shared components, shell primitives, or CSS layers.
 - Avoid runtime-generated Tailwind class names that cannot be statically detected.
 - Use arbitrary Tailwind values sparingly; promote repeated values to tokens.
-- Verify every built-in profile in both modes: `crypto.light`, `crypto.dark`, `industrial.light`, `industrial.dark`, `cyberpunk.light`, `cyberpunk.dark`.
+- Verify every built-in profile in both modes: `crypto.light`, `crypto.dark`, `industrial.light`, `industrial.dark`, `cyberpunk.light`, `cyberpunk.dark`, `newsprint.light`, `newsprint.dark`.
 
 ## Interpretation
 
 - Crypto is dark-first but Crypto Light must still feel like Bitcoin DeFi.
 - Industrial is light-first but Industrial Dark must still feel tactile and mechanical.
 - Cyberpunk is dark-first but Cyberpunk Light must still feel like a high-contrast neon terminal, not a generic cyan admin theme.
+- Newsprint is light-first but Newsprint Dark must still feel like an editorial print system with sharp ink rules, dense columns, and paper-like texture, not a generic dark admin theme.
 
 ## Convention: Adding Built-In Profiles
 
@@ -58,10 +60,10 @@ Use Tailwind with variables:
 
 ```ts
 // packages/core/src/design-profile.ts
-export type DesignProfileId = 'crypto' | 'industrial' | 'cyberpunk' | (string & {})
+export type DesignProfileId = 'crypto' | 'industrial' | 'cyberpunk' | 'newsprint' | (string & {})
 
 // packages/theme/src/index.ts
-export const builtInDesignProfiles = [cryptoProfile, industrialProfile, cyberpunkProfile] as const
+export const builtInDesignProfiles = [cryptoProfile, industrialProfile, cyberpunkProfile, newsprintProfile] as const
 ```
 
 and as a concrete `DesignProfile` file under `packages/theme/src/profiles/<id>.ts`.
@@ -132,6 +134,7 @@ Profile recipes:
 - `industrial`: access checkpoint composition, mechanical rails, status rows, and audit-control tone.
   - The title and control-gate mark belong with the left checkpoint composition, above the mechanical rails, rather than as a detached top banner.
 - `cyberpunk`: terminal/command-gate composition, high-contrast signal panels, and command-access tone.
+- `newsprint`: masthead composition, hard editorial grid, edition metadata, drop-cap lead, and sharp form desk.
 
 ### 4. Validation & Error Matrix
 

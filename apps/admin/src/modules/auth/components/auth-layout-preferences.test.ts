@@ -41,4 +41,15 @@ describe('auth layout preferences entry', () => {
     expect(titleIndex).toBeLessThan(railIndex)
     expect(titleIndex).toBeLessThan(formPanelIndex)
   })
+
+  it('includes a dedicated Newsprint auth composition before the default Crypto fallback', () => {
+    const newsprintBranchIndex = authLayoutSource.indexOf("v-else-if=\"preferences.profileId === 'newsprint'\"")
+    const cryptoFallbackIndex = authLayoutSource.indexOf('v-else class="auth-crypto')
+
+    expect(newsprintBranchIndex).toBeGreaterThan(-1)
+    expect(cryptoFallbackIndex).toBeGreaterThan(-1)
+    expect(newsprintBranchIndex).toBeLessThan(cryptoFallbackIndex)
+    expect(authLayoutSource).toContain('auth-newsprint__masthead')
+    expect(authLayoutSource).toContain('auth-panel--newsprint')
+  })
 })
