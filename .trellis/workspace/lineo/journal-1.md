@@ -379,3 +379,38 @@ Added project-level CodeGraph config, open-source governance and CI baseline, an
 ### Next Steps
 
 - None - task complete
+
+
+## Session 12: Control Center Locale Switcher
+
+**Date**: 2026-06-03
+**Task**: Control Center Locale Switcher
+**Branch**: `main`
+
+### Summary
+
+在控制中心加入 CLI 前置的语言切换入口：locale 进入核心偏好契约并默认 zh-CN，管理端偏好 store 持久化并同步 Vue I18n runtime，控制中心支持中文/English 切换，补充测试、浏览器 spot-check 和前端 i18n 持久化约定。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1380cbd` | (see git log) |
+| `fda264a` | (see git log) |
+| `057461a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
