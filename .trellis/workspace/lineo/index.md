@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 10
+- **Total Sessions**: 11
 - **Last Active**: 2026-06-03
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~346 | Active |
+| `journal-1.md` | ~381 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 11 | 2026-06-03 | I18n foundation before CLI | `6f3a769`, `ece2ec5`, `5a671e7` | `main` |
 | 10 | 2026-06-03 | Open source release readiness | `87ccfa8`, `5195510`, `2a6e79e` | `main` |
 | 9 | 2026-06-01 | API contract validation | `2a4d6ec` | `main` |
 | 8 | 2026-06-01 | VitePress template integration docs | `527e4bd` | `main` |

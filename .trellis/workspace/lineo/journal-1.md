@@ -344,3 +344,38 @@ Added project-level CodeGraph config, open-source governance and CI baseline, an
 ### Next Steps
 
 - None - task complete
+
+
+## Session 11: I18n foundation before CLI
+
+**Date**: 2026-06-03
+**Task**: I18n foundation before CLI
+**Branch**: `main`
+
+### Summary
+
+建立 CLI 前的管理端国际化基础：规划 Trellis task，接入 vue-i18n 默认 zh-CN/en-US catalog，迁移 shell/preferences/auth/workspace/users 高频文案，通用化登录页开源模板文案，并补充前端 i18n 实现约定。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6f3a769` | (see git log) |
+| `ece2ec5` | (see git log) |
+| `5a671e7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
