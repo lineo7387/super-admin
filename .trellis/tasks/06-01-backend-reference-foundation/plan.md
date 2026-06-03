@@ -148,15 +148,30 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Keep this smoke target out of the default scaffold path; it is maintainer validation, not a user requirement.
 - [x] Treat failure here as a release blocker for any claim that the template can connect to real APIs.
 
-## Phase 12: CLI MVP For Frontend-First Template Delivery
+## Phase 12: Internationalization Foundation Before CLI
+
+- [x] Define the admin app i18n strategy before CLI generation begins.
+- [x] Set `zh-CN` as the default locale and `en-US` as an optional locale.
+- [x] Decide whether locale messages are centralized under `apps/admin/src/i18n/` or split by module.
+- [ ] Migrate high-frequency user-facing text away from hard-coded English:
+  - [ ] shell/navigation/account menu
+  - [ ] auth login/register flows
+  - [ ] users/access/dashboard/workbench example modules
+  - [ ] UI Kit page titles, labels, state copy, and validation text
+- [x] Update AI/contribution guidance so new user-facing text must have a default Chinese message.
+- [x] Record CLI implications: generated projects default to `zh-CN`, with future `en-US` selection support.
+
+## Phase 13: CLI MVP For Frontend-First Template Delivery
 
 - [ ] Begin CLI foundation only after Phase 11 proves the current repo has a real reference backend integration path.
+- [ ] Do not begin CLI foundation until Phase 12 defines the i18n/default-locale contract.
 - [ ] Implement the minimum CLI flow that creates/downloads a runnable frontend-first admin template.
 - [ ] Generated output must default to mock data and must not require backend, database, auth provider, AI provider, or CLI-only hidden services.
+- [ ] Generated output must default to `zh-CN` user-facing copy.
 - [ ] Add generated-project smoke checks for install, typecheck, test, build, and default app startup.
 - [ ] Define `tests/cli` layout and generated-project fixture cleanup rules.
 
-## Phase 13: CLI-Generated Reference Integration Smoke
+## Phase 14: CLI-Generated Reference Integration Smoke
 
 - [ ] Begin immediately after the CLI MVP generated-project default smoke passes.
 - [ ] Generate a fresh admin project through the CLI.
@@ -167,9 +182,9 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [ ] Re-run the same login/session/users/logout browser flow from Phase 11 against the CLI-generated project.
 - [ ] This phase must pass before documenting or marketing real API connectivity.
 
-## Phase 14: Backend Platform Coverage Strategy
+## Phase 15: Backend Platform Coverage Strategy
 
-- [ ] Start after Phase 13, not before the CLI MVP.
+- [ ] Start after Phase 14, not before the CLI MVP.
 - [ ] Keep backend platform tests maintainer-only; do not ship them as required user dependencies.
 - [ ] Add one platform/backend fixture at a time only when it validates a real template integration concern:
   - [ ] auth/session token contract

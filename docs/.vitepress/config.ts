@@ -19,7 +19,9 @@ export default defineConfig({
           { text: 'API Adapters', link: '/guide/api-adapters' },
           { text: 'Themes and Layouts', link: '/guide/themes-layouts' },
           { text: 'Examples', link: '/guide/examples' },
-          { text: 'Optional Backend', link: '/guide/optional-backend' }
+          { text: 'Optional Backend', link: '/guide/optional-backend' },
+          { text: 'AI Collaboration', link: '/guide/ai-collaboration' },
+          { text: 'Open Source Workflow', link: '/guide/open-source-workflow' }
         ]
       }
     ],

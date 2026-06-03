@@ -30,3 +30,20 @@ This repository uses the Trellis lake workflow as the only project workflow.
 - Store implementation plans as `.trellis/tasks/<task>/plan.md`.
 - Use `.trellis/spec/` as the source of truth for project coding and architecture rules.
 - If a global or copied skill suggests a Superpowers path, ignore that part and follow the Trellis lake workflow instead.
+
+## Minimal Project Guardrails
+
+Keep this file as a short routing surface. Read detailed rules on demand from `.trellis/spec/` and `docs/guide/`.
+
+- Default scaffold stays frontend-first and mock-backed.
+- Do not make backend, database, auth provider, AI provider, generated schema, CLI, CodeGraph, or other maintainer-only tooling required for users.
+- Keep frontend data access on `Page -> module query composable -> API adapter -> api/mock data or user API`.
+- Do not import optional reference backend code or Hono types into the default admin app.
+
+Read when relevant:
+
+- `.trellis/spec/guides/index.md` for project thinking checklists.
+- `.trellis/spec/frontend/index.md` for frontend implementation rules.
+- `.trellis/spec/backend/index.md` for optional reference backend rules.
+- `.trellis/spec/shared/git-conventions.md` for commit and PR conventions.
+- `docs/guide/ai-collaboration.md` for user-facing AI collaboration guidance.

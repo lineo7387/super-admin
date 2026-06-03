@@ -25,6 +25,7 @@ Guidelines for the Vue 3 + shadcn-vue + Tailwind admin template.
 | [data-and-query.md](./data-and-query.md) | Adding list/detail queries, mutations, cache behavior |
 | [api-adapters.md](./api-adapters.md) | Adding or changing mock data/API adapter points |
 | [api-contracts.md](./api-contracts.md) | Defining frontend-facing adapter contracts and optional helpers |
+| [i18n.md](./i18n.md) | Adding or migrating user-facing copy, locale defaults, or generated-project text |
 | [type-safety.md](./type-safety.md) | Defining types, route meta, manifests, exported APIs |
 | [css-design.md](./css-design.md) | Tailwind/CSS variable/profile styling |
 | [quality.md](./quality.md) | Before finishing frontend work |
@@ -39,3 +40,4 @@ Guidelines for the Vue 3 + shadcn-vue + Tailwind admin template.
 - Runtime profile/mode/layout switching must not unnecessarily destroy tabs or kept-alive route state.
 - Pages expose semantic regions; shell presets decide placement.
 - Keep route/page components as composition surfaces. Move reusable UI into components and stateful logic into composables.
+- New user-facing text should have a default `zh-CN` message; `en-US` is optional until the i18n phase adds full coverage.
