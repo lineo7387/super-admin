@@ -264,7 +264,8 @@ async function runBrowserFlow(config) {
       path: resolve(ARTIFACT_DIR, 'users-reference-success.png')
     })
 
-    await page.getByRole('button', { name: 'Sign out' }).click()
+    await page.getByRole('button', { name: 'MC' }).click()
+    await page.getByRole('menuitem', { name: 'Sign out' }).click()
     await page.waitForURL('**/auth/login**')
 
     const finalUrl = page.url()

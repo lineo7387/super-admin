@@ -118,12 +118,17 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Redirect successful login back to the sanitized `redirect` target.
 - [x] Keep default mock/frontend-first login backend-free by creating a runtime template session outside reference mode.
 - [x] Keep optional reference login enabled when `VITE_SUPER_ADMIN_USERS_API=reference`.
-- [x] Add current user and logout controls to the shared shell header across layout presets.
+- [x] Add current user and logout controls through a layout-aware `ShellAccountMenu` across layout presets.
 - [x] Clear runtime auth session on logout and return to `/auth/login` with the current route as `redirect`.
 - [x] Update the users reference adapter to prefer the runtime auth-session token over `VITE_SUPER_ADMIN_REFERENCE_TOKEN`.
 - [x] Stop persisting bearer session payloads to local storage; keep tokens in runtime Pinia state only.
 - [x] Add/adjust tests for guard redirects, login redirect wiring, shell logout wiring, runtime-only auth sessions, mock auth helper, and reference users token priority.
 - [x] Run browser verification for logged-out redirect, login redirect, current-user shell display, and logout redirect.
+- [x] Refine shell IA so user/logout/settings shortcuts live in an account menu instead of persistent header buttons.
+- [x] Place account menu at the tri-column dock bottom, dual-column sidebar bottom, and top-header actions slot.
+- [x] Move Stage Manager from a permanent viewport button to the account menu and `Cmd/Ctrl+Shift+M` shortcut.
+- [x] Keep Control Center mounted once above layout presets while opening it from the account menu.
+- [x] Fix inline Context placement in dual-column/top-header so the card does not stretch into a blank side column.
 
 ## Phase 11: Maintainer Reference Integration Smoke
 
@@ -137,7 +142,7 @@ Plan the optional reference backend foundation for Super Admin. This task should
   - [x] login redirects back to the original users page
   - [x] users page calls `GET /users` with the runtime login token, not only the env fallback token
   - [x] users page renders reference backend data
-  - [x] logout clears the runtime session and returns to login
+  - [x] logout through the account menu clears the runtime session and returns to login
 - [x] Keep this smoke target out of the default scaffold path; it is maintainer validation, not a user requirement.
 - [x] Treat failure here as a release blocker for any claim that the template can connect to real APIs.
 

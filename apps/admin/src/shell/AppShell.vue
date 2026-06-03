@@ -10,10 +10,13 @@ import DualColumnLayout from './layouts/DualColumnLayout.vue'
 import TopHeaderLayout from './layouts/TopHeaderLayout.vue'
 import TriColumnLayout from './layouts/TriColumnLayout.vue'
 import GlobalPreferences from './preferences/GlobalPreferences.vue'
+import { useShellShortcuts } from './shell-shortcuts'
 
 const route = useRoute()
 const preferences = usePreferencesStore()
 const tabs = useWorkspaceTabsStore()
+
+useShellShortcuts()
 
 const activeLayout = computed(() => {
   if (preferences.layoutPreset === 'dual-column') {
@@ -52,5 +55,5 @@ watch(
     </template>
   </component>
   <StageManagerOverlay />
-  <GlobalPreferences />
+  <GlobalPreferences trigger="none" />
 </template>

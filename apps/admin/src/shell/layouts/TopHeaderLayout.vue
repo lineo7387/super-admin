@@ -7,6 +7,7 @@ import { registeredModules } from '@/modules/module-registry'
 import WorkspaceHeader from '@/workspace/WorkspaceHeader.vue'
 import WorkspaceTabs from '@/workspace/WorkspaceTabs.vue'
 import PrimaryNav from '../PrimaryNav.vue'
+import ShellAccountMenu from '../ShellAccountMenu.vue'
 import ShellHeader from '../ShellHeader.vue'
 
 const route = useRoute()
@@ -16,7 +17,11 @@ const subNavItems = computed(() => activeModule.value?.nav.children ?? [])
 
 <template>
   <div class="super-texture min-h-screen bg-[var(--app-background)] text-[var(--foreground)]">
-    <ShellHeader brand="full" nav="horizontal" :nav-depth="1" />
+    <ShellHeader brand="full" nav="horizontal" :nav-depth="1">
+      <template #actions>
+        <ShellAccountMenu variant="header" />
+      </template>
+    </ShellHeader>
     <div class="grid h-[calc(100vh-3.5rem)] grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(212px,260px)_minmax(0,1fr)]">
       <aside class="hidden min-h-0 border-r border-[var(--border)] bg-[var(--nav-background)] p-3 lg:block">
         <div class="mb-4 px-1">
@@ -33,12 +38,14 @@ const subNavItems = computed(() => activeModule.value?.nav.children ?? [])
         </div>
         <WorkspaceTabs placement="top" />
         <WorkspaceHeader />
-        <AdminScrollArea class="flex-1" view-class="grid grid-cols-[minmax(0,1fr)] gap-4 p-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <slot name="workspace" />
-          <section class="hidden xl:block">
+        <div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_320px]">
+          <AdminScrollArea class="min-h-0" view-class="p-4">
+            <slot name="workspace" />
+          </AdminScrollArea>
+          <section class="context-rail hidden min-h-0 border-l border-[var(--border)] bg-[var(--context-background)] xl:block">
             <slot name="context" />
           </section>
-        </AdminScrollArea>
+        </div>
       </main>
     </div>
   </div>

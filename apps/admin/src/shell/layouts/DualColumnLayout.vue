@@ -4,6 +4,7 @@ import { AdminScrollArea } from '@super-admin/ui'
 import WorkspaceHeader from '@/workspace/WorkspaceHeader.vue'
 import WorkspaceTabs from '@/workspace/WorkspaceTabs.vue'
 import PrimaryNav from '../PrimaryNav.vue'
+import ShellAccountMenu from '../ShellAccountMenu.vue'
 import ShellHeader from '../ShellHeader.vue'
 </script>
 
@@ -22,16 +23,21 @@ import ShellHeader from '../ShellHeader.vue'
           </div>
         </div>
         <PrimaryNav />
+        <div class="mt-auto pt-4">
+          <ShellAccountMenu variant="sidebar" />
+        </div>
       </aside>
       <main class="flex min-w-0 flex-col overflow-hidden bg-[var(--surface-sunken)]">
         <WorkspaceTabs placement="top" />
         <WorkspaceHeader />
-        <AdminScrollArea class="flex-1" view-class="grid grid-cols-[minmax(0,1fr)] gap-4 p-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <slot name="workspace" />
-          <section class="hidden xl:block">
+        <div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_320px]">
+          <AdminScrollArea class="min-h-0" view-class="p-4">
+            <slot name="workspace" />
+          </AdminScrollArea>
+          <section class="context-rail hidden min-h-0 border-l border-[var(--border)] bg-[var(--context-background)] xl:block">
             <slot name="context" />
           </section>
-        </AdminScrollArea>
+        </div>
       </main>
     </div>
   </div>

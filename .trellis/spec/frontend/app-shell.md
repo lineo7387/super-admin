@@ -17,8 +17,8 @@ Pages own content regions and feature UI.
 ## Built-In Layouts
 
 - `tri-column`: first-level dock + active tree nav + workspace + context panel.
-- `dual-column`: sidebar + workspace; context becomes drawer/sheet/inline.
-- `top-header`: header navigation + workspace; context becomes sheet/popover/below content.
+- `dual-column`: sidebar + workspace; context becomes a dedicated right rail on wide screens and can degrade to drawer/sheet on narrow screens.
+- `top-header`: header navigation + workspace; context becomes a dedicated right rail on wide screens and can degrade to sheet/popover/below content on narrow screens.
 
 ## Page Regions
 
@@ -81,7 +81,7 @@ shouldUseReferenceAuth(env?): boolean
 - Authenticated access to `/auth/login` or `/auth/register` redirects to the sanitized `redirect` query value, otherwise `/examples/dashboard`.
 - In mock/default mode, login creates a local template session and must not require `apps/api`.
 - In `VITE_SUPER_ADMIN_USERS_API=reference` mode, login calls the optional reference `/auth/login` helper.
-- `ShellHeader` shows the current user and provides a logout action in every layout preset.
+- `ShellAccountMenu` shows the current user and provides logout in every layout preset; `ShellHeader` stays base chrome and receives only layout-provided actions.
 - Logout clears the runtime auth session and routes to `/auth/login?redirect=<current fullPath>`.
 
 #### 4. Validation & Error Matrix
@@ -96,9 +96,9 @@ shouldUseReferenceAuth(env?): boolean
 
 #### 5. Good/Base/Bad Cases
 
-- Good: router guard owns route access, `LoginPage` owns form submission, `ShellHeader` owns global logout, and `auth-session.store` owns runtime session state.
+- Good: router guard owns route access, `LoginPage` owns form submission, `ShellAccountMenu` owns global logout, and `auth-session.store` owns runtime session state.
 - Base: raw source tests may guard shell wiring when full component interaction tests are not yet installed.
-- Bad: requiring `apps/api` for default login, persisting bearer tokens in local storage, or putting auth checks inside feature pages.
+- Bad: requiring `apps/api` for default login, persisting bearer tokens in local storage, putting auth checks inside feature pages, or rendering separate always-visible user/logout buttons in the header.
 
 #### 6. Tests Required
 
@@ -106,7 +106,8 @@ shouldUseReferenceAuth(env?): boolean
 - Assert authenticated auth routes redirect back into the workspace.
 - Assert successful login uses the redirect query.
 - Assert default login can create a template session without backend config.
-- Assert shell header includes current user and logout wiring.
+- Assert `ShellAccountMenu` includes current user and logout wiring.
+- Assert `ShellHeader` does not directly import auth-session state or render logout controls.
 
 #### 7. Wrong vs Correct
 
@@ -140,7 +141,7 @@ The Control Center trigger and modal must be mounted above layout preset compone
     <WorkspaceRouterView />
   </template>
 </component>
-<GlobalPreferences />
+<GlobalPreferences trigger="none" />
 ```
 
 **Wrong shape**:
@@ -156,6 +157,71 @@ The Control Center trigger and modal must be mounted above layout preset compone
 ```
 
 **Check**: Open Control Center, switch `tri-column` -> `dual-column` -> `top-header`, and confirm the modal remains open and all controls still update immediately.
+
+### Account Menu Placement Contract
+
+`ShellHeader` is base chrome for brand/search/navigation alignment. It must not directly own auth-session state, logout, settings, activity, or Stage Manager buttons. Layout presets decide where the same account menu appears:
+
+- `tri-column`: compact avatar button at the bottom of the left logo/dock rail.
+- `dual-column`: account row at the bottom of the sidebar/nav rail.
+- `top-header`: compact avatar button in the header actions slot.
+
+`ShellAccountMenu` owns the current user summary, Home link, Control Center entry, shortcut/Stage Manager entry, and logout action. Logout stays behind the user click and must not be a persistent header button.
+
+Stage Manager should not render a permanent viewport button. When `preferences.stageManager.enabled` is true, open it from the account menu and the `Cmd/Ctrl+Shift+M` shell shortcut. The Control Center still owns the enabled/disabled preference.
+
+**Correct shape**:
+
+```vue
+<ShellHeader>
+  <template #actions>
+    <ShellAccountMenu variant="header" />
+  </template>
+</ShellHeader>
+```
+
+**Wrong shape**:
+
+```vue
+<ShellHeader>
+  <AdminButton title="Activity" />
+  <AdminButton title="Sign out" />
+  <GlobalPreferences />
+  <AdminButton title="Stage Manager" />
+</ShellHeader>
+```
+
+**Check**: Verify tri-column, dual-column, and top-header layouts after login. The header should not accumulate separate settings, activity, Stage Manager, user, and logout controls.
+
+### Context Rail Contract
+
+`tri-column` owns a full-height persistent context panel. `dual-column` and `top-header` should still keep context visually separate on wide screens by rendering it as a dedicated right rail beside the workspace content.
+
+The context rail must not be placed inside the same `AdminScrollArea` content grid as the page body. Doing that makes the Context surface blend into the primary content or stretch like an accidental card column. Instead, split the workspace body into a scrollable primary content area and a sibling `context-rail` with its own `bg-[var(--context-background)]` and left border.
+
+**Correct shape**:
+
+```vue
+<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_320px]">
+  <AdminScrollArea class="min-h-0" view-class="p-4">
+    <slot name="workspace" />
+  </AdminScrollArea>
+  <section class="context-rail hidden min-h-0 border-l border-[var(--border)] bg-[var(--context-background)] xl:block">
+    <slot name="context" />
+  </section>
+</div>
+```
+
+**Wrong shape**:
+
+```vue
+<AdminScrollArea view-class="grid grid-cols-[minmax(0,1fr)_320px]">
+  <slot name="workspace" />
+  <slot name="context" />
+</AdminScrollArea>
+```
+
+**Check**: In `dual-column` and `top-header`, the Context area should read as a complete side hint rail with a clear boundary from the primary workspace content.
 
 ## Module Navigation Tree
 

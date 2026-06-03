@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Layers3, Pin, PinOff, RotateCw, X } from 'lucide-vue-next'
+import { Pin, PinOff, RotateCw, X } from 'lucide-vue-next'
 import type { Component } from 'vue'
-import { computed, shallowRef } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { findActiveModule, findModuleRoute } from '@super-admin/core'
 import { AdminButton } from '@super-admin/ui'
@@ -13,7 +13,6 @@ const preferences = usePreferencesStore()
 const route = useRoute()
 const router = useRouter()
 const tabs = useWorkspaceTabsStore()
-const isOpen = shallowRef(false)
 
 const stages = computed(() =>
   tabs.state.tabs.map((tab) => {
@@ -29,12 +28,8 @@ const stages = computed(() =>
   })
 )
 
-function openStageManager(): void {
-  isOpen.value = true
-}
-
 function closeStageManager(): void {
-  isOpen.value = false
+  preferences.closeStageManager()
 }
 
 function activateStage(path: string): void {
@@ -65,20 +60,9 @@ function refreshStage(tabId: string): void {
 </script>
 
 <template>
-  <AdminButton
-    v-if="preferences.stageManager.enabled"
-    variant="secondary"
-    size="icon"
-    class="fixed right-16 top-3 z-[70] shadow-[var(--panel-shadow)]"
-    title="Stage Manager"
-    @click="openStageManager"
-  >
-    <Layers3 class="size-4" />
-  </AdminButton>
-
   <Teleport to="body">
     <div
-      v-if="preferences.stageManager.enabled && isOpen"
+      v-if="preferences.stageManager.enabled && preferences.stageManagerOpen"
       class="stage-layer fixed inset-0 z-[75] pointer-events-none"
       @keydown.esc="closeStageManager"
     >

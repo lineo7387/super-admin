@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Settings2, X } from 'lucide-vue-next'
-import { computed, shallowRef } from 'vue'
+import { computed } from 'vue'
 import {
   builtInLayoutPresets,
   type ColorMode,
@@ -14,7 +14,7 @@ import { usePreferencesStore } from '@/stores/preferences.store'
 
 const props = withDefaults(
   defineProps<{
-    trigger?: 'floating' | 'auth'
+    trigger?: 'floating' | 'auth' | 'none'
   }>(),
   {
     trigger: 'floating'
@@ -22,7 +22,6 @@ const props = withDefaults(
 )
 
 const preferences = usePreferencesStore()
-const open = shallowRef(false)
 
 const modeOptions: { id: ColorMode; label: string; detail: string }[] = [
   { id: 'light', label: 'Light', detail: 'Bright operations surface' },
@@ -45,10 +44,11 @@ const triggerTitle = computed(() =>
   props.trigger === 'auth' ? `Open Control Center: ${activeProfileName.value} / ${activeModeName.value}` : 'Control Center'
 )
 const triggerSize = computed(() => (props.trigger === 'auth' ? 'md' : 'icon'))
+const showTrigger = computed(() => props.trigger !== 'none')
 const triggerClass = computed(() =>
   props.trigger === 'auth'
     ? 'shadow-[var(--card-shadow)]'
-    : 'fixed right-4 top-3 z-[70] shadow-[var(--panel-shadow)]'
+    : 'shadow-[var(--panel-shadow)]'
 )
 
 function selectProfile(profileId: DesignProfileId): void {
@@ -72,11 +72,12 @@ function selectDensity(density: Density): void {
 <template>
   <div>
     <AdminButton
+      v-if="showTrigger"
       variant="secondary"
       :size="triggerSize"
       :class="triggerClass"
       :title="triggerTitle"
-      @click="open = true"
+      @click="preferences.openControlCenter()"
     >
       <Settings2 class="size-4" />
       <span v-if="props.trigger === 'auth'" class="text-xs">
@@ -85,7 +86,7 @@ function selectDensity(density: Density): void {
     </AdminButton>
 
     <Teleport to="body">
-      <div v-if="open" class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-4 backdrop-blur-sm" @keydown.esc="open = false">
+      <div v-if="preferences.controlCenterOpen" class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-4 backdrop-blur-sm" @keydown.esc="preferences.closeControlCenter()">
         <section
           class="max-h-[88vh] w-full max-w-5xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
           role="dialog"
@@ -105,7 +106,7 @@ function selectDensity(density: Density): void {
                 Theme, layout, density, tabs, and Stage Manager update immediately.
               </p>
             </div>
-            <AdminButton variant="ghost" size="icon" title="Close Control Center" @click="open = false">
+            <AdminButton variant="ghost" size="icon" title="Close Control Center" @click="preferences.closeControlCenter()">
               <X class="size-4" />
             </AdminButton>
           </header>
@@ -246,7 +247,7 @@ function selectDensity(density: Density): void {
                     @click="preferences.setStageManagerEnabled(!preferences.stageManager.enabled)"
                   >
                     <span class="flex items-center justify-between gap-3">
-                      <span class="text-sm">Stage Manager Button</span>
+                    <span class="text-sm">Stage Manager Shortcut</span>
                       <span class="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px]">
                         {{ preferences.stageManager.enabled ? 'On' : 'Off' }}
                       </span>

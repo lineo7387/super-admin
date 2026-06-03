@@ -9,6 +9,7 @@ import { registeredModules } from '@/modules/module-registry'
 import WorkspaceHeader from '@/workspace/WorkspaceHeader.vue'
 import WorkspaceTabs from '@/workspace/WorkspaceTabs.vue'
 import PrimaryNav from '../PrimaryNav.vue'
+import ShellAccountMenu from '../ShellAccountMenu.vue'
 import ShellHeader from '../ShellHeader.vue'
 
 const route = useRoute()
@@ -62,6 +63,9 @@ function isActive(item: ModuleNavItem): boolean {
             <span class="sr-only">{{ module.nav.label }}</span>
           </RouterLink>
         </nav>
+        <div class="mt-auto">
+          <ShellAccountMenu variant="dock" />
+        </div>
       </div>
       <aside class="min-w-0 border-r border-[var(--border)] bg-[var(--nav-background)] p-3">
         <div class="mb-4 px-1">

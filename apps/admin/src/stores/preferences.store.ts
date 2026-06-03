@@ -34,6 +34,8 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const systemMode = shallowRef<ResolvedColorMode>('dark')
   const providerMode = shallowRef<'mock' | 'custom'>('mock')
   const aiAvailability = shallowRef<AiAvailability>(defaultAiAvailability)
+  const controlCenterOpen = shallowRef(false)
+  const stageManagerOpen = shallowRef(false)
 
   const profileId = computed(() => state.profileId)
   const colorMode = computed(() => state.colorMode)
@@ -76,7 +78,30 @@ export const usePreferencesStore = defineStore('preferences', () => {
 
   function setStageManagerEnabled(enabled: boolean): void {
     state.stageManager.enabled = enabled
+    if (!enabled) {
+      stageManagerOpen.value = false
+    }
     persist()
+  }
+
+  function openControlCenter(): void {
+    controlCenterOpen.value = true
+  }
+
+  function closeControlCenter(): void {
+    controlCenterOpen.value = false
+  }
+
+  function openStageManager(): void {
+    if (!state.stageManager.enabled) {
+      return
+    }
+
+    stageManagerOpen.value = true
+  }
+
+  function closeStageManager(): void {
+    stageManagerOpen.value = false
   }
 
   function bindSystemColorMode(): void {
@@ -91,6 +116,12 @@ export const usePreferencesStore = defineStore('preferences', () => {
   return {
     providerMode,
     aiAvailability,
+    closeControlCenter,
+    closeStageManager,
+    controlCenterOpen,
+    openControlCenter,
+    openStageManager,
+    stageManagerOpen,
     systemMode,
     summary,
     profileId,
