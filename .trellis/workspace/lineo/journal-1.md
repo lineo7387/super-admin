@@ -414,3 +414,36 @@ Added project-level CodeGraph config, open-source governance and CI baseline, an
 ### Next Steps
 
 - None - task complete
+
+
+## Session 13: Add Newsprint design profile
+
+**Date**: 2026-06-03
+**Task**: Add Newsprint design profile
+**Branch**: `codex/newsprint-design-profile`
+
+### Summary
+
+Added Newsprint as a built-in theme profile with light/dark tokens, Control Center registration, auth layout recipe, tests, docs, and visual verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `adc3fc3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
