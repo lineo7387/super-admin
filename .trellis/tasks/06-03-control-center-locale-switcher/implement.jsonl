@@ -1,0 +1,5 @@
+{"type":"spec","path":".trellis/spec/frontend/i18n.md","reason":"Locale defaults, app/shared i18n boundary, runtime convention, Control Center switcher gate."}
+{"type":"spec","path":".trellis/spec/frontend/state-management.md","reason":"Preference persistence and Pinia state conventions."}
+{"type":"spec","path":".trellis/spec/frontend/components.md","reason":"Control Center UI/component composition conventions."}
+{"type":"spec","path":".trellis/spec/frontend/type-safety.md","reason":"Preference contract and locale type changes."}
+{"type":"research","path":".trellis/tasks/archive/2026-06/06-03-i18n-foundation-before-cli/research/vue-i18n-foundation.md","reason":"Prior vue-i18n foundation research for runtime and message catalog approach."}

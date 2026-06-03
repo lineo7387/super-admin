@@ -1,0 +1,4 @@
+{"type":"spec","path":".trellis/spec/frontend/i18n.md","reason":"Verify default locale, switching behavior, missing-key handling, and shared package boundary."}
+{"type":"spec","path":".trellis/spec/frontend/state-management.md","reason":"Verify persisted preferences remain backward compatible and independent."}
+{"type":"spec","path":".trellis/spec/frontend/components.md","reason":"Verify Control Center UI stays consistent and ergonomic."}
+{"type":"spec","path":".trellis/spec/frontend/quality.md","reason":"Frontend quality gate before completion."}
