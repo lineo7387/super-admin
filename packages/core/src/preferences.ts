@@ -2,6 +2,8 @@ import type { ColorMode, Density, DesignProfileId } from './design-profile'
 import type { LayoutPresetId } from './shell'
 import type { WorkspaceTabCloseStrategy } from './workspace-tabs'
 
+export type LocalePreference = 'zh-CN' | 'en-US'
+
 export type WorkspaceTabPreferences = {
   enabled: boolean
   restorePinnedTabs: boolean
@@ -14,6 +16,7 @@ export type StageManagerPreferences = {
 
 export type AppearanceState = {
   profileId: DesignProfileId
+  locale: LocalePreference
   colorMode: ColorMode
   density: Density
   layoutPreset: LayoutPresetId
@@ -28,6 +31,7 @@ export type AppearanceStateInput = Partial<Omit<AppearanceState, 'workspaceTabs'
 
 export const defaultAppearanceState: AppearanceState = {
   profileId: 'crypto',
+  locale: 'zh-CN',
   colorMode: 'dark',
   density: 'comfortable',
   layoutPreset: 'tri-column',

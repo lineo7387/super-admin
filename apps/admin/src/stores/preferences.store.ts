@@ -12,6 +12,7 @@ import {
 } from '@super-admin/core'
 import { defineStore } from 'pinia'
 import { computed, reactive, shallowRef } from 'vue'
+import { DEFAULT_LOCALE, setActiveLocale, type Locale } from '@/i18n'
 
 const STORAGE_KEY = 'super-admin:preferences'
 
@@ -39,6 +40,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const aiAssistantOpen = shallowRef(false)
 
   const profileId = computed(() => state.profileId)
+  const locale = computed(() => state.locale)
   const colorMode = computed(() => state.colorMode)
   const density = computed(() => state.density)
   const layoutPreset = computed(() => state.layoutPreset)
@@ -52,8 +54,16 @@ export const usePreferencesStore = defineStore('preferences', () => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   }
 
+  setActiveLocale(state.locale ?? DEFAULT_LOCALE)
+
   function setProfile(profileId: DesignProfileId): void {
     state.profileId = profileId
+    persist()
+  }
+
+  function setLocale(locale: Locale): void {
+    state.locale = locale
+    setActiveLocale(locale)
     persist()
   }
 
@@ -137,6 +147,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
     systemMode,
     summary,
     profileId,
+    locale,
     colorMode,
     density,
     layoutPreset,
@@ -146,6 +157,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
     setColorMode,
     setDensity,
     setLayoutPreset,
+    setLocale,
     setProfile,
     setTabsEnabled,
     setStageManagerEnabled

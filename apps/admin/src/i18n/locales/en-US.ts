@@ -34,6 +34,8 @@ const enUS = {
       themeProfile: 'Theme Profile',
       themeProfileDescription: 'Switch between installed design recipes.',
       modeDensity: 'Mode & Density',
+      locale: 'Language',
+      localeDescription: 'Switch display language for migrated surfaces.',
       layout: 'Layout',
       layoutDescription: 'Layout presets stay independent from workspace tools.',
       workspace: 'Workspace',
@@ -48,6 +50,16 @@ const enUS = {
       providerDescription: 'Provider interfaces are typed, but no provider is attached by default.',
       on: 'On',
       off: 'Off',
+      locales: {
+        zhCN: {
+          label: '中文',
+          detail: 'Default locale'
+        },
+        enUS: {
+          label: 'English',
+          detail: 'Optional locale'
+        }
+      },
       modes: {
         light: {
           label: 'Light',

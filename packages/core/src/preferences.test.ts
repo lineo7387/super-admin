@@ -16,18 +16,21 @@ describe('preference resolution', () => {
     })
 
     expect(state.profileId).toBe('industrial')
+    expect(state.locale).toBe('zh-CN')
     expect(state.layoutPreset).toBe('tri-column')
     expect(state.workspaceTabs.enabled).toBe(false)
     expect(state.stageManager.enabled).toBe(true)
   })
 
-  it('keeps layout preset and stage manager independent', () => {
+  it('keeps locale, layout preset, and stage manager independent', () => {
     const state = mergeAppearanceState({
+      locale: 'en-US',
       layoutPreset: 'top-header',
       workspaceTabs: { enabled: true },
       stageManager: { enabled: false }
     })
 
+    expect(state.locale).toBe('en-US')
     expect(state.layoutPreset).toBe('top-header')
     expect(state.workspaceTabs.enabled).toBe(true)
     expect(state.stageManager.enabled).toBe(false)

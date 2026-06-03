@@ -62,6 +62,10 @@ export function getActiveLocale(adminI18n: ReturnType<typeof createAdminI18n> = 
   return (typeof locale === 'string' ? locale : locale.value) as Locale
 }
 
+export function setActiveLocale(locale: Locale, adminI18n: ReturnType<typeof createAdminI18n> = i18n): void {
+  adminI18n.global.locale.value = locale
+}
+
 export function createMessageTranslator(locale: Locale = DEFAULT_LOCALE): MessageTranslator {
   const localI18n = createAdminI18n(locale)
   return (key, values) => localI18n.global.t(key, values ?? {})

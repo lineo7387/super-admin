@@ -7,6 +7,8 @@ describe('global preferences shell wiring', () => {
   it('mounts the control center modal once without a fixed app-shell trigger', () => {
     expect(appShellSource).toContain('<GlobalPreferences trigger="none" />')
     expect(globalPreferencesSource).toContain('preferences.controlCenterOpen')
+    expect(globalPreferencesSource).toContain('preferences.setLocale')
+    expect(globalPreferencesSource).toContain('shell.preferences.locale')
     expect(globalPreferencesSource).not.toContain('fixed right-4 top-3')
   })
 

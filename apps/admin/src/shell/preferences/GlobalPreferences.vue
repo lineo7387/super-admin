@@ -11,6 +11,7 @@ import {
 } from '@super-admin/core'
 import { builtInDesignProfiles } from '@super-admin/theme'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin/ui'
+import type { Locale } from '@/i18n'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
 const props = withDefaults(
@@ -29,6 +30,11 @@ const modeOptions = computed<{ id: ColorMode; label: string; detail: string }[]>
   { id: 'light', label: t('shell.preferences.modes.light.label'), detail: t('shell.preferences.modes.light.detail') },
   { id: 'dark', label: t('shell.preferences.modes.dark.label'), detail: t('shell.preferences.modes.dark.detail') },
   { id: 'system', label: t('shell.preferences.modes.system.label'), detail: t('shell.preferences.modes.system.detail') }
+])
+
+const localeOptions = computed<{ id: Locale; label: string; detail: string }[]>(() => [
+  { id: 'zh-CN', label: t('shell.preferences.locales.zhCN.label'), detail: t('shell.preferences.locales.zhCN.detail') },
+  { id: 'en-US', label: t('shell.preferences.locales.enUS.label'), detail: t('shell.preferences.locales.enUS.detail') }
 ])
 
 const densityOptions = computed<{ id: Density; label: string; detail: string }[]>(() => [
@@ -61,6 +67,10 @@ function selectProfile(profileId: DesignProfileId): void {
 
 function selectMode(colorMode: ColorMode): void {
   preferences.setColorMode(colorMode)
+}
+
+function selectLocale(locale: Locale): void {
+  preferences.setLocale(locale)
 }
 
 function selectLayout(layoutPreset: LayoutPresetId): void {
@@ -146,6 +156,26 @@ function selectDensity(density: Density): void {
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
                 <h3 class="[font-family:var(--font-display)] text-lg">{{ t('shell.preferences.modeDensity') }}</h3>
                 <div class="mt-4 grid gap-3">
+                  <div>
+                    <div class="flex items-center justify-between gap-3 pb-2">
+                      <span class="text-sm">{{ t('shell.preferences.locale') }}</span>
+                      <span class="text-[11px] text-[var(--muted-foreground)]">{{ t('shell.preferences.localeDescription') }}</span>
+                    </div>
+                    <div class="grid gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-2 sm:grid-cols-2">
+                      <button
+                        v-for="localeOption in localeOptions"
+                        :key="localeOption.id"
+                        type="button"
+                        class="rounded-[var(--radius-sm)] px-3 py-2 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
+                        :class="localeOption.id === preferences.locale ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[var(--glow)]' : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'"
+                        @click="selectLocale(localeOption.id)"
+                      >
+                        <span class="block text-sm">{{ localeOption.label }}</span>
+                        <span class="block text-[11px] opacity-75">{{ localeOption.detail }}</span>
+                      </button>
+                    </div>
+                  </div>
+
                   <div class="grid gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-2 sm:grid-cols-3">
                     <button
                       v-for="mode in modeOptions"

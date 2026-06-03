@@ -34,6 +34,8 @@ const zhCN = {
       themeProfile: '主题方案',
       themeProfileDescription: '在已安装的设计方案之间切换。',
       modeDensity: '模式与密度',
+      locale: '语言',
+      localeDescription: '切换已迁移界面的显示语言。',
       layout: '布局',
       layoutDescription: '布局预设独立于工作区工具。',
       workspace: '工作区',
@@ -48,6 +50,16 @@ const zhCN = {
       providerDescription: '提供方接口已类型化，但默认不接入任何提供方。',
       on: '开',
       off: '关',
+      locales: {
+        zhCN: {
+          label: '中文',
+          detail: '默认语言'
+        },
+        enUS: {
+          label: 'English',
+          detail: '可选语言'
+        }
+      },
       modes: {
         light: {
           label: '浅色',
