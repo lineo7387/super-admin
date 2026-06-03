@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest an improvement or new capability.
+title: "feat(scope): "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or maintainer problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the change you want.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - admin app
+        - ui package
+        - theme package
+        - core package
+        - optional backend
+        - docs
+        - cli or generated project
+        - maintainer tooling
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Template boundary
+      description: Does this keep the default scaffold frontend-first and mock-backed?
+    validations:
+      required: true
