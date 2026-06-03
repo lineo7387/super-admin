@@ -36,6 +36,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const aiAvailability = shallowRef<AiAvailability>(defaultAiAvailability)
   const controlCenterOpen = shallowRef(false)
   const stageManagerOpen = shallowRef(false)
+  const aiAssistantOpen = shallowRef(false)
 
   const profileId = computed(() => state.profileId)
   const colorMode = computed(() => state.colorMode)
@@ -104,6 +105,14 @@ export const usePreferencesStore = defineStore('preferences', () => {
     stageManagerOpen.value = false
   }
 
+  function openAiAssistant(): void {
+    aiAssistantOpen.value = true
+  }
+
+  function closeAiAssistant(): void {
+    aiAssistantOpen.value = false
+  }
+
   function bindSystemColorMode(): void {
     const query = window.matchMedia('(prefers-color-scheme: dark)')
     const update = (): void => {
@@ -116,10 +125,13 @@ export const usePreferencesStore = defineStore('preferences', () => {
   return {
     providerMode,
     aiAvailability,
+    aiAssistantOpen,
+    closeAiAssistant,
     closeControlCenter,
     closeStageManager,
     controlCenterOpen,
     openControlCenter,
+    openAiAssistant,
     openStageManager,
     stageManagerOpen,
     systemMode,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, shallowRef } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { Home, Keyboard, Layers3, LogOut, Settings2 } from 'lucide-vue-next'
+import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { Keyboard, Layers3, LogOut, Settings2 } from 'lucide-vue-next'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
@@ -19,6 +19,7 @@ const router = useRouter()
 const session = useAuthSessionStore()
 const preferences = usePreferencesStore()
 const open = shallowRef(false)
+const menuRoot = useTemplateRef<HTMLElement>('menuRoot')
 
 const user = computed(() => session.currentUser)
 const initials = computed(() => {
@@ -47,6 +48,16 @@ function closeMenu(): void {
   open.value = false
 }
 
+function handlePointerDown(event: PointerEvent): void {
+  if (!open.value || !menuRoot.value || !(event.target instanceof Node)) {
+    return
+  }
+
+  if (!menuRoot.value.contains(event.target)) {
+    closeMenu()
+  }
+}
+
 function openControlCenter(): void {
   closeMenu()
   preferences.openControlCenter()
@@ -67,59 +78,65 @@ async function signOut(): Promise<void> {
     query: redirect ? { redirect } : undefined
   })
 }
+
+watch(
+  () => route.fullPath,
+  () => {
+    closeMenu()
+  }
+)
+
+onMounted(() => {
+  window.addEventListener('pointerdown', handlePointerDown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('pointerdown', handlePointerDown)
+})
 </script>
 
 <template>
-  <div v-if="user" class="relative" @keydown.esc="closeMenu">
+  <div v-if="user" ref="menuRoot" class="relative" @keydown.esc="closeMenu">
     <button
       type="button"
       class="group flex min-w-0 items-center border border-[var(--border)] bg-[var(--surface-raised)] text-left text-[var(--foreground)] shadow-[var(--card-shadow)] outline-none transition hover:border-[var(--border-strong)] focus-visible:shadow-[var(--focus-ring)]"
-      :class="isSidebar ? 'h-12 w-full gap-3 rounded-[var(--radius-md)] px-2.5' : 'size-11 justify-center rounded-[var(--radius-md)]'"
+      :class="isSidebar ? 'h-10 w-full gap-2 rounded-[var(--radius-md)] px-2' : 'size-10 justify-center rounded-[var(--radius-md)]'"
       :aria-expanded="open"
       aria-haspopup="menu"
       :title="triggerTitle"
       @click="open = !open"
     >
-      <span class="grid size-8 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-xs font-black text-[var(--primary-foreground)] shadow-[var(--glow)]">
+      <span class="grid size-7 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-[0.6875rem] font-black text-[var(--primary-foreground)] shadow-[var(--glow)]">
         {{ initials }}
       </span>
       <span v-if="isSidebar" class="min-w-0 leading-tight">
-        <span class="block truncate text-sm font-semibold">{{ user.name }}</span>
+        <span class="block truncate text-xs font-semibold">{{ user.name }}</span>
         <span class="block truncate text-[0.6875rem] text-[var(--muted-foreground)]">{{ user.role }}</span>
       </span>
     </button>
 
     <div
       v-if="open"
-      class="absolute z-[72] w-72 overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
+      class="absolute z-[72] w-60 overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
       :class="menuClass"
       role="menu"
       aria-label="Account menu"
     >
-      <div class="flex items-center gap-3 border-b border-[var(--border)] bg-[var(--surface-raised)] p-3">
-        <span class="grid size-11 shrink-0 place-items-center rounded-[var(--radius-md)] bg-[var(--primary)] text-sm font-black text-[var(--primary-foreground)] shadow-[var(--glow)]">
+      <div class="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--surface-raised)] p-2.5">
+        <span class="grid size-8 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-xs font-black text-[var(--primary-foreground)] shadow-[var(--glow)]">
           {{ initials }}
         </span>
         <div class="min-w-0">
-          <div class="truncate [font-family:var(--font-display)] text-lg leading-tight">{{ user.name }}</div>
+          <div class="truncate text-sm font-semibold leading-tight">{{ user.name }}</div>
           <div class="truncate text-xs text-[var(--muted-foreground)]">{{ user.email }}</div>
         </div>
       </div>
 
       <div class="grid border-b border-[var(--border)] p-1.5">
-        <RouterLink
-          class="account-menu-item"
-          role="menuitem"
-          to="/examples/dashboard"
-          @click="closeMenu"
-        >
-          <Home class="size-4" />
-          <span>Home</span>
-        </RouterLink>
         <button type="button" class="account-menu-item" role="menuitem" @click="openControlCenter">
           <Settings2 class="size-4" />
           <span class="min-w-0">
-            <span class="block">Personal Settings</span>
+            <span class="block">Settings</span>
             <span class="block truncate text-[0.6875rem] text-[var(--muted-foreground)]">Control Center</span>
           </span>
         </button>
@@ -151,11 +168,11 @@ async function signOut(): Promise<void> {
 <style scoped>
 .account-menu-item {
   display: flex;
-  min-height: 2.75rem;
+  min-height: 2.35rem;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   border-radius: var(--radius-sm);
-  padding: 0.55rem 0.75rem;
+  padding: 0.45rem 0.6rem;
   color: var(--foreground);
   text-align: left;
   transition:

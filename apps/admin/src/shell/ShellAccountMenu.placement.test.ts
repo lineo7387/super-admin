@@ -22,10 +22,11 @@ describe('shell account menu placement', () => {
     expect(topHeaderSource).toContain('<ShellAccountMenu variant="header"')
   })
 
-  it('keeps context in a dedicated side rail instead of blending into workspace content', () => {
-    expect(dualColumnSource).toContain('context-rail')
-    expect(topHeaderSource).toContain('context-rail')
-    expect(dualColumnSource).toContain('xl:grid-cols-[minmax(0,1fr)_320px]')
-    expect(topHeaderSource).toContain('xl:grid-cols-[minmax(0,1fr)_320px]')
+  it('does not keep context as a permanent layout rail', () => {
+    expect(triColumnSource).not.toContain('<slot name="context"')
+    expect(dualColumnSource).not.toContain('<slot name="context"')
+    expect(topHeaderSource).not.toContain('<slot name="context"')
+    expect(dualColumnSource).not.toContain('context-rail')
+    expect(topHeaderSource).not.toContain('context-rail')
   })
 })

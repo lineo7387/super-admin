@@ -11,4 +11,12 @@ describe('shell account menu', () => {
     expect(shellAccountMenuSource).toContain('Shortcuts')
     expect(shellAccountMenuSource).toContain('Sign out')
   })
+
+  it('keeps the account menu light and closes it when clicking outside', () => {
+    expect(shellAccountMenuSource).not.toContain('Home')
+    expect(shellAccountMenuSource).not.toContain('RouterLink')
+    expect(shellAccountMenuSource).toContain('menuRoot')
+    expect(shellAccountMenuSource).toContain("window.addEventListener('pointerdown'")
+    expect(shellAccountMenuSource).toContain("window.removeEventListener('pointerdown'")
+  })
 })

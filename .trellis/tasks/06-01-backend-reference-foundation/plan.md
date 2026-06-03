@@ -129,6 +129,8 @@ Plan the optional reference backend foundation for Super Admin. This task should
 - [x] Move Stage Manager from a permanent viewport button to the account menu and `Cmd/Ctrl+Shift+M` shortcut.
 - [x] Keep Control Center mounted once above layout presets while opening it from the account menu.
 - [x] Fix inline Context placement in dual-column/top-header so the card does not stretch into a blank side column.
+- [x] Hide the permanent Context rail and replace it with an on-demand AI Assistant floating panel.
+- [x] Lighten the account menu by removing duplicate Home navigation and adding outside-click close behavior.
 
 ## Phase 11: Maintainer Reference Integration Smoke
 

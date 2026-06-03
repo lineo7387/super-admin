@@ -5,7 +5,7 @@ import { usePreferencesStore } from '@/stores/preferences.store'
 import StageManagerOverlay from '@/workspace/StageManagerOverlay.vue'
 import WorkspaceRouterView from '@/workspace/WorkspaceRouterView.vue'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
-import ContextPanelHost from './ContextPanelHost.vue'
+import AiAssistantFloatingPanel from './AiAssistantFloatingPanel.vue'
 import DualColumnLayout from './layouts/DualColumnLayout.vue'
 import TopHeaderLayout from './layouts/TopHeaderLayout.vue'
 import TriColumnLayout from './layouts/TriColumnLayout.vue'
@@ -50,10 +50,8 @@ watch(
     <template #workspace>
       <WorkspaceRouterView />
     </template>
-    <template #context>
-      <ContextPanelHost />
-    </template>
   </component>
+  <AiAssistantFloatingPanel />
   <StageManagerOverlay />
   <GlobalPreferences trigger="none" />
 </template>

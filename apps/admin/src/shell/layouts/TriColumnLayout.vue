@@ -36,7 +36,7 @@ function isActive(item: ModuleNavItem): boolean {
 <template>
   <div class="super-texture min-h-screen bg-[var(--app-background)] text-[var(--foreground)]">
     <ShellHeader />
-    <div class="grid h-[calc(100vh-3.5rem)] grid-cols-[72px_minmax(168px,220px)_minmax(0,1fr)] xl:grid-cols-[72px_minmax(168px,220px)_minmax(0,1fr)_minmax(280px,340px)]">
+    <div class="grid h-[calc(100vh-3.5rem)] grid-cols-[72px_minmax(168px,220px)_minmax(0,1fr)]">
       <div class="flex flex-col items-center gap-4 border-r border-[var(--border)] bg-[var(--nav-background)] p-3">
         <div
           aria-label="Super Admin logo"
@@ -81,9 +81,6 @@ function isActive(item: ModuleNavItem): boolean {
           <slot name="workspace" />
         </AdminScrollArea>
       </main>
-      <section class="hidden border-l border-[var(--border)] bg-[var(--context-background)] xl:block">
-        <slot name="context" />
-      </section>
     </div>
   </div>
 </template>

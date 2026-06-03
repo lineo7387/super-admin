@@ -30,14 +30,9 @@ import ShellHeader from '../ShellHeader.vue'
       <main class="flex min-w-0 flex-col overflow-hidden bg-[var(--surface-sunken)]">
         <WorkspaceTabs placement="top" />
         <WorkspaceHeader />
-        <div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_320px]">
-          <AdminScrollArea class="min-h-0" view-class="p-4">
-            <slot name="workspace" />
-          </AdminScrollArea>
-          <section class="context-rail hidden min-h-0 border-l border-[var(--border)] bg-[var(--context-background)] xl:block">
-            <slot name="context" />
-          </section>
-        </div>
+        <AdminScrollArea class="flex-1" view-class="p-4">
+          <slot name="workspace" />
+        </AdminScrollArea>
       </main>
     </div>
   </div>

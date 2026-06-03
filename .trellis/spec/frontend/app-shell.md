@@ -16,9 +16,9 @@ Pages own content regions and feature UI.
 
 ## Built-In Layouts
 
-- `tri-column`: first-level dock + active tree nav + workspace + context panel.
-- `dual-column`: sidebar + workspace; context becomes a dedicated right rail on wide screens and can degrade to drawer/sheet on narrow screens.
-- `top-header`: header navigation + workspace; context becomes a dedicated right rail on wide screens and can degrade to sheet/popover/below content on narrow screens.
+- `tri-column`: first-level dock + active tree nav + workspace.
+- `dual-column`: sidebar + workspace.
+- `top-header`: header navigation + workspace.
 
 ## Page Regions
 
@@ -166,7 +166,14 @@ The Control Center trigger and modal must be mounted above layout preset compone
 - `dual-column`: account row at the bottom of the sidebar/nav rail.
 - `top-header`: compact avatar button in the header actions slot.
 
-`ShellAccountMenu` owns the current user summary, Home link, Control Center entry, shortcut/Stage Manager entry, and logout action. Logout stays behind the user click and must not be a persistent header button.
+`ShellAccountMenu` owns the current user summary, Control Center entry, shortcut/Stage Manager entry, and logout action. Keep it light: do not duplicate primary navigation such as Home/Dashboard inside this menu. Logout stays behind the user click and must not be a persistent header button.
+
+The account menu must close when:
+
+- the user clicks outside the menu
+- the user presses `Esc`
+- the user chooses a menu action
+- the route changes
 
 Stage Manager should not render a permanent viewport button. When `preferences.stageManager.enabled` is true, open it from the account menu and the `Cmd/Ctrl+Shift+M` shell shortcut. The Control Center still owns the enabled/disabled preference.
 
@@ -193,35 +200,32 @@ Stage Manager should not render a permanent viewport button. When `preferences.s
 
 **Check**: Verify tri-column, dual-column, and top-header layouts after login. The header should not accumulate separate settings, activity, Stage Manager, user, and logout controls.
 
-### Context Rail Contract
+### AI Assistant Floating Surface Contract
 
-`tri-column` owns a full-height persistent context panel. `dual-column` and `top-header` should still keep context visually separate on wide screens by rendering it as a dedicated right rail beside the workspace content.
+The old Context rail is reserved for the future AI assistant experience and must not be a permanent layout rail by default. The default scaffold should prioritize the workspace content and expose AI assistance as an on-demand floating surface.
 
-The context rail must not be placed inside the same `AdminScrollArea` content grid as the page body. Doing that makes the Context surface blend into the primary content or stretch like an accidental card column. Instead, split the workspace body into a scrollable primary content area and a sibling `context-rail` with its own `bg-[var(--context-background)]` and left border.
+`AiAssistantFloatingPanel` is mounted once above layout presets from `AppShell`. Its open state is runtime-only Pinia UI state, not a persisted preference. Until a real provider exists, the panel should show page context and an explicit AI-provider unavailable state.
 
 **Correct shape**:
 
 ```vue
-<div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_320px]">
-  <AdminScrollArea class="min-h-0" view-class="p-4">
-    <slot name="workspace" />
-  </AdminScrollArea>
-  <section class="context-rail hidden min-h-0 border-l border-[var(--border)] bg-[var(--context-background)] xl:block">
-    <slot name="context" />
-  </section>
-</div>
+<component :is="activeLayout">
+  <template #workspace>
+    <WorkspaceRouterView />
+  </template>
+</component>
+<AiAssistantFloatingPanel />
 ```
 
 **Wrong shape**:
 
 ```vue
-<AdminScrollArea view-class="grid grid-cols-[minmax(0,1fr)_320px]">
-  <slot name="workspace" />
-  <slot name="context" />
-</AdminScrollArea>
+<section class="context-rail">
+  <ContextPanelHost />
+</section>
 ```
 
-**Check**: In `dual-column` and `top-header`, the Context area should read as a complete side hint rail with a clear boundary from the primary workspace content.
+**Check**: After login, tri-column, dual-column, and top-header layouts should not reserve a permanent right-side Context column. The AI Assistant should appear only after clicking its floating trigger and should close without changing layout dimensions.
 
 ## Module Navigation Tree
 
