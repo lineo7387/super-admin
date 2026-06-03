@@ -11,7 +11,7 @@ export const authRoutes: RouteRecordRaw[] = [
     component: () => import('@/modules/auth/LoginPage.vue'),
     meta: {
       authLayout: true,
-      workspaceTitle: 'Sign in'
+      workspaceTitle: '登录'
     }
   },
   {
@@ -20,7 +20,7 @@ export const authRoutes: RouteRecordRaw[] = [
     component: () => import('@/modules/auth/RegisterPage.vue'),
     meta: {
       authLayout: true,
-      workspaceTitle: 'Create account'
+      workspaceTitle: '创建账户'
     }
   }
 ]

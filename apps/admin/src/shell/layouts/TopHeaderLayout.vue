@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { findActiveModule } from '@super-admin/core'
 import { AdminScrollArea } from '@super-admin/ui'
+import { translateModuleName } from '@/i18n/navigation'
 import { registeredModules } from '@/modules/module-registry'
 import WorkspaceHeader from '@/workspace/WorkspaceHeader.vue'
 import WorkspaceTabs from '@/workspace/WorkspaceTabs.vue'
@@ -11,8 +13,10 @@ import ShellAccountMenu from '../ShellAccountMenu.vue'
 import ShellHeader from '../ShellHeader.vue'
 
 const route = useRoute()
+const { t } = useI18n()
 const activeModule = computed(() => findActiveModule(registeredModules, route.path))
 const subNavItems = computed(() => activeModule.value?.nav.children ?? [])
+const activeModuleName = computed(() => translateModuleName(t, activeModule.value, t('shell.navigation.fallback')))
 </script>
 
 <template>
@@ -25,8 +29,8 @@ const subNavItems = computed(() => activeModule.value?.nav.children ?? [])
     <div class="grid h-[calc(100vh-3.5rem)] grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(212px,260px)_minmax(0,1fr)]">
       <aside class="hidden min-h-0 border-r border-[var(--border)] bg-[var(--nav-background)] p-3 lg:block">
         <div class="mb-4 px-1">
-          <div class="[font-family:var(--font-display)] text-base text-[var(--foreground)]">{{ activeModule?.name ?? 'Navigation' }}</div>
-          <div class="text-xs text-[var(--muted-foreground)]">Template directory</div>
+          <div class="[font-family:var(--font-display)] text-base text-[var(--foreground)]">{{ activeModuleName }}</div>
+          <div class="text-xs text-[var(--muted-foreground)]">{{ t('shell.navigation.templateDirectory') }}</div>
         </div>
         <PrimaryNav v-if="subNavItems.length > 0" :items="subNavItems" :max-depth="2" />
       </aside>

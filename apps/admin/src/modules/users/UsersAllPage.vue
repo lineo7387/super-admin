@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Plus, Search, SlidersHorizontal } from 'lucide-vue-next'
 import { computed, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminButton, AdminSelect, AdminTableFrame, AdminTableToolbar, AdminTextInput, StatusPill } from '@super-admin/ui'
 import UsersTable from './components/UsersTable.vue'
 import UserDrawerForm from './components/UserDrawerForm.vue'
@@ -8,6 +9,7 @@ import { useUsersQuery } from './users.queries'
 import type { UserListParams, UserPreviewScenario, UserRecord, UserStatusFilter } from './users.types'
 
 const pageSize = 4
+const { t } = useI18n()
 const keyword = shallowRef('')
 const status = shallowRef<UserStatusFilter>('all')
 const scenario = shallowRef<UserPreviewScenario>('normal')
@@ -18,19 +20,26 @@ const selectedUser = shallowRef<UserRecord | undefined>()
 const isDrawerOpen = shallowRef(false)
 const lastSavedName = shallowRef('')
 
-const statusOptions = [
-  { value: 'all', label: 'All statuses' },
-  { value: 'active', label: 'Active' },
-  { value: 'review', label: 'Review' },
-  { value: 'paused', label: 'Paused' }
-]
+const statusOptions = computed(() => [
+  { value: 'all', label: t('users.all.allStatuses') },
+  { value: 'active', label: t('users.all.active') },
+  { value: 'review', label: t('users.all.review') },
+  { value: 'paused', label: t('users.all.paused') }
+])
 
-const scenarioOptions = [
-  { value: 'normal', label: 'Normal' },
-  { value: 'loading', label: 'Loading' },
-  { value: 'empty', label: 'Empty' },
-  { value: 'error', label: 'Error' }
-]
+const scenarioOptions = computed(() => [
+  { value: 'normal', label: t('users.all.normal') },
+  { value: 'loading', label: t('users.all.loading') },
+  { value: 'empty', label: t('users.all.empty') },
+  { value: 'error', label: t('users.all.error') }
+])
+const columnLabels = computed<Record<string, string>>(() => ({
+  email: t('users.columns.email'),
+  name: t('users.columns.name'),
+  region: t('users.columns.region'),
+  role: t('users.columns.role'),
+  status: t('users.columns.status')
+}))
 
 const queryParams = computed<UserListParams>(() => ({
   page: page.value,
@@ -89,7 +98,7 @@ function handleSaved(input: { name: string }): void {
 
 <template>
   <div class="grid gap-4">
-    <AdminTableFrame title="All Users" description="Mock-backed CRUD example with module-owned page, query, API adapter, and type boundaries.">
+    <AdminTableFrame :title="t('users.all.title')" :description="t('users.all.description')">
       <template #toolbar>
         <AdminTableToolbar>
           <template #filters>
@@ -98,7 +107,7 @@ function handleSaved(input: { name: string }): void {
               <input
                 v-model="keyword"
                 class="min-w-0 flex-1 bg-transparent text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
-                placeholder="Search users"
+                :placeholder="t('users.all.search')"
                 @input="resetPage"
               />
             </label>
@@ -108,21 +117,21 @@ function handleSaved(input: { name: string }): void {
           <template #actions>
             <AdminButton variant="secondary" size="sm" @click="density = density === 'compact' ? 'comfortable' : 'compact'">
               <SlidersHorizontal class="size-4" />
-              {{ density === 'compact' ? 'Compact' : 'Comfortable' }}
+              {{ density === 'compact' ? t('users.all.compact') : t('users.all.comfortable') }}
             </AdminButton>
             <AdminButton variant="primary" size="sm" @click="openCreate">
               <Plus class="size-4" />
-              New user
+              {{ t('users.all.newUser') }}
             </AdminButton>
           </template>
         </AdminTableToolbar>
         <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-[var(--muted-foreground)]">
-          <span>Columns</span>
+          <span>{{ t('users.all.columns') }}</span>
           <label v-for="column in ['name', 'email', 'role', 'region', 'status']" :key="column" class="inline-flex items-center gap-1">
             <input type="checkbox" :checked="visibleColumns.includes(column)" @change="toggleColumn(column)" />
-            <span class="capitalize">{{ column }}</span>
+            <span>{{ columnLabels[column] ?? column }}</span>
           </label>
-          <StatusPill v-if="lastSavedName" :label="`Saved ${lastSavedName}`" tone="success" />
+          <StatusPill v-if="lastSavedName" :label="t('users.all.saved', { name: lastSavedName })" tone="success" />
         </div>
       </template>
       <UsersTable

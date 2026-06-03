@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminDrawer, AdminField, AdminFormFooter, AdminSelect, AdminTextInput, AdminTextarea } from '@super-admin/ui'
 import type { UserFormErrors, UserFormInput, UserRecord } from '../users.types'
 import { validateUserInput } from '../users.validation'
@@ -18,6 +19,7 @@ const emit = defineEmits<{
   close: []
   saved: [input: UserFormInput]
 }>()
+const { t } = useI18n()
 
 const form = reactive<UserFormInput>({
   name: '',
@@ -37,24 +39,24 @@ const initial = reactive<UserFormInput>({
   notes: ''
 })
 
-const title = computed(() => (props.user ? `Edit ${props.user.name}` : 'Create user'))
-const description = computed(() => (props.user ? 'Update this mock user profile.' : 'Create a mock user profile for the template.'))
+const title = computed(() => (props.user ? t('users.form.editTitle', { name: props.user.name }) : t('users.form.createTitle')))
+const description = computed(() => (props.user ? t('users.form.editDescription') : t('users.form.createDescription')))
 const isDirty = computed(() => JSON.stringify(form) !== JSON.stringify(initial))
 
-const roleOptions = [
-  { value: '', label: 'Select role' },
-  { value: 'Owner', label: 'Owner' },
-  { value: 'Operator', label: 'Operator' },
-  { value: 'Auditor', label: 'Auditor' },
-  { value: 'Analyst', label: 'Analyst' }
-]
+const roleOptions = computed(() => [
+  { value: '', label: t('users.form.selectRole') },
+  { value: 'Owner', label: t('users.roles.owner') },
+  { value: 'Operator', label: t('users.roles.operator') },
+  { value: 'Auditor', label: t('users.roles.auditor') },
+  { value: 'Analyst', label: t('users.roles.analyst') }
+])
 
-const statusOptions = [
-  { value: '', label: 'Select status' },
-  { value: 'active', label: 'Active' },
-  { value: 'review', label: 'Review' },
-  { value: 'paused', label: 'Paused' }
-]
+const statusOptions = computed(() => [
+  { value: '', label: t('users.form.selectStatus') },
+  { value: 'active', label: t('users.statuses.active') },
+  { value: 'review', label: t('users.statuses.review') },
+  { value: 'paused', label: t('users.statuses.paused') }
+])
 
 function toInput(user?: UserRecord): UserFormInput {
   return {
@@ -93,7 +95,7 @@ function resetForm(): void {
 }
 
 function submit(): void {
-  const nextErrors = validateUserInput(form)
+  const nextErrors = validateUserInput(form, t)
   assignErrors(nextErrors)
   if (Object.keys(nextErrors).length > 0) {
     return
@@ -116,25 +118,25 @@ watch(
 <template>
   <AdminDrawer :open="open" :title="title" :description="description" @close="emit('close')">
     <form class="grid gap-4" @submit.prevent="submit">
-      <AdminField label="Name" for="user-name" :error="errors.name">
+      <AdminField :label="t('users.form.name')" for="user-name" :error="errors.name">
         <AdminTextInput id="user-name" v-model="form.name" placeholder="Mira Chen" :invalid="Boolean(errors.name)" />
       </AdminField>
-      <AdminField label="Email" for="user-email" :error="errors.email">
+      <AdminField :label="t('users.form.email')" for="user-email" :error="errors.email">
         <AdminTextInput id="user-email" v-model="form.email" type="email" placeholder="mira@example.com" :invalid="Boolean(errors.email)" />
       </AdminField>
       <div class="grid gap-4 sm:grid-cols-2">
-        <AdminField label="Role" for="user-role" :error="errors.role">
+        <AdminField :label="t('users.form.role')" for="user-role" :error="errors.role">
           <AdminSelect id="user-role" v-model="form.role" :invalid="Boolean(errors.role)" :options="roleOptions" />
         </AdminField>
-        <AdminField label="Status" for="user-status" :error="errors.status">
+        <AdminField :label="t('users.form.status')" for="user-status" :error="errors.status">
           <AdminSelect id="user-status" v-model="form.status" :invalid="Boolean(errors.status)" :options="statusOptions" />
         </AdminField>
       </div>
-      <AdminField label="Region" for="user-region" help="Keep this module-owned; your backend can provide the allowed regions.">
+      <AdminField :label="t('users.form.region')" for="user-region" :help="t('users.form.regionHelp')">
         <AdminTextInput id="user-region" v-model="form.region" placeholder="Singapore" />
       </AdminField>
-      <AdminField label="Notes" for="user-notes" help="Optional operational context.">
-        <AdminTextarea id="user-notes" v-model="form.notes" placeholder="Add review notes or handoff details." />
+      <AdminField :label="t('users.form.notes')" for="user-notes" :help="t('users.form.notesHelp')">
+        <AdminTextarea id="user-notes" v-model="form.notes" :placeholder="t('users.form.notesPlaceholder')" />
       </AdminField>
     </form>
     <template #footer>

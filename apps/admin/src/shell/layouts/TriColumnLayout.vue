@@ -2,9 +2,11 @@
 import { BookOpen, Circle, Palette } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { findActiveModule, isModuleNavItemActive } from '@super-admin/core'
 import type { ModuleNavItem } from '@super-admin/core'
 import { AdminScrollArea } from '@super-admin/ui'
+import { translateModuleName, translateNavItemLabel } from '@/i18n/navigation'
 import { registeredModules } from '@/modules/module-registry'
 import WorkspaceHeader from '@/workspace/WorkspaceHeader.vue'
 import WorkspaceTabs from '@/workspace/WorkspaceTabs.vue'
@@ -13,8 +15,10 @@ import ShellAccountMenu from '../ShellAccountMenu.vue'
 import ShellHeader from '../ShellHeader.vue'
 
 const route = useRoute()
+const { t } = useI18n()
 const activeModule = computed(() => findActiveModule(registeredModules, route.path))
 const subNavItems = computed(() => activeModule.value?.nav.children ?? [])
+const activeModuleName = computed(() => translateModuleName(t, activeModule.value, t('shell.navigation.fallback')))
 
 const icons = {
   examples: BookOpen,
@@ -31,6 +35,10 @@ function getIcon(icon: string | undefined): object {
 function isActive(item: ModuleNavItem): boolean {
   return isModuleNavItemActive(item, route.path)
 }
+
+function navLabel(item: ModuleNavItem): string {
+  return translateNavItemLabel(t, item)
+}
 </script>
 
 <template>
@@ -46,12 +54,12 @@ function isActive(item: ModuleNavItem): boolean {
           <span class="[font-family:var(--font-display)] text-base font-black">SA</span>
           <span class="absolute -right-3 top-1 h-px w-10 rotate-45 bg-[var(--primary-foreground)] opacity-40" />
         </div>
-        <nav aria-label="Primary template navigation" class="mt-2 grid gap-2">
+        <nav :aria-label="t('shell.navigation.primary')" class="mt-2 grid gap-2">
           <RouterLink
             v-for="module in registeredModules"
             :key="module.id"
             :to="module.nav.path"
-            :title="module.nav.label"
+            :title="navLabel(module.nav)"
             class="grid size-11 place-items-center rounded-[var(--radius-md)] border text-[var(--muted-foreground)] transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
             :class="
               isActive(module.nav)
@@ -60,7 +68,7 @@ function isActive(item: ModuleNavItem): boolean {
             "
           >
             <component :is="getIcon(module.nav.icon)" class="size-5" />
-            <span class="sr-only">{{ module.nav.label }}</span>
+            <span class="sr-only">{{ navLabel(module.nav) }}</span>
           </RouterLink>
         </nav>
         <div class="mt-auto">
@@ -69,8 +77,8 @@ function isActive(item: ModuleNavItem): boolean {
       </div>
       <aside class="min-w-0 border-r border-[var(--border)] bg-[var(--nav-background)] p-3">
         <div class="mb-4 px-1">
-          <div class="[font-family:var(--font-display)] text-base text-[var(--foreground)]">{{ activeModule?.name ?? 'Navigation' }}</div>
-          <div class="text-xs text-[var(--muted-foreground)]">Template directory</div>
+          <div class="[font-family:var(--font-display)] text-base text-[var(--foreground)]">{{ activeModuleName }}</div>
+          <div class="text-xs text-[var(--muted-foreground)]">{{ t('shell.navigation.templateDirectory') }}</div>
         </div>
         <PrimaryNav v-if="subNavItems.length > 0" :items="subNavItems" :max-depth="2" />
       </aside>

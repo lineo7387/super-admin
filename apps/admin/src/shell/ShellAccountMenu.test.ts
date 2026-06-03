@@ -6,10 +6,10 @@ describe('shell account menu', () => {
     expect(shellAccountMenuSource).toContain("import { useAuthSessionStore } from '@/stores/auth-session.store'")
     expect(shellAccountMenuSource).toContain('currentUser')
     expect(shellAccountMenuSource).toContain('clearSession')
-    expect(shellAccountMenuSource).toContain('Control Center')
-    expect(shellAccountMenuSource).toContain('Stage Manager')
-    expect(shellAccountMenuSource).toContain('Shortcuts')
-    expect(shellAccountMenuSource).toContain('Sign out')
+    expect(shellAccountMenuSource).toContain('shell.account.controlCenter')
+    expect(shellAccountMenuSource).toContain('shell.account.stageManagerShortcut')
+    expect(shellAccountMenuSource).toContain('shell.account.shortcuts')
+    expect(shellAccountMenuSource).toContain('shell.account.signOut')
   })
 
   it('keeps the account menu light and closes it when clicking outside', () => {

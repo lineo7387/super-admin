@@ -2,10 +2,12 @@
 import { Bot, PanelRight, Sparkles, X } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { AdminButton, StatusPill } from '@super-admin/ui'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
 const route = useRoute()
+const { t } = useI18n()
 const preferences = usePreferencesStore()
 
 const aiStatusMessage = computed(() => {
@@ -28,7 +30,7 @@ const aiStatusMessage = computed(() => {
       variant="primary"
       size="icon"
       class="shadow-[var(--panel-shadow)]"
-      title="Open AI Assistant"
+      :title="t('shell.assistant.open')"
       @click="preferences.openAiAssistant()"
     >
       <Sparkles class="size-4" />
@@ -48,11 +50,11 @@ const aiStatusMessage = computed(() => {
             <Bot class="size-4" />
           </span>
           <div class="min-w-0">
-            <h2 id="ai-assistant-title" class="[font-family:var(--font-display)] text-base leading-tight">AI Assistant</h2>
+            <h2 id="ai-assistant-title" class="[font-family:var(--font-display)] text-base leading-tight">{{ t('shell.assistant.title') }}</h2>
             <p class="truncate text-xs text-[var(--muted-foreground)]">{{ route.meta.title }}</p>
           </div>
         </div>
-        <AdminButton variant="ghost" size="icon" title="Close AI Assistant" @click="preferences.closeAiAssistant()">
+        <AdminButton variant="ghost" size="icon" :title="t('shell.assistant.close')" @click="preferences.closeAiAssistant()">
           <X class="size-4" />
         </AdminButton>
       </header>
@@ -62,22 +64,22 @@ const aiStatusMessage = computed(() => {
           <div>
             <div class="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
               <PanelRight class="size-4 text-[var(--primary)]" />
-              Page context
+              {{ t('shell.assistant.pageContext') }}
             </div>
             <p class="mt-1 text-xs leading-5 text-[var(--muted-foreground)]">
               {{ route.meta.description }}
             </p>
           </div>
-          <StatusPill label="Hidden" />
+          <StatusPill :label="t('shell.assistant.hidden')" />
         </div>
 
         <div class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] p-3">
           <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-2 text-sm text-[var(--foreground)]">
               <Bot class="size-4 text-[var(--warning)]" />
-              AI Provider
+              {{ t('shell.assistant.provider') }}
             </div>
-            <StatusPill label="Unavailable" tone="warning" />
+            <StatusPill :label="t('shell.assistant.unavailable')" tone="warning" />
           </div>
           <p class="mt-2 text-xs leading-5 text-[var(--muted-foreground)]">
             {{ aiStatusMessage }}

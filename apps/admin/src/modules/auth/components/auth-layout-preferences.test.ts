@@ -12,7 +12,7 @@ describe('auth layout preferences entry', () => {
   it('mounts the auth preferences trigger once outside profile-specific branches', () => {
     const preferenceTriggerMatches = authLayoutSource.match(/<GlobalPreferences trigger="auth"/g) ?? []
     const firstPreferenceTriggerIndex = authLayoutSource.indexOf('<GlobalPreferences trigger="auth"')
-    const firstProfileBranchIndex = authLayoutSource.indexOf('v-if="profile ===')
+    const firstProfileBranchIndex = authLayoutSource.indexOf("v-if=\"preferences.profileId ===")
 
     expect(preferenceTriggerMatches).toHaveLength(1)
     expect(firstPreferenceTriggerIndex).toBeGreaterThan(-1)
@@ -27,8 +27,8 @@ describe('auth layout preferences entry', () => {
 
   it('keeps the industrial title inside the left control composition', () => {
     const industrialSection = authLayoutSource.slice(
-      authLayoutSource.indexOf("v-if=\"profile === 'industrial'\""),
-      authLayoutSource.indexOf("v-else-if=\"profile === 'cyberpunk'\"")
+      authLayoutSource.indexOf("v-if=\"preferences.profileId === 'industrial'\""),
+      authLayoutSource.indexOf("v-else-if=\"preferences.profileId === 'cyberpunk'\"")
     )
     const titleIndex = industrialSection.indexOf('{{ props.title }}')
     const railIndex = industrialSection.indexOf('auth-industrial__rail')

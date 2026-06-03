@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { LayoutDashboard } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 import { AdminScrollArea } from '@super-admin/ui'
 import WorkspaceHeader from '@/workspace/WorkspaceHeader.vue'
 import WorkspaceTabs from '@/workspace/WorkspaceTabs.vue'
 import PrimaryNav from '../PrimaryNav.vue'
 import ShellAccountMenu from '../ShellAccountMenu.vue'
 import ShellHeader from '../ShellHeader.vue'
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -19,7 +22,7 @@ import ShellHeader from '../ShellHeader.vue'
           </div>
           <div class="min-w-0">
             <div class="[font-family:var(--font-display)] text-base">Super Admin</div>
-            <div class="truncate text-xs text-[var(--muted-foreground)]">Operator command shell</div>
+            <div class="truncate text-xs text-[var(--muted-foreground)]">{{ t('shell.navigation.operatorShell') }}</div>
           </div>
         </div>
         <PrimaryNav />

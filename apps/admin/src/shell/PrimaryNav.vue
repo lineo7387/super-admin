@@ -2,8 +2,10 @@
 import { BookOpen, Boxes, ChevronDown, ChevronRight, Circle, Gauge, Palette, ShieldCheck, Users } from 'lucide-vue-next'
 import { computed, onMounted, onUnmounted, reactive, shallowRef, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { getVisibleModuleNavTree, isModuleNavItemActive } from '@super-admin/core'
 import type { ModuleNavItem } from '@super-admin/core'
+import { translateNavItemLabel } from '@/i18n/navigation'
 import { registeredModules } from '@/modules/module-registry'
 
 const props = withDefaults(
@@ -22,6 +24,7 @@ const props = withDefaults(
 )
 
 const route = useRoute()
+const { t } = useI18n()
 
 const icons = {
   examples: BookOpen,
@@ -54,6 +57,10 @@ function visibleChildren(item: ModuleNavItem): ModuleNavItem[] {
 
 function isActive(item: ModuleNavItem): boolean {
   return isModuleNavItemActive(item, route.path)
+}
+
+function navLabel(item: ModuleNavItem): string {
+  return translateNavItemLabel(t, item)
 }
 
 function shouldRenderAsButton(item: ModuleNavItem): boolean {
@@ -136,11 +143,11 @@ onUnmounted(() => {
             ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)] font-medium'
             : 'border-transparent bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'
         ]"
-        :title="props.iconOnly ? item.label : undefined"
+        :title="props.iconOnly ? navLabel(item) : undefined"
         @click="handleItemClick(item, $event)"
       >
         <component :is="getIcon(item.icon)" class="size-4" />
-        <span v-if="!props.iconOnly" class="min-w-0 flex-1 text-left">{{ item.label }}</span>
+        <span v-if="!props.iconOnly" class="min-w-0 flex-1 text-left">{{ navLabel(item) }}</span>
         <ChevronRight
           v-if="!props.iconOnly && props.orientation === 'vertical' && visibleChildren(item).length > 0"
           class="size-3 transition-transform duration-200"
@@ -167,7 +174,7 @@ onUnmounted(() => {
             "
             @click="handleNestedItemClick(child, $event)"
           >
-            <span>{{ child.label }}</span>
+            <span>{{ navLabel(child) }}</span>
             <ChevronRight v-if="visibleChildren(child).length > 0" class="size-3" />
           </component>
           <div v-if="visibleChildren(child).length > 0 && isExpanded(child)" class="ml-3 grid gap-1 border-l border-[var(--border)] pl-2">
@@ -182,7 +189,7 @@ onUnmounted(() => {
                   : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'
               "
             >
-              {{ grandchild.label }}
+              {{ navLabel(grandchild) }}
             </RouterLink>
           </div>
         </div>
@@ -207,7 +214,7 @@ onUnmounted(() => {
             "
             @click="handleNestedItemClick(child, $event)"
           >
-            <span>{{ child.label }}</span>
+            <span>{{ navLabel(child) }}</span>
             <ChevronRight v-if="visibleChildren(child).length > 0" class="size-3" />
           </component>
           <div v-if="visibleChildren(child).length > 0 && isExpanded(child)" class="ml-3 grid gap-1 border-l border-[var(--border)] pl-2 my-1">
@@ -222,7 +229,7 @@ onUnmounted(() => {
                   : 'text-[var(--muted-foreground)] hover:bg-[var(--surface)] hover:text-[var(--foreground)]'
               "
             >
-              {{ grandchild.label }}
+              {{ navLabel(grandchild) }}
             </RouterLink>
           </div>
         </div>

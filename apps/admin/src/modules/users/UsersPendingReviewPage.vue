@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminTableFrame } from '@super-admin/ui'
 import UsersTable from './components/UsersTable.vue'
 import { useUsersQuery } from './users.queries'
 import type { UserListParams } from './users.types'
 
 const pageSize = 4
+const { t } = useI18n()
 const page = shallowRef(1)
 const queryParams = computed<UserListParams>(() => ({
   page: page.value,
@@ -35,7 +37,7 @@ function retry(): void {
 </script>
 
 <template>
-  <AdminTableFrame title="Pending Review" description="A lightweight third-level route using the same table primitive.">
+  <AdminTableFrame :title="t('users.secondary.pendingTitle')" :description="t('users.secondary.pendingDescription')">
     <UsersTable
       :users="users"
       :total="total"

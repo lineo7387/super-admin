@@ -222,10 +222,10 @@ describe('users validation', () => {
         notes: ''
       })
     ).toEqual({
-      name: 'Name is required.',
-      email: 'Enter a valid email address.',
-      role: 'Role is required.',
-      status: 'Status is required.'
+      name: '请输入姓名。',
+      email: '请输入有效的邮箱地址。',
+      role: '请选择角色。',
+      status: '请选择状态。'
     })
   })
 })

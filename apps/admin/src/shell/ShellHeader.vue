@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { LayoutDashboard, Search } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 import PrimaryNav from './PrimaryNav.vue'
 
 withDefaults(
@@ -14,6 +15,8 @@ withDefaults(
     navDepth: 3
   }
 )
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -24,18 +27,18 @@ withDefaults(
       </div>
       <div class="min-w-0">
         <div class="truncate [font-family:var(--font-display)] text-base text-[var(--foreground)]">Super Admin</div>
-        <div class="truncate text-xs text-[var(--muted-foreground)]">Adaptive control workspace</div>
+        <div class="truncate text-xs text-[var(--muted-foreground)]">{{ t('shell.navigation.operatorShell') }}</div>
       </div>
     </div>
     <div v-else class="hidden min-w-0 items-center gap-2 text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)] md:flex">
       <span class="size-2 rounded-full bg-[var(--primary)] shadow-[var(--glow)]" />
-      Runtime Shell
+      {{ t('shell.navigation.operatorShell') }}
     </div>
 
     <PrimaryNav v-if="nav === 'horizontal'" orientation="horizontal" :max-depth="navDepth" />
     <div v-else class="hidden h-9 min-w-80 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3 text-sm text-[var(--muted-foreground)] md:flex">
       <Search class="size-4" />
-      <span>Search modules, jobs, users</span>
+      <span>{{ t('users.all.search') }}</span>
     </div>
 
     <div class="flex min-w-0 items-center justify-end gap-2">

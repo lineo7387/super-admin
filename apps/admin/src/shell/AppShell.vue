@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/stores/preferences.store'
+import { translateRouteTitle } from '@/i18n/navigation'
 import StageManagerOverlay from '@/workspace/StageManagerOverlay.vue'
 import WorkspaceRouterView from '@/workspace/WorkspaceRouterView.vue'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
@@ -13,6 +15,7 @@ import GlobalPreferences from './preferences/GlobalPreferences.vue'
 import { useShellShortcuts } from './shell-shortcuts'
 
 const route = useRoute()
+const { t } = useI18n()
 const preferences = usePreferencesStore()
 const tabs = useWorkspaceTabsStore()
 
@@ -36,7 +39,7 @@ watch(
     }
 
     tabs.openTab({
-      title: route.meta.workspaceTitle ?? route.meta.title,
+      title: translateRouteTitle(t, route.path, route.meta.workspaceTitle ?? route.meta.title),
       routePath: route.fullPath,
       keepAlive: route.meta.keepAlive ?? { enabled: true }
     })

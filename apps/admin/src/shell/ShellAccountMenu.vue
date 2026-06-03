@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Keyboard, Layers3, LogOut, Settings2 } from 'lucide-vue-next'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
 import { usePreferencesStore } from '@/stores/preferences.store'
@@ -16,6 +17,7 @@ const props = withDefaults(
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const session = useAuthSessionStore()
 const preferences = usePreferencesStore()
 const open = shallowRef(false)
@@ -35,7 +37,9 @@ const initials = computed(() => {
     .join('')
 })
 const isSidebar = computed(() => props.variant === 'sidebar')
-const triggerTitle = computed(() => (user.value ? `${user.value.name} account menu` : 'Account menu'))
+const triggerTitle = computed(() =>
+  user.value ? t('shell.account.menuFor', { name: user.value.name }) : t('shell.account.menu')
+)
 const menuClass = computed(() => {
   if (props.variant === 'header') {
     return 'right-0 top-[calc(100%+0.55rem)]'
@@ -120,7 +124,7 @@ onUnmounted(() => {
       class="absolute z-[72] w-60 overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
       :class="menuClass"
       role="menu"
-      aria-label="Account menu"
+      :aria-label="t('shell.account.menu')"
     >
       <div class="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--surface-raised)] p-2.5">
         <span class="grid size-8 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-xs font-black text-[var(--primary-foreground)] shadow-[var(--glow)]">
@@ -136,8 +140,8 @@ onUnmounted(() => {
         <button type="button" class="account-menu-item" role="menuitem" @click="openControlCenter">
           <Settings2 class="size-4" />
           <span class="min-w-0">
-            <span class="block">Settings</span>
-            <span class="block truncate text-[0.6875rem] text-[var(--muted-foreground)]">Control Center</span>
+            <span class="block">{{ t('shell.account.settings') }}</span>
+            <span class="block truncate text-[0.6875rem] text-[var(--muted-foreground)]">{{ t('shell.account.controlCenter') }}</span>
           </span>
         </button>
       </div>
@@ -146,9 +150,9 @@ onUnmounted(() => {
         <button type="button" class="account-menu-item" role="menuitem" :disabled="!preferences.stageManager.enabled" @click="openStageManager">
           <Keyboard class="size-4" />
           <span class="min-w-0">
-            <span class="block">Shortcuts</span>
+            <span class="block">{{ t('shell.account.shortcuts') }}</span>
             <span class="block truncate text-[0.6875rem] text-[var(--muted-foreground)]">
-              Stage Manager - Cmd/Ctrl+Shift+M
+              {{ t('shell.account.stageManagerShortcut') }}
             </span>
           </span>
           <Layers3 class="ml-auto size-4 text-[var(--primary)]" />
@@ -158,7 +162,7 @@ onUnmounted(() => {
       <div class="grid p-1.5">
         <button type="button" class="account-menu-item account-menu-item--danger" role="menuitem" @click="signOut">
           <LogOut class="size-4" />
-          <span>Sign out</span>
+          <span>{{ t('shell.account.signOut') }}</span>
         </button>
       </div>
     </div>

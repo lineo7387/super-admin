@@ -2,7 +2,9 @@
 import { ChevronLeft, ChevronRight, Pin, X } from 'lucide-vue-next'
 import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { AdminScrollArea } from '@super-admin/ui'
+import { translateRouteTitle } from '@/i18n/navigation'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 
@@ -23,6 +25,7 @@ withDefaults(
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const tabs = useWorkspaceTabsStore()
 const preferences = usePreferencesStore()
 
@@ -178,8 +181,8 @@ onBeforeUnmount(() => {
     <button
       v-if="hasOverflow"
       type="button"
-      aria-label="Scroll tabs left"
-      title="Scroll tabs left"
+      :aria-label="t('workspace.scrollTabsLeft')"
+      :title="t('workspace.scrollTabsLeft')"
       class="pointer-events-none absolute left-1 top-1/2 z-20 grid size-7 -translate-y-1/2 place-items-center rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted-foreground)] opacity-0 shadow-[var(--panel-shadow)] transition hover:text-[var(--foreground)] focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none group-hover/tabs:pointer-events-auto group-focus-within/tabs:pointer-events-auto"
       :class="canScrollLeft ? 'group-hover/tabs:opacity-100 group-focus-within/tabs:opacity-100' : 'group-hover/tabs:opacity-35 group-focus-within/tabs:opacity-35'"
       :disabled="!canScrollLeft"
@@ -208,13 +211,13 @@ onBeforeUnmount(() => {
           @click="activate(tab.routePath)"
         >
           <Pin v-if="tab.pinned" class="size-3" />
-          <span class="truncate">{{ tab.title }}</span>
+          <span class="truncate">{{ translateRouteTitle(t, tab.routePath, tab.title) }}</span>
         </button>
         <button
           v-if="!tab.pinned"
           type="button"
           class="mr-1 grid size-4 place-items-center rounded-[var(--radius-xs)] text-[var(--muted-foreground)] opacity-60 transition hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] group-hover:opacity-100 focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-          title="Close workspace tab"
+          :title="t('workspace.closeTab')"
           @click.stop="close(tab.id)"
         >
           <X class="size-2.5" />
@@ -224,8 +227,8 @@ onBeforeUnmount(() => {
     <button
       v-if="hasOverflow"
       type="button"
-      aria-label="Scroll tabs right"
-      title="Scroll tabs right"
+      :aria-label="t('workspace.scrollTabsRight')"
+      :title="t('workspace.scrollTabsRight')"
       class="pointer-events-none absolute right-1 top-1/2 z-20 grid size-7 -translate-y-1/2 place-items-center rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted-foreground)] opacity-0 shadow-[var(--panel-shadow)] transition hover:text-[var(--foreground)] focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none group-hover/tabs:pointer-events-auto group-focus-within/tabs:pointer-events-auto"
       :class="canScrollRight ? 'group-hover/tabs:opacity-100 group-focus-within/tabs:opacity-100' : 'group-hover/tabs:opacity-35 group-focus-within/tabs:opacity-35'"
       :disabled="!canScrollRight"

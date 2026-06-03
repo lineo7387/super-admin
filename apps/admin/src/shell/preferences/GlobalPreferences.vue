@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Settings2, X } from 'lucide-vue-next'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   builtInLayoutPresets,
   type ColorMode,
@@ -22,26 +23,29 @@ const props = withDefaults(
 )
 
 const preferences = usePreferencesStore()
+const { t } = useI18n()
 
-const modeOptions: { id: ColorMode; label: string; detail: string }[] = [
-  { id: 'light', label: 'Light', detail: 'Bright operations surface' },
-  { id: 'dark', label: 'Dark', detail: 'Signal-first control room' },
-  { id: 'system', label: 'System', detail: 'Follow OS preference' }
-]
+const modeOptions = computed<{ id: ColorMode; label: string; detail: string }[]>(() => [
+  { id: 'light', label: t('shell.preferences.modes.light.label'), detail: t('shell.preferences.modes.light.detail') },
+  { id: 'dark', label: t('shell.preferences.modes.dark.label'), detail: t('shell.preferences.modes.dark.detail') },
+  { id: 'system', label: t('shell.preferences.modes.system.label'), detail: t('shell.preferences.modes.system.detail') }
+])
 
-const densityOptions: { id: Density; label: string; detail: string }[] = [
-  { id: 'comfortable', label: 'Comfortable', detail: 'Room for scanning' },
-  { id: 'compact', label: 'Compact', detail: 'Dense operator mode' }
-]
+const densityOptions = computed<{ id: Density; label: string; detail: string }[]>(() => [
+  { id: 'comfortable', label: t('shell.preferences.density.comfortable.label'), detail: t('shell.preferences.density.comfortable.detail') },
+  { id: 'compact', label: t('shell.preferences.density.compact.label'), detail: t('shell.preferences.density.compact.detail') }
+])
 
 const activeProfileName = computed(
   () => builtInDesignProfiles.find((profile) => profile.id === preferences.profileId)?.name ?? preferences.profileId
 )
 const activeModeName = computed(
-  () => modeOptions.find((mode) => mode.id === preferences.colorMode)?.label ?? preferences.colorMode
+  () => modeOptions.value.find((mode) => mode.id === preferences.colorMode)?.label ?? preferences.colorMode
 )
 const triggerTitle = computed(() =>
-  props.trigger === 'auth' ? `Open Control Center: ${activeProfileName.value} / ${activeModeName.value}` : 'Control Center'
+  props.trigger === 'auth'
+    ? t('shell.preferences.open', { profile: activeProfileName.value, mode: activeModeName.value })
+    : t('shell.preferences.title')
 )
 const triggerSize = computed(() => (props.trigger === 'auth' ? 'md' : 'icon'))
 const showTrigger = computed(() => props.trigger !== 'none')
@@ -96,17 +100,17 @@ function selectDensity(density: Density): void {
           <header class="flex items-start justify-between gap-4 border-b border-[var(--border)] bg-[var(--header-background)] p-5">
             <div>
               <div class="flex items-center gap-2">
-                <StatusPill label="Live" />
-                <span class="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">Control Center</span>
+                <StatusPill :label="t('shell.preferences.live')" />
+                <span class="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">{{ t('shell.preferences.title') }}</span>
               </div>
               <h2 id="control-center-title" class="mt-2 [font-family:var(--font-display)] text-2xl text-[var(--foreground)]">
-                {{ activeProfileName }} workspace configuration
+                {{ t('shell.preferences.workspaceConfiguration', { profile: activeProfileName }) }}
               </h2>
               <p class="mt-1 text-sm text-[var(--muted-foreground)]">
-                Theme, layout, density, tabs, and Stage Manager update immediately.
+                {{ t('shell.preferences.immediateUpdate') }}
               </p>
             </div>
-            <AdminButton variant="ghost" size="icon" title="Close Control Center" @click="preferences.closeControlCenter()">
+            <AdminButton variant="ghost" size="icon" :title="t('shell.preferences.close')" @click="preferences.closeControlCenter()">
               <X class="size-4" />
             </AdminButton>
           </header>
@@ -116,8 +120,8 @@ function selectDensity(density: Density): void {
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
                 <div class="flex items-center justify-between gap-3">
                   <div>
-                    <h3 class="[font-family:var(--font-display)] text-lg">Theme Profile</h3>
-                    <p class="text-xs text-[var(--muted-foreground)]">Switch between installed design recipes.</p>
+                    <h3 class="[font-family:var(--font-display)] text-lg">{{ t('shell.preferences.themeProfile') }}</h3>
+                    <p class="text-xs text-[var(--muted-foreground)]">{{ t('shell.preferences.themeProfileDescription') }}</p>
                   </div>
                   <StatusPill :label="activeProfileName" />
                 </div>
@@ -140,7 +144,7 @@ function selectDensity(density: Density): void {
               </div>
 
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
-                <h3 class="[font-family:var(--font-display)] text-lg">Mode & Density</h3>
+                <h3 class="[font-family:var(--font-display)] text-lg">{{ t('shell.preferences.modeDensity') }}</h3>
                 <div class="mt-4 grid gap-3">
                   <div class="grid gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-2 sm:grid-cols-3">
                     <button
@@ -175,8 +179,8 @@ function selectDensity(density: Density): void {
 
             <section class="grid gap-4">
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
-                <h3 class="[font-family:var(--font-display)] text-lg">Layout</h3>
-                <p class="text-xs text-[var(--muted-foreground)]">Layout presets stay independent from workspace tools.</p>
+                <h3 class="[font-family:var(--font-display)] text-lg">{{ t('shell.preferences.layout') }}</h3>
+                <p class="text-xs text-[var(--muted-foreground)]">{{ t('shell.preferences.layoutDescription') }}</p>
                 <div class="mt-4 grid gap-3 xl:grid-cols-3">
                   <button
                     v-for="layout in builtInLayoutPresets"
@@ -218,10 +222,10 @@ function selectDensity(density: Density): void {
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
                 <div class="flex items-center justify-between gap-3">
                   <div>
-                    <h3 class="[font-family:var(--font-display)] text-lg">Workspace</h3>
-                    <p class="text-xs text-[var(--muted-foreground)]">Tabs and Stage Manager can be enabled together.</p>
+                    <h3 class="[font-family:var(--font-display)] text-lg">{{ t('shell.preferences.workspace') }}</h3>
+                    <p class="text-xs text-[var(--muted-foreground)]">{{ t('shell.preferences.workspaceDescription') }}</p>
                   </div>
-                  <StatusPill label="Keep-alive" tone="success" />
+                  <StatusPill :label="t('shell.preferences.keepAlive')" tone="success" />
                 </div>
 
                 <div class="mt-4 grid gap-3 sm:grid-cols-2">
@@ -232,12 +236,12 @@ function selectDensity(density: Density): void {
                     @click="preferences.setTabsEnabled(!preferences.workspaceTabs.enabled)"
                   >
                     <span class="flex items-center justify-between gap-3">
-                      <span class="text-sm">Workspace Tabs</span>
+                      <span class="text-sm">{{ t('shell.preferences.workspaceTabs') }}</span>
                       <span class="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px]">
-                        {{ preferences.workspaceTabs.enabled ? 'On' : 'Off' }}
+                        {{ preferences.workspaceTabs.enabled ? t('shell.preferences.on') : t('shell.preferences.off') }}
                       </span>
                     </span>
-                    <span class="mt-2 block text-[11px] opacity-75">Persistent horizontal route tabs.</span>
+                    <span class="mt-2 block text-[11px] opacity-75">{{ t('shell.preferences.tabsDescription') }}</span>
                   </button>
 
                   <button
@@ -247,22 +251,22 @@ function selectDensity(density: Density): void {
                     @click="preferences.setStageManagerEnabled(!preferences.stageManager.enabled)"
                   >
                     <span class="flex items-center justify-between gap-3">
-                    <span class="text-sm">Stage Manager Shortcut</span>
+                    <span class="text-sm">{{ t('shell.preferences.stageManagerShortcut') }}</span>
                       <span class="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px]">
-                        {{ preferences.stageManager.enabled ? 'On' : 'Off' }}
+                        {{ preferences.stageManager.enabled ? t('shell.preferences.on') : t('shell.preferences.off') }}
                       </span>
                     </span>
-                    <span class="mt-2 block text-[11px] opacity-75">macOS-style overview layer for open workspaces.</span>
+                    <span class="mt-2 block text-[11px] opacity-75">{{ t('shell.preferences.stageDescription') }}</span>
                   </button>
                 </div>
 
                 <div class="mt-4 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-3">
                   <div class="flex items-center justify-between">
-                    <span class="text-sm">AI provider</span>
-                    <StatusPill label="Unavailable" tone="warning" />
+                    <span class="text-sm">{{ t('shell.preferences.aiProvider') }}</span>
+                    <StatusPill :label="t('shell.preferences.providerUnavailable')" tone="warning" />
                   </div>
                   <p class="mt-2 text-xs text-[var(--muted-foreground)]">
-                    Provider interfaces are typed, but no provider is attached by default.
+                    {{ t('shell.preferences.providerDescription') }}
                   </p>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Boxes, Command, Factory, Landmark, ShieldCheck } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import GlobalPreferences from '@/shell/preferences/GlobalPreferences.vue'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
@@ -11,35 +11,17 @@ const props = defineProps<{
 }>()
 
 const preferences = usePreferencesStore()
+const { t } = useI18n()
 
-const profile = computed(() => preferences.profileId)
-const metrics = computed(() => {
-  if (profile.value === 'industrial') {
-    return [
-      { label: 'Audit lock', value: 'Armed' },
-      { label: 'Shift gate', value: '06:00' },
-      { label: 'Access tier', value: 'Ops' }
-    ]
-  }
-
-  if (profile.value === 'cyberpunk') {
-    return [
-      { label: 'Node', value: 'A7' },
-      { label: 'Trace', value: '0.04ms' },
-      { label: 'Clearance', value: 'Root' }
-    ]
-  }
-
-  return [
-    { label: 'Vault', value: 'Live' },
-    { label: 'Risk', value: 'Low' },
-    { label: 'Keys', value: '2FA' }
-  ]
-})
+const metrics = [
+  { labelKey: 'auth.layout.metrics.locale', valueKey: 'auth.layout.metrics.localeValue' },
+  { labelKey: 'auth.layout.metrics.data', valueKey: 'auth.layout.metrics.dataValue' },
+  { labelKey: 'auth.layout.metrics.backend', valueKey: 'auth.layout.metrics.backendValue' }
+] as const
 </script>
 
 <template>
-  <main class="auth-shell min-h-screen overflow-hidden bg-[var(--app-background)] text-[var(--foreground)]" :data-auth-profile="profile">
+  <main class="auth-shell min-h-screen overflow-hidden bg-[var(--app-background)] text-[var(--foreground)]" :data-auth-profile="preferences.profileId">
     <div class="auth-shell__texture absolute inset-0" aria-hidden="true" />
     <div class="auth-preferences-slot pointer-events-none absolute inset-x-0 top-4 z-[70] mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex justify-end">
@@ -47,20 +29,20 @@ const metrics = computed(() => {
       </div>
     </div>
 
-    <section v-if="profile === 'industrial'" class="auth-industrial relative mx-auto grid min-h-screen w-full max-w-7xl px-4 pb-4 pt-20 sm:px-6 lg:px-8">
+    <section v-if="preferences.profileId === 'industrial'" class="auth-industrial relative mx-auto grid min-h-screen w-full max-w-7xl px-4 pb-4 pt-20 sm:px-6 lg:px-8">
       <div class="grid min-h-0 gap-5 lg:grid-cols-[1fr_minmax(360px,440px)] lg:items-center">
         <aside class="grid gap-4">
           <div class="auth-industrial__intro border-b border-[var(--border-strong)] pb-5">
             <div class="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-[var(--muted-foreground)]">
               <Factory class="size-4 text-[var(--primary)]" />
-              Control Gate
+              {{ t('auth.layout.projectIntro') }}
             </div>
             <h1 class="mt-4 max-w-4xl [font-family:var(--font-display)] text-4xl leading-none md:text-6xl">{{ props.title }}</h1>
           </div>
           <div class="auth-industrial__rail grid gap-3">
-            <div v-for="metric in metrics" :key="metric.label" class="grid grid-cols-[120px_1fr] items-center gap-4 border border-[var(--border)] bg-[var(--surface)] p-3">
-              <span class="text-xs uppercase tracking-[0.2em] text-[var(--muted-foreground)]">{{ metric.label }}</span>
-              <span class="[font-family:var(--font-display)] text-2xl">{{ metric.value }}</span>
+            <div v-for="metric in metrics" :key="metric.labelKey" class="grid grid-cols-[120px_1fr] items-center gap-4 border border-[var(--border)] bg-[var(--surface)] p-3">
+              <span class="text-xs uppercase tracking-[0.2em] text-[var(--muted-foreground)]">{{ t(metric.labelKey) }}</span>
+              <span class="[font-family:var(--font-display)] text-2xl">{{ t(metric.valueKey) }}</span>
             </div>
           </div>
           <div class="grid gap-3 border border-[var(--border-strong)] bg-[var(--surface-sunken)] p-5 md:grid-cols-[auto_1fr]">
@@ -77,11 +59,11 @@ const metrics = computed(() => {
       </div>
     </section>
 
-    <section v-else-if="profile === 'cyberpunk'" class="auth-cyberpunk relative mx-auto grid min-h-screen w-full max-w-7xl grid-rows-[auto_1fr] gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <section v-else-if="preferences.profileId === 'cyberpunk'" class="auth-cyberpunk relative mx-auto grid min-h-screen w-full max-w-7xl grid-rows-[auto_1fr] gap-4 px-4 py-4 sm:px-6 lg:px-8">
       <header class="flex flex-wrap items-start justify-between gap-4">
         <div class="auth-cyberpunk__mark">
           <Command class="size-5" />
-          <span>Command Access</span>
+          <span>{{ t('auth.layout.brand') }}</span>
         </div>
       </header>
 
@@ -97,9 +79,9 @@ const metrics = computed(() => {
             <h1 class="[font-family:var(--font-display)] text-4xl leading-none sm:text-6xl">{{ props.title }}</h1>
             <p class="max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">{{ props.description }}</p>
             <div class="grid gap-2 sm:grid-cols-3">
-              <div v-for="metric in metrics" :key="metric.label" class="border border-[var(--border)] bg-[var(--surface-sunken)] p-3">
-                <div class="text-[10px] uppercase tracking-[0.22em] text-[var(--muted-foreground)]">{{ metric.label }}</div>
-                <div class="mt-2 [font-family:var(--font-mono)] text-lg text-[var(--primary)]">{{ metric.value }}</div>
+              <div v-for="metric in metrics" :key="metric.labelKey" class="border border-[var(--border)] bg-[var(--surface-sunken)] p-3">
+                <div class="text-[10px] uppercase tracking-[0.22em] text-[var(--muted-foreground)]">{{ t(metric.labelKey) }}</div>
+                <div class="mt-2 [font-family:var(--font-mono)] text-lg text-[var(--primary)]">{{ t(metric.valueKey) }}</div>
               </div>
             </div>
           </div>
@@ -115,7 +97,7 @@ const metrics = computed(() => {
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="auth-crypto__seal">
             <Landmark class="size-5 text-[var(--primary)]" />
-            <span>Vault Session</span>
+            <span>{{ t('auth.layout.brand') }}</span>
           </div>
         </div>
         <div class="auth-crypto__ledger">
@@ -126,9 +108,9 @@ const metrics = computed(() => {
           <h1 class="mt-8 max-w-3xl [font-family:var(--font-display)] text-5xl leading-none sm:text-7xl">{{ props.title }}</h1>
           <p class="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted-foreground)]">{{ props.description }}</p>
           <div class="mt-8 grid gap-3 sm:grid-cols-3">
-            <div v-for="metric in metrics" :key="metric.label" class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
-              <div class="text-xs uppercase tracking-[0.2em] text-[var(--muted-foreground)]">{{ metric.label }}</div>
-              <div class="mt-3 [font-family:var(--font-display)] text-2xl">{{ metric.value }}</div>
+            <div v-for="metric in metrics" :key="metric.labelKey" class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
+              <div class="text-xs uppercase tracking-[0.2em] text-[var(--muted-foreground)]">{{ t(metric.labelKey) }}</div>
+              <div class="mt-3 [font-family:var(--font-display)] text-2xl">{{ t(metric.valueKey) }}</div>
             </div>
           </div>
         </div>

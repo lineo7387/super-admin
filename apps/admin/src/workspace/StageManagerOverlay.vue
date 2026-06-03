@@ -3,8 +3,10 @@ import { Pin, PinOff, RotateCw, X } from 'lucide-vue-next'
 import type { Component } from 'vue'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { findActiveModule, findModuleRoute } from '@super-admin/core'
 import { AdminButton } from '@super-admin/ui'
+import { translateRouteTitle } from '@/i18n/navigation'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { registeredModules } from '@/modules/module-registry'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
@@ -12,6 +14,7 @@ import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 const preferences = usePreferencesStore()
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const tabs = useWorkspaceTabsStore()
 
 const stages = computed(() =>
@@ -76,9 +79,9 @@ function refreshStage(tabId: string): void {
 
         <header class="pointer-events-none absolute left-7 top-6 z-20 max-w-sm">
           <div>
-            <div class="text-xs uppercase tracking-[0.18em] text-[var(--primary)]">Stage Manager</div>
+            <div class="text-xs uppercase tracking-[0.18em] text-[var(--primary)]">{{ t('workspace.stage.title') }}</div>
             <h2 id="stage-manager-title" class="mt-1 [font-family:var(--font-display)] text-lg text-[var(--foreground)]">
-              Open workspaces
+              {{ t('workspace.stage.openWorkspaces') }}
             </h2>
           </div>
         </header>
@@ -87,13 +90,13 @@ function refreshStage(tabId: string): void {
           variant="secondary"
           size="icon"
           class="pointer-events-auto absolute left-[13.75rem] top-6 z-30 shadow-[var(--panel-shadow)]"
-          title="Close Stage Manager"
+          :title="t('workspace.stage.close')"
           @click="closeStageManager"
         >
           <X class="size-4" />
         </AdminButton>
 
-        <div class="stage-dock" aria-label="Workspace stages">
+        <div class="stage-dock" :aria-label="t('workspace.stage.stages')">
           <article
             v-for="stage in stages"
             :key="stage.tab.id"
@@ -109,20 +112,20 @@ function refreshStage(tabId: string): void {
                 <div class="stage-window-scale stage-window-scale--thumb">
                   <component :is="stage.component" v-if="stage.component" />
                   <div v-else class="grid h-full place-items-center text-sm text-[var(--muted-foreground)]">
-                    Preview unavailable
+                    {{ t('workspace.stage.previewUnavailable') }}
                   </div>
                 </div>
               </div>
-              <div class="mt-2 truncate text-xs font-semibold text-[var(--foreground)]">{{ stage.tab.title }}</div>
+              <div class="mt-2 truncate text-xs font-semibold text-[var(--foreground)]">{{ translateRouteTitle(t, stage.tab.routePath, stage.tab.title) }}</div>
               <div class="mt-1 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em]">
-                <span v-if="stage.isActive" class="text-[var(--primary)]">Current</span>
-                <span v-if="stage.tab.pinned" class="text-[var(--accent)]">Pinned</span>
+                <span v-if="stage.isActive" class="text-[var(--primary)]">{{ t('workspace.stage.current') }}</span>
+                <span v-if="stage.tab.pinned" class="text-[var(--accent)]">{{ t('workspace.stage.pinned') }}</span>
               </div>
             </button>
             <button
               type="button"
               class="stage-action stage-action--pin opacity-0 transition group-hover:opacity-100"
-              :title="stage.tab.pinned ? 'Unpin stage' : 'Pin stage'"
+              :title="stage.tab.pinned ? t('workspace.stage.unpin') : t('workspace.stage.pin')"
               @click.stop="toggleStagePin(stage.tab.id)"
             >
               <PinOff v-if="stage.tab.pinned" class="size-3" />
@@ -131,7 +134,7 @@ function refreshStage(tabId: string): void {
             <button
               type="button"
               class="stage-action stage-action--refresh opacity-0 transition group-hover:opacity-100"
-              title="Refresh stage"
+              :title="t('workspace.stage.refresh')"
               @click.stop="refreshStage(stage.tab.id)"
             >
               <RotateCw class="size-3" />
@@ -140,7 +143,7 @@ function refreshStage(tabId: string): void {
               v-if="!stage.tab.pinned"
               type="button"
               class="stage-action stage-action--close opacity-0 transition group-hover:opacity-100"
-              title="Close stage"
+              :title="t('workspace.stage.closeStage')"
               @click.stop="closeStage(stage.tab.id)"
             >
               <X class="size-3" />
