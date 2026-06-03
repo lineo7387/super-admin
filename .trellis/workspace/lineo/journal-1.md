@@ -309,3 +309,38 @@ Added TypeScript-first API contract helpers, documented frontend adapter contrac
 ### Next Steps
 
 - None - task complete
+
+
+## Session 10: Open source release readiness
+
+**Date**: 2026-06-03
+**Task**: Open source release readiness
+**Branch**: `main`
+
+### Summary
+
+Added project-level CodeGraph config, open-source governance and CI baseline, and documented the i18n-before-CLI release readiness path for Super Admin.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `87ccfa8` | (see git log) |
+| `5195510` | (see git log) |
+| `2a6e79e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
