@@ -447,3 +447,36 @@ Added Newsprint as a built-in theme profile with light/dark tokens, Control Cent
 ### Next Steps
 
 - None - task complete
+
+
+## Session 14: Archive Bootstrap Guidelines
+
+**Date**: 2026-06-04
+**Task**: Archive Bootstrap Guidelines
+**Branch**: `main`
+
+### Summary
+
+复核 00-bootstrap-guidelines：确认 backend/frontend/shared specs 和代码示例已由后续任务填实，更新 bootstrap PRD checklist 为完成，并归档初始化规范任务。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5eb6e96` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

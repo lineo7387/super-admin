@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 13
-- **Last Active**: 2026-06-03
+- **Total Sessions**: 14
+- **Last Active**: 2026-06-04
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~449 | Active |
+| `journal-1.md` | ~482 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 14 | 2026-06-04 | Archive Bootstrap Guidelines | `5eb6e96` | `main` |
 | 13 | 2026-06-03 | Add Newsprint design profile | `adc3fc3` | `codex/newsprint-design-profile` |
 | 12 | 2026-06-03 | Control Center Locale Switcher | `1380cbd`, `fda264a`, `057461a` | `main` |
 | 11 | 2026-06-03 | I18n foundation before CLI | `6f3a769`, `ece2ec5`, `5a671e7` | `main` |
