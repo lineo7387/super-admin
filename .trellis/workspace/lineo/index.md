@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 19
+- **Total Sessions**: 20
 - **Last Active**: 2026-06-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~649 | Active |
+| `journal-1.md` | ~687 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 20 | 2026-06-06 | Add generated starter validation | `5d79f19` | `main` |
 | 19 | 2026-06-06 | Design generated starter template | `b13497c` | `main` |
 | 18 | 2026-06-06 | Split theme packages and registry | `6dd3604`,  `d37ff49` | `main` |
 | 17 | 2026-06-06 | Inventory package publish boundaries | `7661ce1` | `main` |

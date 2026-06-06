@@ -61,7 +61,10 @@ Polished workspace tab lifecycle with pinned ordering, protected close, active w
 
 ### Main Changes
 
-(Add details)
+- Completed and archived `.trellis/tasks/06-06-design-generated-starter-template`.
+- Added template file map, CLI input contract, plan, and decision summary artifacts.
+- Promoted generated-template constraints into `.trellis/spec/shared/cli-starter-contract.md`.
+- Kept the parent task active in planning; progress advanced to `[4/6 done]`.
 
 ### Git Commits
 
@@ -72,7 +75,9 @@ Polished workspace tab lifecycle with pinned ordering, protected close, active w
 
 ### Testing
 
-- [OK] (Add test results)
+- [OK] `python3 ./.trellis/scripts/task.py validate 06-06-design-generated-starter-template`
+- [OK] `git diff --check`
+- [OK] `git diff --cached --check` before both commits
 
 ### Status
 
@@ -95,7 +100,12 @@ Added reusable admin table and form primitives, refactored Users into mock-backe
 
 ### Main Changes
 
-(Add details)
+- Completed and archived `.trellis/tasks/06-06-add-generated-starter-validation`.
+- Added `scripts/validate-generated-starter.mjs` for maintainer-side generated starter validation.
+- Added `scripts/validate-generated-starter.test.mjs` and included `scripts/*.test.mjs` in root `pnpm test`.
+- Added `pnpm validate:starter <generated-project-dir>` as the root maintainer command.
+- Updated `.trellis/spec/shared/cli-starter-contract.md` with the validator command and packed manifest check.
+- Kept the parent task active in planning; progress advanced to `[5/6 done]`.
 
 ### Git Commits
 
@@ -105,7 +115,14 @@ Added reusable admin table and form primitives, refactored Users into mock-backe
 
 ### Testing
 
-- [OK] (Add test results)
+- [OK] `pnpm exec vitest run scripts/validate-generated-starter.test.mjs`
+- [OK] `pnpm test`
+- [OK] `pnpm typecheck`
+- [OK] `pnpm lint`
+- [OK] `pnpm build`
+- [OK] `python3 ./.trellis/scripts/task.py validate 06-06-add-generated-starter-validation`
+- [OK] `git diff --check`
+- [OK] `git diff --cached --check` before the work and archive commits
 
 ### Status
 
@@ -640,6 +657,39 @@ Defined generated starter template file map, app-local ownership, future CLI inp
 | Hash | Message |
 |------|---------|
 | `b13497c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 20: Add generated starter validation
+
+**Date**: 2026-06-06
+**Task**: Add generated starter validation
+**Branch**: `main`
+
+### Summary
+
+Added maintainer-side generated starter validator, static helper tests, root validation script, and CLI starter spec updates for validation boundaries.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5d79f19` | (see git log) |
 
 ### Testing
 
