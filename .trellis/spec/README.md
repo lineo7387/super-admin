@@ -39,6 +39,7 @@ Cross-cutting project rules:
 - [TypeScript](./shared/typescript.md)
 - [Code Quality](./shared/code-quality.md)
 - [Monorepo](./shared/monorepo.md)
+- [CLI Starter Contract](./shared/cli-starter-contract.md)
 - [Git Conventions](./shared/git-conventions.md)
 - [Timestamp Handling](./shared/timestamp.md)
 

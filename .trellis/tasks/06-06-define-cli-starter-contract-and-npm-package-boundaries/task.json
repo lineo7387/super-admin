@@ -1,0 +1,28 @@
+{
+  "id": "define-cli-starter-contract-and-npm-package-boundaries",
+  "name": "define-cli-starter-contract-and-npm-package-boundaries",
+  "title": "Define CLI starter contract and npm package boundaries",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lineo",
+  "assignee": "lineo",
+  "createdAt": "2026-06-06",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-06-add-neutral-base-design-profile"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
