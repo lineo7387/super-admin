@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 14
-- **Last Active**: 2026-06-04
+- **Total Sessions**: 15
+- **Last Active**: 2026-06-06
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~482 | Active |
+| `journal-1.md` | ~515 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 15 | 2026-06-06 | Shell IA and Stage Manager refinement | `d082ca4` | `main` |
 | 14 | 2026-06-04 | Archive Bootstrap Guidelines | `5eb6e96` | `main` |
 | 13 | 2026-06-03 | Add Newsprint design profile | `adc3fc3` | `codex/newsprint-design-profile` |
 | 12 | 2026-06-03 | Control Center Locale Switcher | `1380cbd`, `fda264a`, `057461a` | `main` |

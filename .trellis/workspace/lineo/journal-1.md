@@ -480,3 +480,36 @@ Added Newsprint as a built-in theme profile with light/dark tokens, Control Cent
 ### Next Steps
 
 - None - task complete
+
+
+## Session 15: Shell IA and Stage Manager refinement
+
+**Date**: 2026-06-06
+**Task**: Shell IA and Stage Manager refinement
+**Branch**: `main`
+
+### Summary
+
+Refined shell information architecture, moved Control Center to a stable global trigger, converted account shortcuts into a read-only surface, refactored Stage Manager into tested logic and focused Vue components, removed side-dock scrolling, and verified lint, typecheck, tests, build, docs build, and browser QA.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d082ca4` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
