@@ -547,3 +547,36 @@ Defined the CLI starter contract and added the neutral Base design profile as th
 ### Next Steps
 
 - None - task complete
+
+
+## Session 17: Inventory package publish boundaries
+
+**Date**: 2026-06-06
+**Task**: Inventory package publish boundaries
+**Branch**: `main`
+
+### Summary
+
+Prepared the package publish boundary inventory for the CLI starter work, captured export/dependency/app-local ownership blockers, updated the CLI starter contract with published-package consumption rules, and archived the completed child task.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7661ce1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
