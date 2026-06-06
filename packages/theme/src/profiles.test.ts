@@ -9,6 +9,18 @@ describe('built-in design profiles', () => {
     }
   })
 
+  it('includes Base with neutral shadcn-vue aligned light and dark modes', () => {
+    const profile = getBuiltInDesignProfile('base')
+
+    expect(profile.id).toBe('base')
+    expect(profile.modes.light.colors.background).toBe('#ffffff')
+    expect(profile.modes.light.colors.primary).toBe('#18181b')
+    expect(profile.modes.light.shape.radiusMd).toBe('8px')
+    expect(profile.modes.light.effects.texture).toContain('linear-gradient')
+    expect(profile.modes.dark.colors.background).not.toBe(profile.modes.light.colors.background)
+    expect(profile.modes.dark.effects.cardShadow).toContain('rgba')
+  })
+
   it('includes Cyberpunk with distinct neon light and dark modes', () => {
     const profile = getBuiltInDesignProfile('cyberpunk')
 

@@ -9,6 +9,13 @@ describe('preference resolution', () => {
     expect(resolveColorMode('light', 'dark')).toBe('light')
   })
 
+  it('defaults new starters to the neutral base profile in light mode', () => {
+    const state = mergeAppearanceState({})
+
+    expect(state.profileId).toBe('base')
+    expect(state.colorMode).toBe('light')
+  })
+
   it('merges partial appearance state with stable defaults', () => {
     const state = mergeAppearanceState({
       profileId: 'industrial',

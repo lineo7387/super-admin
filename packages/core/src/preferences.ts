@@ -33,9 +33,9 @@ export type AppearanceStateInput = Partial<Omit<AppearanceState, 'workspaceTabs'
 }
 
 export const defaultAppearanceState: AppearanceState = {
-  profileId: 'crypto',
+  profileId: 'base',
   locale: 'zh-CN',
-  colorMode: 'dark',
+  colorMode: 'light',
   density: 'comfortable',
   layoutPreset: 'tri-column',
   workspaceTabs: {

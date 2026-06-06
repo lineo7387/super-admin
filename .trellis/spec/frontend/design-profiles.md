@@ -4,6 +4,7 @@
 
 Initial profiles:
 
+- `base`
 - `crypto`
 - `industrial`
 - `cyberpunk`
@@ -41,14 +42,15 @@ Use Tailwind with variables:
 
 ## Rules
 
-- Do not write feature-page-specific Crypto/Industrial/Cyberpunk class logic.
+- Do not write feature-page-specific Base/Crypto/Industrial/Cyberpunk/Newsprint class logic.
 - Keep profile-specific decorations in shared components, shell primitives, or CSS layers.
 - Avoid runtime-generated Tailwind class names that cannot be statically detected.
 - Use arbitrary Tailwind values sparingly; promote repeated values to tokens.
-- Verify every built-in profile in both modes: `crypto.light`, `crypto.dark`, `industrial.light`, `industrial.dark`, `cyberpunk.light`, `cyberpunk.dark`, `newsprint.light`, `newsprint.dark`.
+- Verify every built-in profile in both modes: `base.light`, `base.dark`, `crypto.light`, `crypto.dark`, `industrial.light`, `industrial.dark`, `cyberpunk.light`, `cyberpunk.dark`, `newsprint.light`, `newsprint.dark`.
 
 ## Interpretation
 
+- Base is light-first and should feel like the neutral `shadcn-vue` starter: calm surfaces, readable contrast, modest radius, and minimal decoration.
 - Crypto is dark-first but Crypto Light must still feel like Bitcoin DeFi.
 - Industrial is light-first but Industrial Dark must still feel tactile and mechanical.
 - Cyberpunk is dark-first but Cyberpunk Light must still feel like a high-contrast neon terminal, not a generic cyan admin theme.
@@ -60,10 +62,10 @@ Use Tailwind with variables:
 
 ```ts
 // packages/core/src/design-profile.ts
-export type DesignProfileId = 'crypto' | 'industrial' | 'cyberpunk' | 'newsprint' | (string & {})
+export type DesignProfileId = 'base' | 'crypto' | 'industrial' | 'cyberpunk' | 'newsprint' | (string & {})
 
 // packages/theme/src/index.ts
-export const builtInDesignProfiles = [cryptoProfile, industrialProfile, cyberpunkProfile, newsprintProfile] as const
+export const builtInDesignProfiles = [baseProfile, cryptoProfile, industrialProfile, cyberpunkProfile, newsprintProfile] as const
 ```
 
 and as a concrete `DesignProfile` file under `packages/theme/src/profiles/<id>.ts`.
@@ -123,13 +125,14 @@ Logged-out preferences entry:
 - Auth pages render outside `AppShell`; the shell should not wrap standalone auth routes.
 - Auth pages follow the currently selected profile and mode from `preferences.store`.
 - The unauthenticated appearance control must reuse the shared `GlobalPreferences` Control Center. Auth pages may change profile and light/dark/system mode before sign-in, but they must not introduce a separate theme/profile switcher UI.
-- `GlobalPreferences` must stay mounted while the active profile recipe changes. Keep the auth trigger in a stable root position so switching `crypto` / `industrial` / `cyberpunk` does not close the Control Center.
+- `GlobalPreferences` must stay mounted while the active profile recipe changes. Keep the auth trigger in a stable root position so switching `base` / `crypto` / `industrial` / `cyberpunk` / `newsprint` does not close the Control Center.
 - The auth preferences trigger should align to the auth layout container, not the viewport edge, so it reads as part of the login/register composition.
 - Profile differences must include layout recipe differences, not only color or text changes.
 - Registration can be a template-only flow when no backend registration API exists, but the page must clearly report that registration is not configured.
 
 Profile recipes:
 
+- `base`: neutral starter composition, quiet workspace summary, restrained panels, and direct access tone.
 - `crypto`: vault/ledger composition, account-safety signals, and treasury-like panels.
 - `industrial`: access checkpoint composition, mechanical rails, status rows, and audit-control tone.
   - The title and control-gate mark belong with the left checkpoint composition, above the mechanical rails, rather than as a detached top banner.

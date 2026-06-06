@@ -6,12 +6,13 @@ Super Admin includes runtime appearance controls so users can inspect the same m
 
 Built-in profiles live in `packages/theme/`.
 
+- Base
 - Crypto
 - Industrial
 - Cyberpunk
 - Newsprint
 
-Profiles define token sets and visual recipes. Feature modules should not hard-code profile-specific classes. Use shared primitives and CSS variables so profile switching remains global.
+Profiles define token sets and visual recipes. Base is the neutral starter default; the other profiles provide stronger visual directions. Feature modules should not hard-code profile-specific classes. Use shared primitives and CSS variables so profile switching remains global.
 
 ## Color Mode
 

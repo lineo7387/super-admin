@@ -25,15 +25,30 @@ describe('auth layout preferences entry', () => {
     expect(globalPreferencesSource).not.toContain("fixed right-4 top-4 z-[70] max-w-[calc(100vw-2rem)]")
   })
 
+  it('includes a dedicated Base auth composition before the strong-style branches', () => {
+    const baseBranchIndex = authLayoutSource.indexOf("v-if=\"preferences.profileId === 'base'\"")
+    const industrialBranchIndex = authLayoutSource.indexOf("v-else-if=\"preferences.profileId === 'industrial'\"")
+
+    expect(baseBranchIndex).toBeGreaterThan(-1)
+    expect(industrialBranchIndex).toBeGreaterThan(-1)
+    expect(baseBranchIndex).toBeLessThan(industrialBranchIndex)
+    expect(authLayoutSource).toContain('auth-base__workspace')
+    expect(authLayoutSource).toContain('auth-panel--base')
+  })
+
   it('keeps the industrial title inside the left control composition', () => {
+    const industrialBranchIndex = authLayoutSource.indexOf("preferences.profileId === 'industrial'")
+    const cyberpunkBranchIndex = authLayoutSource.indexOf("preferences.profileId === 'cyberpunk'")
     const industrialSection = authLayoutSource.slice(
-      authLayoutSource.indexOf("v-if=\"preferences.profileId === 'industrial'\""),
-      authLayoutSource.indexOf("v-else-if=\"preferences.profileId === 'cyberpunk'\"")
+      industrialBranchIndex,
+      cyberpunkBranchIndex
     )
     const titleIndex = industrialSection.indexOf('{{ props.title }}')
     const railIndex = industrialSection.indexOf('auth-industrial__rail')
     const formPanelIndex = industrialSection.indexOf('auth-panel--industrial')
 
+    expect(industrialBranchIndex).toBeGreaterThan(-1)
+    expect(cyberpunkBranchIndex).toBeGreaterThan(-1)
     expect(industrialSection).toContain('auth-industrial__intro')
     expect(titleIndex).toBeGreaterThan(-1)
     expect(railIndex).toBeGreaterThan(-1)
