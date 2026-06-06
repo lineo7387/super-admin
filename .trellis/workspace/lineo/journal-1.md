@@ -702,3 +702,45 @@ Added maintainer-side generated starter validator, static helper tests, root val
 ### Next Steps
 
 - None - task complete
+
+
+## Session 21: Scaffold create-super-admin CLI MVP
+
+**Date**: 2026-06-06
+**Task**: Scaffold create-super-admin CLI MVP
+**Branch**: `main`
+
+### Summary
+
+Implemented packages/cli create-super-admin MVP, validated generated default and multi-theme/i18n starters, archived the child task, and kept the parent task active.
+
+### Main Changes
+
+- Added `packages/cli` with a buildable `create-super-admin` bin, parser, generator, templates, and tests.
+- Generated starter output is derived from `apps/admin` with contract transforms: no workspace ranges, no monorepo aliases, no reference backend env/imports, and generated theme/i18n config.
+- Updated `.trellis/spec/shared/cli-starter-contract.md` with CLI package, Node ESM import, input-validation, and validator coverage conventions.
+- Archived only the CLI child task; parent task remains active/planning.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `206abba` | feat(cli): scaffold create-super-admin starter |
+| `a781eed` | chore(task): archive 06-06-scaffold-create-super-admin-cli |
+
+### Testing
+
+- [OK] `pnpm test`
+- [OK] `pnpm typecheck`
+- [OK] `pnpm lint`
+- [OK] `pnpm build`
+- [OK] `pnpm validate:starter /private/tmp/super-admin-cli.FTCgV0/final-default-admin --static-only`
+- [OK] `pnpm validate:starter /private/tmp/super-admin-cli.FTCgV0/multi-i18n-admin --static-only --themes base,cyberpunk --i18n --pm pnpm`
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
