@@ -108,6 +108,14 @@ Package boundary:
 create-super-admin    CLI project creator
 ```
 
+CLI implementation package:
+
+- The source package lives under `packages/cli` and is named `create-super-admin`.
+- The CLI bin is `create-super-admin` and should point at emitted Node ESM output such as `dist/cli.js` after package build.
+- TypeScript source files that compile to runnable Node ESM must use relative `.js` import specifiers between local modules, for example `import { runCreateSuperAdmin } from './run-create-super-admin.js'`. Without the emitted extension, Node cannot execute the built CLI.
+- The CLI should normalize and validate input before materializing output, then write through a temporary directory and rename into place so invalid flags and generation errors do not leave a partial project.
+- The CLI MVP does not install dependencies by default. It may print package-manager-specific next steps. Maintainer validation stays outside generated apps.
+
 Published package consumption boundary:
 
 - Generated projects must consume emitted npm package artifacts, not monorepo source files.
@@ -184,7 +192,10 @@ Generated template derivation:
 | No flags passed | Generate Chinese, single-theme `base` starter with no runtime theme or language switchers. |
 | `--theme <id>` passed | Install only `@super-admin/theme` plus that one theme package, set it as default, and omit runtime theme switching. |
 | `--themes <a,b>` passed | Install exactly the selected theme packages and enable/configure runtime theme switching as needed. |
+| Both `--theme` and `--themes` passed | Fail before writing files with a mutually exclusive flag message. |
 | Unknown theme id | Fail with a clear supported-theme message; do not generate a partial project. |
+| Project name missing | Fail before writing files with usage guidance. |
+| Target directory exists and is not empty | Fail before writing files; do not merge generated files into user content. |
 | Theme add/remove command | Add/remove the actual npm package dependency and regenerate theme registry/config. |
 | Package manager not specified | Detect from `package.json#packageManager`, then lockfiles, then CLI invocation/default. |
 | Generated project would require a backend/auth/AI provider | Reject the design; default output must run without those requirements. |
@@ -229,6 +240,9 @@ Maintainer validation for generated output must cover:
 - no runtime theme or locale switcher appears in no-flags default output
 - generated app resolves `@super-admin/*` from package dependencies instead of package source paths
 - generated app still follows `Page -> query composable -> API adapter -> mock/user API`
+- CLI parser/generator tests cover default, single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, and non-empty targets.
+- A built-bin smoke check runs the emitted `create-super-admin` output, not only source-level generator functions, so Node ESM import-extension regressions are caught.
+- CLI-generated default and multi-theme/i18n outputs are passed to `pnpm validate:starter` with matching flags. Use `--static-only` while `@super-admin/*` packages are not yet published or locally packed for install/build validation.
 
 Generated user projects do not include test files by default.
 
