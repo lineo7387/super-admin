@@ -96,6 +96,16 @@ Package boundary:
 create-super-admin    CLI project creator
 ```
 
+Published package consumption boundary:
+
+- Generated projects must consume emitted npm package artifacts, not monorepo source files.
+- Published `@super-admin/*` packages must not expose `workspace:*` dependency specifiers.
+- Package exports should point to emitted ESM/declaration artifacts, not `./src/*.ts` or workspace-only Vue source paths.
+- Generated project TypeScript config must not map `@super-admin/*` to `../../packages/*`.
+- `@super-admin/theme` owns theme runtime/core and must not require every built-in theme profile.
+- Selected `@super-admin/theme-*` packages own profile constants.
+- Generated theme composition belongs in real generated app files such as `src/super-admin/theme-registry.generated.ts`.
+
 Theme package naming:
 
 ```text
@@ -115,6 +125,7 @@ src/i18n/*
 src/shell/*
 src/stores/*
 src/router/*
+src/styles/*
 src/super-admin/*
 ```
 
@@ -146,6 +157,9 @@ AI boundary:
 | Theme add/remove command | Add/remove the actual npm package dependency and regenerate theme registry/config. |
 | Package manager not specified | Detect from `package.json#packageManager`, then lockfiles, then CLI invocation/default. |
 | Generated project would require a backend/auth/AI provider | Reject the design; default output must run without those requirements. |
+| Generated project depends on `workspace:*` or TypeScript path aliases for `@super-admin/*` | Reject; generated projects must consume published package artifacts. |
+| Published package export points at source TypeScript instead of emitted package output | Reject for publish-ready package work; source exports are only acceptable as a temporary monorepo development state. |
+| Theme runtime package bundles all theme profiles | Reject; selected theme packages must remain dependency-granular. |
 | User wants to remove examples | Point to docs; CLI MVP must not auto-delete examples. |
 | AI Assistant has no configuration | App runs; assistant is visible/unconfigured but unusable. |
 | AI provider secret is proposed for frontend `VITE_*` env | Reject; frontend env may only hold client-safe config such as endpoint URL. |
@@ -168,9 +182,11 @@ Maintainer validation for generated output must cover:
 - `build` succeeds
 - startup smoke succeeds
 - no workspace package dependencies appear in generated `package.json`
+- no monorepo package path aliases appear in generated TypeScript/Vite config
 - no backend/docs/test/lint/e2e/reference-smoke tooling appears in default output
 - default theme dependencies are only `@super-admin/theme` and `@super-admin/theme-base`
 - multi-theme generation installs exactly the selected theme packages
+- generated app resolves `@super-admin/*` from package dependencies instead of package source paths
 - generated app still follows `Page -> query composable -> API adapter -> mock/user API`
 
 Generated user projects do not include test files by default.

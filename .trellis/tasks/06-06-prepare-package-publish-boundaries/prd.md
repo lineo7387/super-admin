@@ -30,10 +30,12 @@ This is the next implementation/design slice after the base theme. The goal is t
 
 ## Acceptance Criteria
 
-- [ ] Package boundary inventory exists for current workspace packages.
-- [ ] Export and dependency gaps are identified with file/package references.
-- [ ] Generated app-local ownership is clearly separated from reusable package ownership.
-- [ ] Follow-up tasks for actual package changes can be created without re-litigating the CLI product boundary.
+- [x] Package boundary inventory exists for current workspace packages.
+- [x] Export and dependency gaps are identified with file/package references.
+- [x] Generated app-local ownership is clearly separated from reusable package ownership.
+- [x] Follow-up tasks for actual package changes can be created without re-litigating the CLI product boundary.
+- [x] The task produces `inventory.md` and `plan.md` under this task directory.
+- [x] No CLI implementation, npm publishing, or package splitting is started in this task.
 
 ## Out Of Scope
 
@@ -46,3 +48,5 @@ This is the next implementation/design slice after the base theme. The goal is t
 
 - Read `.trellis/spec/shared/cli-starter-contract.md` first.
 - This task should probably inspect `package.json`, workspace package exports, and imports from `apps/admin`.
+- PRD review on 2026-06-06 found no blocking product question. The task can proceed as an inventory and planning slice.
+- Relevant specs reviewed: `.trellis/spec/shared/cli-starter-contract.md`, `.trellis/spec/shared/typescript.md`, `.trellis/spec/shared/code-quality.md`, `.trellis/spec/shared/monorepo.md`, `.trellis/spec/frontend/directory-structure.md`.

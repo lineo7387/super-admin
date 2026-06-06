@@ -1,1 +1,4 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "Check inventory and plan against the CLI starter package boundary contract."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Check that generated starter exclusions and quality risks are captured."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Check package export, dependency, and publish-readiness recommendations."}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Check generated app-local ownership boundaries."}
