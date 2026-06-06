@@ -35,6 +35,18 @@ super-admin i18n remove <locale>
 super-admin i18n set <locale>
 ```
 
+Maintainer validation command:
+
+```text
+pnpm validate:starter <generated-project-dir>
+pnpm validate:starter <generated-project-dir> --static-only
+pnpm validate:starter <generated-project-dir> --theme base
+pnpm validate:starter <generated-project-dir> --themes base,cyberpunk
+pnpm validate:starter <generated-project-dir> --i18n
+pnpm validate:starter <generated-project-dir> --pm pnpm
+pnpm validate:starter <generated-project-dir> --package-manifest <packed-package-json>
+```
+
 Theme configuration should be declarative and user-readable:
 
 ```ts
@@ -219,6 +231,9 @@ Maintainer validation for generated output must cover:
 - generated app still follows `Page -> query composable -> API adapter -> mock/user API`
 
 Generated user projects do not include test files by default.
+
+The maintainer validator lives outside generated projects. It may be implemented under `scripts/` and exercised by repository tests, but generated starters must not copy validator scripts or tests.
+When local packed package manifests are part of validation, pass them with `--package-manifest`; those manifests must not expose `workspace:` dependency ranges.
 
 ### 7. Wrong vs Correct
 
