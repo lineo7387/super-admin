@@ -44,7 +44,7 @@ This task is planning-first. Do not implement the CLI yet.
 - The generated project should keep the default toolchain light. Include dev, build, typecheck, and preview scripts; do not include lint, format, unit test, e2e, docs build, or reference smoke tooling by default.
 - The generated project should be package-manager neutral. CLI dependency installation should detect the user's package manager and allow explicit `--pm` override.
 - Initial package boundary should be `@super-admin/ui`, `@super-admin/core`, `@super-admin/theme`, `create-super-admin`, and independently installable theme packages.
-- Theme package naming should use independent packages such as `@super-admin/theme-base`, `@super-admin/theme-cyberpunk`, `@super-admin/theme-industrial`, and `@super-admin/theme-newsprint`.
+- Theme package naming should use independent packages such as `@super-admin/theme-base`, `@super-admin/theme-crypto`, `@super-admin/theme-cyberpunk`, `@super-admin/theme-industrial`, and `@super-admin/theme-newsprint`.
 - Theme installation must be dependency-granular. Installing one theme should install only that theme's package and dependencies; installing two themes should install two theme packages and dependency sets. If every theme is already downloaded in one required package, the CLI theme feature loses most of its value.
 - Generated app-owned code should keep user-modifiable surfaces in the project, including modules, API adapters, mock data, i18n, shell, stores, and router.
 - Generated output needs real validation: install, typecheck, build, and dev/startup smoke.
@@ -198,7 +198,7 @@ Page -> module query composable -> API adapter -> mock data / user API
 - Exact `shadcn-vue` base theme token mapping.
 - Exact CLI UX details for theme/template and i18n install/switch commands beyond the flags-first MVP.
 - Exact generated-file differences between Chinese-only and language-switching projects.
-- Exact package folder/release setup for independent theme packages.
+- Exact release setup for independent theme packages.
 - Exact package-manager detection order and command mapping for npm, pnpm, yarn, and bun.
 - Exact architecture for CLI-managed theme installation: config file, generated registry, Vite virtual module, or another mechanism.
 - Exact generated registry file path and shape, likely `src/super-admin/theme-registry.generated.ts`.
@@ -208,8 +208,7 @@ Page -> module query composable -> API adapter -> mock data / user API
 ## Technical Notes
 
 - Current `@super-admin/theme` package only exports `"."` from `packages/theme/src/index.ts`.
-- Current theme index exports all profile modules and builds one `builtInDesignProfiles` array, which does not support dependency-granular theme installation.
-- To support user-selected theme dependencies cleanly, future package work likely needs a theme runtime/core package plus independently installable theme packages.
+- Follow-up package work split `@super-admin/theme` into a runtime/core package and independently installable theme packages for `base`, `crypto`, `cyberpunk`, `industrial`, and `newsprint`.
 - Product concern: if theme selection is only a manual code-level registry edit, the CLI theme feature may not feel worthwhile. The contract should evaluate a first-class theme config/manifest architecture.
 - Preferred MVP architecture: user-readable config plus generated real registry file. Avoid Vite virtual modules initially because they add plugin/type/debugging complexity and make user override less transparent.
 - Exact validation harness for generated output, including package packing, install mode, and dev smoke strategy.

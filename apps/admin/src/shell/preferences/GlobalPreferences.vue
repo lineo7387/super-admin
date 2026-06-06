@@ -10,8 +10,8 @@ import {
   type LayoutPresetId,
   type StageManagerPresentationMode
 } from '@super-admin/core'
-import { builtInDesignProfiles } from '@super-admin/theme'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin/ui'
+import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'
 import type { Locale } from '@/i18n'
 import { usePreferencesStore } from '@/stores/preferences.store'
 

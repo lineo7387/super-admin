@@ -62,7 +62,7 @@ The key conclusion: the next task should not be "build the CLI" immediately. It 
 - Generated projects should be package-manager neutral.
 - CLI dependency operations should detect the user's package manager and allow explicit `--pm` override.
 - Initial package boundary is `@super-admin/ui`, `@super-admin/core`, `@super-admin/theme`, `create-super-admin`, and independently installable theme packages.
-- Theme package naming should use independent npm packages, for example `@super-admin/theme-base`, `@super-admin/theme-cyberpunk`, `@super-admin/theme-industrial`, and `@super-admin/theme-newsprint`.
+- Theme package naming should use independent npm packages, for example `@super-admin/theme-base`, `@super-admin/theme-crypto`, `@super-admin/theme-cyberpunk`, `@super-admin/theme-industrial`, and `@super-admin/theme-newsprint`.
 - Theme installation must be dependency-granular: one selected theme installs one theme package/dependency set; two selected themes install two theme packages/dependency sets.
 - Generated projects should keep user-modifiable surfaces app-local: `src/modules/*`, `src/api/*`, `src/api/mock/*`, `src/i18n/*`, `src/shell/*`, `src/stores/*`, and `src/router/*`.
 - Generated output must be verified by maintainers with install, typecheck, build, and startup smoke checks.
@@ -228,7 +228,7 @@ Interactive selection is a later enhancement, not required for the CLI MVP.
   - multiple selected themes means runtime switching can remain available
   - users can later add or remove themes based on their product needs
 - The no-flags starter installs only `@super-admin/theme` and `@super-admin/theme-base`.
-- Future package work should avoid forcing all themes into generated projects when the user selects only one theme. Current `@super-admin/theme` exports all built-in profiles through one main entry, so selected-theme generation likely needs a theme runtime/core package plus independently installable theme packages.
+- Package work should avoid forcing all themes into generated projects when the user selects only one theme. `@super-admin/theme` should stay a theme runtime/core package, while selected theme profiles live in independently installable `@super-admin/theme-*` packages.
 - Theme CLI commands should not be designed as a thin wrapper over manual import edits. If theme install/switch is a user-facing CLI capability, the architecture should likely include a first-class config/manifest layer that the CLI manages.
 - CLI creation can expose template/style selection so users can install the default template or another style template.
 - The style template model should support future additions without changing the business-module boundary.
@@ -306,19 +306,21 @@ Theme packages need a stricter boundary than ordinary built-in profiles. If ever
 1. Define CLI starter contract and npm package boundaries.
 2. Add or refine the neutral/base `shadcn-vue`-style default theme.
 3. Prepare package publish boundaries.
-4. Build the `create-super-admin` CLI MVP.
-5. Validate generated projects with install, typecheck, build, and startup smoke.
-6. Later, design/build the optional Python FastAPI AI companion backend as a separate project.
+4. Split theme runtime and independent theme profile packages.
+5. Design the generated single-app starter template.
+6. Build the `create-super-admin` CLI MVP.
+7. Validate generated projects with install, typecheck, build, and startup smoke.
+8. Later, design/build the optional Python FastAPI AI companion backend as a separate project.
 
 ## Child Task Backlog
 
-The parent task is an umbrella/planning surface. `task.py list` only counts registered child tasks, so `[1/1 done]` after the base-theme slice does not mean the broader CLI starter roadmap is complete.
+The parent task is an umbrella/planning surface. Keep it active until the registered child-task backlog below is complete.
 
 Registered child tasks:
 
 - `06-06-add-neutral-base-design-profile` — completed and archived. Implements the neutral Base profile slice from roadmap step 2.
-- `06-06-prepare-package-publish-boundaries` — next recommended task. Inventory publish boundaries and export/dependency gaps before CLI implementation.
-- `06-06-split-theme-packages-and-registry` — follow-up to make selected themes real dependency-granular packages.
+- `06-06-prepare-package-publish-boundaries` — completed and archived. Inventoried publish boundaries and export/dependency gaps before CLI implementation.
+- `06-06-split-theme-packages-and-registry` — completed in the current implementation slice. Makes selected themes real dependency-granular packages.
 - `06-06-design-generated-starter-template` — define the single-app Vite starter template file map and app-local ownership.
 - `06-06-scaffold-create-super-admin-cli` — implement flags-first project creation once package/template boundaries are ready.
 - `06-06-add-generated-starter-validation` — add maintainer validation for generated output after the CLI exists.

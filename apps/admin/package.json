@@ -13,6 +13,11 @@
   "dependencies": {
     "@super-admin/core": "workspace:*",
     "@super-admin/theme": "workspace:*",
+    "@super-admin/theme-base": "workspace:*",
+    "@super-admin/theme-crypto": "workspace:*",
+    "@super-admin/theme-cyberpunk": "workspace:*",
+    "@super-admin/theme-industrial": "workspace:*",
+    "@super-admin/theme-newsprint": "workspace:*",
     "@super-admin/ui": "workspace:*",
     "@tanstack/vue-query": "^5.0.0",
     "lucide-vue-next": "^0.555.0",

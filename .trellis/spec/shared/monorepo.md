@@ -12,7 +12,8 @@ The exact package layout can evolve, but the project should keep these boundarie
 apps/admin/          # Vue admin app
 docs/                # VitePress documentation site
 packages/ui/         # shared shadcn-vue-based UI primitives/compositions
-packages/theme/      # design profiles and token helpers
+packages/theme/      # theme runtime/core token application helpers
+packages/theme-*/    # independently installable design profile packages
 packages/core/       # shared frontend contracts when needed
 packages/cli/        # future theme-first scaffolder
 examples/            # optional validation examples, not default scaffold

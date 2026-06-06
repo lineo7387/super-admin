@@ -56,23 +56,31 @@ Use Tailwind with variables:
 - Cyberpunk is dark-first but Cyberpunk Light must still feel like a high-contrast neon terminal, not a generic cyan admin theme.
 - Newsprint is light-first but Newsprint Dark must still feel like an editorial print system with sharp ink rules, dense columns, and paper-like texture, not a generic dark admin theme.
 
-## Convention: Adding Built-In Profiles
+## Convention: Adding Installable Profiles
 
-**What**: A built-in design profile must be added in three places:
+**What**: A built-in design profile must be added as an independently installable theme package, then composed by the app's generated registry:
 
 ```ts
 // packages/core/src/design-profile.ts
 export type DesignProfileId = 'base' | 'crypto' | 'industrial' | 'cyberpunk' | 'newsprint' | (string & {})
 
-// packages/theme/src/index.ts
+// packages/theme-<id>/src/index.ts
+export const <id>Profile: DesignProfile = { ... }
+
+// apps/admin/src/super-admin/theme-registry.generated.ts
 export const builtInDesignProfiles = [baseProfile, cryptoProfile, industrialProfile, cyberpunkProfile, newsprintProfile] as const
 ```
 
-and as a concrete `DesignProfile` file under `packages/theme/src/profiles/<id>.ts`.
+Add a package manifest and `tsconfig.json` under `packages/theme-<id>/`. The package name must be `@super-admin/theme-<id>` and its public entrypoint must export the profile constant. The package may depend on `@super-admin/core`, but it must not depend on the admin app.
 
-**Why**: The Control Center renders installed profiles from `builtInDesignProfiles`, while persisted preferences use `DesignProfileId`. Updating both keeps runtime switching, local storage, tests, and UI selection in sync.
+The theme runtime package, `@super-admin/theme`, owns token application helpers only. It must not import or re-export built-in profile constants or registries.
 
-**Tests Required**: Extend `packages/theme/src/profiles.test.ts` so the new profile is resolved by `getBuiltInDesignProfile('<id>')`, exposes both light/dark variants, and has at least one profile-specific token assertion for its visual signature.
+**Why**: Dependency-granular CLI theme selection only works when selected themes map to selected npm packages. The generated app registry composes installed profiles for the app, while persisted preferences use `DesignProfileId`. Updating both keeps runtime switching, local storage, tests, and UI selection in sync without forcing every built-in theme into the required runtime package.
+
+**Tests Required**:
+
+- Keep `packages/theme/src/profiles.test.ts` focused on the runtime package boundary: it should export runtime helpers and should not expose profile registries or profile constants.
+- Extend the app registry test, `apps/admin/src/super-admin/theme-registry.generated.test.ts`, so the installed profile is resolved by `getBuiltInDesignProfile('<id>')`, exposes both light/dark variants, and has at least one profile-specific token assertion for its visual signature.
 
 ## Scenario: Auth Portal Profile Recipes
 

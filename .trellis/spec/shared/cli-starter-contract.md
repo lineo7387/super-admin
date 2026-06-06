@@ -111,6 +111,7 @@ Theme package naming:
 
 ```text
 @super-admin/theme-base
+@super-admin/theme-crypto
 @super-admin/theme-cyberpunk
 @super-admin/theme-industrial
 @super-admin/theme-newsprint

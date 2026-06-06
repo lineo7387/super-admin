@@ -7,6 +7,11 @@
       "@/*": ["src/*"],
       "@super-admin/core": ["../../packages/core/src/index.ts"],
       "@super-admin/theme": ["../../packages/theme/src/index.ts"],
+      "@super-admin/theme-base": ["../../packages/theme-base/src/index.ts"],
+      "@super-admin/theme-crypto": ["../../packages/theme-crypto/src/index.ts"],
+      "@super-admin/theme-cyberpunk": ["../../packages/theme-cyberpunk/src/index.ts"],
+      "@super-admin/theme-industrial": ["../../packages/theme-industrial/src/index.ts"],
+      "@super-admin/theme-newsprint": ["../../packages/theme-newsprint/src/index.ts"],
       "@super-admin/ui": ["../../packages/ui/src/index.ts"]
     }
   },

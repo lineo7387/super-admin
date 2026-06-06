@@ -1,1 +1,11 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "Defines dependency-granular theme package and generated registry boundaries."}
+{"file": ".trellis/spec/shared/typescript.md", "reason": "Defines explicit exported type and package API expectations."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Defines default scaffold and package quality constraints."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Defines workspace package boundaries and explicit exports."}
+{"file": ".trellis/spec/frontend/design-profiles.md", "reason": "Defines built-in profile ids, tokens, and verification expectations."}
+{"file": ".trellis/spec/frontend/css-design.md", "reason": "Defines Tailwind/CSS variable safety for theme consumption."}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Defines frontend exported contract typing rules."}
+{"file": ".trellis/spec/frontend/quality.md", "reason": "Defines frontend/theme verification expectations."}
+{"file": ".trellis/spec/big-question/theme-switching-state-loss.md", "reason": "Preserve runtime profile switching without state loss."}
+{"file": ".trellis/tasks/archive/2026-06/06-06-prepare-package-publish-boundaries/inventory.md", "reason": "Records package export/dependency blockers discovered before this split."}
+{"file": ".trellis/tasks/archive/2026-06/06-06-prepare-package-publish-boundaries/plan.md", "reason": "Records follow-up plan for theme runtime and independent packages."}

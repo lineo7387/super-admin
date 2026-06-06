@@ -1,1 +1,6 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "Check implementation against dependency-granular theme and generated registry contract."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Check default scaffold/package quality constraints."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Check package boundaries, exports, and dependency direction."}
+{"file": ".trellis/spec/frontend/design-profiles.md", "reason": "Check all built-in profiles remain available and verified."}
+{"file": ".trellis/spec/frontend/quality.md", "reason": "Check frontend/theme verification expectations."}
+{"file": ".trellis/spec/big-question/theme-switching-state-loss.md", "reason": "Check runtime switching preserves shell/workspace state."}

@@ -158,6 +158,7 @@ Theme packages must be dependency-granular:
 
 ```text
 @super-admin/theme-base
+@super-admin/theme-crypto
 @super-admin/theme-cyberpunk
 @super-admin/theme-industrial
 @super-admin/theme-newsprint
@@ -281,7 +282,7 @@ Generated projects do not include test files by default.
 Likely follow-up work:
 
 - Add `base`/`neutral` shadcn-vue-style theme.
-- Split theme runtime and independent theme packages.
+- Finish publish-ready exports for the split theme runtime and independent theme packages.
 - Define `super-admin.config.ts` and generated registry shape.
 - Prepare npm package publish boundaries.
 - Implement `create-super-admin` CLI MVP.

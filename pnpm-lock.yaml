@@ -44,6 +44,21 @@ importers:
       '@super-admin/theme':
         specifier: workspace:*
         version: link:../../packages/theme
+      '@super-admin/theme-base':
+        specifier: workspace:*
+        version: link:../../packages/theme-base
+      '@super-admin/theme-crypto':
+        specifier: workspace:*
+        version: link:../../packages/theme-crypto
+      '@super-admin/theme-cyberpunk':
+        specifier: workspace:*
+        version: link:../../packages/theme-cyberpunk
+      '@super-admin/theme-industrial':
+        specifier: workspace:*
+        version: link:../../packages/theme-industrial
+      '@super-admin/theme-newsprint':
+        specifier: workspace:*
+        version: link:../../packages/theme-newsprint
       '@super-admin/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -111,6 +126,56 @@ importers:
         version: 4.1.7(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
 
   packages/theme:
+    dependencies:
+      '@super-admin/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.7(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
+
+  packages/theme-base:
+    dependencies:
+      '@super-admin/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.7(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
+
+  packages/theme-crypto:
+    dependencies:
+      '@super-admin/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.7(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
+
+  packages/theme-cyberpunk:
+    dependencies:
+      '@super-admin/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.7(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
+
+  packages/theme-industrial:
+    dependencies:
+      '@super-admin/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.7(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
+
+  packages/theme-newsprint:
     dependencies:
       '@super-admin/core':
         specifier: workspace:*
