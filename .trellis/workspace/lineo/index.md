@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 17
+- **Total Sessions**: 18
 - **Last Active**: 2026-06-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~582 | Active |
+| `journal-1.md` | ~616 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 18 | 2026-06-06 | Split theme packages and registry | `6dd3604`,  `d37ff49` | `main` |
 | 17 | 2026-06-06 | Inventory package publish boundaries | `7661ce1` | `main` |
 | 16 | 2026-06-06 | CLI starter contract and base theme | `06290f8`, `b201be5` | `main` |
 | 15 | 2026-06-06 | Shell IA and Stage Manager refinement | `d082ca4` | `main` |

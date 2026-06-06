@@ -580,3 +580,37 @@ Prepared the package publish boundary inventory for the CLI starter work, captur
 ### Next Steps
 
 - None - task complete
+
+
+## Session 18: Split theme packages and registry
+
+**Date**: 2026-06-06
+**Task**: Split theme packages and registry
+**Branch**: `main`
+
+### Summary
+
+Split @super-admin/theme into runtime-only helpers plus independent theme profile packages; added the maintainer app generated theme registry and tests; updated CLI starter/package boundary specs; archived 06-06-split-theme-packages-and-registry while keeping the parent task active.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6dd3604` | (see git log) |
+| `d37ff49` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
