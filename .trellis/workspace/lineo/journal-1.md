@@ -19,7 +19,10 @@ Built and closed the first frontend foundation milestone: Vue admin shell, runti
 
 ### Main Changes
 
-(Add details)
+- Completed and archived `.trellis/tasks/06-06-design-generated-starter-template`.
+- Added template file map, CLI input contract, plan, and decision summary artifacts.
+- Promoted generated-template constraints into `.trellis/spec/shared/cli-starter-contract.md`.
+- Kept the parent task active in planning; progress advanced to `[4/6 done]`.
 
 ### Git Commits
 
@@ -33,7 +36,9 @@ Built and closed the first frontend foundation milestone: Vue admin shell, runti
 
 ### Testing
 
-- [OK] (Add test results)
+- [OK] `python3 ./.trellis/scripts/task.py validate 06-06-design-generated-starter-template`
+- [OK] `git diff --check`
+- [OK] `git diff --cached --check` before both commits
 
 ### Status
 
@@ -602,6 +607,39 @@ Split @super-admin/theme into runtime-only helpers plus independent theme profil
 |------|---------|
 | `6dd3604` | (see git log) |
 | `d37ff49` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 19: Design generated starter template
+
+**Date**: 2026-06-06
+**Task**: Design generated starter template
+**Branch**: `main`
+
+### Summary
+
+Defined generated starter template file map, app-local ownership, future CLI input contract, and shared starter validation rules.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b13497c` | (see git log) |
 
 ### Testing
 
