@@ -513,3 +513,37 @@ Refined shell information architecture, moved Control Center to a stable global 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 16: CLI starter contract and base theme
+
+**Date**: 2026-06-06
+**Task**: CLI starter contract and base theme
+**Branch**: `main`
+
+### Summary
+
+Defined the CLI starter contract and added the neutral Base design profile as the first implementation slice; parent task remains active for broader CLI/package-boundary follow-up.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `06290f8` | (see git log) |
+| `b201be5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
