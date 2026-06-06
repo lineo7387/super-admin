@@ -4,11 +4,21 @@ import aiAssistantSource from '../AiAssistantFloatingPanel.vue?raw'
 import globalPreferencesSource from './GlobalPreferences.vue?raw'
 
 describe('global preferences shell wiring', () => {
-  it('mounts the control center modal once without a fixed app-shell trigger', () => {
+  it('mounts the control center modal once with a fixed right-side app-shell trigger', () => {
     expect(appShellSource).toContain('<GlobalPreferences trigger="none" />')
+    expect(appShellSource).toContain('openControlCenter')
+    expect(appShellSource).toContain('Settings2')
+    expect(appShellSource).toContain('fixed right-4 top-1/2')
     expect(globalPreferencesSource).toContain('preferences.controlCenterOpen')
     expect(globalPreferencesSource).toContain('preferences.setLocale')
     expect(globalPreferencesSource).toContain('shell.preferences.locale')
+    expect(globalPreferencesSource).toContain('preferences.setStageManagerPresentationMode')
+    expect(globalPreferencesSource).toContain('shell.preferences.stagePresentationMode')
+    expect(globalPreferencesSource).toContain('shell.preferences.stageModes.sideDock')
+    expect(globalPreferencesSource).toContain('shell.preferences.stageModes.allWindows')
+    expect(globalPreferencesSource).not.toContain('setStageManagerScrollOverflow')
+    expect(globalPreferencesSource).not.toContain('stageManagerScroll')
+    expect(globalPreferencesSource).not.toContain('stageScrollDescription')
     expect(globalPreferencesSource).not.toContain('fixed right-4 top-3')
   })
 

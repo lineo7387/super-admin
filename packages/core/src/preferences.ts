@@ -10,8 +10,11 @@ export type WorkspaceTabPreferences = {
   closeStrategy: WorkspaceTabCloseStrategy
 }
 
+export type StageManagerPresentationMode = 'side-dock' | 'all-windows'
+
 export type StageManagerPreferences = {
   enabled: boolean
+  presentationMode: StageManagerPresentationMode
 }
 
 export type AppearanceState = {
@@ -41,7 +44,15 @@ export const defaultAppearanceState: AppearanceState = {
     closeStrategy: 'activate-nearest'
   },
   stageManager: {
-    enabled: true
+    enabled: true,
+    presentationMode: 'side-dock'
+  }
+}
+
+function mergeStageManagerPreferences(input?: Partial<StageManagerPreferences>): StageManagerPreferences {
+  return {
+    enabled: input?.enabled ?? defaultAppearanceState.stageManager.enabled,
+    presentationMode: input?.presentationMode ?? defaultAppearanceState.stageManager.presentationMode
   }
 }
 
@@ -53,9 +64,6 @@ export function mergeAppearanceState(input: AppearanceStateInput): AppearanceSta
       ...defaultAppearanceState.workspaceTabs,
       ...input.workspaceTabs
     },
-    stageManager: {
-      ...defaultAppearanceState.stageManager,
-      ...input.stageManager
-    }
+    stageManager: mergeStageManagerPreferences(input.stageManager)
   }
 }

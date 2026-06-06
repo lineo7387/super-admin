@@ -4,10 +4,20 @@ const zhCN = {
       menu: '账户菜单',
       menuFor: '{name} 的账户菜单',
       settings: '设置',
-      controlCenter: '控制中心',
+      profileSettings: '个人信息与账户设置',
       shortcuts: '快捷方式',
-      stageManagerShortcut: '舞台管理器 - Cmd/Ctrl+Shift+M',
+      shortcutsDetail: '查看已绑定快捷键',
       signOut: '退出登录'
+    },
+    shortcuts: {
+      title: '快捷方式',
+      readOnly: '当前版本仅供查看，暂不支持自定义快捷键。',
+      close: '关闭快捷方式',
+      stageManager: '台前调度',
+      controlCenter: '控制中心',
+      aiAssistant: 'AI 助手',
+      commandPalette: '搜索 / 命令面板',
+      unbound: '未绑定'
     },
     assistant: {
       open: '打开 AI 助手',
@@ -45,6 +55,8 @@ const zhCN = {
       tabsDescription: '持久化的横向路由标签页。',
       stageManagerShortcut: '舞台管理器快捷键',
       stageDescription: '用于打开工作区概览层。',
+      stagePresentationMode: '台前调度展示',
+      stagePresentationDescription: '切换侧边分组或全遮罩全部窗口。',
       aiProvider: 'AI 提供方',
       providerUnavailable: '不可用',
       providerDescription: '提供方接口已类型化，但默认不接入任何提供方。',
@@ -72,6 +84,16 @@ const zhCN = {
         system: {
           label: '跟随系统',
           detail: '使用操作系统偏好'
+        }
+      },
+      stageModes: {
+        sideDock: {
+          label: '侧边分组',
+          detail: '左侧显示最多四个窗口或模块组。'
+        },
+        allWindows: {
+          label: '全部窗口',
+          detail: '全遮罩展示所有窗口，不做模块分组。'
         }
       },
       density: {
@@ -127,7 +149,12 @@ const zhCN = {
       pin: '固定舞台',
       unpin: '取消固定舞台',
       refresh: '刷新舞台',
-      closeStage: '关闭舞台'
+      closeStage: '关闭舞台',
+      expandGroup: '展开分组',
+      collapseGroup: '收起分组',
+      enterGroupWindows: '进入窗口层级',
+      windows: '窗口',
+      backToGroups: '返回分组'
     }
   },
   auth: {

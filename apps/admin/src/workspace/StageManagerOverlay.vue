@@ -1,44 +1,132 @@
 <script setup lang="ts">
-import { Pin, PinOff, RotateCw, X } from 'lucide-vue-next'
+import { X } from 'lucide-vue-next'
 import type { Component } from 'vue'
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { findActiveModule, findModuleRoute } from '@super-admin/core'
+import { createWorkspaceTabGroups, findActiveModule, findModuleRoute } from '@super-admin/core'
 import { AdminButton } from '@super-admin/ui'
 import { translateRouteTitle } from '@/i18n/navigation'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { registeredModules } from '@/modules/module-registry'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
+import { resolveNextGroupWindow, resolveOverviewLayout, sortStageGroupsForDock } from './stage-manager'
+import type { StageGroupView, StageWindowView } from './stage-manager'
+import StageDockPanel from './StageDockPanel.vue'
+import StageOverviewCard from './StageOverviewCard.vue'
 
 const preferences = usePreferencesStore()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const tabs = useWorkspaceTabsStore()
+const activeWindowGroupId = shallowRef<string | null>(null)
+const stageViewportWidth = shallowRef(1024)
 
-const stages = computed(() =>
-  tabs.state.tabs.map((tab) => {
-    const module = findActiveModule(registeredModules, tab.routePath)
-    const moduleRoute = findModuleRoute(module, tab.routePath)
-    const isActive = tab.routePath === route.fullPath
+const stageGroups = computed<StageGroupView[]>(() =>
+  sortStageGroupsForDock(
+    createWorkspaceTabGroups(tabs.state.tabs, registeredModules).map((group) => {
+      const module = findActiveModule(registeredModules, group.activeTab.routePath)
+      const moduleRoute = findModuleRoute(module, group.activeTab.routePath)
+      const isActive = group.tabs.some((tab) => tab.routePath === route.fullPath)
 
-    return {
-      tab,
-      component: moduleRoute?.component as Component | undefined,
-      isActive
-    }
-  })
+      return {
+        ...group,
+        activeTabTitle: translateRouteTitle(t, group.activeTab.routePath, group.activeTab.title),
+        component: moduleRoute?.component as Component | undefined,
+        isActive
+      }
+    })
+  )
 )
+const activeWindowGroup = computed(() =>
+  activeWindowGroupId.value ? stageGroups.value.find((group) => group.id === activeWindowGroupId.value) ?? null : null
+)
+const windowStages = computed<StageWindowView[]>(() =>
+  (activeWindowGroup.value?.tabs ?? []).map((tab) => ({
+    tab,
+    component: resolveTabComponent(tab.routePath),
+    isActive: tab.routePath === route.fullPath,
+    title: translateRouteTitle(t, tab.routePath, tab.title)
+  }))
+)
+const allWindowStages = computed<StageWindowView[]>(() =>
+  [...tabs.state.tabs]
+    .sort((left, right) => right.activatedAt - left.activatedAt)
+    .map((tab) => ({
+      tab,
+      component: resolveTabComponent(tab.routePath),
+      isActive: tab.routePath === route.fullPath,
+      title: translateRouteTitle(t, tab.routePath, tab.title)
+    }))
+)
+const overviewGridStyle = computed<Record<string, string>>(() => {
+  const layout = resolveOverviewLayout(allWindowStages.value.length, stageViewportWidth.value)
+
+  return {
+    '--stage-overview-columns': String(layout.columns),
+    '--stage-overview-rows': String(layout.rows),
+    '--stage-overview-card-width': layout.cardWidth,
+    '--stage-overview-card-height': layout.cardHeight,
+    '--stage-overview-scale': String(layout.scale)
+  }
+})
+
+function syncStageViewportWidth(): void {
+  stageViewportWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+  syncStageViewportWidth()
+  window.addEventListener('resize', syncStageViewportWidth)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', syncStageViewportWidth)
+})
 
 function closeStageManager(): void {
+  activeWindowGroupId.value = null
   preferences.closeStageManager()
 }
 
+function closeAllWindowsOnBackdrop(): void {
+  if (preferences.stageManager.presentationMode !== 'all-windows') {
+    return
+  }
+
+  closeStageManager()
+}
+
+function resolveTabComponent(routePath: string): Component | undefined {
+  const module = findActiveModule(registeredModules, routePath)
+  const moduleRoute = findModuleRoute(module, routePath)
+
+  return moduleRoute?.component as Component | undefined
+}
+
 function activateStage(path: string): void {
+  activeWindowGroupId.value = null
   tabs.activateTab(path)
   closeStageManager()
   void router.push(path)
+}
+
+function activateStageGroup(groupId: string): void {
+  const group = stageGroups.value.find((item) => item.id === groupId)
+  if (!group) {
+    return
+  }
+
+  activateStage(resolveNextGroupWindow(group, route.fullPath).routePath)
+}
+
+function enterWindowGroup(groupId: string): void {
+  activeWindowGroupId.value = groupId
+}
+
+function exitWindowGroup(): void {
+  activeWindowGroupId.value = null
 }
 
 function closeStage(tabId: string): void {
@@ -49,7 +137,7 @@ function closeStage(tabId: string): void {
   }
 
   if (route.fullPath === tabId) {
-    void router.push('/dashboard')
+    void router.push('/examples/dashboard')
   }
 }
 
@@ -66,7 +154,7 @@ function refreshStage(tabId: string): void {
   <Teleport to="body">
     <div
       v-if="preferences.stageManager.enabled && preferences.stageManagerOpen"
-      class="stage-layer fixed inset-0 z-[75] pointer-events-none"
+      class="stage-layer fixed inset-0 z-[75] pointer-events-auto"
       @keydown.esc="closeStageManager"
     >
       <section
@@ -74,10 +162,15 @@ function refreshStage(tabId: string): void {
         role="dialog"
         aria-modal="true"
         aria-labelledby="stage-manager-title"
+        @click="closeAllWindowsOnBackdrop"
       >
-        <div class="stage-side-mask" />
+        <div v-if="preferences.stageManager.presentationMode === 'side-dock'" class="stage-side-mask" aria-hidden="true" />
+        <div v-else-if="preferences.stageManager.presentationMode === 'all-windows'" class="stage-all-windows-mask" aria-hidden="true" />
 
-        <header class="pointer-events-none absolute left-7 top-6 z-20 max-w-sm">
+        <header
+          class="pointer-events-none absolute left-7 top-6 z-20 max-w-sm"
+          :class="preferences.stageManager.presentationMode === 'all-windows' ? 'stage-header--muted' : ''"
+        >
           <div>
             <div class="text-xs uppercase tracking-[0.18em] text-[var(--primary)]">{{ t('workspace.stage.title') }}</div>
             <h2 id="stage-manager-title" class="mt-1 [font-family:var(--font-display)] text-lg text-[var(--foreground)]">
@@ -87,68 +180,68 @@ function refreshStage(tabId: string): void {
         </header>
 
         <AdminButton
+          v-if="preferences.stageManager.presentationMode !== 'all-windows'"
           variant="secondary"
           size="icon"
           class="pointer-events-auto absolute left-[13.75rem] top-6 z-30 shadow-[var(--panel-shadow)]"
           :title="t('workspace.stage.close')"
-          @click="closeStageManager"
+          @click.stop="closeStageManager"
         >
           <X class="size-4" />
         </AdminButton>
 
-        <div class="stage-dock" :aria-label="t('workspace.stage.stages')">
-          <article
-            v-for="stage in stages"
+        <StageDockPanel
+          v-if="preferences.stageManager.presentationMode === 'side-dock'"
+          :active-window-group="activeWindowGroup"
+          :labels="{
+            backToGroups: t('workspace.stage.backToGroups'),
+            closeStage: t('workspace.stage.closeStage'),
+            current: t('workspace.stage.current'),
+            enterGroupWindows: t('workspace.stage.enterGroupWindows'),
+            pin: t('workspace.stage.pin'),
+            pinned: t('workspace.stage.pinned'),
+            previewUnavailable: t('workspace.stage.previewUnavailable'),
+            refresh: t('workspace.stage.refresh'),
+            stages: t('workspace.stage.stages'),
+            unpin: t('workspace.stage.unpin'),
+            windows: t('workspace.stage.windows')
+          }"
+          :stage-groups="stageGroups"
+          :window-stages="windowStages"
+          @activate-group="activateStageGroup"
+          @activate-window="activateStage"
+          @close-window="closeStage"
+          @enter-group="enterWindowGroup"
+          @exit-group="exitWindowGroup"
+          @refresh-window="refreshStage"
+          @toggle-pin="toggleStagePin"
+        />
+
+        <div
+          v-else-if="preferences.stageManager.presentationMode === 'all-windows'"
+          class="stage-overview-grid"
+          :style="overviewGridStyle"
+          :aria-label="t('workspace.stage.stages')"
+        >
+          <StageOverviewCard
+            v-for="stage in allWindowStages"
             :key="stage.tab.id"
-            class="stage-thumb group"
-            :class="stage.isActive ? 'stage-thumb--active' : ''"
-          >
-            <button
-              type="button"
-              class="block h-full w-full text-left focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-              @click="activateStage(stage.tab.routePath)"
-            >
-              <div class="stage-window-preview stage-window-preview--thumb">
-                <div class="stage-window-scale stage-window-scale--thumb">
-                  <component :is="stage.component" v-if="stage.component" />
-                  <div v-else class="grid h-full place-items-center text-sm text-[var(--muted-foreground)]">
-                    {{ t('workspace.stage.previewUnavailable') }}
-                  </div>
-                </div>
-              </div>
-              <div class="mt-2 truncate text-xs font-semibold text-[var(--foreground)]">{{ translateRouteTitle(t, stage.tab.routePath, stage.tab.title) }}</div>
-              <div class="mt-1 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em]">
-                <span v-if="stage.isActive" class="text-[var(--primary)]">{{ t('workspace.stage.current') }}</span>
-                <span v-if="stage.tab.pinned" class="text-[var(--accent)]">{{ t('workspace.stage.pinned') }}</span>
-              </div>
-            </button>
-            <button
-              type="button"
-              class="stage-action stage-action--pin opacity-0 transition group-hover:opacity-100"
-              :title="stage.tab.pinned ? t('workspace.stage.unpin') : t('workspace.stage.pin')"
-              @click.stop="toggleStagePin(stage.tab.id)"
-            >
-              <PinOff v-if="stage.tab.pinned" class="size-3" />
-              <Pin v-else class="size-3" />
-            </button>
-            <button
-              type="button"
-              class="stage-action stage-action--refresh opacity-0 transition group-hover:opacity-100"
-              :title="t('workspace.stage.refresh')"
-              @click.stop="refreshStage(stage.tab.id)"
-            >
-              <RotateCw class="size-3" />
-            </button>
-            <button
-              v-if="!stage.tab.pinned"
-              type="button"
-              class="stage-action stage-action--close opacity-0 transition group-hover:opacity-100"
-              :title="t('workspace.stage.closeStage')"
-              @click.stop="closeStage(stage.tab.id)"
-            >
-              <X class="size-3" />
-            </button>
-          </article>
+            :active="stage.isActive"
+            :close-label="t('workspace.stage.closeStage')"
+            :component="stage.component"
+            :current-label="t('workspace.stage.current')"
+            :pin-label="t('workspace.stage.pin')"
+            :pinned="stage.tab.pinned"
+            :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
+            :refresh-label="t('workspace.stage.refresh')"
+            :route-path="stage.tab.routePath"
+            :title="stage.title"
+            :unpin-label="t('workspace.stage.unpin')"
+            @activate="activateStage(stage.tab.routePath)"
+            @close="closeStage(stage.tab.id)"
+            @refresh="refreshStage(stage.tab.id)"
+            @toggle-pin="toggleStagePin(stage.tab.id)"
+          />
         </div>
       </section>
     </div>
@@ -157,6 +250,9 @@ function refreshStage(tabId: string): void {
 
 <style scoped>
 .stage-layer {
+  --stage-side-mask-width: 17rem;
+  --stage-dock-width: 12.6rem;
+
   background: transparent;
   perspective: 1400px;
 }
@@ -164,115 +260,54 @@ function refreshStage(tabId: string): void {
 .stage-side-mask {
   position: absolute;
   inset: 0 auto 0 0;
-  width: min(19rem, 42vw);
+  z-index: 0;
+  width: var(--stage-side-mask-width);
   pointer-events: none;
+  border-right: 1px solid color-mix(in srgb, var(--border-strong) 70%, transparent);
   background:
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--app-background) 82%, black 18%) 0%,
-      color-mix(in srgb, var(--app-background) 58%, transparent) 72%,
+      color-mix(in srgb, var(--app-background) 44%, transparent) 0%,
+      color-mix(in srgb, var(--app-background) 28%, transparent) 68%,
       transparent 100%
     );
-  backdrop-filter: blur(2px);
-  border-right: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+  backdrop-filter: blur(8px);
 }
 
-.stage-dock {
+.stage-all-windows-mask {
   position: absolute;
-  pointer-events: auto;
-  left: clamp(1.25rem, 4vw, 3rem);
-  top: 7rem;
-  display: flex;
-  width: 12.6rem;
-  height: calc(100vh - 11rem);
-  flex-direction: column;
-  gap: 1rem;
-  transform-style: preserve-3d;
-}
-
-.stage-thumb {
-  position: relative;
-  width: 12rem;
-  padding: 0.55rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--surface) 78%, transparent);
-  box-shadow: var(--panel-shadow);
-  backdrop-filter: blur(10px);
-  transform: perspective(1000px) rotateY(12deg) scale(0.96);
-  transform-origin: right center;
-  transition:
-    transform var(--duration-base) var(--easing),
-    border-color var(--duration-base) var(--easing);
-}
-
-.stage-thumb--active {
-  border-color: var(--border-strong);
-  box-shadow: var(--glow), var(--panel-shadow);
-}
-
-.stage-thumb:hover {
-  border-color: var(--border-strong);
-  transform: perspective(1000px) rotateY(7deg) scale(1) translateX(0.35rem);
-}
-
-.stage-window-preview {
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--app-background);
-}
-
-.stage-window-preview--thumb {
-  height: 7.2rem;
-}
-
-.stage-window-scale {
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
-  transform-origin: top left;
+  background: color-mix(in srgb, var(--app-background) 18%, transparent);
+  backdrop-filter: blur(16px);
 }
 
-.stage-window-scale--thumb {
-  width: 56rem;
-  height: 38rem;
-  padding: 0.85rem;
-  transform: scale(0.21);
+.stage-header--muted {
+  opacity: 0.48;
 }
 
-.stage-action {
+.stage-overview-grid {
   position: absolute;
-  top: 0.4rem;
+  inset: 0;
+  z-index: 10;
   display: grid;
-  width: 1.35rem;
-  height: 1.35rem;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-raised);
-  color: var(--foreground);
-}
-
-.stage-action--close {
-  right: 0.4rem;
-}
-
-.stage-action--refresh {
-  right: 1.95rem;
-}
-
-.stage-action--pin {
-  right: 3.5rem;
+  grid-template-columns: repeat(var(--stage-overview-columns), minmax(0, var(--stage-overview-card-width)));
+  grid-template-rows: repeat(var(--stage-overview-rows), minmax(0, var(--stage-overview-card-height)));
+  place-content: center;
+  justify-content: center;
+  align-content: center;
+  align-items: stretch;
+  justify-items: stretch;
+  gap: clamp(0.65rem, 1.4vw, 1.35rem);
+  overflow: hidden;
+  padding: clamp(5.5rem, 7vh, 7rem) clamp(2rem, 4vw, 4.5rem);
 }
 
 @media (max-width: 760px) {
-  .stage-dock {
-    left: 1rem;
-    top: 6rem;
-    width: 10rem;
-  }
-
-  .stage-thumb {
-    width: 9.5rem;
+  .stage-layer {
+    --stage-side-mask-width: 12rem;
+    --stage-dock-width: 10rem;
   }
 }
 </style>

@@ -4,10 +4,20 @@ const enUS = {
       menu: 'Account menu',
       menuFor: '{name} account menu',
       settings: 'Settings',
-      controlCenter: 'Control Center',
+      profileSettings: 'Profile and account settings',
       shortcuts: 'Shortcuts',
-      stageManagerShortcut: 'Stage Manager - Cmd/Ctrl+Shift+M',
+      shortcutsDetail: 'View assigned shortcuts',
       signOut: 'Sign out'
+    },
+    shortcuts: {
+      title: 'Shortcuts',
+      readOnly: 'This first version is read-only and does not support custom shortcuts.',
+      close: 'Close shortcuts',
+      stageManager: 'Stage Manager',
+      controlCenter: 'Control Center',
+      aiAssistant: 'AI Assistant',
+      commandPalette: 'Search / Command Palette',
+      unbound: 'Unbound'
     },
     assistant: {
       open: 'Open AI Assistant',
@@ -45,6 +55,8 @@ const enUS = {
       tabsDescription: 'Persistent horizontal route tabs.',
       stageManagerShortcut: 'Stage Manager Shortcut',
       stageDescription: 'macOS-style overview layer for open workspaces.',
+      stagePresentationMode: 'Stage Manager Display',
+      stagePresentationDescription: 'Switch between grouped side dock and full-mask windows.',
       aiProvider: 'AI provider',
       providerUnavailable: 'Unavailable',
       providerDescription: 'Provider interfaces are typed, but no provider is attached by default.',
@@ -72,6 +84,16 @@ const enUS = {
         system: {
           label: 'System',
           detail: 'Follow OS preference'
+        }
+      },
+      stageModes: {
+        sideDock: {
+          label: 'Side Groups',
+          detail: 'Show up to four windows or module groups on the left.'
+        },
+        allWindows: {
+          label: 'All Windows',
+          detail: 'Use a full mask and show every window without module grouping.'
         }
       },
       density: {
@@ -127,7 +149,12 @@ const enUS = {
       pin: 'Pin stage',
       unpin: 'Unpin stage',
       refresh: 'Refresh stage',
-      closeStage: 'Close stage'
+      closeStage: 'Close stage',
+      expandGroup: 'Expand group',
+      collapseGroup: 'Collapse group',
+      enterGroupWindows: 'Enter window level',
+      windows: 'windows',
+      backToGroups: 'Back to groups'
     }
   },
   auth: {

@@ -8,7 +8,8 @@ import {
   type Density,
   type DesignProfileId,
   type LayoutPresetId,
-  type ResolvedColorMode
+  type ResolvedColorMode,
+  type StageManagerPresentationMode
 } from '@super-admin/core'
 import { defineStore } from 'pinia'
 import { computed, reactive, shallowRef } from 'vue'
@@ -95,6 +96,11 @@ export const usePreferencesStore = defineStore('preferences', () => {
     persist()
   }
 
+  function setStageManagerPresentationMode(presentationMode: StageManagerPresentationMode): void {
+    state.stageManager.presentationMode = presentationMode
+    persist()
+  }
+
   function openControlCenter(): void {
     controlCenterOpen.value = true
   }
@@ -159,6 +165,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
     setLayoutPreset,
     setLocale,
     setProfile,
+    setStageManagerPresentationMode,
     setTabsEnabled,
     setStageManagerEnabled
   }

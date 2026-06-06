@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { Settings2 } from 'lucide-vue-next'
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { AdminButton } from '@super-admin/ui'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { translateRouteTitle } from '@/i18n/navigation'
 import StageManagerOverlay from '@/workspace/StageManagerOverlay.vue'
@@ -31,6 +33,10 @@ const activeLayout = computed(() => {
   return TriColumnLayout
 })
 
+function openControlCenter(): void {
+  preferences.openControlCenter()
+}
+
 watch(
   () => route.fullPath,
   () => {
@@ -54,6 +60,15 @@ watch(
       <WorkspaceRouterView />
     </template>
   </component>
+  <AdminButton
+    variant="secondary"
+    size="icon"
+    class="fixed right-4 top-1/2 z-[64] -translate-y-1/2 shadow-[var(--panel-shadow)]"
+    :title="t('shell.preferences.title')"
+    @click="openControlCenter"
+  >
+    <Settings2 class="size-4" />
+  </AdminButton>
   <AiAssistantFloatingPanel />
   <StageManagerOverlay />
   <GlobalPreferences trigger="none" />

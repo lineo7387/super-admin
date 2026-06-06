@@ -20,20 +20,30 @@ describe('preference resolution', () => {
     expect(state.layoutPreset).toBe('tri-column')
     expect(state.workspaceTabs.enabled).toBe(false)
     expect(state.stageManager.enabled).toBe(true)
+    expect(state.stageManager.presentationMode).toBe('side-dock')
+    expect(state.stageManager).not.toHaveProperty('scrollOverflow')
   })
 
   it('keeps locale, layout preset, and stage manager independent', () => {
+    const legacyStageManager = {
+      enabled: false,
+      scrollOverflow: true,
+      presentationMode: 'all-windows'
+    } as unknown as Parameters<typeof mergeAppearanceState>[0]['stageManager']
+
     const state = mergeAppearanceState({
       locale: 'en-US',
       layoutPreset: 'top-header',
       workspaceTabs: { enabled: true },
-      stageManager: { enabled: false }
+      stageManager: legacyStageManager
     })
 
     expect(state.locale).toBe('en-US')
     expect(state.layoutPreset).toBe('top-header')
     expect(state.workspaceTabs.enabled).toBe(true)
     expect(state.stageManager.enabled).toBe(false)
+    expect(state.stageManager.presentationMode).toBe('all-windows')
+    expect(state.stageManager).not.toHaveProperty('scrollOverflow')
   })
 
   it('allows page metadata to override the active layout preference', () => {

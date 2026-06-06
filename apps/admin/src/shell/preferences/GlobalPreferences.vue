@@ -7,7 +7,8 @@ import {
   type ColorMode,
   type Density,
   type DesignProfileId,
-  type LayoutPresetId
+  type LayoutPresetId,
+  type StageManagerPresentationMode
 } from '@super-admin/core'
 import { builtInDesignProfiles } from '@super-admin/theme'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin/ui'
@@ -40,6 +41,11 @@ const localeOptions = computed<{ id: Locale; label: string; detail: string }[]>(
 const densityOptions = computed<{ id: Density; label: string; detail: string }[]>(() => [
   { id: 'comfortable', label: t('shell.preferences.density.comfortable.label'), detail: t('shell.preferences.density.comfortable.detail') },
   { id: 'compact', label: t('shell.preferences.density.compact.label'), detail: t('shell.preferences.density.compact.detail') }
+])
+
+const stagePresentationOptions = computed<{ id: StageManagerPresentationMode; label: string; detail: string }[]>(() => [
+  { id: 'side-dock', label: t('shell.preferences.stageModes.sideDock.label'), detail: t('shell.preferences.stageModes.sideDock.detail') },
+  { id: 'all-windows', label: t('shell.preferences.stageModes.allWindows.label'), detail: t('shell.preferences.stageModes.allWindows.detail') }
 ])
 
 const activeProfileName = computed(
@@ -79,6 +85,10 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
 
 function selectDensity(density: Density): void {
   preferences.setDensity(density)
+}
+
+function selectStagePresentationMode(presentationMode: StageManagerPresentationMode): void {
+  preferences.setStageManagerPresentationMode(presentationMode)
 }
 
 </script>
@@ -281,13 +291,34 @@ function selectDensity(density: Density): void {
                     @click="preferences.setStageManagerEnabled(!preferences.stageManager.enabled)"
                   >
                     <span class="flex items-center justify-between gap-3">
-                    <span class="text-sm">{{ t('shell.preferences.stageManagerShortcut') }}</span>
+                      <span class="text-sm">{{ t('shell.preferences.stageManagerShortcut') }}</span>
                       <span class="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px]">
                         {{ preferences.stageManager.enabled ? t('shell.preferences.on') : t('shell.preferences.off') }}
                       </span>
                     </span>
                     <span class="mt-2 block text-[11px] opacity-75">{{ t('shell.preferences.stageDescription') }}</span>
                   </button>
+
+                </div>
+
+                <div class="mt-4 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-3">
+                  <div class="flex items-center justify-between gap-3 pb-2">
+                    <span class="text-sm">{{ t('shell.preferences.stagePresentationMode') }}</span>
+                    <span class="text-[11px] text-[var(--muted-foreground)]">{{ t('shell.preferences.stagePresentationDescription') }}</span>
+                  </div>
+                  <div class="grid gap-2 sm:grid-cols-2">
+                    <button
+                      v-for="stageMode in stagePresentationOptions"
+                      :key="stageMode.id"
+                      type="button"
+                      class="rounded-[var(--radius-sm)] px-3 py-2 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
+                      :class="stageMode.id === preferences.stageManager.presentationMode ? 'bg-[var(--active-tab-background)] text-[var(--foreground)] shadow-[var(--glow)]' : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'"
+                      @click="selectStagePresentationMode(stageMode.id)"
+                    >
+                      <span class="block text-sm">{{ stageMode.label }}</span>
+                      <span class="block text-[11px] opacity-75">{{ stageMode.detail }}</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div class="mt-4 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-3">

@@ -1,4 +1,6 @@
 import type { KeepAlivePolicy } from './shell'
+import type { ModuleManifest, ModuleNavItem } from './module'
+import { isModuleNavItemActive } from './module'
 
 export type WorkspaceTabId = string
 
@@ -18,6 +20,17 @@ export type WorkspaceTabCloseStrategy = 'activate-left' | 'activate-right' | 'ac
 export type WorkspaceTabsState = {
   tabs: WorkspaceTab[]
   activeTabId: WorkspaceTabId | null
+}
+
+export type WorkspaceTabGroup = {
+  id: string
+  label: string
+  moduleId: string
+  moduleName: string
+  routePath: string
+  tabs: WorkspaceTab[]
+  activeTab: WorkspaceTab
+  isStacked: boolean
 }
 
 export function createWorkspaceTab(
@@ -98,6 +111,91 @@ export function refreshWorkspaceTab(
         : tab
     )
   }
+}
+
+export function createWorkspaceTabGroups(tabs: WorkspaceTab[], manifests: ModuleManifest[]): WorkspaceTabGroup[] {
+  const groups = new Map<string, Omit<WorkspaceTabGroup, 'activeTab' | 'isStacked'>>()
+
+  for (const tab of tabs) {
+    const descriptor = resolveWorkspaceTabGroup(tab.routePath, manifests)
+    const existing = groups.get(descriptor.id)
+
+    if (existing) {
+      existing.tabs.push(tab)
+      continue
+    }
+
+    groups.set(descriptor.id, {
+      ...descriptor,
+      tabs: [tab]
+    })
+  }
+
+  return Array.from(groups.values()).map((group) => {
+    const activeTab = group.tabs.reduce((latest, tab) => (tab.activatedAt > latest.activatedAt ? tab : latest), group.tabs[0]!)
+
+    return {
+      ...group,
+      activeTab,
+      isStacked: group.tabs.length > 1
+    }
+  })
+}
+
+function resolveWorkspaceTabGroup(routePath: string, manifests: ModuleManifest[]): Omit<WorkspaceTabGroup, 'tabs' | 'activeTab' | 'isStacked'> {
+  const manifest = manifests.find((item) => isModuleNavItemActive(item.nav, routePath))
+
+  if (!manifest) {
+    return {
+      id: routePath,
+      label: routePath,
+      moduleId: 'unknown',
+      moduleName: 'Unknown',
+      routePath
+    }
+  }
+
+  const activeTrail = findActiveNavTrail(manifest.nav, routePath)
+  const groupNavItem = manifest.id === 'examples' ? activeTrail?.[1] ?? manifest.nav : manifest.nav
+
+  return {
+    id: `${manifest.id}:${groupNavItem.path}`,
+    label: groupNavItem.label,
+    moduleId: manifest.id,
+    moduleName: manifest.name,
+    routePath: groupNavItem.path
+  }
+}
+
+function findActiveNavTrail(item: ModuleNavItem, routePath: string): ModuleNavItem[] | null {
+  for (const child of item.children ?? []) {
+    const childTrail = findActiveNavTrail(child, routePath)
+    if (childTrail) {
+      return [item, ...childTrail]
+    }
+  }
+
+  if (pathMatches(item.path, routePath)) {
+    return [item]
+  }
+
+  return null
+}
+
+function normalizePath(path: string): string {
+  const [pathWithoutQuery = '/'] = path.split(/[?#]/)
+  if (pathWithoutQuery.length > 1 && pathWithoutQuery.endsWith('/')) {
+    return pathWithoutQuery.slice(0, -1)
+  }
+
+  return pathWithoutQuery
+}
+
+function pathMatches(navPath: string, routePath: string): boolean {
+  const normalizedNavPath = normalizePath(navPath)
+  const normalizedRoutePath = normalizePath(routePath)
+
+  return normalizedRoutePath === normalizedNavPath || normalizedRoutePath.startsWith(`${normalizedNavPath}/`)
 }
 
 function resolveNextActiveTabId(

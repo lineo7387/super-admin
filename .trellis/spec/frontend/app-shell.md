@@ -49,7 +49,10 @@ type ShellAppearancePreferences = {
   layoutPreset: LayoutPresetId
   density: Density
   workspaceTabs: { enabled: boolean }
-  stageManager: { enabled: boolean }
+  stageManager: {
+    enabled: boolean
+    presentationMode: 'side-dock' | 'all-windows'
+  }
 }
 ```
 
@@ -158,6 +161,34 @@ The Control Center trigger and modal must be mounted above layout preset compone
 
 **Check**: Open Control Center, switch `tri-column` -> `dual-column` -> `top-header`, and confirm the modal remains open and all controls still update immediately.
 
+### Global Control Center Placement Contract
+
+The Control Center is a project/workspace configuration surface, not a personal account setting. Its trigger must be a fixed, right-side, vertically centered floating gear button mounted from `AppShell`, outside all layout preset components and outside `ShellAccountMenu`.
+
+The modal remains mounted once with `GlobalPreferences trigger="none"` above layout presets so live theme, density, workspace-tab, Stage Manager, and layout changes do not close it.
+
+**Correct shape**:
+
+```vue
+<component :is="activeLayout">
+  <template #workspace>
+    <WorkspaceRouterView />
+  </template>
+</component>
+<button class="fixed right-4 top-1/2">...</button>
+<GlobalPreferences trigger="none" />
+```
+
+**Wrong shape**:
+
+```vue
+<ShellAccountMenu>
+  <button @click="preferences.openControlCenter()">Control Center</button>
+</ShellAccountMenu>
+```
+
+**Check**: Verify tri-column, dual-column, and top-header layouts after login. The floating gear should stay visible on the right side and open the same live Control Center without changing routes.
+
 ### Account Menu Placement Contract
 
 `ShellHeader` is base chrome for brand/search/navigation alignment. It must not directly own auth-session state, logout, settings, activity, or Stage Manager buttons. Layout presets decide where the same account menu appears:
@@ -166,7 +197,16 @@ The Control Center trigger and modal must be mounted above layout preset compone
 - `dual-column`: account row at the bottom of the sidebar/nav rail.
 - `top-header`: compact avatar button in the header actions slot.
 
-`ShellAccountMenu` owns the current user summary, Control Center entry, shortcut/Stage Manager entry, and logout action. Keep it light: do not duplicate primary navigation such as Home/Dashboard inside this menu. Logout stays behind the user click and must not be a persistent header button.
+`ShellAccountMenu` owns the current user summary, personal account/profile settings entry, shortcuts viewer entry, and logout action. Keep it light: do not duplicate primary navigation such as Home/Dashboard inside this menu, and do not put project/workspace Control Center controls in the avatar menu. Logout stays behind the user click and must not be a persistent header button.
+
+The personal settings entry is user-scoped. It may route to or reserve space for account/profile details, but it must not open the project/workspace Control Center.
+
+The shortcuts entry opens a read-only shortcuts surface. In the first phase it lists:
+
+- Stage Manager: `Cmd/Ctrl + Shift + M`
+- Control Center: unbound
+- AI Assistant: unbound
+- Search / Command Palette: unbound
 
 The account menu must close when:
 
@@ -175,7 +215,7 @@ The account menu must close when:
 - the user chooses a menu action
 - the route changes
 
-Stage Manager should not render a permanent viewport button. When `preferences.stageManager.enabled` is true, open it from the account menu and the `Cmd/Ctrl+Shift+M` shell shortcut. The Control Center still owns the enabled/disabled preference.
+Stage Manager should not render a permanent viewport button and should not open from the account menu's shortcuts item. When `preferences.stageManager.enabled` is true, open it with the `Cmd/Ctrl+Shift+M` shell shortcut. The Control Center still owns the enabled/disabled preference.
 
 **Correct shape**:
 
@@ -199,6 +239,30 @@ Stage Manager should not render a permanent viewport button. When `preferences.s
 ```
 
 **Check**: Verify tri-column, dual-column, and top-header layouts after login. The header should not accumulate separate settings, activity, Stage Manager, user, and logout controls.
+
+### Stage Manager Grouping Contract
+
+Stage Manager groups workspace tabs by their active module. A module group with one tab can render like a single stage. A module group with multiple tabs must render as a stacked group. Clicking the stacked group follows macOS Stage Manager's "One at a Time" behavior: activate the group's most recent window when switching into the group, and switch to another recent window when the current route already belongs to that group.
+
+Pin, refresh, close, and activate actions still target individual tabs. The first phase does not support drag grouping, drag ungrouping, or custom shortcut bindings.
+
+The secondary affordance enters a window-level view for that group. This is not a side details panel and not a text tab list: the left Stage Manager dock switches from group thumbnails to that group's window thumbnails, with each window preview selectable. Keep the dock to a macOS-like maximum of four visible windows/groups; overflow is not scrollable in side-dock mode.
+
+Before applying the four-slot side-dock cap, order groups by current route first and then by most recent group activation. The current group/window must never be hidden just because more than four groups are open.
+
+The four-item limit is a visual contract, not just a flex item count. If dock thumbnails use 3D transforms, size the dock from the transformed bounding boxes or include an explicit perspective buffer so four complete windows/groups are visible. Do not enforce the four-item limit by putting `overflow-y: hidden` on the transformed dock/card container; that clips hover/current scale feedback. Hide items after the fourth slot explicitly and keep native vertical scrolling out of side-dock mode. Verify in a browser by checking computed overflow values, visible thumbnail count, and each hovered thumbnail's `getBoundingClientRect()` in light mode.
+
+The workspace blur belongs to the left Stage Manager side mask behind the dock, not to the full modal layer and not to per-window preview backgrounds. Keep the side mask low-blur and give it a visible right border so the side dock boundary is readable. If a stacked group already has an explicit window-level cue, place that cue on the preview's lower-right corner and do not render a second small count badge inside the same card.
+
+Stacked-group decoration must sit behind each thumbnail's own preview surface. Do not let a group stack background replace or tint the individual window/card preview background.
+
+Stage Manager has two presentation modes. `side-dock` is the default grouped mode: render the left dock, group by module, keep only four visible windows/groups, and keep the blur on the left side mask behind the dock. The dock lane itself must be horizontally centered within `stage-side-mask`, and side-dock thumbnails should be horizontally centered inside that lane rather than visually anchored to the right edge. `all-windows` is a full-mask overview mode: render a full-viewport blur layer and lay out every open workspace window without module grouping or stacked-group cues. This mode must fit all open windows into the available viewport with quantity-driven rows, columns, and preview scale; do not make the full-mask overview rely on scrolling. Each overview window needs max width and max height constraints. When there is exactly one overview window, use a single grid column so the card is truly horizontally and vertically centered. When there are only a few windows, keep the window group horizontally and vertically centered at modest max dimensions instead of stretching cards to fill the screen; when there are many windows, shrink the tracks within those maxima so all windows remain visible. In `all-windows`, weaken the title chrome and do not render the top close button; clicking outside a window closes Stage Manager, while clicking a window or its actions must not be treated as a backdrop click.
+
+Current and hovered Stage Manager windows/groups need an obvious theme state, but it should read as the active design profile's style rather than only as a color change. Prefer profile effect tokens such as `--glow`, `--panel-shadow`, and `--texture`, plus existing border/depth tokens, so Crypto, Industrial, Cyberpunk, and Newsprint each express their own material language. Do not reintroduce filled per-window preview surfaces or group-sized background cards to create this effect.
+
+Side-dock cards must keep their interactive hit target flat and stable. Do not put 3D perspective transforms on the clickable article/button itself; browser hit testing can fall through to the dock viewport after hover motion, making touch/click feel dead. Put 3D rotation/scale and profile effects on an inner visual surface with `pointer-events: none`, while group/window activation buttons, group-entry cues, and pin/refresh/close controls remain normal clickable elements above it. A stacked group's entry cue uses the same split: the outer cue button stays flat, above the main thumbnail hit target, and clickable; only its inner visual surface follows card tilt/scale.
+
+**Check**: Open Users All, Pending Review, Invites, and Activity. Stage Manager should show one Users stack. Clicking the Users stack from outside the group should activate the most recent Users window; clicking it while already in Users should switch to another recent Users window. The secondary window-level control should replace the left dock with Users window thumbnails, not open a side panel.
 
 ### AI Assistant Floating Surface Contract
 

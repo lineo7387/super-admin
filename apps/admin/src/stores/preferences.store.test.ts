@@ -57,6 +57,7 @@ describe('preferences store shell overlays', () => {
     preferences.setLayoutPreset('top-header')
     preferences.setTabsEnabled(false)
     preferences.setStageManagerEnabled(false)
+    preferences.setStageManagerPresentationMode('all-windows')
     preferences.setLocale('en-US')
 
     const stored = JSON.parse(window.localStorage.getItem('super-admin:preferences') ?? '{}') as Record<string, unknown>
@@ -70,5 +71,31 @@ describe('preferences store shell overlays', () => {
     expect(preferences.layoutPreset).toBe('top-header')
     expect(preferences.workspaceTabs.enabled).toBe(false)
     expect(preferences.stageManager.enabled).toBe(false)
+    expect(preferences.stageManager.presentationMode).toBe('all-windows')
+    expect(stored.stageManager).not.toHaveProperty('scrollOverflow')
+    expect((stored.stageManager as { presentationMode?: string }).presentationMode).toBe('all-windows')
+  })
+
+  it('drops retired stage manager scroll preferences from persisted state', () => {
+    window.localStorage.setItem(
+      'super-admin:preferences',
+      JSON.stringify({
+        stageManager: {
+          enabled: true,
+          scrollOverflow: true,
+          presentationMode: 'all-windows'
+        }
+      })
+    )
+
+    const preferences = usePreferencesStore()
+
+    expect(preferences.stageManager).not.toHaveProperty('scrollOverflow')
+
+    preferences.setLocale('en-US')
+
+    const stored = JSON.parse(window.localStorage.getItem('super-admin:preferences') ?? '{}') as Record<string, unknown>
+
+    expect(stored.stageManager).not.toHaveProperty('scrollOverflow')
   })
 })

@@ -2,9 +2,8 @@
 import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Keyboard, Layers3, LogOut, Settings2 } from 'lucide-vue-next'
+import { Keyboard, LogOut, Settings2, X } from 'lucide-vue-next'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
-import { usePreferencesStore } from '@/stores/preferences.store'
 
 const props = withDefaults(
   defineProps<{
@@ -19,8 +18,8 @@ const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const session = useAuthSessionStore()
-const preferences = usePreferencesStore()
 const open = shallowRef(false)
+const shortcutsPanelOpen = shallowRef(false)
 const menuRoot = useTemplateRef<HTMLElement>('menuRoot')
 
 const user = computed(() => session.currentUser)
@@ -52,6 +51,10 @@ function closeMenu(): void {
   open.value = false
 }
 
+function closeShortcutsPanel(): void {
+  shortcutsPanelOpen.value = false
+}
+
 function handlePointerDown(event: PointerEvent): void {
   if (!open.value || !menuRoot.value || !(event.target instanceof Node)) {
     return
@@ -62,14 +65,13 @@ function handlePointerDown(event: PointerEvent): void {
   }
 }
 
-function openControlCenter(): void {
+function openProfileSettings(): void {
   closeMenu()
-  preferences.openControlCenter()
 }
 
-function openStageManager(): void {
+function openShortcutsPanel(): void {
   closeMenu()
-  preferences.openStageManager()
+  shortcutsPanelOpen.value = true
 }
 
 async function signOut(): Promise<void> {
@@ -87,6 +89,7 @@ watch(
   () => route.fullPath,
   () => {
     closeMenu()
+    closeShortcutsPanel()
   }
 )
 
@@ -137,25 +140,24 @@ onUnmounted(() => {
       </div>
 
       <div class="grid border-b border-[var(--border)] p-1.5">
-        <button type="button" class="account-menu-item" role="menuitem" @click="openControlCenter">
+        <button type="button" class="account-menu-item" role="menuitem" @click="openProfileSettings">
           <Settings2 class="size-4" />
           <span class="min-w-0">
             <span class="block">{{ t('shell.account.settings') }}</span>
-            <span class="block truncate text-[0.6875rem] text-[var(--muted-foreground)]">{{ t('shell.account.controlCenter') }}</span>
+            <span class="block truncate text-[0.6875rem] text-[var(--muted-foreground)]">{{ t('shell.account.profileSettings') }}</span>
           </span>
         </button>
       </div>
 
       <div class="grid border-b border-[var(--border)] p-1.5">
-        <button type="button" class="account-menu-item" role="menuitem" :disabled="!preferences.stageManager.enabled" @click="openStageManager">
+        <button type="button" class="account-menu-item" role="menuitem" @click="openShortcutsPanel">
           <Keyboard class="size-4" />
           <span class="min-w-0">
             <span class="block">{{ t('shell.account.shortcuts') }}</span>
             <span class="block truncate text-[0.6875rem] text-[var(--muted-foreground)]">
-              {{ t('shell.account.stageManagerShortcut') }}
+              {{ t('shell.account.shortcutsDetail') }}
             </span>
           </span>
-          <Layers3 class="ml-auto size-4 text-[var(--primary)]" />
         </button>
       </div>
 
@@ -166,6 +168,57 @@ onUnmounted(() => {
         </button>
       </div>
     </div>
+
+    <Teleport to="body">
+      <div
+        v-if="shortcutsPanelOpen"
+        class="fixed inset-0 z-[78] grid place-items-center bg-black/35 p-4 backdrop-blur-sm"
+        @keydown.esc="closeShortcutsPanel"
+      >
+        <section
+          class="w-full max-w-md overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shortcuts-panel-title"
+        >
+          <header class="flex items-start justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-raised)] p-4">
+            <div>
+              <h2 id="shortcuts-panel-title" class="[font-family:var(--font-display)] text-lg text-[var(--foreground)]">
+                {{ t('shell.shortcuts.title') }}
+              </h2>
+              <p class="mt-1 text-xs text-[var(--muted-foreground)]">{{ t('shell.shortcuts.readOnly') }}</p>
+            </div>
+            <button
+              type="button"
+              class="grid size-8 place-items-center rounded-[var(--radius-sm)] text-[var(--muted-foreground)] transition hover:bg-[var(--surface)] hover:text-[var(--foreground)] focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
+              :title="t('shell.shortcuts.close')"
+              @click="closeShortcutsPanel"
+            >
+              <X class="size-4" />
+            </button>
+          </header>
+
+          <div class="grid gap-2 p-3">
+            <div class="shortcut-row">
+              <span>{{ t('shell.shortcuts.stageManager') }}</span>
+              <kbd>Cmd/Ctrl + Shift + M</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span>{{ t('shell.shortcuts.controlCenter') }}</span>
+              <span class="shortcut-row__empty">{{ t('shell.shortcuts.unbound') }}</span>
+            </div>
+            <div class="shortcut-row">
+              <span>{{ t('shell.shortcuts.aiAssistant') }}</span>
+              <span class="shortcut-row__empty">{{ t('shell.shortcuts.unbound') }}</span>
+            </div>
+            <div class="shortcut-row">
+              <span>{{ t('shell.shortcuts.commandPalette') }}</span>
+              <span class="shortcut-row__empty">{{ t('shell.shortcuts.unbound') }}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -199,5 +252,30 @@ onUnmounted(() => {
 
 .account-menu-item--danger {
   color: var(--danger);
+}
+
+.shortcut-row {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  padding: 0.65rem 0.8rem;
+  color: var(--foreground);
+  font-size: 0.875rem;
+}
+
+.shortcut-row kbd,
+.shortcut-row__empty {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 0.2rem 0.45rem;
+  color: var(--muted-foreground);
+  font-size: 0.6875rem;
+  line-height: 1.2;
 }
 </style>

@@ -4,12 +4,38 @@ import {
   activateWorkspaceTab,
   closeWorkspaceTab,
   createWorkspaceTab,
+  createWorkspaceTabGroups,
   refreshWorkspaceTab,
   toggleWorkspaceTabPin,
   type WorkspaceTabsState
 } from './workspace-tabs'
+import type { ModuleManifest } from './module'
 
 const keepAlive: KeepAlivePolicy = { enabled: true, cacheKey: 'demo' }
+
+const examplesManifest: ModuleManifest = {
+  id: 'examples',
+  name: 'Examples',
+  nav: {
+    label: 'Examples',
+    path: '/examples/template-guide',
+    children: [
+      { label: 'Dashboard', path: '/examples/dashboard' },
+      {
+        label: 'Users',
+        path: '/examples/users/all',
+        children: [
+          { label: 'All Users', path: '/examples/users/all' },
+          { label: 'Pending Review', path: '/examples/users/pending-review' },
+          { label: 'Invites', path: '/examples/users/invites' },
+          { label: 'Activity', path: '/examples/users/activity' }
+        ]
+      },
+      { label: 'Access', path: '/examples/access' }
+    ]
+  },
+  routes: []
+}
 
 function tab(id: string, now: number, pinned = false) {
   return createWorkspaceTab(
@@ -109,5 +135,32 @@ describe('workspace tab state', () => {
 
     expect(activated.activeTabId).toBe('/users')
     expect(activated.tabs.find((item) => item.id === '/users')?.refreshKey).toBe(0)
+  })
+
+  it('groups workspace tabs by module section and selects the most recently active tab', () => {
+    const state: WorkspaceTabsState = {
+      tabs: [
+        tab('/examples/dashboard', 1),
+        tab('/examples/users/all', 2),
+        tab('/examples/users/pending-review', 3),
+        tab('/examples/users/invites', 4)
+      ],
+      activeTabId: '/examples/users/invites'
+    }
+    state.tabs[1]!.activatedAt = 20
+    state.tabs[2]!.activatedAt = 60
+    state.tabs[3]!.activatedAt = 40
+
+    const groups = createWorkspaceTabGroups(state.tabs, [examplesManifest])
+
+    const usersGroup = groups.find((group) => group.label === 'Users')
+    expect(usersGroup?.tabs.map((item) => item.id)).toEqual([
+      '/examples/users/all',
+      '/examples/users/pending-review',
+      '/examples/users/invites'
+    ])
+    expect(usersGroup?.isStacked).toBe(true)
+    expect(usersGroup?.activeTab.id).toBe('/examples/users/pending-review')
+    expect(groups.find((group) => group.label === 'Dashboard')?.isStacked).toBe(false)
   })
 })
