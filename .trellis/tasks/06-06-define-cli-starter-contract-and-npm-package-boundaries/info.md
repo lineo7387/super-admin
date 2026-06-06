@@ -49,8 +49,9 @@ The key conclusion: the next task should not be "build the CLI" immediately. It 
 - The no-flags default should not include runtime theme switching or language switching.
 - The CLI can let users choose the default template or another style template at project creation time.
 - The template/style system should leave room to add more style templates later.
-- Generated projects should not depend on monorepo workspace packages.
-- Generated projects should install published npm packages directly.
+- Generated projects should not depend on monorepo-only package references.
+- Generated projects should install published npm packages directly with normal version ranges.
+- Source package manifests may still use pnpm `workspace:` ranges during monorepo development; generated app output and packed/published artifacts must not expose those ranges.
 - Generated projects should be single-app Vite projects, not generated workspaces.
 - Generated projects should not include the VitePress docs site.
 - Generated projects may include README links to official Super Admin docs.
@@ -327,7 +328,7 @@ Registered child tasks:
 These decisions may later be promoted into `.trellis/spec/` after the contract is reviewed:
 
 - CLI product boundary: project generation only; no business module generation.
-- Generated starter dependency rule: published npm packages only, no monorepo workspace dependency.
+- Generated starter dependency rule: published npm packages only in generated output; source monorepo package manifests may still use pnpm `workspace:` ranges during development.
 - Generated project shape: single-app Vite project.
 - Generated project docs boundary: no VitePress docs site, README links only.
 - Generated project backend boundary: no optional Hono reference API or backend scaffold.

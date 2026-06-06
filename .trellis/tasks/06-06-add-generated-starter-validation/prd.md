@@ -16,7 +16,8 @@ This task implements the validation stage from the CLI starter contract. It shou
 - Validate generated project `typecheck` succeeds.
 - Validate generated project `build` succeeds.
 - Add a startup smoke check for generated app boot.
-- Verify generated `package.json` has no monorepo `workspace:*` dependencies.
+- Verify generated `package.json` has no `workspace:` dependency specifiers.
+- Verify any packed local `@super-admin/*` artifacts consumed by validation have rewritten workspace ranges to normal npm version ranges.
 - Verify default generated output does not include backend/docs/test/lint/e2e/reference-smoke tooling.
 - Verify default theme dependencies are only `@super-admin/theme` and `@super-admin/theme-base`.
 - Verify multi-theme generation installs exactly selected theme packages.

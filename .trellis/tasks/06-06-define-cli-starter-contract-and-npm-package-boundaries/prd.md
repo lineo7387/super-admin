@@ -36,7 +36,7 @@ This task is planning-first. Do not implement the CLI yet.
 - CLI project creation should be able to select the default template or another style template, with room to add more style templates later.
 - The CLI may support installing or switching themes and i18n options.
 - CLI MVP should be flags-first rather than interactive-first.
-- The generated project should not depend on monorepo workspace packages. It should install published npm packages directly.
+- The generated project should not depend on monorepo-only package references. It should install published npm packages directly with normal version ranges. Source manifests may still use pnpm `workspace:` ranges during monorepo development.
 - The generated project should be a single-app Vite project, not a generated workspace.
 - The generated project should not include the VitePress docs site. Docs remain in the Super Admin docs/website; generated projects can include README links to relevant guides.
 - The generated project should not include the optional Hono reference API or any backend scaffold.
@@ -77,7 +77,7 @@ The generated project should provide:
 - Optional runtime theme switching only when multiple themes are selected.
 - User-owned ability to add or remove selected themes after installation.
 - Dependency-granular theme installation.
-- Published `@super-admin/*` npm dependencies instead of workspace links.
+- Published `@super-admin/*` npm dependencies instead of generated `workspace:` links.
 - Single-app Vite project shape.
 - No generated VitePress docs site.
 - No generated optional Hono reference API or backend scaffold.
@@ -165,7 +165,7 @@ Page -> module query composable -> API adapter -> mock data / user API
 - [ ] The starter contract clearly states what the CLI generates by default.
 - [ ] The contract explicitly says demo modules are removable examples, not business templates.
 - [ ] The contract explicitly excludes business module generation.
-- [ ] The contract defines the generated project's npm dependency model without workspace package dependencies.
+- [ ] The contract defines the generated project's npm dependency model without generated `workspace:` dependencies, while allowing source monorepo manifests to use pnpm workspace ranges.
 - [ ] The contract defines dependency-granular theme installation, so selected themes map to actual installed theme packages/dependencies.
 - [ ] The contract defines package-manager detection and `--pm` override expectations.
 - [ ] The contract defines the default `zh-CN` locale behavior.

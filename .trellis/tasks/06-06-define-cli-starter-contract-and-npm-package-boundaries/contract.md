@@ -138,7 +138,7 @@ src/router/*
 src/super-admin/*
 ```
 
-Generated projects install published npm packages directly and must not depend on monorepo workspace packages.
+Generated projects install published npm packages directly and must not depend on monorepo-only package references. Source manifests in this repository may still use pnpm `workspace:` ranges during monorepo development; the restriction applies to generated app output and packed/published artifacts.
 
 ## Theme Architecture
 
