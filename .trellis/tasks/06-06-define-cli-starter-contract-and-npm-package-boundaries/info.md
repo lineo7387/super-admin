@@ -309,6 +309,19 @@ Theme packages need a stricter boundary than ordinary built-in profiles. If ever
 5. Validate generated projects with install, typecheck, build, and startup smoke.
 6. Later, design/build the optional Python FastAPI AI companion backend as a separate project.
 
+## Child Task Backlog
+
+The parent task is an umbrella/planning surface. `task.py list` only counts registered child tasks, so `[1/1 done]` after the base-theme slice does not mean the broader CLI starter roadmap is complete.
+
+Registered child tasks:
+
+- `06-06-add-neutral-base-design-profile` — completed and archived. Implements the neutral Base profile slice from roadmap step 2.
+- `06-06-prepare-package-publish-boundaries` — next recommended task. Inventory publish boundaries and export/dependency gaps before CLI implementation.
+- `06-06-split-theme-packages-and-registry` — follow-up to make selected themes real dependency-granular packages.
+- `06-06-design-generated-starter-template` — define the single-app Vite starter template file map and app-local ownership.
+- `06-06-scaffold-create-super-admin-cli` — implement flags-first project creation once package/template boundaries are ready.
+- `06-06-add-generated-starter-validation` — add maintainer validation for generated output after the CLI exists.
+
 ## Candidate Spec Updates
 
 These decisions may later be promoted into `.trellis/spec/` after the contract is reviewed:
