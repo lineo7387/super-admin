@@ -744,3 +744,36 @@ Implemented packages/cli create-super-admin MVP, validated generated default and
 ### Next Steps
 
 - None - task complete
+
+
+## Session 22: Archive CLI starter parent and open release validation task
+
+**Date**: 2026-06-07
+**Task**: Archive CLI starter parent and open release validation task
+**Branch**: `main`
+
+### Summary
+
+Archived the completed CLI starter contract/package-boundaries parent task after 6/6 child tasks, then created the next parent task for full generated starter release validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8351fd0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
