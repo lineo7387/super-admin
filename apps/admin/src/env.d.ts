@@ -15,7 +15,7 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
-import type { PageShellMeta } from '@super-admin/core'
+import type { PageShellMeta } from '@super-admin-org/core'
 
 declare module 'vue-router' {
   interface RouteMeta extends Partial<PageShellMeta> {

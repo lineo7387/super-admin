@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AdminAlert, AdminCard, AdminScrollArea, MetricTile, StatusPill } from '@super-admin/ui'
+import { AdminAlert, AdminCard, AdminScrollArea, MetricTile, StatusPill } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
 const swatches = [

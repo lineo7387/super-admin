@@ -2,7 +2,7 @@
 import { MoreHorizontal } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
-import { AdminButton, AdminDataTable, AdminPagination, getAdminPaginationRange, StatusPill } from '@super-admin/ui'
+import { AdminButton, AdminDataTable, AdminPagination, getAdminPaginationRange, StatusPill } from '@super-admin-org/ui'
 import type { UserRecord, UserStatus } from '../users.types'
 
 const props = withDefaults(

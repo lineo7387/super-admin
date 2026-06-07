@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FileCode2, Layers3, Route, ShieldCheck } from 'lucide-vue-next'
-import { AdminAlert, AdminCard, StatusPill } from '@super-admin/ui'
+import { AdminAlert, AdminCard, StatusPill } from '@super-admin-org/ui'
 import { templateGuideSections, templateGuideSignals } from './template-guide'
 
 function sectionIcon(sectionId: string) {

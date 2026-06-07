@@ -2,7 +2,7 @@
 import { Building2, Send } from 'lucide-vue-next'
 import { computed, reactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AdminAlert, AdminButton, AdminField, AdminTextInput, AdminValidationSummary } from '@super-admin/ui'
+import { AdminAlert, AdminButton, AdminField, AdminTextInput, AdminValidationSummary } from '@super-admin-org/ui'
 import AuthLayout from './components/AuthLayout.vue'
 import { validateRegisterInput } from './auth.validation'
 import type { AuthFieldErrors, RegisterInput } from './auth.types'

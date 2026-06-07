@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AdminTableFrame } from '@super-admin/ui'
+import { AdminTableFrame } from '@super-admin-org/ui'
 import UsersTable from './components/UsersTable.vue'
 import { useUsersQuery } from './users.queries'
 import type { UserListParams } from './users.types'

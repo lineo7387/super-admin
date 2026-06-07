@@ -1,0 +1,77 @@
+name: Publish next
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type publish-super-admin-next-0.1.0 to publish 0.1.0 to the next dist-tag.
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-next:
+    if: ${{ inputs.confirm == 'publish-super-admin-next-0.1.0' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          registry-url: https://registry.npmjs.org
+
+      - name: Use modern npm for Trusted Publishing
+        run: npm install -g npm@^11.10.0
+
+      - name: Enable pnpm
+        run: corepack prepare pnpm@10.33.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Validate publish readiness
+        run: pnpm validate:publish --skip-build
+
+      - name: Publish core
+        run: npm publish packages/core --tag next --access public --provenance
+
+      - name: Publish theme runtime
+        run: npm publish packages/theme --tag next --access public --provenance
+
+      - name: Publish base theme
+        run: npm publish packages/theme-base --tag next --access public --provenance
+
+      - name: Publish crypto theme
+        run: npm publish packages/theme-crypto --tag next --access public --provenance
+
+      - name: Publish cyberpunk theme
+        run: npm publish packages/theme-cyberpunk --tag next --access public --provenance
+
+      - name: Publish industrial theme
+        run: npm publish packages/theme-industrial --tag next --access public --provenance
+
+      - name: Publish newsprint theme
+        run: npm publish packages/theme-newsprint --tag next --access public --provenance
+
+      - name: Publish UI
+        run: npm publish packages/ui --tag next --access public --provenance
+
+      - name: Publish creator CLI
+        run: npm publish packages/cli --tag next --provenance

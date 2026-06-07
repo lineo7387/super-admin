@@ -1,5 +1,5 @@
-import type { Density, DesignProfile, ResolvedColorMode } from '@super-admin/core'
-import { getProfileMode } from '@super-admin/core'
+import type { Density, DesignProfile, ResolvedColorMode } from '@super-admin-org/core'
+import { getProfileMode } from '@super-admin-org/core'
 
 export type ThemeRoot = Pick<HTMLElement, 'dataset' | 'style'>
 

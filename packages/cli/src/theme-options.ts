@@ -14,27 +14,27 @@ export type ThemeDefinition = {
 export const themeDefinitions: Record<StarterThemeId, ThemeDefinition> = {
   base: {
     id: 'base',
-    packageName: '@super-admin/theme-base',
+    packageName: '@super-admin-org/theme-base',
     profileExport: 'baseProfile'
   },
   crypto: {
     id: 'crypto',
-    packageName: '@super-admin/theme-crypto',
+    packageName: '@super-admin-org/theme-crypto',
     profileExport: 'cryptoProfile'
   },
   cyberpunk: {
     id: 'cyberpunk',
-    packageName: '@super-admin/theme-cyberpunk',
+    packageName: '@super-admin-org/theme-cyberpunk',
     profileExport: 'cyberpunkProfile'
   },
   industrial: {
     id: 'industrial',
-    packageName: '@super-admin/theme-industrial',
+    packageName: '@super-admin-org/theme-industrial',
     profileExport: 'industrialProfile'
   },
   newsprint: {
     id: 'newsprint',
-    packageName: '@super-admin/theme-newsprint',
+    packageName: '@super-admin-org/theme-newsprint',
     profileExport: 'newsprintProfile'
   }
 }

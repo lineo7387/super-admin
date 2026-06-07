@@ -1,4 +1,4 @@
-import type { ModuleManifest, ModuleNavItem } from '@super-admin/core'
+import type { ModuleManifest, ModuleNavItem } from '@super-admin-org/core'
 import type { MessageTranslator } from './index'
 
 const moduleNameKeys: Record<string, string> = {

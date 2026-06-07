@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ShieldCheck } from 'lucide-vue-next'
 import { computed, shallowRef } from 'vue'
-import { AdminAlert, AdminCard, AdminSkeleton, StatusPill } from '@super-admin/ui'
+import { AdminAlert, AdminCard, AdminSkeleton, StatusPill } from '@super-admin-org/ui'
 import { useAccessMatrixQuery } from './access.queries'
 import type { AccessMatrixParams } from './access.types'
 

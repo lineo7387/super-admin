@@ -3,7 +3,7 @@ import { Bot, PanelRight, Sparkles, X } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { AdminButton, StatusPill } from '@super-admin/ui'
+import { AdminButton, StatusPill } from '@super-admin-org/ui'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
 const route = useRoute()

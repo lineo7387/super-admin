@@ -72,8 +72,8 @@ describe('create-super-admin starter generation', () => {
       preview: 'vite preview',
       typecheck: 'vue-tsc --noEmit'
     })
-    expect(packageJson.dependencies['@super-admin/theme-base']).toBe('^0.0.0')
-    expect(packageJson.dependencies['@super-admin/theme-cyberpunk']).toBeUndefined()
+    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.0')
+    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
     expect(config).toContain("installed: ['base']")
     expect(config).toContain("switcher: 'off'")
     expect(preferences).not.toContain('selectProfile')
@@ -92,11 +92,11 @@ describe('create-super-admin starter generation', () => {
     const registry = await readGeneratedText(input.targetDirectory, 'src/super-admin/theme-registry.generated.ts')
     const preferences = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferences.vue')
 
-    expect(packageJson.dependencies['@super-admin/theme-base']).toBe('^0.0.0')
-    expect(packageJson.dependencies['@super-admin/theme-cyberpunk']).toBe('^0.0.0')
-    expect(packageJson.dependencies['@super-admin/theme-crypto']).toBeUndefined()
-    expect(registry).toContain("from '@super-admin/theme-base'")
-    expect(registry).toContain("from '@super-admin/theme-cyberpunk'")
+    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.0')
+    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.0')
+    expect(packageJson.dependencies['@super-admin-org/theme-crypto']).toBeUndefined()
+    expect(registry).toContain("from '@super-admin-org/theme-base'")
+    expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")
     expect(preferences).toContain('selectProfile')
     expect(preferences).toContain('selectLocale')
 

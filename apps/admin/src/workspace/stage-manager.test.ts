@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { WorkspaceTab, WorkspaceTabGroup } from '@super-admin/core'
+import type { WorkspaceTab, WorkspaceTabGroup } from '@super-admin-org/core'
 import { resolveNextGroupWindow, resolveOverviewLayout, sortStageGroupsForDock } from './stage-manager'
 
 function createTab(routePath: string, activatedAt: number): WorkspaceTab {

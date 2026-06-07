@@ -1,4 +1,4 @@
-import { createPageListResult } from '@super-admin/core'
+import { createPageListResult } from '@super-admin-org/core'
 import type { UserListParams, UserListResult, UserRecord } from '@/modules/users/users.types'
 
 export type ReferenceUsersApiConfig = {

@@ -137,7 +137,7 @@ function transformSourceText(relativePath: string, text: string, context: Transf
   }
 
   if (relativePath === 'styles/main.css') {
-    return text.replace('@source "../../../../packages/ui/src";', '@source "../../node_modules/@super-admin/ui/src";')
+    return text.replace('@source "../../../../packages/ui/src";', '@source "../../node_modules/@super-admin-org/ui/dist";')
   }
 
   return text

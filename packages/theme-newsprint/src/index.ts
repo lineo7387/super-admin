@@ -1,4 +1,4 @@
-import type { DesignProfile } from '@super-admin/core'
+import type { DesignProfile } from '@super-admin-org/core'
 
 export const newsprintProfile: DesignProfile = {
   id: 'newsprint',

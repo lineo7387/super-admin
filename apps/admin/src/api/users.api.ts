@@ -1,4 +1,4 @@
-import { createPageListResult } from '@super-admin/core'
+import { createPageListResult } from '@super-admin-org/core'
 import { mockUsers } from '@/api/mock/users.mock'
 import type { MockUser } from '@/api/mock/users.mock'
 import { listReferenceUsers, type ReferenceUsersApiConfig } from '@/api/reference/users-reference.api'

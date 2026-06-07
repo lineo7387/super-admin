@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { MailPlus } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
-import { AdminButton, AdminCard, EmptyState } from '@super-admin/ui'
+import { AdminButton, AdminCard, EmptyState } from '@super-admin-org/ui'
 
 const { t } = useI18n()
 const invites = [

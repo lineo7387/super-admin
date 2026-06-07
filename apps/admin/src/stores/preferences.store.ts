@@ -10,7 +10,7 @@ import {
   type LayoutPresetId,
   type ResolvedColorMode,
   type StageManagerPresentationMode
-} from '@super-admin/core'
+} from '@super-admin-org/core'
 import { defineStore } from 'pinia'
 import { computed, reactive, shallowRef } from 'vue'
 import { DEFAULT_LOCALE, setActiveLocale, type Locale } from '@/i18n'

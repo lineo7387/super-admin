@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Download, Plus, RefreshCw, Trash2 } from 'lucide-vue-next'
-import { AdminAlert, AdminButton, AdminCard, AdminFormFooter } from '@super-admin/ui'
+import { AdminAlert, AdminButton, AdminCard, AdminFormFooter } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 </script>
 

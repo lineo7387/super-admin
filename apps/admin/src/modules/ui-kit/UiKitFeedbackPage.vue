@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AdminAlert, AdminButton, AdminCard, AdminSkeleton, AdminValidationSummary, EmptyState, StatusPill } from '@super-admin/ui'
+import { AdminAlert, AdminButton, AdminCard, AdminSkeleton, AdminValidationSummary, EmptyState, StatusPill } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
 const validationErrors = ['Name is required.', 'Notification email must include @.']

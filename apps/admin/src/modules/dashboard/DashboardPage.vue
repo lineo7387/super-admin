@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Activity, AlertTriangle, Database, RadioTower } from 'lucide-vue-next'
 import { computed, shallowRef } from 'vue'
-import { AdminAlert, AdminCard, AdminSkeleton, MetricTile, StatusPill } from '@super-admin/ui'
+import { AdminAlert, AdminCard, AdminSkeleton, MetricTile, StatusPill } from '@super-admin-org/ui'
 import { useDashboardOverviewQuery } from './dashboard.queries'
 import type { DashboardOverviewParams, DashboardSignalIcon } from './dashboard.types'
 

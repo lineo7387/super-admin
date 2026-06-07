@@ -1,21 +1,43 @@
 {
-  "name": "@super-admin/theme-crypto",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@super-admin-org/theme-crypto",
+  "version": "0.1.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json --noEmit",
+    "build": "node ../../scripts/build-publish-package.mjs .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@super-admin/core": "workspace:*"
+    "@super-admin-org/core": "^0.1.0"
   },
   "devDependencies": {
     "vitest": "^4.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lineo7387/super-admin.git",
+    "directory": "packages/theme-crypto"
+  },
+  "bugs": {
+    "url": "https://github.com/lineo7387/super-admin/issues"
+  },
+  "homepage": "https://github.com/lineo7387/super-admin#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
   }
 }

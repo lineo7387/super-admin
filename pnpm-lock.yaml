@@ -38,28 +38,28 @@ importers:
 
   apps/admin:
     dependencies:
-      '@super-admin/core':
+      '@super-admin-org/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@super-admin/theme':
+      '@super-admin-org/theme':
         specifier: workspace:*
         version: link:../../packages/theme
-      '@super-admin/theme-base':
+      '@super-admin-org/theme-base':
         specifier: workspace:*
         version: link:../../packages/theme-base
-      '@super-admin/theme-crypto':
+      '@super-admin-org/theme-crypto':
         specifier: workspace:*
         version: link:../../packages/theme-crypto
-      '@super-admin/theme-cyberpunk':
+      '@super-admin-org/theme-cyberpunk':
         specifier: workspace:*
         version: link:../../packages/theme-cyberpunk
-      '@super-admin/theme-industrial':
+      '@super-admin-org/theme-industrial':
         specifier: workspace:*
         version: link:../../packages/theme-industrial
-      '@super-admin/theme-newsprint':
+      '@super-admin-org/theme-newsprint':
         specifier: workspace:*
         version: link:../../packages/theme-newsprint
-      '@super-admin/ui':
+      '@super-admin-org/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tanstack/vue-query':
@@ -119,6 +119,18 @@ importers:
         specifier: ^4.0.0
         version: 4.1.7(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
 
+  packages/cli:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.12.4
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.7(@types/node@24.12.4)(vite@7.3.3(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
+
   packages/core:
     devDependencies:
       vitest:
@@ -127,8 +139,8 @@ importers:
 
   packages/theme:
     dependencies:
-      '@super-admin/core':
-        specifier: workspace:*
+      '@super-admin-org/core':
+        specifier: ^0.1.0
         version: link:../core
     devDependencies:
       vitest:
@@ -137,8 +149,8 @@ importers:
 
   packages/theme-base:
     dependencies:
-      '@super-admin/core':
-        specifier: workspace:*
+      '@super-admin-org/core':
+        specifier: ^0.1.0
         version: link:../core
     devDependencies:
       vitest:
@@ -147,8 +159,8 @@ importers:
 
   packages/theme-crypto:
     dependencies:
-      '@super-admin/core':
-        specifier: workspace:*
+      '@super-admin-org/core':
+        specifier: ^0.1.0
         version: link:../core
     devDependencies:
       vitest:
@@ -157,8 +169,8 @@ importers:
 
   packages/theme-cyberpunk:
     dependencies:
-      '@super-admin/core':
-        specifier: workspace:*
+      '@super-admin-org/core':
+        specifier: ^0.1.0
         version: link:../core
     devDependencies:
       vitest:
@@ -167,8 +179,8 @@ importers:
 
   packages/theme-industrial:
     dependencies:
-      '@super-admin/core':
-        specifier: workspace:*
+      '@super-admin-org/core':
+        specifier: ^0.1.0
         version: link:../core
     devDependencies:
       vitest:
@@ -177,8 +189,8 @@ importers:
 
   packages/theme-newsprint:
     dependencies:
-      '@super-admin/core':
-        specifier: workspace:*
+      '@super-admin-org/core':
+        specifier: ^0.1.0
         version: link:../core
     devDependencies:
       vitest:

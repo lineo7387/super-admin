@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
-import { AdminAlert, AdminCard, AdminField, AdminFormFooter, AdminSelect, AdminTextInput, AdminTextarea, AdminValidationSummary } from '@super-admin/ui'
+import { AdminAlert, AdminCard, AdminField, AdminFormFooter, AdminSelect, AdminTextInput, AdminTextarea, AdminValidationSummary } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
 const owner = shallowRef('Mira Chen')

@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import type { WorkspaceTab, WorkspaceTabGroup } from '@super-admin/core'
+import type { WorkspaceTab, WorkspaceTabGroup } from '@super-admin-org/core'
 
 export type StageWindowView = {
   component: Component | undefined

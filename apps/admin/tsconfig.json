@@ -5,14 +5,14 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@super-admin/core": ["../../packages/core/src/index.ts"],
-      "@super-admin/theme": ["../../packages/theme/src/index.ts"],
-      "@super-admin/theme-base": ["../../packages/theme-base/src/index.ts"],
-      "@super-admin/theme-crypto": ["../../packages/theme-crypto/src/index.ts"],
-      "@super-admin/theme-cyberpunk": ["../../packages/theme-cyberpunk/src/index.ts"],
-      "@super-admin/theme-industrial": ["../../packages/theme-industrial/src/index.ts"],
-      "@super-admin/theme-newsprint": ["../../packages/theme-newsprint/src/index.ts"],
-      "@super-admin/ui": ["../../packages/ui/src/index.ts"]
+      "@super-admin-org/core": ["../../packages/core/src/index.ts"],
+      "@super-admin-org/theme": ["../../packages/theme/src/index.ts"],
+      "@super-admin-org/theme-base": ["../../packages/theme-base/src/index.ts"],
+      "@super-admin-org/theme-crypto": ["../../packages/theme-crypto/src/index.ts"],
+      "@super-admin-org/theme-cyberpunk": ["../../packages/theme-cyberpunk/src/index.ts"],
+      "@super-admin-org/theme-industrial": ["../../packages/theme-industrial/src/index.ts"],
+      "@super-admin-org/theme-newsprint": ["../../packages/theme-newsprint/src/index.ts"],
+      "@super-admin-org/ui": ["../../packages/ui/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.vue", "src/**/*.d.ts"]

@@ -71,9 +71,9 @@ export const <id>Profile: DesignProfile = { ... }
 export const builtInDesignProfiles = [baseProfile, cryptoProfile, industrialProfile, cyberpunkProfile, newsprintProfile] as const
 ```
 
-Add a package manifest and `tsconfig.json` under `packages/theme-<id>/`. The package name must be `@super-admin/theme-<id>` and its public entrypoint must export the profile constant. The package may depend on `@super-admin/core`, but it must not depend on the admin app.
+Add a package manifest and `tsconfig.json` under `packages/theme-<id>/`. The package name must be `@super-admin-org/theme-<id>` and its public entrypoint must export the profile constant. The package may depend on `@super-admin-org/core`, but it must not depend on the admin app.
 
-The theme runtime package, `@super-admin/theme`, owns token application helpers only. It must not import or re-export built-in profile constants or registries.
+The theme runtime package, `@super-admin-org/theme`, owns token application helpers only. It must not import or re-export built-in profile constants or registries.
 
 **Why**: Dependency-granular CLI theme selection only works when selected themes map to selected npm packages. The generated app registry composes installed profiles for the app, while persisted preferences use `DesignProfileId`. Updating both keeps runtime switching, local storage, tests, and UI selection in sync without forcing every built-in theme into the required runtime package.
 

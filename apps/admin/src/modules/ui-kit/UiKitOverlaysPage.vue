@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
-import { AdminAlert, AdminButton, AdminCard, AdminCheckbox, AdminDrawer, AdminField, AdminFormFooter, AdminTextInput, AdminValidationSummary } from '@super-admin/ui'
+import { AdminAlert, AdminButton, AdminCard, AdminCheckbox, AdminDrawer, AdminField, AdminFormFooter, AdminTextInput, AdminValidationSummary } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
 const isDrawerOpen = shallowRef(false)

@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "Generated starter package consumption and publish-ready package boundary contract."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Workspace package boundaries and root script expectations."}
+{"file": ".trellis/spec/shared/typescript.md", "reason": "Strict TypeScript and emitted declaration expectations for package code."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Shared quality and verification rules before claiming completion."}
+{"file": ".trellis/tasks/06-07-npm-publish-readiness-flow/research/npm-publish-flow.md", "reason": "Official npm publish, provenance, trusted publishing, and unpublish constraints."}

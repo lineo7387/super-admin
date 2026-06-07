@@ -3,8 +3,8 @@ import { BookOpen, Boxes, ChevronDown, ChevronRight, Circle, Gauge, Palette, Shi
 import { computed, onMounted, onUnmounted, reactive, shallowRef, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { getVisibleModuleNavTree, isModuleNavItemActive } from '@super-admin/core'
-import type { ModuleNavItem } from '@super-admin/core'
+import { getVisibleModuleNavTree, isModuleNavItemActive } from '@super-admin-org/core'
+import type { ModuleNavItem } from '@super-admin-org/core'
 import { translateNavItemLabel } from '@/i18n/navigation'
 import { registeredModules } from '@/modules/module-registry'
 

@@ -2,7 +2,7 @@ import type { StarterGenerationInput } from './parse-args.js'
 import { themeDefinitions } from './theme-options.js'
 import type { StarterLocaleId, StarterThemeId } from './theme-options.js'
 
-const SUPER_ADMIN_VERSION_RANGE = '^0.0.0'
+const SUPER_ADMIN_VERSION_RANGE = '^0.1.0'
 
 function formatStringList(values: readonly string[]): string {
   return values.map((value) => `'${value}'`).join(', ')
@@ -10,9 +10,9 @@ function formatStringList(values: readonly string[]): string {
 
 export function createPackageJson(input: StarterGenerationInput): string {
   const dependencies: Record<string, string> = {
-    '@super-admin/core': SUPER_ADMIN_VERSION_RANGE,
-    '@super-admin/theme': SUPER_ADMIN_VERSION_RANGE,
-    '@super-admin/ui': SUPER_ADMIN_VERSION_RANGE,
+    '@super-admin-org/core': SUPER_ADMIN_VERSION_RANGE,
+    '@super-admin-org/theme': SUPER_ADMIN_VERSION_RANGE,
+    '@super-admin-org/ui': SUPER_ADMIN_VERSION_RANGE,
     '@tanstack/vue-query': '^5.0.0',
     'lucide-vue-next': '^0.555.0',
     pinia: '^3.0.0',
@@ -91,13 +91,15 @@ export function createTsconfig(): string {
     {
       extends: '@vue/tsconfig/tsconfig.dom.json',
       compilerOptions: {
-        types: ['vite/client'],
         baseUrl: '.',
+        lib: ['ES2022', 'DOM', 'DOM.Iterable'],
         paths: {
           '@/*': ['src/*']
         },
+        target: 'ES2022',
         strict: true,
-        noEmit: true
+        noEmit: true,
+        types: ['vite/client']
       },
       include: ['super-admin.config.ts', 'src/**/*.ts', 'src/**/*.vue', 'src/**/*.d.ts']
     },
@@ -154,7 +156,7 @@ export function createThemeRegistry(themes: StarterThemeId[], defaultTheme: Star
   const profileExports = themes.map((themeId) => themeDefinitions[themeId].profileExport)
   const fallbackProfile = themeDefinitions[defaultTheme].profileExport
 
-  return `import type { DesignProfile, DesignProfileId } from '@super-admin/core'
+  return `import type { DesignProfile, DesignProfileId } from '@super-admin-org/core'
 ${imports}
 
 export const builtInDesignProfiles = [${profileExports.join(', ')}] as const
@@ -181,7 +183,7 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
-import type { PageShellMeta } from '@super-admin/core'
+import type { PageShellMeta } from '@super-admin-org/core'
 
 declare module 'vue-router' {
   interface RouteMeta extends Partial<PageShellMeta> {
@@ -193,7 +195,7 @@ declare module 'vue-router' {
 }
 
 export function createUsersApi(): string {
-  return `import { createPageListResult } from '@super-admin/core'
+  return `import { createPageListResult } from '@super-admin-org/core'
 import { mockUsers } from '@/api/mock/users.mock'
 import type { MockUser } from '@/api/mock/users.mock'
 import type { UserListParams, UserListResult, UserRecord } from '@/modules/users/users.types'
@@ -349,7 +351,7 @@ import { ArrowRight, KeyRound } from 'lucide-vue-next'
 import { computed, reactive, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { AdminAlert, AdminButton, AdminField, AdminTextInput, AdminValidationSummary } from '@super-admin/ui'
+import { AdminAlert, AdminButton, AdminField, AdminTextInput, AdminValidationSummary } from '@super-admin-org/ui'
 import { resolvePostLoginPath } from '@/router/auth-guard'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
 import { createTemplateAuthSession } from './auth-session'
@@ -551,7 +553,7 @@ export function createPreferencesStore(): string {
   type LayoutPresetId,
   type ResolvedColorMode,
   type StageManagerPresentationMode
-} from '@super-admin/core'
+} from '@super-admin-org/core'
 import { defineStore } from 'pinia'
 import { computed, reactive, shallowRef } from 'vue'
 import superAdminConfig from '../../super-admin.config'
@@ -809,8 +811,8 @@ import {
   type Density,
 ${themeImports}  type LayoutPresetId,
   type StageManagerPresentationMode
-} from '@super-admin/core'
-import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin/ui'
+} from '@super-admin-org/core'
+import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin-org/ui'
 ${registryImport}${localeImport}import { usePreferencesStore } from '@/stores/preferences.store'
 
 const props = withDefaults(

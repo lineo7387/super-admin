@@ -1,4 +1,4 @@
-import type { ModuleManifest } from '@super-admin/core'
+import type { ModuleManifest } from '@super-admin-org/core'
 import WorkbenchPage from './WorkbenchPage.vue'
 
 export const workbenchManifest: ModuleManifest = {

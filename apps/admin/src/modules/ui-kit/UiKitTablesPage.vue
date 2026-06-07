@@ -12,7 +12,7 @@ import {
   AdminTextInput,
   StatusPill,
   getAdminSelectionState
-} from '@super-admin/ui'
+} from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
 type ViewRow = {

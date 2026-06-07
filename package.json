@@ -14,7 +14,9 @@
     "test": "pnpm -r test && vitest run scripts/*.test.mjs",
     "validate:starter": "node scripts/validate-generated-starter.mjs",
     "test:reference": "vitest run scripts/reference-integration-smoke.test.mjs && node scripts/reference-integration-smoke.mjs",
-    "lint": "pnpm -r lint"
+    "lint": "pnpm -r lint",
+    "validate:publish": "node scripts/publish-readiness.mjs",
+    "release:commands": "node scripts/npm-registry-release-commands.mjs"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",

@@ -24,10 +24,10 @@ async function createStarterFixture(overrides = {}) {
       preview: 'vite preview'
     },
     dependencies: {
-      '@super-admin/core': '^0.0.0',
-      '@super-admin/theme': '^0.0.0',
-      '@super-admin/theme-base': '^0.0.0',
-      '@super-admin/ui': '^0.0.0',
+      '@super-admin-org/core': '^0.1.0',
+      '@super-admin-org/theme': '^0.1.0',
+      '@super-admin-org/theme-base': '^0.1.0',
+      '@super-admin-org/ui': '^0.1.0',
       '@tanstack/vue-query': '^5.0.0',
       'lucide-vue-next': '^0.555.0',
       pinia: '^3.0.0',
@@ -92,7 +92,7 @@ async function createStarterFixture(overrides = {}) {
     root,
     'src/super-admin/theme-registry.generated.ts',
     overrides.themeRegistry ??
-      "import type { DesignProfile, DesignProfileId } from '@super-admin/core'\nimport { baseProfile } from '@super-admin/theme-base'\n\nexport const builtInDesignProfiles = [baseProfile] as const\n\nexport function getBuiltInDesignProfile(profileId: DesignProfileId): DesignProfile {\n  return builtInDesignProfiles.find((profile) => profile.id === profileId) ?? baseProfile\n}\n"
+      "import type { DesignProfile, DesignProfileId } from '@super-admin-org/core'\nimport { baseProfile } from '@super-admin-org/theme-base'\n\nexport const builtInDesignProfiles = [baseProfile] as const\n\nexport function getBuiltInDesignProfile(profileId: DesignProfileId): DesignProfile {\n  return builtInDesignProfiles.find((profile) => profile.id === profileId) ?? baseProfile\n}\n"
   )
   await writeText(root, 'src/i18n/locales/zh-CN.ts', 'export default {}\n')
   await writeText(root, 'src/shell/preferences/GlobalPreferences.vue', overrides.preferences ?? '<template><div /></template>\n')
@@ -122,14 +122,14 @@ describe('generated starter validator', () => {
   it('rejects workspace dependency specifiers and monorepo path leaks', async () => {
     const root = await createStarterFixture({
       dependencies: {
-        '@super-admin/core': 'workspace:*'
+        '@super-admin-org/core': 'workspace:*'
       },
       mainCss: '@import "tailwindcss";\n@source "../../../../packages/ui/src";\n',
       tsconfig: JSON.stringify({
         compilerOptions: {
           paths: {
             '@/*': ['src/*'],
-            '@super-admin/core': ['../../packages/core/src/index.ts']
+            '@super-admin-org/core': ['../../packages/core/src/index.ts']
           }
         }
       })
@@ -183,10 +183,10 @@ describe('generated starter validator', () => {
       packedManifestPath,
       JSON.stringify(
         {
-          name: '@super-admin/theme-base',
+          name: '@super-admin-org/theme-base',
           version: '0.0.0',
           dependencies: {
-            '@super-admin/core': 'workspace:*'
+            '@super-admin-org/core': 'workspace:*'
           }
         },
         null,
@@ -205,17 +205,17 @@ describe('generated starter validator', () => {
   it('validates selected theme package and registry boundaries', async () => {
     const invalidDefault = await createStarterFixture({
       dependencies: {
-        '@super-admin/theme-cyberpunk': '^0.0.0'
+        '@super-admin-org/theme-cyberpunk': '^0.1.0'
       },
       themeRegistry:
-        "import { baseProfile } from '@super-admin/theme-base'\nimport { cyberpunkProfile } from '@super-admin/theme-cyberpunk'\nexport const builtInDesignProfiles = [baseProfile, cyberpunkProfile] as const\n"
+        "import { baseProfile } from '@super-admin-org/theme-base'\nimport { cyberpunkProfile } from '@super-admin-org/theme-cyberpunk'\nexport const builtInDesignProfiles = [baseProfile, cyberpunkProfile] as const\n"
     })
     const validMultiTheme = await createStarterFixture({
       dependencies: {
-        '@super-admin/theme-cyberpunk': '^0.0.0'
+        '@super-admin-org/theme-cyberpunk': '^0.1.0'
       },
       themeRegistry:
-        "import { baseProfile } from '@super-admin/theme-base'\nimport { cyberpunkProfile } from '@super-admin/theme-cyberpunk'\nexport const builtInDesignProfiles = [baseProfile, cyberpunkProfile] as const\n"
+        "import { baseProfile } from '@super-admin-org/theme-base'\nimport { cyberpunkProfile } from '@super-admin-org/theme-cyberpunk'\nexport const builtInDesignProfiles = [baseProfile, cyberpunkProfile] as const\n"
     })
 
     expect(failureIds(await validateGeneratedStarterStatic(invalidDefault, { themes: ['base'] }))).toEqual(

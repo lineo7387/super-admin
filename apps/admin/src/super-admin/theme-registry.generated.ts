@@ -1,9 +1,9 @@
-import type { DesignProfile, DesignProfileId } from '@super-admin/core'
-import { baseProfile } from '@super-admin/theme-base'
-import { cyberpunkProfile } from '@super-admin/theme-cyberpunk'
-import { cryptoProfile } from '@super-admin/theme-crypto'
-import { industrialProfile } from '@super-admin/theme-industrial'
-import { newsprintProfile } from '@super-admin/theme-newsprint'
+import type { DesignProfile, DesignProfileId } from '@super-admin-org/core'
+import { baseProfile } from '@super-admin-org/theme-base'
+import { cyberpunkProfile } from '@super-admin-org/theme-cyberpunk'
+import { cryptoProfile } from '@super-admin-org/theme-crypto'
+import { industrialProfile } from '@super-admin-org/theme-industrial'
+import { newsprintProfile } from '@super-admin-org/theme-newsprint'
 
 export const builtInDesignProfiles = [baseProfile, cryptoProfile, industrialProfile, cyberpunkProfile, newsprintProfile] as const
 

@@ -63,7 +63,7 @@ Example module types are frontend example contracts, not universal backend schem
 
 ## Contract Helpers
 
-`@super-admin/core` exposes small TypeScript-first contract helpers for common adapter shapes:
+`@super-admin-org/core` exposes small TypeScript-first contract helpers for common adapter shapes:
 
 - `createPageListResult` for page-based admin tables
 - `createCursorListResult` for stream-like lists

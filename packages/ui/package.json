@@ -1,13 +1,15 @@
 {
-  "name": "@super-admin/ui",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@super-admin-org/ui",
+  "version": "0.1.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
   "scripts": {
-    "build": "vue-tsc -p tsconfig.json --noEmit",
+    "build": "node ../../scripts/build-publish-package.mjs .",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "lint": "vue-tsc -p tsconfig.json --noEmit"
@@ -20,5 +22,25 @@
   },
   "devDependencies": {
     "@vue/tsconfig": "^0.8.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lineo7387/super-admin.git",
+    "directory": "packages/ui"
+  },
+  "bugs": {
+    "url": "https://github.com/lineo7387/super-admin/issues"
+  },
+  "homepage": "https://github.com/lineo7387/super-admin#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
   }
 }

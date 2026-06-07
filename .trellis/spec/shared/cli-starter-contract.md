@@ -76,7 +76,7 @@ Default `create-super-admin <project>` output:
 - single-app Vite project
 - `zh-CN` only
 - single `base` theme
-- installs only `@super-admin/theme` and `@super-admin/theme-base` for theming
+- installs only `@super-admin-org/theme` and `@super-admin-org/theme-base` for theming
 - no runtime theme switcher
 - no language switcher
 - no VitePress docs site
@@ -101,10 +101,10 @@ Default scripts:
 Package boundary:
 
 ```text
-@super-admin/ui       shared UI primitives
-@super-admin/core     business-neutral module/nav/workspace/preferences logic
-@super-admin/theme    theme runtime/core and token application logic
-@super-admin/theme-*  independently installable theme profiles and theme-specific dependencies
+@super-admin-org/ui       shared UI primitives
+@super-admin-org/core     business-neutral module/nav/workspace/preferences logic
+@super-admin-org/theme    theme runtime/core and token application logic
+@super-admin-org/theme-*  independently installable theme profiles and theme-specific dependencies
 create-super-admin    CLI project creator
 ```
 
@@ -120,21 +120,21 @@ Published package consumption boundary:
 
 - Generated projects must consume emitted npm package artifacts, not monorepo source files.
 - Source package manifests may use pnpm `workspace:` ranges for monorepo development.
-- Packed/published `@super-admin/*` artifacts and generated app `package.json` files must not expose `workspace:` dependency specifiers.
+- Packed/published `@super-admin-org/*` artifacts and generated app `package.json` files must not expose `workspace:` dependency specifiers.
 - Package exports may point to source during early monorepo development, but publish-ready exports should point to emitted ESM/declaration artifacts, not `./src/*.ts` or workspace-only Vue source paths.
-- Generated project TypeScript config must not map `@super-admin/*` to `../../packages/*`.
-- `@super-admin/theme` owns theme runtime/core and must not require every built-in theme profile.
-- Selected `@super-admin/theme-*` packages own profile constants.
+- Generated project TypeScript config must not map `@super-admin-org/*` to `../../packages/*`.
+- `@super-admin-org/theme` owns theme runtime/core and must not require every built-in theme profile.
+- Selected `@super-admin-org/theme-*` packages own profile constants.
 - Generated theme composition belongs in real generated app files such as `src/super-admin/theme-registry.generated.ts`.
 
 Theme package naming:
 
 ```text
-@super-admin/theme-base
-@super-admin/theme-crypto
-@super-admin/theme-cyberpunk
-@super-admin/theme-industrial
-@super-admin/theme-newsprint
+@super-admin-org/theme-base
+@super-admin-org/theme-crypto
+@super-admin-org/theme-cyberpunk
+@super-admin-org/theme-industrial
+@super-admin-org/theme-newsprint
 ```
 
 Generated app-local user-modifiable code:
@@ -181,7 +181,7 @@ Generated template derivation:
 - Generated `src/env.d.ts` must not declare optional reference backend env vars in the default starter. It may declare only Vue/router types and client-safe public config such as an assistant endpoint.
 - Generated default auth and users adapters are mock/template-only; they must not import `src/api/reference/*`, require `VITE_SUPER_ADMIN_API_BASE_URL`, or use `VITE_SUPER_ADMIN_REFERENCE_TOKEN`.
 - Generated default i18n is `zh-CN` only with no visible runtime locale switcher; `--i18n` may add optional locale catalogs and switching.
-- Generated default theme registry imports only `@super-admin/theme-base`; multi-theme generation imports exactly the selected theme packages.
+- Generated default theme registry imports only `@super-admin-org/theme-base`; multi-theme generation imports exactly the selected theme packages.
 - Generated default Control Center must not expose runtime theme/profile or locale switching when only one theme/locale is installed.
 - Generated output excludes `src/**/*.test.ts`, `src/api/reference/`, `dist/`, `node_modules/`, `*.tsbuildinfo`, docs, optional backend code, and reference smoke tooling.
 
@@ -190,7 +190,7 @@ Generated template derivation:
 | Condition | Required behavior |
 | --- | --- |
 | No flags passed | Generate Chinese, single-theme `base` starter with no runtime theme or language switchers. |
-| `--theme <id>` passed | Install only `@super-admin/theme` plus that one theme package, set it as default, and omit runtime theme switching. |
+| `--theme <id>` passed | Install only `@super-admin-org/theme` plus that one theme package, set it as default, and omit runtime theme switching. |
 | `--themes <a,b>` passed | Install exactly the selected theme packages and enable/configure runtime theme switching as needed. |
 | Both `--theme` and `--themes` passed | Fail before writing files with a mutually exclusive flag message. |
 | Unknown theme id | Fail with a clear supported-theme message; do not generate a partial project. |
@@ -201,7 +201,7 @@ Generated template derivation:
 | Generated project would require a backend/auth/AI provider | Reject the design; default output must run without those requirements. |
 | Source package manifest uses `workspace:` for local monorepo development | Allow; pnpm publish/pack rewrites workspace ranges for packed artifacts, and source manifests are not generated app output. |
 | Generated project or packed artifact exposes `workspace:` dependency specifiers | Reject; generated projects and published artifacts must consume/install normal npm package versions. |
-| Generated project uses TypeScript path aliases for `@super-admin/*` | Reject; generated projects must consume published package artifacts. |
+| Generated project uses TypeScript path aliases for `@super-admin-org/*` | Reject; generated projects must consume published package artifacts. |
 | Generated project CSS points at `../../../../packages/*` or another monorepo path | Reject; generated projects must not depend on repository-local package paths. |
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
 | Generated default exposes runtime theme or language switching with one installed theme/locale | Reject; no-flags output is fixed to `base` and `zh-CN`. |
@@ -213,10 +213,10 @@ Generated template derivation:
 
 ### 5. Good/Base/Bad Cases
 
-- Good: `create-super-admin app --themes base,cyberpunk --i18n` generates a single Vite app, installs `@super-admin/theme`, `@super-admin/theme-base`, `@super-admin/theme-cyberpunk`, enables theme switching, and includes language switching.
-- Good: `super-admin theme remove cyberpunk` removes `@super-admin/theme-cyberpunk`, updates `super-admin.config.ts`, and regenerates `src/super-admin/theme-registry.generated.ts`.
+- Good: `create-super-admin app --themes base,cyberpunk --i18n` generates a single Vite app, installs `@super-admin-org/theme`, `@super-admin-org/theme-base`, `@super-admin-org/theme-cyberpunk`, enables theme switching, and includes language switching.
+- Good: `super-admin theme remove cyberpunk` removes `@super-admin-org/theme-cyberpunk`, updates `super-admin.config.ts`, and regenerates `src/super-admin/theme-registry.generated.ts`.
 - Base: generated README links to VitePress docs for deleting examples, connecting APIs, adding tests/lint, changing themes, and changing locale.
-- Bad: `@super-admin/theme` bundles every theme profile, making theme CLI commands only toggle already-downloaded code.
+- Bad: `@super-admin-org/theme` bundles every theme profile, making theme CLI commands only toggle already-downloaded code.
 - Bad: generated project contains the VitePress docs site, optional Hono reference API, FastAPI AI companion backend, test files, or lint/e2e tooling by default.
 - Bad: CLI generates `super-admin add module orders`; Super Admin must not generate user business modules.
 
@@ -233,16 +233,16 @@ Maintainer validation for generated output must cover:
 - no monorepo package paths appear in generated Tailwind/CSS source scanning
 - no optional reference backend imports or reference env tokens appear in default generated source
 - no backend/docs/test/lint/e2e/reference-smoke tooling appears in default output
-- default theme dependencies are only `@super-admin/theme` and `@super-admin/theme-base`
-- default theme registry imports only `@super-admin/theme-base`
+- default theme dependencies are only `@super-admin-org/theme` and `@super-admin-org/theme-base`
+- default theme registry imports only `@super-admin-org/theme-base`
 - multi-theme generation installs exactly the selected theme packages
 - multi-theme generation imports exactly the selected theme packages
 - no runtime theme or locale switcher appears in no-flags default output
-- generated app resolves `@super-admin/*` from package dependencies instead of package source paths
+- generated app resolves `@super-admin-org/*` from package dependencies instead of package source paths
 - generated app still follows `Page -> query composable -> API adapter -> mock/user API`
 - CLI parser/generator tests cover default, single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, and non-empty targets.
 - A built-bin smoke check runs the emitted `create-super-admin` output, not only source-level generator functions, so Node ESM import-extension regressions are caught.
-- CLI-generated default and multi-theme/i18n outputs are passed to `pnpm validate:starter` with matching flags. Use `--static-only` while `@super-admin/*` packages are not yet published or locally packed for install/build validation.
+- CLI-generated default and multi-theme/i18n outputs are passed to `pnpm validate:starter` with matching flags. Use `--static-only` while `@super-admin-org/*` packages are not yet published or locally packed for install/build validation.
 
 Generated user projects do not include test files by default.
 
@@ -270,7 +270,7 @@ This turns the frontend starter into a full-stack framework and weakens theme in
 create-super-admin app
   -> creates a single Vite app
   -> includes removable examples
-  -> installs @super-admin/theme and @super-admin/theme-base only
+  -> installs @super-admin-org/theme and @super-admin-org/theme-base only
   -> runs with mock data
   -> includes auth pages but no real auth provider
   -> includes optional AI Assistant surface but no required AI provider/backend

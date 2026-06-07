@@ -7,7 +7,7 @@ import {
   type KeepAlivePolicy,
   type WorkspaceTab,
   type WorkspaceTabsState
-} from '@super-admin/core'
+} from '@super-admin-org/core'
 import { defineStore } from 'pinia'
 import { computed, reactive } from 'vue'
 import { usePreferencesStore } from '@/stores/preferences.store'

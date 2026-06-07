@@ -1,4 +1,4 @@
-import type { ModuleManifest } from '@super-admin/core'
+import type { ModuleManifest } from '@super-admin-org/core'
 import UiKitActionsPage from './UiKitActionsPage.vue'
 import UiKitFeedbackPage from './UiKitFeedbackPage.vue'
 import UiKitFormsPage from './UiKitFormsPage.vue'

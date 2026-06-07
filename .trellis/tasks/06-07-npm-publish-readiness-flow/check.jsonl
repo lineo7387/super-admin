@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "Validate generated starter and package artifact release contract."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Check package boundary and workspace dependency handling."}
+{"file": ".trellis/spec/shared/typescript.md", "reason": "Check package TypeScript output and type-safety expectations."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Check required verification gates and quality rules."}
+{"file": ".trellis/tasks/06-07-npm-publish-readiness-flow/research/npm-publish-flow.md", "reason": "Check publish flow against npm official constraints and rollback risks."}

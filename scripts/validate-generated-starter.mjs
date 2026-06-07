@@ -4,11 +4,11 @@ import { resolve } from 'node:path'
 import { spawn } from 'node:child_process'
 
 export const themePackageById = {
-  base: '@super-admin/theme-base',
-  crypto: '@super-admin/theme-crypto',
-  cyberpunk: '@super-admin/theme-cyberpunk',
-  industrial: '@super-admin/theme-industrial',
-  newsprint: '@super-admin/theme-newsprint'
+  base: '@super-admin-org/theme-base',
+  crypto: '@super-admin-org/theme-crypto',
+  cyberpunk: '@super-admin-org/theme-cyberpunk',
+  industrial: '@super-admin-org/theme-industrial',
+  newsprint: '@super-admin-org/theme-newsprint'
 }
 
 const allowedDefaultScripts = new Set(['dev', 'build', 'typecheck', 'preview'])
@@ -171,8 +171,8 @@ function validatePackageJson(packageJson, themes) {
     )
   }
 
-  if (!('@super-admin/theme' in dependencies)) {
-    failures.push(createFailure('theme-runtime-package-present', 'Generated package.json must include @super-admin/theme.', 'package.json'))
+  if (!('@super-admin-org/theme' in dependencies)) {
+    failures.push(createFailure('theme-runtime-package-present', 'Generated package.json must include @super-admin-org/theme.', 'package.json'))
   }
 
   const toolingEntries = getAllDependencyEntries(packageJson)
@@ -217,11 +217,13 @@ async function validatePackedPackageManifests(packageManifestPaths = []) {
 
 function getRegistryThemeImports(registryText) {
   const imports = []
-  const importRegex = /from\s+['"](@super-admin\/theme-[^'"]+)['"]/g
+  const importRegex = /from\s+['"]([^'"]+)['"]/g
   let match = importRegex.exec(registryText)
 
   while (match) {
-    imports.push(match[1])
+    if (allThemeProfilePackages.includes(match[1])) {
+      imports.push(match[1])
+    }
     match = importRegex.exec(registryText)
   }
 
@@ -281,14 +283,14 @@ function validateNoMonorepoPaths(textEntries) {
 }
 
 function validateTsconfig(tsconfigText) {
-  if (!tsconfigText.includes('../../packages') && !tsconfigText.includes('@super-admin/')) {
+  if (!tsconfigText.includes('../../packages') && !tsconfigText.includes('@super-admin-org/') && !tsconfigText.includes('@super-admin/')) {
     return []
   }
 
   return [
     createFailure(
       'tsconfig-no-package-path-aliases',
-      'Generated tsconfig.json must not map @super-admin/* to monorepo package source paths.',
+      'Generated tsconfig.json must not map @super-admin-org/* to monorepo package source paths.',
       'tsconfig.json'
     )
   ]
@@ -470,8 +472,10 @@ function getPackageManagerCommand(packageManager, script, extraArgs = []) {
     }
   }
 
+  const passthroughArgs = packageManager === 'npm' ? ['--', ...extraArgs] : extraArgs
+
   return {
-    args: ['run', script, ...extraArgs],
+    args: ['run', script, ...passthroughArgs],
     command: packageManager
   }
 }
@@ -521,7 +525,7 @@ async function waitForHttp(url, timeoutMs = 20_000) {
 
 async function runStartupSmoke(projectDir, packageManager) {
   const port = await getFreePort()
-  const { args, command } = getPackageManagerCommand(packageManager, 'dev', ['--', '--host', '127.0.0.1', '--port', String(port), '--strictPort'])
+  const { args, command } = getPackageManagerCommand(packageManager, 'dev', ['--host', '127.0.0.1', '--port', String(port), '--strictPort'])
   const child = spawn(command, args, {
     cwd: projectDir,
     stdio: ['ignore', 'pipe', 'pipe']

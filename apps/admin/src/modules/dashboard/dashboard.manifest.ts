@@ -1,4 +1,4 @@
-import type { ModuleManifest } from '@super-admin/core'
+import type { ModuleManifest } from '@super-admin-org/core'
 import DashboardPage from './DashboardPage.vue'
 
 export const dashboardManifest: ModuleManifest = {

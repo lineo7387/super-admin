@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
-import { resolveColorMode } from '@super-admin/core'
-import { applyDesignProfile } from '@super-admin/theme'
+import { resolveColorMode } from '@super-admin-org/core'
+import { applyDesignProfile } from '@super-admin-org/theme'
 import { getBuiltInDesignProfile } from './super-admin/theme-registry.generated'
 import { usePreferencesStore } from './stores/preferences.store'
 import AppShell from './shell/AppShell.vue'

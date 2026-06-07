@@ -1,4 +1,4 @@
-import type { ModuleManifest } from '@super-admin/core'
+import type { ModuleManifest } from '@super-admin-org/core'
 import UsersActivityPage from './UsersActivityPage.vue'
 import UsersAllPage from './UsersAllPage.vue'
 import UsersInvitesPage from './UsersInvitesPage.vue'

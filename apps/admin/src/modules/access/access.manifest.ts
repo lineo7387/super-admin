@@ -1,4 +1,4 @@
-import type { ModuleManifest } from '@super-admin/core'
+import type { ModuleManifest } from '@super-admin-org/core'
 import AccessPage from './AccessPage.vue'
 
 export const accessManifest: ModuleManifest = {

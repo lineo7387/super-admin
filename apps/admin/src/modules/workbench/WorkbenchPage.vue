@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Play, RotateCcw, TimerReset } from 'lucide-vue-next'
 import { computed, shallowRef } from 'vue'
-import { AdminAlert, AdminButton, AdminCard, AdminSkeleton, StatusPill } from '@super-admin/ui'
+import { AdminAlert, AdminButton, AdminCard, AdminSkeleton, StatusPill } from '@super-admin-org/ui'
 import { useWorkbenchJobsQuery } from './workbench.queries'
 import type { WorkbenchJobListParams } from './workbench.types'
 

@@ -1,4 +1,4 @@
-import type { ModuleManifest } from '@super-admin/core'
+import type { ModuleManifest } from '@super-admin-org/core'
 import AccessPage from '../access/AccessPage.vue'
 import DashboardPage from '../dashboard/DashboardPage.vue'
 import TemplateGuidePage from './TemplateGuidePage.vue'

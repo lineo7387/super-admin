@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { AdminCard, StatusPill } from '@super-admin/ui'
+import { AdminCard, StatusPill } from '@super-admin-org/ui'
 
 const { t } = useI18n()
 const events = [
