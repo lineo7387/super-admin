@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make generated `create-super-admin` projects verifiable through the pre-publish release path: generate a starter, consume locally packed `@super-admin/*` package artifacts, install dependencies, run `typecheck`, run `build`, and pass startup smoke. This task should close the gap between current static generated-output validation and release-grade validation without publishing packages to npm.
+Make generated `create-super-admin` projects verifiable through the pre-publish release path: generate a starter, consume locally packed `@super-admin-org/*` package artifacts, install dependencies, run `typecheck`, run `build`, and pass startup smoke. This task should close the gap between static generated-output validation and release-grade validation without publishing packages to npm.
 
 ## What I Already Know
 
@@ -10,13 +10,13 @@ Make generated `create-super-admin` projects verifiable through the pre-publish 
 - The `create-super-admin` MVP exists under `packages/cli`.
 - The maintainer validator exists at `scripts/validate-generated-starter.mjs`.
 - Current generated starter validation passes with `--static-only`.
-- Full validator execution currently cannot be treated as complete because reusable packages are not yet emitted as installable package artifacts.
-- Source package manifests may keep `workspace:*` for monorepo development.
+- The later npm publish readiness work in commit `f76935d` produced installable local package artifacts and a full `pnpm validate:publish` flow.
+- Source package manifests now use publish-safe semver for publish candidates while `.npmrc` keeps local workspace linking for monorepo development.
 - Generated app `package.json` files and packed/published artifacts must not expose `workspace:*`.
 - Generated app TypeScript/Vite/CSS must not point at monorepo package paths.
-- Current reusable package manifests mostly point exports at `./src/index.ts` and build scripts often type-check with `noEmit`.
-- Generated starter package dependencies use normal semver ranges such as `^0.0.0`, which is correct for user output but not enough for local full validation before packages are published.
-- `@super-admin/ui` currently relies on Tailwind utility classes and app CSS variable/scroll styles; generated projects must have a published-package-safe styling strategy.
+- Current reusable package manifests point exports at emitted `dist` artifacts.
+- Generated starter package dependencies use normal semver ranges such as `^0.1.0`, which is correct for user output; local full validation rewrites only temporary smoke projects to local tarballs.
+- `@super-admin-org/ui` ships built artifacts and generated projects scan its package output through a published-package-safe Tailwind source path.
 - Public npm publishing is intentionally deferred. This task should prove that packages are packable/installable before any registry publish step.
 
 ## Assumptions
@@ -30,10 +30,10 @@ Make generated `create-super-admin` projects verifiable through the pre-publish 
 ## Requirements
 
 - Define and implement publish/pack-ready package outputs for packages needed by the generated starter:
-  - `@super-admin/core`
-  - `@super-admin/ui`
-  - `@super-admin/theme`
-  - selected `@super-admin/theme-*` packages
+  - `@super-admin-org/core`
+  - `@super-admin-org/ui`
+  - `@super-admin-org/theme`
+  - selected `@super-admin-org/theme-*` packages
   - `create-super-admin` if needed by the validation harness
 - Ensure packed package manifests do not expose `workspace:*`.
 - Ensure package exports used by generated projects point at emitted ESM/declaration artifacts rather than monorepo-only source paths.
@@ -48,14 +48,23 @@ Make generated `create-super-admin` projects verifiable through the pre-publish 
 
 ## Acceptance Criteria
 
-- [ ] Reusable packages needed by generated starters emit installable artifacts.
-- [ ] Packed package manifests do not contain `workspace:*`.
-- [ ] Generated starter validation can consume local packed artifacts before public npm publishing.
-- [ ] `pnpm validate:starter <generated-project-dir>` can run full install/typecheck/build/startup smoke for a locally generated default starter.
-- [ ] Multi-theme/i18n generated output can be full-validated with matching validator flags.
-- [ ] Generated user-facing `package.json` output still uses normal dependency ranges, not validation-only local paths.
-- [ ] Generated app configs do not use monorepo package aliases or monorepo CSS source paths.
-- [ ] Any package CSS/Tailwind strategy is published-package-safe.
+- [x] Reusable packages needed by generated starters emit installable artifacts.
+- [x] Packed package manifests do not contain `workspace:*`.
+- [x] Generated starter validation can consume local packed artifacts before public npm publishing.
+- [x] `pnpm validate:starter <generated-project-dir>` can run full install/typecheck/build/startup smoke for a locally generated default starter.
+- [x] Multi-theme/i18n generated output can be full-validated with matching validator flags.
+- [x] Generated user-facing `package.json` output still uses normal dependency ranges, not validation-only local paths.
+- [x] Generated app configs do not use monorepo package aliases or monorepo CSS source paths.
+- [x] Any package CSS/Tailwind strategy is published-package-safe.
+
+## Resolved Decisions
+
+- Local full validation uses `scripts/publish-readiness.mjs` to build or reuse package outputs, run `npm pack --dry-run`, create local tarballs, generate temporary starters, rewrite only the temporary starter dependency graph to `file:` tarballs, install with pnpm, typecheck, build, and startup-smoke.
+- User-facing generated output keeps normal semver ranges; validation-only local tarball paths are applied only to temporary smoke projects.
+- Package artifacts emit bundled ESM plus declaration files under `dist`, with manifests/exports pointing at emitted artifacts instead of monorepo source paths.
+- The initial release-grade validation target is pnpm. npm/yarn/bun parity remains a follow-up.
+- The CSS/Tailwind compatibility path is to keep generated app CSS in the app and scan `@super-admin-org/ui` built package output.
+- Public npm publishing remains out of scope for this task and is handled by the separate npm publish readiness flow.
 
 ## Definition Of Done
 
@@ -63,6 +72,18 @@ Make generated `create-super-admin` projects verifiable through the pre-publish 
 - `pnpm test`, `pnpm typecheck`, `pnpm lint`, and `pnpm build` pass.
 - Full generated starter validation passes without `--static-only` for the agreed MVP scenarios.
 - Follow-up gaps for npm/yarn/bun validation, public publishing, docs, and CLI vNext commands are captured rather than folded into this task.
+
+## Verification Evidence
+
+Fresh verification on 2026-06-07:
+
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm test`
+- `pnpm build`
+- `pnpm validate:publish --skip-build`
+- `pnpm validate:starter /var/folders/z4/1p1f3v6x72d2lrcmk5lh90rh0000gn/T/super-admin-starter-smoke-bOELD8/starter-default --pm pnpm --theme base`
+- `pnpm validate:starter /var/folders/z4/1p1f3v6x72d2lrcmk5lh90rh0000gn/T/super-admin-starter-smoke-bOELD8/starter-base-cyberpunk-i18n --pm pnpm --themes base,cyberpunk --i18n`
 
 ## Out Of Scope
 
@@ -78,14 +99,19 @@ Make generated `create-super-admin` projects verifiable through the pre-publish 
 
 ## Open Questions
 
-- Should local full validation use tarball dependency replacement in a temporary generated project copy, package-manager overrides, or another pack-install strategy?
-- Should the first package artifact work emit bundled JS, preserve source files in the package, or use a hybrid approach for Vue/Tailwind compatibility?
-- Should `@super-admin/ui` ship a CSS entry, published source scanning path, or both?
-- Which package metadata is required for this internal full-validation milestone versus public npm publishing?
+- None blocking. Earlier questions are resolved by the implemented publish readiness path; remaining work is fresh verification and Trellis closure for this task.
 
 ## Technical Notes
 
 - Relevant spec: `.trellis/spec/shared/cli-starter-contract.md`.
+- Relevant implementation commit: `f76935d feat: prepare npm publish readiness flow`.
+- Relevant implemented files:
+  - `scripts/publish-readiness.mjs`
+  - `scripts/prepare-npm-bootstrap.mjs`
+  - `scripts/npm-registry-release-commands.mjs`
+  - `scripts/validate-generated-starter.mjs`
+  - `packages/*/package.json`
+  - `packages/*/tsconfig.build.json`
 - Relevant previous artifacts:
   - `.trellis/tasks/archive/2026-06/06-06-define-cli-starter-contract-and-npm-package-boundaries/`
   - `.trellis/tasks/archive/2026-06/06-06-prepare-package-publish-boundaries/`
