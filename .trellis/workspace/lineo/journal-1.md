@@ -758,17 +758,23 @@ Archived the completed CLI starter contract/package-boundaries parent task after
 
 ### Main Changes
 
-(Add details)
+- Archived the completed CLI starter contract/package-boundaries parent task after all six child tasks were completed.
+- Created the next parent task: `06-07-enable-full-generated-starter-release-validation`.
+- Seeded the new PRD around packed/published package artifacts, full generated starter install/typecheck/build/startup validation, and published-package-safe CSS/Tailwind strategy.
+- Added recommended Trellis context entries for future implementation/check phases.
 
 ### Git Commits
 
 | Hash | Message |
 |------|---------|
-| `8351fd0` | (see git log) |
+| `1c24da6` | chore(task): archive 06-06-define-cli-starter-contract-and-npm-package-boundaries |
+| `8351fd0` | chore(task): create generated starter release validation task |
 
 ### Testing
 
-- [OK] (Add test results)
+- [OK] Verified worktree was clean before task transition.
+- [OK] Verified current active task is `.trellis/tasks/06-07-enable-full-generated-starter-release-validation`.
+- [OK] No code checks were required; changes are Trellis planning/archive artifacts only.
 
 ### Status
 
