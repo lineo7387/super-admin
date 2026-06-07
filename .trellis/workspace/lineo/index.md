@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 22
+- **Total Sessions**: 23
 - **Last Active**: 2026-06-07
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~779 | Active |
+| `journal-1.md` | ~818 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 23 | 2026-06-07 | Prepare npm publish readiness flow | `f76935d` | `main` |
 | 22 | 2026-06-07 | Archive CLI starter parent and open release validation task | `8351fd0` | `main` |
 | 21 | 2026-06-06 | Scaffold create-super-admin CLI MVP | `a781eed` | `main` |
 | 20 | 2026-06-06 | Add generated starter validation | `5d79f19` | `main` |

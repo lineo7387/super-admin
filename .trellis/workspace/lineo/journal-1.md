@@ -783,3 +783,36 @@ Archived the completed CLI starter contract/package-boundaries parent task after
 ### Next Steps
 
 - None - task complete
+
+
+## Session 23: Prepare npm publish readiness flow
+
+**Date**: 2026-06-07
+**Task**: Prepare npm publish readiness flow
+**Branch**: `main`
+
+### Summary
+
+Migrated publish candidates to @super-admin-org, added npm package metadata/build artifacts, local pack/install readiness validation, bootstrap/trust command preparation, and manual GitHub Actions next publish workflow without running registry mutations.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f76935d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
