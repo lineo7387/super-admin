@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make generated `create-super-admin` projects verifiable through the full release path: generate a starter, consume packed or published `@super-admin/*` package artifacts, install dependencies, run `typecheck`, run `build`, and pass startup smoke. This task should close the gap between current static generated-output validation and release-grade validation.
+Make generated `create-super-admin` projects verifiable through the pre-publish release path: generate a starter, consume locally packed `@super-admin/*` package artifacts, install dependencies, run `typecheck`, run `build`, and pass startup smoke. This task should close the gap between current static generated-output validation and release-grade validation without publishing packages to npm.
 
 ## What I Already Know
 
@@ -17,6 +17,7 @@ Make generated `create-super-admin` projects verifiable through the full release
 - Current reusable package manifests mostly point exports at `./src/index.ts` and build scripts often type-check with `noEmit`.
 - Generated starter package dependencies use normal semver ranges such as `^0.0.0`, which is correct for user output but not enough for local full validation before packages are published.
 - `@super-admin/ui` currently relies on Tailwind utility classes and app CSS variable/scroll styles; generated projects must have a published-package-safe styling strategy.
+- Public npm publishing is intentionally deferred. This task should prove that packages are packable/installable before any registry publish step.
 
 ## Assumptions
 
@@ -24,6 +25,7 @@ Make generated `create-super-admin` projects verifiable through the full release
 - Validation-only dependency substitution may happen in a temporary validation copy so user-facing generated output still contains normal semver ranges.
 - The first full validation target should prioritize pnpm, while preserving the package-manager-neutral product contract for later npm/yarn/bun coverage.
 - This task should not implement later `super-admin theme add/remove/set`, i18n mutation commands, example-removal automation, or the optional AI companion backend.
+- No npm account, npm token, registry login, npm organization permission, dist-tag, provenance, or release automation decision is required for this task.
 
 ## Requirements
 
@@ -65,6 +67,7 @@ Make generated `create-super-admin` projects verifiable through the full release
 ## Out Of Scope
 
 - Public npm publishing.
+- npm account/token setup, registry login, npm org permission checks, dist-tags, provenance, and release automation.
 - `super-admin theme add/remove/set`.
 - `super-admin i18n add/remove/set`.
 - Interactive CLI prompts.
