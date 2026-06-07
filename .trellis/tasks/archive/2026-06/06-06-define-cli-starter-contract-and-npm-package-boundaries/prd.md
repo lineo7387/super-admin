@@ -4,7 +4,38 @@
 
 Define the product contract for the future Super Admin CLI starter before building the CLI. The contract should settle what the generated project contains, which npm packages it depends on, how themes and i18n are configured, and how the mock-backed frontend boundary remains clear when users gradually adapt the starter to their own business.
 
-This task is planning-first. Do not implement the CLI yet.
+This task began as planning-first. After the contract stabilized, it spawned implementation child tasks for the package/theme boundaries, generated starter validation, and the CLI MVP.
+
+## Completion Summary
+
+Status: complete for this parent task.
+
+Completed child tasks `[6/6]`:
+
+- `06-06-add-neutral-base-design-profile`
+- `06-06-prepare-package-publish-boundaries`
+- `06-06-split-theme-packages-and-registry`
+- `06-06-design-generated-starter-template`
+- `06-06-add-generated-starter-validation`
+- `06-06-scaffold-create-super-admin-cli`
+
+Completed scope:
+
+- The generated starter contract is documented in this task and promoted to `.trellis/spec/shared/cli-starter-contract.md`.
+- The neutral `base` theme exists as the default starter theme.
+- Theme profile constants live in independent `@super-admin/theme-*` packages.
+- `@super-admin/theme` owns runtime/core theme helpers, not all built-in profiles.
+- The generated starter file map and CLI input contract are captured in archived child-task artifacts.
+- Maintainer static validation exists at `pnpm validate:starter <generated-project-dir>`.
+- `packages/cli` implements the `create-super-admin` MVP with flags-first generation, app-local config/registry output, and static generated-output validation coverage.
+
+Remaining work mentioned in this PRD is intentionally moved to follow-up tasks and is not a blocker for archiving this parent:
+
+- Full generated starter install/typecheck/build/startup validation with packed or published `@super-admin/*` artifacts.
+- Publish-ready package emission, exports, declarations, and package metadata.
+- Later `super-admin theme add/remove/set` and `super-admin i18n add/remove/set` commands.
+- User-facing docs for deleting examples and adding optional quality tooling.
+- Optional Python FastAPI AI companion backend.
 
 ## What I Already Know
 
@@ -162,19 +193,19 @@ Page -> module query composable -> API adapter -> mock data / user API
 
 ## Acceptance Criteria
 
-- [ ] The starter contract clearly states what the CLI generates by default.
-- [ ] The contract explicitly says demo modules are removable examples, not business templates.
-- [ ] The contract explicitly excludes business module generation.
-- [ ] The contract defines the generated project's npm dependency model without generated `workspace:` dependencies, while allowing source monorepo manifests to use pnpm workspace ranges.
-- [ ] The contract defines dependency-granular theme installation, so selected themes map to actual installed theme packages/dependencies.
-- [ ] The contract defines package-manager detection and `--pm` override expectations.
-- [ ] The contract defines the default `zh-CN` locale behavior.
-- [ ] The contract defines language switching as optional, not required in Chinese-only generated projects.
-- [ ] The contract defines a flags-first CLI MVP surface for project creation.
-- [ ] The contract defines the default neutral/base `shadcn-vue`-style theme requirement.
-- [ ] The contract explains the `Page -> query -> API adapter -> mock/user API` boundary in user-understandable language.
-- [ ] The contract defines install, typecheck, build, and startup smoke validation for generated projects.
-- [ ] Follow-up implementation tasks can be split from the contract without re-litigating the product boundary.
+- [x] The starter contract clearly states what the CLI generates by default.
+- [x] The contract explicitly says demo modules are removable examples, not business templates.
+- [x] The contract explicitly excludes business module generation.
+- [x] The contract defines the generated project's npm dependency model without generated `workspace:` dependencies, while allowing source monorepo manifests to use pnpm workspace ranges.
+- [x] The contract defines dependency-granular theme installation, so selected themes map to actual installed theme packages/dependencies.
+- [x] The contract defines package-manager detection and `--pm` override expectations.
+- [x] The contract defines the default `zh-CN` locale behavior.
+- [x] The contract defines language switching as optional, not required in Chinese-only generated projects.
+- [x] The contract defines a flags-first CLI MVP surface for project creation.
+- [x] The contract defines the default neutral/base `shadcn-vue`-style theme requirement.
+- [x] The contract explains the `Page -> query -> API adapter -> mock/user API` boundary in user-understandable language.
+- [x] The contract defines install, typecheck, build, and startup smoke validation for generated projects.
+- [x] Follow-up implementation tasks can be split from the contract without re-litigating the product boundary.
 
 ## Out Of Scope
 
@@ -190,18 +221,15 @@ Page -> module query composable -> API adapter -> mock data / user API
 - Building or generating the optional Python FastAPI AI companion backend in the CLI MVP.
 - Replacing current demo modules with a single vertical business product.
 
-## Open Questions
+## Follow-Up Questions
 
-- Exact source paths/routes for the default demo/example set.
+These are not blockers for this parent task. They should be handled in focused follow-up tasks:
+
 - Exact VitePress guide structure for "how to delete examples safely."
-- Exact package entrypoints and build/publish readiness requirements.
-- Exact `shadcn-vue` base theme token mapping.
-- Exact CLI UX details for theme/template and i18n install/switch commands beyond the flags-first MVP.
-- Exact generated-file differences between Chinese-only and language-switching projects.
+- Exact package entrypoints, emitted artifacts, and build/publish readiness requirements.
 - Exact release setup for independent theme packages.
-- Exact package-manager detection order and command mapping for npm, pnpm, yarn, and bun.
-- Exact architecture for CLI-managed theme installation: config file, generated registry, Vite virtual module, or another mechanism.
-- Exact generated registry file path and shape, likely `src/super-admin/theme-registry.generated.ts`.
+- Exact package-manager command mapping for npm, pnpm, yarn, and bun when dependency-install commands are added.
+- Exact CLI UX details for theme/template and i18n install/switch commands beyond the flags-first MVP.
 - Exact Python FastAPI AI companion backend scope, repository path, endpoint contract, docs-context strategy, provider-key handling, and deployment model.
 - Whether future style templates beyond theme profiles may also change layout/module composition; this is separate from the already-approved ability to choose any theme profile.
 
@@ -215,7 +243,7 @@ Page -> module query composable -> API adapter -> mock data / user API
 
 ## Definition Of Done
 
-- Product decisions from the current discussion are preserved in this task.
-- A contract document or equivalent task artifact exists for implementation planning.
-- Candidate `.trellis/spec/` updates are identified before implementation starts.
-- No implementation starts until the contract is reviewed.
+- [x] Product decisions from the current discussion are preserved in this task.
+- [x] A contract document or equivalent task artifact exists for implementation planning.
+- [x] Candidate `.trellis/spec/` updates are identified before implementation starts.
+- [x] Follow-up work is split from this contract without re-litigating the product boundary.

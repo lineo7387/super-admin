@@ -277,15 +277,25 @@ Maintainers must validate generated projects with:
 
 Generated projects do not include test files by default.
 
+## Completed In This Parent
+
+Completed child tasks:
+
+- Add `base`/`neutral` shadcn-vue-style theme.
+- Prepare package publish boundaries.
+- Split `@super-admin/theme` runtime/core from independent theme profile packages.
+- Define `super-admin.config.ts` and generated registry shape.
+- Define the generated starter template and CLI input contract.
+- Add maintainer-side generated starter validation.
+- Implement the `create-super-admin` CLI MVP.
+
 ## Follow-Up Tasks
 
 Likely follow-up work:
 
-- Add `base`/`neutral` shadcn-vue-style theme.
-- Finish publish-ready exports for the split theme runtime and independent theme packages.
-- Define `super-admin.config.ts` and generated registry shape.
-- Prepare npm package publish boundaries.
-- Implement `create-super-admin` CLI MVP.
+- Enable full generated starter release validation with packed or published `@super-admin/*` artifacts.
+- Finish publish-ready emitted exports, declarations, and package metadata for reusable packages.
 - Write VitePress docs for deleting examples, changing themes, changing locale, connecting APIs, and adding tests/lint/e2e.
+- Implement later `super-admin theme add/remove/set` and `super-admin i18n add/remove/set` commands.
 - Improve auth page/session logic in a separate task.
 - Design/build optional `apps/ai-assistant-api` Python FastAPI companion backend.
