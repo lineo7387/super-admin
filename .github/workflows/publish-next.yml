@@ -45,28 +45,28 @@ jobs:
         run: pnpm release check
 
       - name: Publish core
-        run: npm publish packages/core --tag next --access public --provenance
+        run: npm publish ./packages/core --tag next --access public --provenance
 
       - name: Publish theme runtime
-        run: npm publish packages/theme --tag next --access public --provenance
+        run: npm publish ./packages/theme --tag next --access public --provenance
 
       - name: Publish base theme
-        run: npm publish packages/theme-base --tag next --access public --provenance
+        run: npm publish ./packages/theme-base --tag next --access public --provenance
 
       - name: Publish crypto theme
-        run: npm publish packages/theme-crypto --tag next --access public --provenance
+        run: npm publish ./packages/theme-crypto --tag next --access public --provenance
 
       - name: Publish cyberpunk theme
-        run: npm publish packages/theme-cyberpunk --tag next --access public --provenance
+        run: npm publish ./packages/theme-cyberpunk --tag next --access public --provenance
 
       - name: Publish industrial theme
-        run: npm publish packages/theme-industrial --tag next --access public --provenance
+        run: npm publish ./packages/theme-industrial --tag next --access public --provenance
 
       - name: Publish newsprint theme
-        run: npm publish packages/theme-newsprint --tag next --access public --provenance
+        run: npm publish ./packages/theme-newsprint --tag next --access public --provenance
 
       - name: Publish UI
-        run: npm publish packages/ui --tag next --access public --provenance
+        run: npm publish ./packages/ui --tag next --access public --provenance
 
       - name: Publish creator CLI
-        run: npm publish packages/cli --tag next --provenance
+        run: npm publish ./packages/cli --tag next --provenance

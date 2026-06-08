@@ -89,6 +89,7 @@ Publish candidate packages must expose:
 - `pnpm release commands ...` prints registry-mutating commands only; it must not execute them.
 - GitHub `Publish next` workflow confirmation text must be `publish-super-admin-next-<current-package-version>`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
+- Normal publish workflow commands and generated local publish commands must use explicit local package specs such as `./packages/core` and `./output/npm-bootstrap/...tgz`. A bare spec like `packages/core` can be parsed by npm as a GitHub shorthand and trigger `git ls-remote ssh://git@github.com/packages/core.git`.
 - The normal publish workflow must ensure `pnpm@10.33.0` is available after upgrading npm for Trusted Publishing; do not rely on Corepack alone if the runner cannot resolve `pnpm` in later steps.
 - Generated starter smoke tests that launch dev servers must terminate and await the full child process tree before reporting success, because open handles can leave GitHub release checks stuck after validation output is printed.
 - Release workflow validation steps should have a timeout before any `npm publish` step so hangs fail closed before registry mutation begins.
@@ -110,6 +111,7 @@ Publish candidate packages must expose:
 | `npm trust github` rejects `--allow-publish` | Use the printed npm update command or a temporary modern npm CLI; do not drop the permission flag from the policy. |
 | GitHub publish workflow reports `pnpm: command not found` after the npm upgrade step | Install the pinned pnpm CLI explicitly before dependency installation, then rerun the workflow only after approval. |
 | Release workflow remains in `Run release check` after `Publish readiness validation passed` | Treat as an open-handle or child-process cleanup bug; cancel before publish steps start, fix cleanup, and rerun only after approval. |
+| Publish workflow runs `git ls-remote ssh://git@github.com/packages/<name>.git` for a local workspace path | Treat the publish spec as missing an explicit local `./` prefix; fix workflow and generated commands before rerunning with approval. |
 | Normal publish omits `--provenance` | Fail in `prepublishOnly`. |
 | Publish manifest exposes `workspace:` dependency ranges | Fail in `prepublishOnly` or pack validation. |
 | Publish artifact targets are missing from `dist` | Fail in `prepublishOnly` or pack validation. |

@@ -100,6 +100,8 @@ publish-super-admin-next-0.1.1
 
 The workflow runs `pnpm release check` before publishing. Package `prepublishOnly` guards block accidental normal local publishes and allow normal publishes only from the configured GitHub Actions workflow with the `next` tag and provenance.
 
+Publish commands for local package directories must use explicit local paths such as `./packages/core`. Do not write bare paths like `packages/core`; npm may parse them as GitHub shorthand package specs instead of local directories.
+
 ## Smoke Test Next
 
 After the workflow publishes to `next`, verify the CLI from the registry:

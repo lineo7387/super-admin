@@ -12,7 +12,11 @@ function scopedAccessArgs(candidate) {
 
 function bootstrapTarballPath(candidate) {
   const filename = `${candidate.name.replace(/^@/, '').replaceAll('/', '-')}-0.0.0-bootstrap.0.tgz`
-  return `output/npm-bootstrap/tarballs/${filename}`
+  return localPublishSpec(`output/npm-bootstrap/tarballs/${filename}`)
+}
+
+function localPublishSpec(path) {
+  return path.startsWith('.') || path.startsWith('/') ? path : `./${path}`
 }
 
 function printHeader(title) {
@@ -40,7 +44,7 @@ function printTrustCommands() {
 function printPublishNextCommands() {
   printHeader('GitHub Actions publish-next workflow commands')
   for (const candidate of publishCandidates) {
-    console.log(`npm publish ${candidate.path} --tag next --provenance${scopedAccessArgs(candidate)}`)
+    console.log(`npm publish ${localPublishSpec(candidate.path)} --tag next --provenance${scopedAccessArgs(candidate)}`)
   }
 }
 
