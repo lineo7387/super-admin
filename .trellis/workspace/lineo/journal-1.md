@@ -883,3 +883,37 @@ Added Changesets lockstep configuration, unified pnpm release commands, lightwei
 ### Next Steps
 
 - None - task complete
+
+
+## Session 26: Codify npm release channel policy
+
+**Date**: 2026-06-08
+**Task**: Codify npm release channel policy
+**Branch**: `main`
+
+### Summary
+
+Bootstrapped npm package names, configured Trusted Publishing, and documented Super Admin release channel/version policy plus npm trust CLI requirements.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b2d9dbc` | (see git log) |
+| `0636305` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
