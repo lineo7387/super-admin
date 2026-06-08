@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 26
+- **Total Sessions**: 27
 - **Last Active**: 2026-06-08
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~919 | Active |
+| `journal-1.md` | ~952 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 27 | 2026-06-08 | Fix fresh CI workspace type resolution | `be6a9ec` | `main` |
 | 26 | 2026-06-08 | Codify npm release channel policy | `b2d9dbc`, `0636305` | `main` |
 | 25 | 2026-06-08 | Add unified release automation | `7844eee` | `main` |
 | 24 | 2026-06-07 | Verify generated starter release validation | `f76935d`, `86d2423` | `main` |

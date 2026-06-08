@@ -917,3 +917,36 @@ Bootstrapped npm package names, configured Trusted Publishing, and documented Su
 ### Next Steps
 
 - None - task complete
+
+
+## Session 27: Fix fresh CI workspace type resolution
+
+**Date**: 2026-06-08
+**Task**: Fix fresh CI workspace type resolution
+**Branch**: `main`
+
+### Summary
+
+Confirmed GitHub CI failed in lint because fresh checkouts ran lint before generated publish package dist artifacts existed. Reordered CI and pnpm release check to build before lint/typecheck/test, documented the release-gate rule, verified pnpm release check, docs build, and fresh checkout build+lint.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `be6a9ec` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
