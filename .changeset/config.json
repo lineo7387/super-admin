@@ -1,0 +1,26 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [
+    [
+      "@super-admin-org/core",
+      "@super-admin-org/ui",
+      "@super-admin-org/theme",
+      "@super-admin-org/theme-base",
+      "@super-admin-org/theme-crypto",
+      "@super-admin-org/theme-cyberpunk",
+      "@super-admin-org/theme-industrial",
+      "@super-admin-org/theme-newsprint",
+      "create-super-admin"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "@super-admin/admin",
+    "@super-admin/api"
+  ]
+}

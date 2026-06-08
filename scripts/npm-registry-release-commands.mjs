@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-import { publishCandidates, releaseVersion } from './publish-readiness.mjs'
+import { publishCandidates } from './publish-readiness.mjs'
+import { readReleaseVersion } from './release.mjs'
 
 const workflowFile = 'publish-next.yml'
 const repository = 'lineo7387/super-admin'
+const releaseVersion = readReleaseVersion()
 
 function scopedAccessArgs(candidate) {
   return candidate.scoped ? ' --access public' : ''

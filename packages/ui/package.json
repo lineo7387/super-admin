@@ -9,6 +9,7 @@
     }
   },
   "scripts": {
+    "prepublishOnly": "node ../../scripts/prepublish-guard.mjs .",
     "build": "node ../../scripts/build-publish-package.mjs .",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",

@@ -18,6 +18,7 @@ export default defineConfig({
           { text: 'Project Structure', link: '/guide/project-structure' },
           { text: 'API Adapters', link: '/guide/api-adapters' },
           { text: 'Themes and Layouts', link: '/guide/themes-layouts' },
+          { text: 'Releasing', link: '/guide/releasing' },
           { text: 'Examples', link: '/guide/examples' },
           { text: 'Optional Backend', link: '/guide/optional-backend' },
           { text: 'AI Collaboration', link: '/guide/ai-collaboration' },

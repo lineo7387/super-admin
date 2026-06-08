@@ -6,7 +6,6 @@ import { dirname, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { validateGeneratedStarter } from './validate-generated-starter.mjs'
 
-export const releaseVersion = '0.1.0'
 export const publishCandidates = [
   {
     name: '@super-admin-org/core',

@@ -16,9 +16,15 @@
     "test:reference": "vitest run scripts/reference-integration-smoke.test.mjs && node scripts/reference-integration-smoke.mjs",
     "lint": "pnpm -r lint",
     "validate:publish": "node scripts/publish-readiness.mjs",
-    "release:commands": "node scripts/npm-registry-release-commands.mjs"
+    "changeset": "changeset",
+    "release": "node scripts/release.mjs",
+    "release:check": "node scripts/release.mjs check",
+    "release:version": "node scripts/release.mjs version",
+    "release:bootstrap:prepare": "node scripts/release.mjs bootstrap:prepare",
+    "release:commands": "node scripts/release.mjs commands"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^24.0.0",
     "@vitejs/plugin-vue": "^6.0.0",

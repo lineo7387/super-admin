@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: Type publish-super-admin-next-0.1.0 to publish 0.1.0 to the next dist-tag.
+        description: Type publish-super-admin-next-<version> to publish the current lockstep version to the next dist-tag.
         required: true
 
 permissions:
@@ -13,8 +13,9 @@ permissions:
 
 jobs:
   publish-next:
-    if: ${{ inputs.confirm == 'publish-super-admin-next-0.1.0' }}
     runs-on: ubuntu-latest
+    env:
+      SUPER_ADMIN_PUBLISH_WORKFLOW: publish-next.yml
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,26 +29,19 @@ jobs:
       - name: Use modern npm for Trusted Publishing
         run: npm install -g npm@^11.10.0
 
+      - name: Verify publish confirmation
+        env:
+          PUBLISH_CONFIRM: ${{ inputs.confirm }}
+        run: node scripts/release.mjs assert-workflow-confirm "$PUBLISH_CONFIRM"
+
       - name: Enable pnpm
         run: corepack prepare pnpm@10.33.0 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Test
-        run: pnpm test
-
-      - name: Build
-        run: pnpm build
-
-      - name: Validate publish readiness
-        run: pnpm validate:publish --skip-build
+      - name: Run release check
+        run: pnpm release check
 
       - name: Publish core
         run: npm publish packages/core --tag next --access public --provenance
