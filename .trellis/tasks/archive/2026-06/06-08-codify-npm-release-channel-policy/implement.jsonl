@@ -1,0 +1,10 @@
+{"file": ".trellis/spec/big-question/server-state-in-pinia.md", "reason": "Prevent duplicating query caches in Pinia."}
+{"file": ".trellis/spec/frontend/api-adapters.md", "reason": "Mock API and user API adapter pattern."}
+{"file": ".trellis/spec/frontend/data-and-query.md", "reason": "TanStack Query and server-state ownership rules."}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "App, package, and module directory conventions."}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Pinia and persisted preference boundaries."}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Frontend contract and route meta typing rules."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Layer boundary checks for shell, modules, API adapters, and queries."}
+{"file": ".trellis/spec/guides/pre-implementation-checklist.md", "reason": "Pre-code product and architecture checks."}
+{"file": ".trellis/spec/guides/trellis-lake-workflow.md", "reason": "Project workflow guard and artifact locations."}
+{"file": ".trellis/tasks/06-08-codify-npm-release-channel-policy/research/npm-release-channel-policy.md", "reason": "Task-specific research and design decisions."}
