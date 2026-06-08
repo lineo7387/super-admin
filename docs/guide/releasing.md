@@ -14,6 +14,22 @@ Super Admin publishes a small lockstep package set:
 
 The root app, admin app, and optional API reference app are not published.
 
+## Version And Channel Policy
+
+Version numbers describe release stability and compatibility. npm dist-tags describe install channels.
+
+| Version form | npm dist-tag | Purpose |
+| --- | --- | --- |
+| `0.0.0-bootstrap.0` | `bootstrap` | Package-name creation only. Do not document or recommend this as an installable release. |
+| `0.1.0-beta.1` | `beta` | Optional public beta prerelease, only when the project intentionally wants beta testers. |
+| `0.1.0-rc.1` | `rc` | Optional release candidate, only when a final release is expected after candidate validation. |
+| `0.1.0` | `next` | Real release candidate published by GitHub Actions for registry smoke testing. |
+| `0.1.0` | `latest` | Smoke-verified release promoted only after explicit approval. |
+
+Use `latest` only for smoke-verified releases that should be installed by default with `npm install <package>` or `pnpm add <package>`. Do not move `latest` to `bootstrap`, `beta`, `rc`, or `next` versions.
+
+The first real Super Admin release is lockstep `0.1.0`. It is not a beta version; SemVer major version `0` already communicates initial-development API instability.
+
 ## Daily Release Preparation
 
 Create a changeset when a publishable package changes:
@@ -53,6 +69,8 @@ pnpm release commands bootstrap
 ```
 
 Only run the printed `npm publish ... --tag bootstrap` commands after explicitly approving that registry mutation. The bootstrap version is `0.0.0-bootstrap.0` and exists only to create the package names.
+
+npm may leave `latest` pointing at the first bootstrap version for brand-new package names, and the registry may reject deleting `latest` while no replacement release exists. Treat this as a temporary registry bootstrap artifact, not as a valid default install channel. Continue with Trusted Publishing, publish the real release to `next`, smoke test it, then promote that real release to `latest`.
 
 ## Trusted Publishing Setup
 
@@ -102,6 +120,8 @@ pnpm release commands promote-latest
 ```
 
 Only run the printed `npm dist-tag add ... latest` commands after explicitly approving that registry mutation.
+
+Promotion must move `latest` to the smoke-verified real release version, for example `0.1.0`. It must not promote bootstrap or prerelease versions.
 
 ## Command Reference
 

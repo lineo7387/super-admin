@@ -78,11 +78,18 @@ Publish candidate packages must expose:
 - Changesets owns package version/changelog automation.
 - Publish candidates stay in one fixed lockstep Changesets group.
 - Private workspaces such as `@super-admin/admin` and `@super-admin/api` are not published.
+- Version numbers communicate release stability and compatibility; npm dist-tags communicate install channels.
+- `latest` is reserved for smoke-verified real releases that should be installed by default.
+- `0.0.0-bootstrap.0` is package-name bootstrap only and must use `bootstrap`; it is not a consumable release channel.
+- Optional prerelease versions must use SemVer prerelease identifiers and matching non-latest tags, for example `0.2.0-beta.1` with `beta` or `0.2.0-rc.1` with `rc`.
+- Real release candidates publish to `next`; after registry smoke passes, the same real version is promoted to `latest`.
+- The first real release is lockstep `0.1.0`; it is not a beta unless the version itself uses a prerelease suffix.
 - `pnpm release check` is the full non-registry release gate: lint, typecheck, tests, build, and local pack/install validation.
 - `pnpm release commands ...` prints registry-mutating commands only; it must not execute them.
 - GitHub `Publish next` workflow confirmation text must be `publish-super-admin-next-<current-package-version>`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
 - The local bootstrap path is allowed only for version `0.0.0-bootstrap.0` with `--tag bootstrap`.
+- If npm temporarily leaves `latest` pointing at a first bootstrap version and refuses to delete it before any replacement release exists, do not promote beta/next to latest as a workaround and do not unpublish without explicit approval. Proceed to Trusted Publishing, publish the real version to `next`, smoke test, then move `latest` to the real version.
 
 ### 4. Validation & Error Matrix
 
@@ -92,6 +99,9 @@ Publish candidate packages must expose:
 | Workflow confirmation does not match current version | Fail before install/build/publish steps. |
 | Local normal `npm publish` is attempted | Fail in `prepublishOnly`. |
 | Bootstrap publish uses a non-bootstrap tag or version | Fail in `prepublishOnly`. |
+| Bootstrap version is treated as a valid default install channel | Reject; bootstrap is package-name creation only. |
+| `latest` points to bootstrap or prerelease after a real smoke-verified release exists | Move `latest` to the smoke-verified real release before announcing install commands. |
+| A beta, rc, or next version is proposed for `latest` | Reject; publish it under the matching prerelease/upcoming tag. |
 | Normal publish omits `--provenance` | Fail in `prepublishOnly`. |
 | Publish manifest exposes `workspace:` dependency ranges | Fail in `prepublishOnly` or pack validation. |
 | Publish artifact targets are missing from `dist` | Fail in `prepublishOnly` or pack validation. |
@@ -100,8 +110,12 @@ Publish candidate packages must expose:
 
 - Good: maintainer runs `pnpm changeset`, `pnpm release version`, `pnpm release check`, pushes, then manually runs the `Publish next` workflow with the dynamic confirmation text.
 - Base: `pnpm release commands promote-latest` prints `npm dist-tag add ... latest` commands after registry smoke passes.
+- Good: `0.1.0` is published to `next`, smoke-tested from the registry, then promoted to `latest`.
+- Good: an intentional beta uses a version such as `0.2.0-beta.1` and publishes under `beta`, not `latest`.
+- Base: npm may temporarily show `latest: 0.0.0-bootstrap.0` immediately after brand-new package bootstrap; this is a registry artifact to replace with the first real release after smoke, not a release announcement.
 - Bad: a script silently runs `npm publish`, `npm trust`, or `npm dist-tag add` without an explicit human approval phase.
 - Bad: each package repeats the full lint/typecheck/test/build suite in `prepublishOnly`; the package hook should stay a lightweight guard.
+- Bad: publishing a placeholder bootstrap version and leaving it as the default install channel after a real release is available.
 
 ### 6. Tests Required
 
