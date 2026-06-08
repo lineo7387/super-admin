@@ -90,6 +90,8 @@ Publish candidate packages must expose:
 - GitHub `Publish next` workflow confirmation text must be `publish-super-admin-next-<current-package-version>`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
 - The normal publish workflow must ensure `pnpm@10.33.0` is available after upgrading npm for Trusted Publishing; do not rely on Corepack alone if the runner cannot resolve `pnpm` in later steps.
+- Generated starter smoke tests that launch dev servers must terminate and await the full child process tree before reporting success, because open handles can leave GitHub release checks stuck after validation output is printed.
+- Release workflow validation steps should have a timeout before any `npm publish` step so hangs fail closed before registry mutation begins.
 - The local bootstrap path is allowed only for version `0.0.0-bootstrap.0` with `--tag bootstrap`.
 - Trusted Publishing setup must use an npm CLI whose `npm trust github --help` supports `--allow-publish`; older npm 11 builds may reject the flag even though the major version is 11.
 - If npm temporarily leaves `latest` pointing at a first bootstrap version and refuses to delete it before any replacement release exists, do not promote beta/next to latest as a workaround and do not unpublish without explicit approval. Proceed to Trusted Publishing, publish the real version to `next`, smoke test, then move `latest` to the real version.
@@ -107,6 +109,7 @@ Publish candidate packages must expose:
 | A beta, rc, or next version is proposed for `latest` | Reject; publish it under the matching prerelease/upcoming tag. |
 | `npm trust github` rejects `--allow-publish` | Use the printed npm update command or a temporary modern npm CLI; do not drop the permission flag from the policy. |
 | GitHub publish workflow reports `pnpm: command not found` after the npm upgrade step | Install the pinned pnpm CLI explicitly before dependency installation, then rerun the workflow only after approval. |
+| Release workflow remains in `Run release check` after `Publish readiness validation passed` | Treat as an open-handle or child-process cleanup bug; cancel before publish steps start, fix cleanup, and rerun only after approval. |
 | Normal publish omits `--provenance` | Fail in `prepublishOnly`. |
 | Publish manifest exposes `workspace:` dependency ranges | Fail in `prepublishOnly` or pack validation. |
 | Publish artifact targets are missing from `dist` | Fail in `prepublishOnly` or pack validation. |

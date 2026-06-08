@@ -523,11 +523,58 @@ async function waitForHttp(url, timeoutMs = 20_000) {
   throw new Error(`Generated starter did not become reachable at ${url} within ${timeoutMs}ms.`)
 }
 
+function killProcessTree(child, signal) {
+  if (!child.pid) {
+    return
+  }
+
+  try {
+    if (process.platform === 'win32') {
+      child.kill(signal)
+      return
+    }
+
+    process.kill(-child.pid, signal)
+  } catch (error) {
+    if (error?.code !== 'ESRCH') {
+      throw error
+    }
+  }
+}
+
+async function stopStartupProcess(child, timeoutMs = 5_000) {
+  if (child.exitCode !== null || child.signalCode !== null) {
+    child.stdout.destroy()
+    child.stderr.destroy()
+    return
+  }
+
+  const closed = new Promise((resolveClose) => {
+    child.once('close', resolveClose)
+  })
+  let forceKillTimer
+  const forceKillDelay = new Promise((resolveDelay) => {
+    forceKillTimer = setTimeout(() => {
+      killProcessTree(child, 'SIGKILL')
+      resolveDelay()
+    }, timeoutMs)
+
+    forceKillTimer.unref?.()
+  })
+
+  killProcessTree(child, 'SIGTERM')
+  await Promise.race([closed, forceKillDelay])
+  clearTimeout(forceKillTimer)
+  child.stdout.destroy()
+  child.stderr.destroy()
+}
+
 async function runStartupSmoke(projectDir, packageManager) {
   const port = await getFreePort()
   const { args, command } = getPackageManagerCommand(packageManager, 'dev', ['--host', '127.0.0.1', '--port', String(port), '--strictPort'])
   const child = spawn(command, args, {
     cwd: projectDir,
+    detached: process.platform !== 'win32',
     stdio: ['ignore', 'pipe', 'pipe']
   })
   const logs = []
@@ -544,7 +591,7 @@ async function runStartupSmoke(projectDir, packageManager) {
   } catch (error) {
     throw new Error(`${error.message}\n${logs.join('')}`)
   } finally {
-    child.kill('SIGTERM')
+    await stopStartupProcess(child)
   }
 }
 
