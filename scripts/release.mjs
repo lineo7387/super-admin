@@ -85,10 +85,10 @@ export function normalizeRegistryCommandMode(mode) {
 }
 
 async function runReleaseCheck() {
+  await runCommand('pnpm', ['build'])
   await runCommand('pnpm', ['lint'])
   await runCommand('pnpm', ['typecheck'])
   await runCommand('pnpm', ['test'])
-  await runCommand('pnpm', ['build'])
   await runCommand('pnpm', ['validate:publish', '--skip-build'])
 }
 

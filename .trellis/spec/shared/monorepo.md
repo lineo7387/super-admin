@@ -84,7 +84,8 @@ Publish candidate packages must expose:
 - Optional prerelease versions must use SemVer prerelease identifiers and matching non-latest tags, for example `0.2.0-beta.1` with `beta` or `0.2.0-rc.1` with `rc`.
 - Real release candidates publish to `next`; after registry smoke passes, the same real version is promoted to `latest`.
 - The first real release is lockstep `0.1.0`; it is not a beta unless the version itself uses a prerelease suffix.
-- `pnpm release check` is the full non-registry release gate: lint, typecheck, tests, build, and local pack/install validation.
+- `pnpm release check` is the full non-registry release gate: build, lint, typecheck, tests, and local pack/install validation.
+- CI and release gates must build before lint/typecheck/test in a fresh checkout. Publishable package manifests export types from generated `dist`, so cross-package type resolution must not depend on stale local build artifacts.
 - `pnpm release commands ...` prints registry-mutating commands only; it must not execute them.
 - GitHub `Publish next` workflow confirmation text must be `publish-super-admin-next-<current-package-version>`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
