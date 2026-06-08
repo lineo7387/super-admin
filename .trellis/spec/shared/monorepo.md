@@ -89,6 +89,7 @@ Publish candidate packages must expose:
 - GitHub `Publish next` workflow confirmation text must be `publish-super-admin-next-<current-package-version>`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
 - The local bootstrap path is allowed only for version `0.0.0-bootstrap.0` with `--tag bootstrap`.
+- Trusted Publishing setup must use an npm CLI whose `npm trust github --help` supports `--allow-publish`; older npm 11 builds may reject the flag even though the major version is 11.
 - If npm temporarily leaves `latest` pointing at a first bootstrap version and refuses to delete it before any replacement release exists, do not promote beta/next to latest as a workaround and do not unpublish without explicit approval. Proceed to Trusted Publishing, publish the real version to `next`, smoke test, then move `latest` to the real version.
 
 ### 4. Validation & Error Matrix
@@ -102,6 +103,7 @@ Publish candidate packages must expose:
 | Bootstrap version is treated as a valid default install channel | Reject; bootstrap is package-name creation only. |
 | `latest` points to bootstrap or prerelease after a real smoke-verified release exists | Move `latest` to the smoke-verified real release before announcing install commands. |
 | A beta, rc, or next version is proposed for `latest` | Reject; publish it under the matching prerelease/upcoming tag. |
+| `npm trust github` rejects `--allow-publish` | Use the printed npm update command or a temporary modern npm CLI; do not drop the permission flag from the policy. |
 | Normal publish omits `--provenance` | Fail in `prepublishOnly`. |
 | Publish manifest exposes `workspace:` dependency ranges | Fail in `prepublishOnly` or pack validation. |
 | Publish artifact targets are missing from `dist` | Fail in `prepublishOnly` or pack validation. |

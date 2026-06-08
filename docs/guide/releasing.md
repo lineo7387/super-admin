@@ -82,6 +82,8 @@ pnpm release commands trust
 
 Only run the printed `npm trust github ... --allow-publish` commands after explicitly approving that registry mutation.
 
+Use an npm CLI that supports the `--allow-publish` trust permission flag. If `npm trust github --help` does not list `--allow-publish`, run the printed `npm install -g npm@^11.10.0` update or use a temporary modern CLI such as `npx npm@11.16.0 ...` for the trust commands.
+
 ## Publish To Next
 
 Push the release commit to GitHub, then run the `Publish next` workflow manually. The confirmation text must match the current package version:
