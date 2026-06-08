@@ -850,3 +850,36 @@ Closed the generated starter release validation task after reconciling its PRD t
 ### Next Steps
 
 - None - task complete
+
+
+## Session 25: Add unified release automation
+
+**Date**: 2026-06-08
+**Task**: Add unified release automation
+**Branch**: `main`
+
+### Summary
+
+Added Changesets lockstep configuration, unified pnpm release commands, lightweight prepublish guards, dynamic GitHub publish confirmation, release docs, and monorepo release spec coverage without running registry-mutating commands.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7844eee` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

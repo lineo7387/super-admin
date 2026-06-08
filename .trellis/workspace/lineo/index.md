@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 24
-- **Last Active**: 2026-06-07
+- **Total Sessions**: 25
+- **Last Active**: 2026-06-08
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~852 | Active |
+| `journal-1.md` | ~885 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 25 | 2026-06-08 | Add unified release automation | `7844eee` | `main` |
 | 24 | 2026-06-07 | Verify generated starter release validation | `f76935d`, `86d2423` | `main` |
 | 23 | 2026-06-07 | Prepare npm publish readiness flow | `f76935d` | `main` |
 | 22 | 2026-06-07 | Archive CLI starter parent and open release validation task | `8351fd0` | `main` |
