@@ -86,6 +86,8 @@ Publish candidate packages must expose:
 - The first real release is lockstep `0.1.0`; it is not a beta unless the version itself uses a prerelease suffix.
 - `pnpm release check` is the full non-registry release gate: build, lint, typecheck, tests, and local pack/install validation.
 - CI and release gates must build before lint/typecheck/test in a fresh checkout. Publishable package manifests export types from generated `dist`, so cross-package type resolution must not depend on stale local build artifacts.
+- Release readiness must validate `create-super-admin` through the packed package artifact, not only `packages/cli/dist/cli.js` in the monorepo. The packed CLI must generate starters without access to repository-root `apps/admin`.
+- The `create-super-admin` pack artifact must include its runtime starter template, for example under `dist/starter-template/admin`, and pack validation must fail if those files are missing.
 - `pnpm release commands ...` prints registry-mutating commands only; it must not execute them.
 - GitHub `Publish next` workflow confirmation text must be `publish-super-admin-next-<current-package-version>`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
@@ -115,6 +117,8 @@ Publish candidate packages must expose:
 | Normal publish omits `--provenance` | Fail in `prepublishOnly`. |
 | Publish manifest exposes `workspace:` dependency ranges | Fail in `prepublishOnly` or pack validation. |
 | Publish artifact targets are missing from `dist` | Fail in `prepublishOnly` or pack validation. |
+| Packed `create-super-admin` cannot generate a starter unless repo-root `apps/admin` exists | Fail in release readiness before publish; build/package the runtime template into the CLI tarball. |
+| Registry smoke for `next` fails after a version was published | Do not promote `latest`; fix forward with a new patch version on `next` because npm package versions are immutable. |
 
 ### 5. Good/Base/Bad Cases
 
@@ -139,6 +143,7 @@ Publish candidate packages must expose:
   - `workspace:` ranges rejected
   - missing artifacts rejected
 - Full release gate: `pnpm release check`.
+- Pack-level CLI runtime regression: unpack the `create-super-admin` tarball and run its emitted CLI in a workspace that does not contain repo-root `apps/admin`.
 - Docs build when release docs or VitePress sidebar change.
 
 ### 7. Wrong vs Correct

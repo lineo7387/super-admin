@@ -57,4 +57,37 @@ describe('publish readiness helpers', () => {
       'packed-package-no-build-artifacts'
     ])
   })
+
+  it('requires the packed creator CLI to carry its runtime starter template', () => {
+    const failures = createPackedManifestFailures({
+      files: [
+        'dist/cli.js',
+        'dist/index.js',
+        'dist/index.d.ts',
+        'dist/starter-template/admin/components.json',
+        'dist/starter-template/admin/src/App.vue',
+        'dist/starter-template/admin/src/api/reference/users-reference.api.ts',
+        'README.md'
+      ],
+      manifest: {
+        bin: {
+          'create-super-admin': './dist/cli.js'
+        },
+        exports: {
+          '.': {
+            import: './dist/index.js',
+            types: './dist/index.d.ts'
+          }
+        },
+        main: './dist/index.js',
+        types: './dist/index.d.ts'
+      },
+      packageName: 'create-super-admin'
+    })
+
+    expect(failures.map((failure) => failure.id)).toEqual([
+      'packed-cli-runtime-template-present',
+      'packed-cli-runtime-template-no-reference-api'
+    ])
+  })
 })

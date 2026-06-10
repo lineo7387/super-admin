@@ -56,6 +56,14 @@ export const publishCandidates = [
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const dependencyGroupNames = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']
+const cliRuntimeTemplateRequiredFiles = [
+  'dist/starter-template/admin/components.json',
+  'dist/starter-template/admin/src/App.vue',
+  'dist/starter-template/admin/src/i18n/locales/en-US.ts',
+  'dist/starter-template/admin/src/i18n/locales/zh-CN.ts',
+  'dist/starter-template/admin/src/main.ts',
+  'dist/starter-template/admin/src/super-admin/theme-registry.generated.ts'
+]
 
 function toPosixPath(path) {
   return path.split(sep).join('/')
@@ -139,10 +147,33 @@ export function createPackedManifestFailures({ files, manifest, packageName }) {
     )
   }
 
-  const buildArtifacts = [...packedFiles].filter((file) => file.endsWith('.tsbuildinfo') || /\\.(test|spec)\\./.test(file))
+  const buildArtifacts = [...packedFiles].filter((file) => file.endsWith('.tsbuildinfo') || /\.(test|spec)\./.test(file))
 
   if (buildArtifacts.length > 0) {
     failures.push(createFailure('packed-package-no-build-artifacts', `${packageName} tarball includes build/test artifacts: ${buildArtifacts.join(', ')}.`))
+  }
+
+  if (packageName === 'create-super-admin') {
+    const missingTemplateFiles = cliRuntimeTemplateRequiredFiles.filter((file) => !packedFiles.has(file))
+    const forbiddenTemplateFiles = [...packedFiles].filter((file) => file.startsWith('dist/starter-template/admin/src/api/reference/'))
+
+    if (missingTemplateFiles.length > 0) {
+      failures.push(
+        createFailure(
+          'packed-cli-runtime-template-present',
+          `${packageName} tarball must include runtime starter template files: ${missingTemplateFiles.join(', ')}.`
+        )
+      )
+    }
+
+    if (forbiddenTemplateFiles.length > 0) {
+      failures.push(
+        createFailure(
+          'packed-cli-runtime-template-no-reference-api',
+          `${packageName} runtime starter template must not include optional reference API source: ${forbiddenTemplateFiles.join(', ')}.`
+        )
+      )
+    }
   }
 
   if (!packedFiles.has('README.md')) {
@@ -268,8 +299,23 @@ async function packCandidates(outputDir) {
   return tarballs
 }
 
-async function generateStarter(targetDir, args) {
-  await runCommand('node', [resolve(repoRoot, 'packages/cli/dist/cli.js'), targetDir, ...args, '--pm', 'pnpm'], repoRoot)
+async function extractPackedCli(outputDir, tarballs) {
+  const cliTarball = tarballs.find((tarball) => tarball.name === 'create-super-admin')
+
+  if (!cliTarball) {
+    throw new Error('create-super-admin tarball is required for starter validation.')
+  }
+
+  const packedCliRoot = resolve(outputDir, 'packed-create-super-admin')
+  await rm(packedCliRoot, { force: true, recursive: true })
+  await mkdir(packedCliRoot, { recursive: true })
+  await runCommand('tar', ['-xzf', cliTarball.tarballPath, '-C', packedCliRoot], repoRoot)
+
+  return resolve(packedCliRoot, 'package/dist/cli.js')
+}
+
+async function generateStarter(cliBinPath, targetDir, args) {
+  await runCommand('node', [cliBinPath, targetDir, ...args, '--pm', 'pnpm'], repoRoot)
 }
 
 async function rewriteStarterDependencies(projectDir, tarballs) {
@@ -279,11 +325,11 @@ async function rewriteStarterDependencies(projectDir, tarballs) {
   await writeJson(packageJsonPath, rewriteStarterPackageJson(packageJson, tarballDependencyMap))
 }
 
-async function validateStarterVariant({ args, i18n, outputDir, tarballs, themes }) {
+async function validateStarterVariant({ args, cliBinPath, i18n, outputDir, tarballs, themes }) {
   const projectDir = resolve(outputDir, args.length === 0 ? 'starter-default' : `starter-${themes.join('-')}${i18n ? '-i18n' : ''}`)
 
   await rm(projectDir, { force: true, recursive: true })
-  await generateStarter(projectDir, args)
+  await generateStarter(cliBinPath, projectDir, args)
   await rewriteStarterDependencies(projectDir, tarballs)
 
   const failures = await validateGeneratedStarter(projectDir, {
@@ -300,9 +346,11 @@ async function validateStarterVariant({ args, i18n, outputDir, tarballs, themes 
 
 async function validateLocalStarters(outputDir, tarballs) {
   const starterRoot = await mkdtemp(resolve(tmpdir(), 'super-admin-starter-smoke-'))
+  const cliBinPath = await extractPackedCli(outputDir, tarballs)
 
   await validateStarterVariant({
     args: [],
+    cliBinPath,
     i18n: false,
     outputDir: starterRoot,
     tarballs,
@@ -310,6 +358,7 @@ async function validateLocalStarters(outputDir, tarballs) {
   })
   await validateStarterVariant({
     args: ['--themes', 'base,cyberpunk', '--i18n'],
+    cliBinPath,
     i18n: true,
     outputDir: starterRoot,
     tarballs,

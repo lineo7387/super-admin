@@ -34,8 +34,8 @@ type TransformContext = {
   input: StarterGenerationInput
 }
 
-function getDefaultSourceRoot(): string {
-  return resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
+function getDefaultSourceAppDir(): string {
+  return resolve(dirname(fileURLToPath(import.meta.url)), 'starter-template/admin')
 }
 
 function toPosixPath(path: string): string {
@@ -194,8 +194,7 @@ export async function generateStarter(
   input: StarterGenerationInput,
   options: GenerateStarterOptions = {}
 ): Promise<GenerateStarterResult> {
-  const sourceRoot = options.sourceRoot ?? getDefaultSourceRoot()
-  const sourceAppDir = resolve(sourceRoot, 'apps/admin')
+  const sourceAppDir = options.sourceRoot ? resolve(options.sourceRoot, 'apps/admin') : getDefaultSourceAppDir()
   const targetDirectory = input.targetDirectory
   const tempDirectory = resolve(dirname(targetDirectory), `.${input.projectName}.tmp-${Date.now()}-${process.pid}`)
   const context: TransformContext = {

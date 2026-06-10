@@ -119,6 +119,9 @@ CLI implementation package:
 Published package consumption boundary:
 
 - Generated projects must consume emitted npm package artifacts, not monorepo source files.
+- The published `create-super-admin` package must be self-contained for `npm exec`, `npx`, and `pnpm dlx` runtime. It must not rely on the repository-root `apps/admin` source directory being present after installation.
+- The CLI may derive its runtime starter template from `apps/admin` during package build, but the files used at runtime must be carried inside the packed package, for example under `dist/starter-template/admin`.
+- Maintainer-only source-level tests may pass an explicit repo `sourceRoot`; the default published runtime path must resolve package-local template files.
 - Source package manifests may use pnpm `workspace:` ranges for monorepo development.
 - Packed/published `@super-admin-org/*` artifacts and generated app `package.json` files must not expose `workspace:` dependency specifiers.
 - Package exports may point to source during early monorepo development, but publish-ready exports should point to emitted ESM/declaration artifacts, not `./src/*.ts` or workspace-only Vue source paths.
@@ -203,6 +206,8 @@ Generated template derivation:
 | Generated project or packed artifact exposes `workspace:` dependency specifiers | Reject; generated projects and published artifacts must consume/install normal npm package versions. |
 | Generated project uses TypeScript path aliases for `@super-admin-org/*` | Reject; generated projects must consume published package artifacts. |
 | Generated project CSS points at `../../../../packages/*` or another monorepo path | Reject; generated projects must not depend on repository-local package paths. |
+| Packed `create-super-admin` tarball omits its runtime starter template | Reject during pack validation before publish; registry/dlx consumers do not have repo-root `apps/admin`. |
+| Published CLI default path attempts to read repository-root `apps/admin` | Reject; only explicit maintainer test hooks may read repo source. |
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
 | Generated default exposes runtime theme or language switching with one installed theme/locale | Reject; no-flags output is fixed to `base` and `zh-CN`. |
 | Publish-ready package export points at source TypeScript instead of emitted package output | Reject for publish-ready package work; source exports are only acceptable as a temporary monorepo development state. |
@@ -229,6 +234,8 @@ Maintainer validation for generated output must cover:
 - `build` succeeds
 - startup smoke succeeds
 - no `workspace:` dependency specifiers appear in generated `package.json` or packed package artifacts
+- the packed `create-super-admin` package includes the runtime starter template required by the CLI
+- a packed-package CLI smoke runs the emitted CLI from an unpacked tarball in a directory with no repo-root `apps/admin`
 - no monorepo package path aliases appear in generated TypeScript/Vite config
 - no monorepo package paths appear in generated Tailwind/CSS source scanning
 - no optional reference backend imports or reference env tokens appear in default generated source

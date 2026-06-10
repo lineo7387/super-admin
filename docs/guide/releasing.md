@@ -54,6 +54,8 @@ pnpm release check
 
 This runs lint, typecheck, tests, package builds, local `npm pack` validation, generated starter install/typecheck/build, and startup smoke. It does not publish anything.
 
+The release gate validates the generated starter by running the packed `create-super-admin` tarball, not only the local monorepo CLI. This catches registry and `pnpm dlx` runtime issues such as missing package-local starter templates before publish.
+
 ## First-Time Package Bootstrap
 
 Brand-new npm package names must exist before Trusted Publishing can be configured. Prepare bootstrap tarballs locally:
@@ -114,6 +116,8 @@ pnpm typecheck
 pnpm build
 pnpm dev
 ```
+
+If registry smoke fails, do not promote `latest`. npm package versions are immutable, so fix the issue, create a new patch release, publish that new version to `next`, and smoke test again. For example, if `0.1.0` was already published to `next` and fails smoke, the fix should publish `0.1.1` to `next`; only promote `0.1.1` after its registry smoke passes.
 
 ## Promote Latest
 

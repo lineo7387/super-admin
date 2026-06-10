@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process'
 import { mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -19,6 +20,36 @@ async function readGeneratedJson(root, filePath) {
 
 async function readGeneratedText(root, filePath) {
   return readFile(join(root, filePath), 'utf8')
+}
+
+function runCommand(command, args, cwd) {
+  return new Promise((resolveRun, reject) => {
+    const stderrChunks = []
+    const stdoutChunks = []
+    const child = spawn(command, args, {
+      cwd,
+      stdio: ['ignore', 'pipe', 'pipe']
+    })
+
+    child.stdout.on('data', (chunk) => {
+      stdoutChunks.push(chunk)
+    })
+    child.stderr.on('data', (chunk) => {
+      stderrChunks.push(chunk)
+    })
+    child.on('error', reject)
+    child.on('exit', (code) => {
+      const stdout = Buffer.concat(stdoutChunks).toString()
+      const stderr = Buffer.concat(stderrChunks).toString()
+
+      if (code === 0) {
+        resolveRun(stdout)
+        return
+      }
+
+      reject(new Error(`${command} ${args.join(' ')} failed with exit code ${code}.\n${stdout}${stderr}`))
+    })
+  })
 }
 
 describe('create-super-admin starter generation', () => {
@@ -72,7 +103,7 @@ describe('create-super-admin starter generation', () => {
       preview: 'vite preview',
       typecheck: 'vue-tsc --noEmit'
     })
-    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.0')
+    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.1')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
     expect(config).toContain("installed: ['base']")
     expect(config).toContain("switcher: 'off'")
@@ -92,8 +123,8 @@ describe('create-super-admin starter generation', () => {
     const registry = await readGeneratedText(input.targetDirectory, 'src/super-admin/theme-registry.generated.ts')
     const preferences = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferences.vue')
 
-    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.0')
-    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.0')
+    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.1')
+    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.1')
     expect(packageJson.dependencies['@super-admin-org/theme-crypto']).toBeUndefined()
     expect(registry).toContain("from '@super-admin-org/theme-base'")
     expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")
@@ -129,5 +160,22 @@ describe('create-super-admin starter generation', () => {
     expect(exitCode).toBe(0)
     expect(output.join('\n')).toContain('Created Super Admin starter')
     await expect(validateGeneratedStarterStatic(join(tempRoot, 'demo-admin'), { themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('runs from the packed CLI package without a repo apps/admin source tree', async () => {
+    const tempRoot = await createTempRoot()
+    const unpackRoot = join(tempRoot, 'unpacked')
+    const workspaceRoot = join(tempRoot, 'workspace')
+    await mkdir(unpackRoot)
+    await mkdir(workspaceRoot)
+
+    await runCommand('pnpm', ['--filter', 'create-super-admin', 'build'], repoRoot)
+    const packOutput = await runCommand('npm', ['pack', '--json', '--pack-destination', tempRoot], resolve(repoRoot, 'packages/cli'))
+    const [packed] = JSON.parse(packOutput)
+    await runCommand('tar', ['-xzf', resolve(tempRoot, packed.filename), '-C', unpackRoot], repoRoot)
+
+    await runCommand('node', [join(unpackRoot, 'package/dist/cli.js'), 'demo-admin', '--pm', 'pnpm'], workspaceRoot)
+
+    await expect(validateGeneratedStarterStatic(join(workspaceRoot, 'demo-admin'), { themes: ['base'] })).resolves.toEqual([])
   })
 })

@@ -1,6 +1,6 @@
 {
   "name": "create-super-admin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "bin": {
     "create-super-admin": "./dist/cli.js"
@@ -13,7 +13,7 @@
   },
   "scripts": {
     "prepublishOnly": "node ../../scripts/prepublish-guard.mjs .",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node ../../scripts/build-cli-template.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "lint": "tsc -p tsconfig.json --noEmit"
