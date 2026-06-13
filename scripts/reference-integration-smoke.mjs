@@ -232,7 +232,7 @@ async function runBrowserFlow(config) {
       .then((response) => ({ response }))
       .catch((error) => ({ error }))
 
-    await page.getByRole('button', { name: 'Sign in' }).click()
+    await page.getByRole('button', { name: /^(登录|Sign in)$/ }).click()
     const authResponse = await authResponsePromise
     const authPayload = await authResponse.json()
     const authToken = authPayload.data.token
@@ -265,7 +265,7 @@ async function runBrowserFlow(config) {
     })
 
     await page.getByRole('button', { name: 'MC' }).click()
-    await page.getByRole('menuitem', { name: 'Sign out' }).click()
+    await page.getByRole('menuitem', { name: /^(退出登录|Sign out)$/ }).click()
     await page.waitForURL('**/auth/login**')
 
     const finalUrl = page.url()

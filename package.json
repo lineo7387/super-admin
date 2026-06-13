@@ -12,7 +12,7 @@
     "docs:preview": "vitepress preview docs",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test && vitest run scripts/*.test.mjs",
-    "validate:starter": "node scripts/validate-generated-starter.mjs",
+    "validate:starter": "node scripts/validate-starter-smoke.mjs",
     "test:reference": "vitest run scripts/reference-integration-smoke.test.mjs && node scripts/reference-integration-smoke.mjs",
     "lint": "pnpm -r lint",
     "validate:publish": "node scripts/publish-readiness.mjs",
