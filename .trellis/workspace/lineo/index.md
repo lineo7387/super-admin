@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 29
+- **Total Sessions**: 30
 - **Last Active**: 2026-06-13
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1020 | Active |
+| `journal-1.md` | ~1054 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 30 | 2026-06-13 | Align public docs with CLI release state | `7672dc4`, `392d898` | `main` |
 | 29 | 2026-06-13 | Chinese communication rule | `f09b643`, `b6373f9` | `main` |
 | 28 | 2026-06-13 | Independent release model | `b318d40`, `d6d3e4a` | `main` |
 | 27 | 2026-06-08 | Fix fresh CI workspace type resolution | `be6a9ec` | `main` |

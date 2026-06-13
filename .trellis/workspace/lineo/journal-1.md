@@ -1018,3 +1018,37 @@ Added a project-level AGENTS.md rule to default user-facing replies to Chinese w
 ### Next Steps
 
 - None - task complete
+
+
+## Session 30: Align public docs with CLI release state
+
+**Date**: 2026-06-13
+**Task**: Align public docs with CLI release state
+**Branch**: `main`
+
+### Summary
+
+Aligned public README and guide wording with the current optional create-super-admin CLI and dependency-aware release automation state, while preserving the frontend-first mock-backed default boundary and registry mutation safety constraints.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7672dc4` | (see git log) |
+| `392d898` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
