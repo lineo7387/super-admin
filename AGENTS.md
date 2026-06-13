@@ -31,6 +31,10 @@ This repository uses the Trellis lake workflow as the only project workflow.
 - Use `.trellis/spec/` as the source of truth for project coding and architecture rules.
 - If a global or copied skill suggests a Superpowers path, ignore that part and follow the Trellis lake workflow instead.
 
+## Communication Style
+
+- 默认用中文和用户沟通；代码标识符、命令、包名、文件路径、API 名称、产品名，以及不适合翻译的技术名词保留原文。必要时用中文简短解释这些术语。
+
 ## Minimal Project Guardrails
 
 Keep this file as a short routing surface. Read detailed rules on demand from `.trellis/spec/` and `docs/guide/`.
