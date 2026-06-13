@@ -37,5 +37,5 @@
 - [x] Replace the CLI starter single version constant with build-time package-specific version injection.
 - [x] Update release docs and shared monorepo release spec.
 - [x] Optionally add a documented promote-latest workflow draft with a single GitHub approval gate.
-- [ ] Run required verification commands and package dry-run checks.
-- [ ] Commit and push without triggering publish-next.
+- [x] Run required verification commands and package dry-run checks.
+- [x] Commit and push without triggering publish-next.
