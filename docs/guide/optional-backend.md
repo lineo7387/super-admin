@@ -4,14 +4,14 @@ The default scaffold is frontend-first. It should run without a backend, databas
 
 ## What Is Optional
 
-Optional future/reference surfaces include:
+Optional/reference surfaces include:
 
 - Hono-style reference API
 - database or ORM examples
 - auth provider examples
 - AI provider integration
 - formal API contract validation
-- CLI scaffold generation
+- `create-super-admin` CLI scaffold generation
 
 These should validate or generate the frontend template boundary. They should not redefine the default scaffold as a full-stack framework.
 
@@ -25,9 +25,9 @@ For real projects today:
 4. If the workflow differs, reshape the page, components, types, queries, and adapter together.
 5. Keep backend-specific clients out of Vue pages.
 
-## Planned Direction
+## Maintainer Validation Path
 
-The roadmap after this documentation pass is:
+The optional backend and CLI surfaces are validation tools around the same frontend-first boundary:
 
 ```text
 API contract validation
@@ -36,4 +36,4 @@ API contract validation
       -> release acceptance QA
 ```
 
-The CLI is planned, not available yet. Do not rely on CLI commands until they exist in `package.json` and this documentation.
+The CLI is available as an optional generated-project path. It does not make the optional backend mandatory, and backend-specific clients should still stay behind API adapters rather than inside Vue pages.

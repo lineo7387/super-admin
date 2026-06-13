@@ -48,6 +48,6 @@ The default scaffold does not require:
 - auth provider
 - AI provider
 - fixed API response shape
-- CLI generation
+- CLI generation or release tooling
 
 Those surfaces can be added later, but they should not be required to run or customize the frontend template.

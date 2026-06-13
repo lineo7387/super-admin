@@ -26,4 +26,4 @@ features:
 
 Super Admin is an open-source admin template focused on the frontend experience first. It gives you a runnable Vue admin app, reusable admin-console primitives, example modules, and a clear replacement point for connecting your own APIs.
 
-The default scaffold stays mock-backed on purpose. Backend, database, auth, AI, formal API contracts, and CLI scaffolding are optional or future surfaces.
+The default scaffold stays mock-backed on purpose. Backend, database, auth, AI, and formal API contracts remain optional integration surfaces. The `create-super-admin` CLI is available as an optional scaffolding path, not a requirement for using or customizing the admin app.

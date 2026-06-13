@@ -1,6 +1,6 @@
 # Open Source Workflow
 
-This project uses a lightweight open-source workflow while it prepares for npm release.
+This project uses a lightweight open-source workflow for ongoing `0.x` development and npm releases.
 
 ## Branches
 
@@ -67,14 +67,8 @@ Run `pnpm test:reference` before claiming that the admin app connects to the opt
 
 ## Release Direction
 
-The project is not npm-ready yet. The intended release path is:
+Package publish boundaries, the optional `create-super-admin` CLI, generated starter validation, and dependency-aware release automation are now present in the repository. Use [Releasing](./releasing.md) as the source of truth for release preparation, selected package planning, registry smoke, and promotion.
 
-1. Stabilize open-source project docs and CI.
-2. Define package publish boundaries.
-3. Add an internationalization foundation with `zh-CN` as the default locale and `en-US` as an optional locale.
-4. Migrate user-facing admin UI text away from hard-coded English before CLI generation.
-5. Add CLI generation with `zh-CN` as the default generated-project locale.
-6. Verify CLI-generated projects with install, typecheck, test, build, and startup smoke.
-7. Run optional reference backend smoke against generated output before documenting real API connectivity.
+The default admin app remains frontend-first and mock-backed. Release tooling and the CLI are maintainer and scaffolding surfaces; they should not make backend, database, auth, AI, or generated schema setup mandatory for users.
 
-Do not document CLI commands or publish workflows as available until they exist in code and package scripts.
+Before documenting a new command or workflow as available, verify that it exists in code, package scripts, and the release guide. Do not run registry-mutating commands such as `npm publish`, `npm trust`, `npm dist-tag`, or `npm stage` without explicit approval.

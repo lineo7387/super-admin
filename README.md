@@ -6,7 +6,7 @@ Super Admin is designed for teams who want a flexible admin-console foundation w
 
 ## Status
 
-This project is under active development before its first public npm release.
+This project is under active `0.x` development after its initial npm release.
 
 Current focus:
 
@@ -14,8 +14,8 @@ Current focus:
 - Shared `core`, `ui`, and `theme` packages.
 - Optional Hono reference backend for maintainer validation.
 - Documentation for adapter replacement and template boundaries.
-- Future internationalization with `zh-CN` as the default locale.
-- Future CLI generation and release validation.
+- Internationalization foundation with `zh-CN` as the default locale.
+- Optional `create-super-admin` CLI generation and release validation.
 
 ## Quick Start
 
@@ -54,6 +54,8 @@ apps/api/            Optional Hono reference API for maintainer validation
 packages/core/       Shared frontend contracts and helpers
 packages/ui/         Reusable admin UI primitives
 packages/theme/      Design profiles and token helpers
+packages/theme-*/    Independently installable design profile packages
+packages/cli/        Optional create-super-admin scaffolder
 docs/                VitePress documentation
 scripts/             Maintainer validation scripts
 ```
