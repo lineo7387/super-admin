@@ -950,3 +950,37 @@ Confirmed GitHub CI failed in lint because fresh checkouts ran lint before gener
 ### Next Steps
 
 - None - task complete
+
+
+## Session 28: Independent release model
+
+**Date**: 2026-06-13
+**Task**: Independent release model
+**Branch**: `main`
+
+### Summary
+
+Implemented dependency-aware independent npm release planning, updated publish-next selection, generated CLI package-specific starter dependency ranges, documented release rules and verified CI/release gates.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b318d40` | (see git log) |
+| `d6d3e4a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
