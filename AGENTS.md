@@ -43,11 +43,14 @@ Keep this file as a short routing surface. Read detailed rules on demand from `.
 - Do not make backend, database, auth provider, AI provider, generated schema, CLI, CodeGraph, or other maintainer-only tooling required for users.
 - Keep frontend data access on `Page -> module query composable -> API adapter -> api/mock data or user API`.
 - Do not import optional reference backend code or Hono types into the default admin app.
+- Keep public docs, root scripts, generated starters, and GitHub-facing guidance aligned with real npm/package state.
+- Do not make maintainer-only AI workflow tooling appear required for ordinary users or generated starters.
 
 Read when relevant:
 
 - `.trellis/spec/guides/index.md` for project thinking checklists.
 - `.trellis/spec/frontend/index.md` for frontend implementation rules.
 - `.trellis/spec/backend/index.md` for optional reference backend rules.
+- `.trellis/spec/shared/public-delivery.md` for public docs, root scripts, generated starter output, GitHub-facing guidance, and AI/maintainer workflow visibility.
 - `.trellis/spec/shared/git-conventions.md` for commit and PR conventions.
 - `docs/guide/ai-collaboration.md` for user-facing AI collaboration guidance.

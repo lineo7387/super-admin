@@ -6,7 +6,7 @@ Super Admin is designed for teams who want a flexible admin-console foundation w
 
 ## Status
 
-This project is under active `0.x` development after its initial npm release.
+This project is under active `0.x` development after its initial npm release. The current public package line is `0.1.x`.
 
 Current focus:
 
@@ -18,6 +18,14 @@ Current focus:
 - Optional `create-super-admin` CLI generation and release validation.
 
 ## Quick Start
+
+Create a starter from npm:
+
+```bash
+npm create super-admin my-admin
+```
+
+Or run the repository locally:
 
 Install dependencies:
 
@@ -88,10 +96,11 @@ When a screen already fits your business workflow, replace the API adapter. When
 The optional reference backend validates that the admin app can connect to a real API without making the backend mandatory for users.
 
 ```bash
+pnpm validate:starter
 pnpm test:reference
 ```
 
-This smoke test is maintainer-only and intentionally stays out of the default user path.
+These smoke tests are maintainer-only and intentionally stay out of the default user path.
 
 ## Contributing
 

@@ -91,3 +91,7 @@ These bypass the template boundaries and make the project harder to adapt.
 ## Maintainer Tools
 
 CodeGraph may be available through `.mcp.json` in this repository. It is a maintainer-side code navigation aid. Generated projects should not depend on it.
+
+Trellis, Codex, Claude, CodeGraph, and other AI workflow files in the source repository are maintainer workflow aids. They may help contributors work on this repository, but they are not part of the generated starter contract and should not be described as required user setup.
+
+When asking an AI to change public docs, package scripts, generated starter output, release guidance, or repository-root workflow files, tell it to read `.trellis/spec/shared/public-delivery.md` first. That spec records the public delivery boundary: what ordinary users should receive, what belongs to maintainers, and how docs should stay aligned with the real npm/package state.

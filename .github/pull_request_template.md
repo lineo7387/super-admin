@@ -17,6 +17,8 @@
 - [ ] No backend/database/auth/AI provider became required.
 - [ ] Feature pages still use query composables and API adapters for data access.
 - [ ] New user-facing UI text has default `zh-CN` copy and is not English-only.
+- [ ] Public docs, root scripts, generated starter behavior, and npm/release state remain aligned.
+- [ ] Maintainer-only AI workflow tooling is not required for ordinary users or generated starters.
 - [ ] Generated output, local indexes, and dependency folders are not committed.
 
 ## Notes

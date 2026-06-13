@@ -37,16 +37,25 @@ super-admin i18n remove <locale>
 super-admin i18n set <locale>
 ```
 
-Maintainer validation command:
+Maintainer starter smoke command:
 
 ```text
-pnpm validate:starter <generated-project-dir>
-pnpm validate:starter <generated-project-dir> --static-only
-pnpm validate:starter <generated-project-dir> --theme base
-pnpm validate:starter <generated-project-dir> --themes base,cyberpunk
-pnpm validate:starter <generated-project-dir> --i18n
-pnpm validate:starter <generated-project-dir> --pm pnpm
-pnpm validate:starter <generated-project-dir> --package-manifest <packed-package-json>
+pnpm validate:starter
+pnpm validate:starter --skip-build
+```
+
+The root `validate:starter` script validates generated starter behavior through the packed local CLI/package artifacts and should be directly runnable without hidden positional arguments.
+
+Existing generated project validator:
+
+```text
+node scripts/validate-generated-starter.mjs <generated-project-dir>
+node scripts/validate-generated-starter.mjs <generated-project-dir> --static-only
+node scripts/validate-generated-starter.mjs <generated-project-dir> --theme base
+node scripts/validate-generated-starter.mjs <generated-project-dir> --themes base,cyberpunk
+node scripts/validate-generated-starter.mjs <generated-project-dir> --i18n
+node scripts/validate-generated-starter.mjs <generated-project-dir> --pm pnpm
+node scripts/validate-generated-starter.mjs <generated-project-dir> --package-manifest <packed-package-json>
 ```
 
 Theme configuration should be declarative and user-readable:
@@ -259,7 +268,8 @@ Maintainer validation for generated output must cover:
 - CLI parser/generator tests cover single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, non-empty targets, interactive theme selection, and non-interactive missing-theme failure.
 - CLI entrypoint tests cover `--help` and `-h`; help output must not materialize a starter.
 - A built-bin smoke check runs the emitted `create-super-admin` output, not only source-level generator functions, so Node ESM import-extension regressions are caught.
-- CLI-generated default and multi-theme/i18n outputs are passed to `pnpm validate:starter` with matching flags. Use `--static-only` while `@super-admin-org/*` packages are not yet published or locally packed for install/build validation.
+- CLI-generated default and multi-theme/i18n outputs are passed through `pnpm validate:starter`.
+- Existing generated project fixtures may be passed to `node scripts/validate-generated-starter.mjs` with matching flags. Use `--static-only` while `@super-admin-org/*` packages are not yet published or locally packed for install/build validation.
 
 Generated user projects do not include test files by default.
 

@@ -72,3 +72,9 @@ Package publish boundaries, the optional `create-super-admin` CLI, generated sta
 The default admin app remains frontend-first and mock-backed. Release tooling and the CLI are maintainer and scaffolding surfaces; they should not make backend, database, auth, AI, or generated schema setup mandatory for users.
 
 Before documenting a new command or workflow as available, verify that it exists in code, package scripts, and the release guide. Do not run registry-mutating commands such as `npm publish`, `npm trust`, `npm dist-tag`, or `npm stage` without explicit approval.
+
+## Public Delivery Boundary
+
+Keep public repository docs, root scripts, generated starter behavior, and npm release state aligned. When a release or CLI capability moves from future work to available behavior, update the root README, security/changelog wording, and relevant docs in the same change.
+
+Maintainer workflow tools such as Trellis, Codex/Claude hooks, CodeGraph, task archives, and AI skills may support repository development, but they are not generated starter requirements. Do not document them as required setup for ordinary users, and do not copy them into generated projects.

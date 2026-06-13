@@ -1,6 +1,6 @@
 # Security Policy
 
-Super Admin is currently preparing for its first public release.
+Super Admin is in active `0.x` development after its initial npm release. Security reports are welcome for the repository, published packages, generated starter output, and maintainer release pipeline.
 
 ## Reporting Security Issues
 
