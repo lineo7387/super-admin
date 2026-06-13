@@ -2,7 +2,7 @@ import type { StarterGenerationInput } from './parse-args.js'
 import { themeDefinitions } from './theme-options.js'
 import type { StarterLocaleId, StarterThemeId } from './theme-options.js'
 
-const SUPER_ADMIN_VERSION_RANGE = '^0.1.1'
+const SUPER_ADMIN_VERSION_RANGE = '^0.1.2'
 
 function formatStringList(values: readonly string[]): string {
   return values.map((value) => `'${value}'`).join(', ')

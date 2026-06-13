@@ -325,8 +325,8 @@ async function rewriteStarterDependencies(projectDir, tarballs) {
   await writeJson(packageJsonPath, rewriteStarterPackageJson(packageJson, tarballDependencyMap))
 }
 
-async function validateStarterVariant({ args, cliBinPath, i18n, outputDir, tarballs, themes }) {
-  const projectDir = resolve(outputDir, args.length === 0 ? 'starter-default' : `starter-${themes.join('-')}${i18n ? '-i18n' : ''}`)
+async function validateStarterVariant({ args, cliBinPath, i18n, label, outputDir, tarballs, themes }) {
+  const projectDir = resolve(outputDir, label ?? `starter-${themes.join('-')}${i18n ? '-i18n' : ''}`)
 
   await rm(projectDir, { force: true, recursive: true })
   await generateStarter(cliBinPath, projectDir, args)
@@ -349,9 +349,10 @@ async function validateLocalStarters(outputDir, tarballs) {
   const cliBinPath = await extractPackedCli(outputDir, tarballs)
 
   await validateStarterVariant({
-    args: [],
+    args: ['--theme', 'base'],
     cliBinPath,
     i18n: false,
+    label: 'starter-default',
     outputDir: starterRoot,
     tarballs,
     themes: ['base']

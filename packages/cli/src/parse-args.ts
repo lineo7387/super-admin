@@ -100,7 +100,7 @@ function normalizeThemes(theme?: string, themes?: string): StarterThemeId[] {
     throw new Error('--theme and --themes are mutually exclusive.')
   }
 
-  const rawThemes = (themes ? themes.split(',') : [theme ?? 'base']).map((item) => item.trim()).filter(Boolean)
+  const rawThemes = (themes ? themes.split(',') : theme ? [theme] : []).map((item) => item.trim()).filter(Boolean)
   const normalizedThemes: StarterThemeId[] = []
 
   for (const rawTheme of rawThemes) {
@@ -114,7 +114,7 @@ function normalizeThemes(theme?: string, themes?: string): StarterThemeId[] {
   }
 
   if (normalizedThemes.length === 0) {
-    throw new Error('At least one generated starter theme is required.')
+    throw new Error('Theme selection is required. Use --theme <id>, --themes <ids>, or run create-super-admin in an interactive terminal.')
   }
 
   return normalizedThemes
@@ -143,13 +143,14 @@ export function parseCreateSuperAdminArgs(
     throw new Error('Usage: create-super-admin <project> [--theme base] [--themes base,cyberpunk] [--i18n] [--pm pnpm]')
   }
 
+  const packageManager = normalizePackageManager(flags.packageManager)
   const themes = normalizeThemes(flags.theme, flags.themes)
   const projectName = basename(flags.project)
 
   return {
     projectName,
     packageName: normalizePackageName(projectName),
-    packageManager: normalizePackageManager(flags.packageManager),
+    packageManager,
     targetDirectory: resolve(cwd, flags.project),
     themes: {
       installed: themes,

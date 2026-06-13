@@ -17,4 +17,10 @@
 - [x] Bump publish candidates to `0.1.1` for the next fix-forward publish.
 - [x] Update CLI starter/release specs and release guide.
 - [x] Verify release checks after packed CLI runtime fix.
-- [ ] Ask for explicit approval before retriggering `Publish next`.
+- [x] Ask for explicit approval before retriggering `Publish next`.
+- [x] Promote the verified `0.1.1` packages to `latest`.
+- [x] Add `--help` / `-h` usage guidance to the creator CLI.
+- [x] Add mandatory keyboard theme selection for interactive creator runs.
+- [x] Bump publish candidates to `0.1.2` for the next CLI improvement publish.
+- [x] Verify release checks after CLI interaction changes.
+- [ ] Ask for explicit approval before triggering `Publish next` for `0.1.2`.

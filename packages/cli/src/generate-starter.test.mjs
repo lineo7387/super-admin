@@ -53,9 +53,9 @@ function runCommand(command, args, cwd) {
 }
 
 describe('create-super-admin starter generation', () => {
-  it('normalizes default CLI input', () => {
+  it('normalizes explicit single-theme CLI input', () => {
     const cwd = '/tmp/super-admin-cli'
-    const input = parseCreateSuperAdminArgs(['demo-admin'], { cwd })
+    const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base'], { cwd })
 
     expect(input).toEqual({
       i18n: {
@@ -85,11 +85,12 @@ describe('create-super-admin starter generation', () => {
     )
     expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'unknown'], { cwd: '/tmp' })).toThrow(/Supported themes: base/)
     expect(() => parseCreateSuperAdminArgs(['demo', '--pm', 'deno'], { cwd: '/tmp' })).toThrow(/Supported package managers/)
+    expect(() => parseCreateSuperAdminArgs(['demo'], { cwd: '/tmp' })).toThrow(/Theme selection is required/)
   })
 
   it('generates the default single-theme starter and passes static validation', async () => {
     const tempRoot = await createTempRoot()
-    const input = parseCreateSuperAdminArgs(['demo-admin'], { cwd: tempRoot })
+    const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base'], { cwd: tempRoot })
 
     await generateStarter(input, { sourceRoot: repoRoot })
 
@@ -103,7 +104,7 @@ describe('create-super-admin starter generation', () => {
       preview: 'vite preview',
       typecheck: 'vue-tsc --noEmit'
     })
-    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.1')
+    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.2')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
     expect(config).toContain("installed: ['base']")
     expect(config).toContain("switcher: 'off'")
@@ -123,8 +124,8 @@ describe('create-super-admin starter generation', () => {
     const registry = await readGeneratedText(input.targetDirectory, 'src/super-admin/theme-registry.generated.ts')
     const preferences = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferences.vue')
 
-    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.1')
-    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.1')
+    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.2')
+    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.2')
     expect(packageJson.dependencies['@super-admin-org/theme-crypto']).toBeUndefined()
     expect(registry).toContain("from '@super-admin-org/theme-base'")
     expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")
@@ -140,7 +141,7 @@ describe('create-super-admin starter generation', () => {
     await mkdir(target)
     await writeFile(join(target, 'keep.txt'), 'existing file\n')
 
-    const input = parseCreateSuperAdminArgs(['demo-admin'], { cwd: tempRoot })
+    const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base'], { cwd: tempRoot })
 
     await expect(generateStarter(input, { sourceRoot: repoRoot })).rejects.toThrow(/not empty/)
     await expect(readdir(target)).resolves.toEqual(['keep.txt'])
@@ -160,6 +161,48 @@ describe('create-super-admin starter generation', () => {
     expect(exitCode).toBe(0)
     expect(output.join('\n')).toContain('Created Super Admin starter')
     await expect(validateGeneratedStarterStatic(join(tempRoot, 'demo-admin'), { themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('prompts for theme selection when no theme flag is provided in an interactive terminal', async () => {
+    const tempRoot = await createTempRoot()
+    const output = []
+
+    const exitCode = await runCreateSuperAdmin(['demo-admin'], {
+      cwd: tempRoot,
+      isTTY: true,
+      promptThemes: async () => ['base', 'cyberpunk'],
+      sourceRoot: repoRoot,
+      stderr: (message) => output.push(`error:${message}`),
+      stdout: (message) => output.push(message)
+    })
+
+    expect(exitCode).toBe(0)
+
+    const packageJson = await readGeneratedJson(join(tempRoot, 'demo-admin'), 'package.json')
+    const registry = await readGeneratedText(join(tempRoot, 'demo-admin'), 'src/super-admin/theme-registry.generated.ts')
+    const preferences = await readGeneratedText(join(tempRoot, 'demo-admin'), 'src/shell/preferences/GlobalPreferences.vue')
+    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.2')
+    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.2')
+    expect(packageJson.dependencies['@super-admin-org/theme-crypto']).toBeUndefined()
+    expect(registry).toContain("from '@super-admin-org/theme-base'")
+    expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")
+    expect(preferences).toContain('selectProfile')
+  })
+
+  it('requires an explicit theme flag when no interactive terminal is available', async () => {
+    const tempRoot = await createTempRoot()
+    const output = []
+
+    const exitCode = await runCreateSuperAdmin(['demo-admin'], {
+      cwd: tempRoot,
+      isTTY: false,
+      stderr: (message) => output.push(`error:${message}`),
+      stdout: (message) => output.push(message)
+    })
+
+    expect(exitCode).toBe(1)
+    expect(output.join('\n')).toContain('Theme selection is required')
+    await expect(readdir(tempRoot)).resolves.toEqual([])
   })
 
   it('prints CLI help without generating a starter', async () => {
@@ -220,7 +263,7 @@ describe('create-super-admin starter generation', () => {
     const [packed] = JSON.parse(packOutput)
     await runCommand('tar', ['-xzf', resolve(tempRoot, packed.filename), '-C', unpackRoot], repoRoot)
 
-    await runCommand('node', [join(unpackRoot, 'package/dist/cli.js'), 'demo-admin', '--pm', 'pnpm'], workspaceRoot)
+    await runCommand('node', [join(unpackRoot, 'package/dist/cli.js'), 'demo-admin', '--theme', 'base', '--pm', 'pnpm'], workspaceRoot)
 
     await expect(validateGeneratedStarterStatic(join(workspaceRoot, 'demo-admin'), { themes: ['base'] })).resolves.toEqual([])
   })

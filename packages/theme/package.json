@@ -1,6 +1,6 @@
 {
   "name": "@super-admin-org/theme",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "exports": {
     ".": {
@@ -16,7 +16,7 @@
     "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@super-admin-org/core": "^0.1.1"
+    "@super-admin-org/core": "^0.1.2"
   },
   "devDependencies": {
     "vitest": "^4.0.0"

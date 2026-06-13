@@ -14,7 +14,7 @@ The CLI starter contract defines what `create-super-admin` may generate and what
 
 ### 2. Signatures
 
-MVP creation commands are flags-first:
+MVP creation commands are flags-first, with an interactive theme selector when no theme flag is provided:
 
 ```text
 create-super-admin <project>
@@ -73,7 +73,12 @@ src/super-admin/theme-registry.generated.ts
 
 ### 3. Contracts
 
-Default `create-super-admin <project>` output:
+Default `create-super-admin <project>` command behavior:
+
+- in an interactive terminal, prompts for one or more themes before generation
+- in a non-interactive terminal, fails with guidance to pass `--theme` or `--themes`
+
+Base-theme generated output:
 
 - single-app Vite project
 - `zh-CN` only
@@ -194,7 +199,8 @@ Generated template derivation:
 
 | Condition | Required behavior |
 | --- | --- |
-| No flags passed | Generate Chinese, single-theme `base` starter with no runtime theme or language switchers. |
+| No theme flags in an interactive terminal | Prompt for one or more themes with keyboard controls: Up/Down moves, Space toggles, Enter confirms. Generate from the selected themes. |
+| No theme flags in a non-interactive terminal | Fail before writing files with guidance to pass `--theme` or `--themes`; do not hang waiting for input. |
 | `--theme <id>` passed | Install only `@super-admin-org/theme` plus that one theme package, set it as default, and omit runtime theme switching. |
 | `--themes <a,b>` passed | Install exactly the selected theme packages and enable/configure runtime theme switching as needed. |
 | Both `--theme` and `--themes` passed | Fail before writing files with a mutually exclusive flag message. |
@@ -212,7 +218,7 @@ Generated template derivation:
 | Packed `create-super-admin` tarball omits its runtime starter template | Reject during pack validation before publish; registry/dlx consumers do not have repo-root `apps/admin`. |
 | Published CLI default path attempts to read repository-root `apps/admin` | Reject; only explicit maintainer test hooks may read repo source. |
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
-| Generated default exposes runtime theme or language switching with one installed theme/locale | Reject; no-flags output is fixed to `base` and `zh-CN`. |
+| Generated single-theme output exposes runtime theme or language switching with one installed theme/locale | Reject; single-theme output is fixed to that theme and `zh-CN`. |
 | Publish-ready package export points at source TypeScript instead of emitted package output | Reject for publish-ready package work; source exports are only acceptable as a temporary monorepo development state. |
 | Theme runtime package bundles all theme profiles | Reject; selected theme packages must remain dependency-granular. |
 | User wants to remove examples | Point to docs; CLI MVP must not auto-delete examples. |
@@ -247,10 +253,10 @@ Maintainer validation for generated output must cover:
 - default theme registry imports only `@super-admin-org/theme-base`
 - multi-theme generation installs exactly the selected theme packages
 - multi-theme generation imports exactly the selected theme packages
-- no runtime theme or locale switcher appears in no-flags default output
+- no runtime theme or locale switcher appears in single-theme output
 - generated app resolves `@super-admin-org/*` from package dependencies instead of package source paths
 - generated app still follows `Page -> query composable -> API adapter -> mock/user API`
-- CLI parser/generator tests cover default, single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, and non-empty targets.
+- CLI parser/generator tests cover single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, non-empty targets, interactive theme selection, and non-interactive missing-theme failure.
 - CLI entrypoint tests cover `--help` and `-h`; help output must not materialize a starter.
 - A built-bin smoke check runs the emitted `create-super-admin` output, not only source-level generator functions, so Node ESM import-extension regressions are caught.
 - CLI-generated default and multi-theme/i18n outputs are passed to `pnpm validate:starter` with matching flags. Use `--static-only` while `@super-admin-org/*` packages are not yet published or locally packed for install/build validation.
