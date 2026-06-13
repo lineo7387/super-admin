@@ -3,8 +3,11 @@ name: Publish next
 on:
   workflow_dispatch:
     inputs:
+      changed_packages:
+        description: Comma-separated changed publish candidates. Dependents are added automatically, for example create-super-admin or @super-admin-org/core.
+        required: true
       confirm:
-        description: Type publish-super-admin-next-<version> to publish the current lockstep version to the next dist-tag.
+        description: Type the confirmation printed by pnpm release plan --changed <packages>.
         required: true
 
 permissions:
@@ -31,8 +34,9 @@ jobs:
 
       - name: Verify publish confirmation
         env:
+          PUBLISH_CHANGED_PACKAGES: ${{ inputs.changed_packages }}
           PUBLISH_CONFIRM: ${{ inputs.confirm }}
-        run: node scripts/release.mjs assert-workflow-confirm "$PUBLISH_CONFIRM"
+        run: node scripts/release.mjs assert-workflow-confirm "$PUBLISH_CONFIRM" --changed "$PUBLISH_CHANGED_PACKAGES"
 
       - name: Install pnpm
         run: npm install -g pnpm@10.33.0
@@ -44,29 +48,39 @@ jobs:
         timeout-minutes: 15
         run: pnpm release check
 
-      - name: Publish core
-        run: npm publish ./packages/core --tag next --access public --provenance
+      - name: Create publish plan
+        id: publish-plan
+        env:
+          PUBLISH_CHANGED_PACKAGES: ${{ inputs.changed_packages }}
+        run: |
+          plan_json="$(node scripts/npm-registry-release-commands.mjs publish-next --changed "$PUBLISH_CHANGED_PACKAGES" --json)"
+          echo "plan_json=$plan_json" >> "$GITHUB_OUTPUT"
 
-      - name: Publish theme runtime
-        run: npm publish ./packages/theme --tag next --access public --provenance
+      - name: Publish selected packages
+        env:
+          RELEASE_PLAN_JSON: ${{ steps.publish-plan.outputs.plan_json }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { spawnSync } from 'node:child_process'
 
-      - name: Publish base theme
-        run: npm publish ./packages/theme-base --tag next --access public --provenance
+          const releasePlan = JSON.parse(process.env.RELEASE_PLAN_JSON ?? '[]')
 
-      - name: Publish crypto theme
-        run: npm publish ./packages/theme-crypto --tag next --access public --provenance
+          if (releasePlan.length === 0) {
+            throw new Error('Publish plan is empty.')
+          }
 
-      - name: Publish cyberpunk theme
-        run: npm publish ./packages/theme-cyberpunk --tag next --access public --provenance
+          for (const candidate of releasePlan) {
+            const args = ['publish', candidate.localSpec, '--tag', 'next', '--provenance']
 
-      - name: Publish industrial theme
-        run: npm publish ./packages/theme-industrial --tag next --access public --provenance
+            if (candidate.scoped) {
+              args.push('--access', 'public')
+            }
 
-      - name: Publish newsprint theme
-        run: npm publish ./packages/theme-newsprint --tag next --access public --provenance
+            console.log(`Publishing ${candidate.name}@${candidate.version}`)
+            const result = spawnSync('npm', args, { stdio: 'inherit' })
 
-      - name: Publish UI
-        run: npm publish ./packages/ui --tag next --access public --provenance
-
-      - name: Publish creator CLI
-        run: npm publish ./packages/cli --tag next --provenance
+            if (result.status !== 0) {
+              process.exit(result.status ?? 1)
+            }
+          }
+          NODE

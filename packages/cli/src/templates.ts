@@ -1,18 +1,27 @@
 import type { StarterGenerationInput } from './parse-args.js'
+import { superAdminPackageVersionRanges } from './package-version-ranges.generated.js'
 import { themeDefinitions } from './theme-options.js'
 import type { StarterLocaleId, StarterThemeId } from './theme-options.js'
 
-const SUPER_ADMIN_VERSION_RANGE = '^0.1.2'
+type SuperAdminPackageName = keyof typeof superAdminPackageVersionRanges
+
+export type CreatePackageJsonOptions = {
+  packageVersionRanges?: Partial<Record<SuperAdminPackageName, string>>
+}
 
 function formatStringList(values: readonly string[]): string {
   return values.map((value) => `'${value}'`).join(', ')
 }
 
-export function createPackageJson(input: StarterGenerationInput): string {
+export function createPackageJson(input: StarterGenerationInput, options: CreatePackageJsonOptions = {}): string {
+  const versionRanges = {
+    ...superAdminPackageVersionRanges,
+    ...(options.packageVersionRanges ?? {})
+  }
   const dependencies: Record<string, string> = {
-    '@super-admin-org/core': SUPER_ADMIN_VERSION_RANGE,
-    '@super-admin-org/theme': SUPER_ADMIN_VERSION_RANGE,
-    '@super-admin-org/ui': SUPER_ADMIN_VERSION_RANGE,
+    '@super-admin-org/core': versionRanges['@super-admin-org/core'],
+    '@super-admin-org/theme': versionRanges['@super-admin-org/theme'],
+    '@super-admin-org/ui': versionRanges['@super-admin-org/ui'],
     '@tanstack/vue-query': '^5.0.0',
     'lucide-vue-next': '^0.555.0',
     pinia: '^3.0.0',
@@ -22,7 +31,8 @@ export function createPackageJson(input: StarterGenerationInput): string {
   }
 
   for (const themeId of input.themes.installed) {
-    dependencies[themeDefinitions[themeId].packageName] = SUPER_ADMIN_VERSION_RANGE
+    const packageName = themeDefinitions[themeId].packageName
+    dependencies[packageName] = versionRanges[packageName as SuperAdminPackageName]
   }
 
   return `${JSON.stringify(

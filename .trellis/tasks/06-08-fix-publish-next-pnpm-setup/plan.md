@@ -24,3 +24,18 @@
 - [x] Bump publish candidates to `0.1.2` for the next CLI improvement publish.
 - [x] Verify release checks after CLI interaction changes.
 - [ ] Ask for explicit approval before triggering `Publish next` for `0.1.2`.
+
+## Independent Release Model Follow-Up
+
+- [x] Add release-plan tests for package selection and internal dependency graph expansion.
+- [x] Add command-printer tests proving CLI-only releases print only CLI publish/promote commands.
+- [x] Add command-printer tests proving core releases include internal dependents but exclude unrelated packages.
+- [x] Add CLI starter tests proving generated dependencies use package-specific version ranges.
+- [x] Remove the Changesets fixed group so publish candidates can version independently.
+- [x] Implement dependency-aware release planning for publish/promote command generation.
+- [x] Update the publish-next workflow to use the dependency-aware selected package set after release check.
+- [x] Replace the CLI starter single version constant with build-time package-specific version injection.
+- [x] Update release docs and shared monorepo release spec.
+- [x] Optionally add a documented promote-latest workflow draft with a single GitHub approval gate.
+- [ ] Run required verification commands and package dry-run checks.
+- [ ] Commit and push without triggering publish-next.

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { validateGeneratedStarterStatic } from '../../../scripts/validate-generated-starter.mjs'
 import { generateStarter, parseCreateSuperAdminArgs, runCreateSuperAdmin } from './index.ts'
+import { createPackageJson } from './templates.ts'
 
 const packageDir = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(packageDir, '../../..')
@@ -133,6 +134,27 @@ describe('create-super-admin starter generation', () => {
     expect(preferences).toContain('selectLocale')
 
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { i18n: true, themes: ['base', 'cyberpunk'] })).resolves.toEqual([])
+  })
+
+  it('uses package-specific Super Admin dependency ranges in generated package.json', () => {
+    const input = parseCreateSuperAdminArgs(['demo-admin', '--themes', 'base,cyberpunk'], { cwd: '/tmp/super-admin-cli' })
+    const packageJson = JSON.parse(
+      createPackageJson(input, {
+        packageVersionRanges: {
+          '@super-admin-org/core': '^1.0.0',
+          '@super-admin-org/theme': '^2.0.0',
+          '@super-admin-org/theme-base': '^3.0.0',
+          '@super-admin-org/theme-cyberpunk': '^4.0.0',
+          '@super-admin-org/ui': '^5.0.0'
+        }
+      })
+    )
+
+    expect(packageJson.dependencies['@super-admin-org/core']).toBe('^1.0.0')
+    expect(packageJson.dependencies['@super-admin-org/theme']).toBe('^2.0.0')
+    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^3.0.0')
+    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^4.0.0')
+    expect(packageJson.dependencies['@super-admin-org/ui']).toBe('^5.0.0')
   })
 
   it('does not write into non-empty target directories', async () => {

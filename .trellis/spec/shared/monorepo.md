@@ -59,8 +59,9 @@ pnpm changeset
 pnpm release check
 pnpm release version
 pnpm release bootstrap:prepare
-pnpm release commands [bootstrap|trust|publish-next|promote-latest|all]
-pnpm release assert-workflow-confirm <confirmation-text>
+pnpm release plan [--channel next|latest] --changed <package[,package]>
+pnpm release commands [bootstrap|trust|publish-next|promote-latest|all] [--changed <package[,package]>|--packages <package[,package]>]
+pnpm release assert-workflow-confirm <confirmation-text> [--channel next|latest] [--changed <package[,package]>|--packages <package[,package]>]
 ```
 
 Publish candidate packages must expose:
@@ -76,21 +77,26 @@ Publish candidate packages must expose:
 ### 3. Contracts
 
 - Changesets owns package version/changelog automation.
-- Publish candidates stay in one fixed lockstep Changesets group.
+- Publish candidates use independent Changesets versions; do not put the normal publish candidates in one fixed lockstep group.
 - Private workspaces such as `@super-admin/admin` and `@super-admin/api` are not published.
 - Version numbers communicate release stability and compatibility; npm dist-tags communicate install channels.
 - `latest` is reserved for smoke-verified real releases that should be installed by default.
 - `0.0.0-bootstrap.0` is package-name bootstrap only and must use `bootstrap`; it is not a consumable release channel.
 - Optional prerelease versions must use SemVer prerelease identifiers and matching non-latest tags, for example `0.2.0-beta.1` with `beta` or `0.2.0-rc.1` with `rc`.
-- Real release candidates publish to `next`; after registry smoke passes, the same real version is promoted to `latest`.
-- The first real release is lockstep `0.1.0`; it is not a beta unless the version itself uses a prerelease suffix.
+- Real release candidates publish to `next`; after registry smoke passes, the same selected package versions are promoted to `latest`.
+- The first real release used `0.1.0` for the initial package set. Later releases are independent and package-specific.
+- Normal publish and promote commands require a selected release set via `--changed` or `--packages`.
+- `--changed` expands through internal publish-candidate dependents. Today, `@super-admin-org/core` selects `core`, `theme`, and all `theme-*` packages; a `create-super-admin`, `ui`, `theme`, or single `theme-*` change selects only that package unless another package declares a real dependency on it.
+- Bootstrap and Trusted Publishing setup still target every explicit publish candidate.
 - `pnpm release check` is the full non-registry release gate: build, lint, typecheck, tests, and local pack/install validation.
 - CI and release gates must build before lint/typecheck/test in a fresh checkout. Publishable package manifests export types from generated `dist`, so cross-package type resolution must not depend on stale local build artifacts.
 - Release readiness must validate `create-super-admin` through the packed package artifact, not only `packages/cli/dist/cli.js` in the monorepo. The packed CLI must generate starters without access to repository-root `apps/admin`.
 - The `create-super-admin` pack artifact must include its runtime starter template, for example under `dist/starter-template/admin`, and pack validation must fail if those files are missing.
+- The generated starter dependency ranges for `@super-admin-org/*` packages must come from a package-specific generated range map, not from the `create-super-admin` package version.
 - `pnpm release commands ...` prints registry-mutating commands only; it must not execute them.
-- GitHub `Publish next` workflow confirmation text must be `publish-super-admin-next-<current-package-version>`.
+- GitHub `Publish next` workflow confirmation text must be generated from the selected package versions, for example `publish-super-admin-next-create-super-admin-0.1.3`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
+- The normal publish workflow must accept a changed package list, run the full release check, then publish only the dependency-aware selected package set.
 - Normal publish workflow commands and generated local publish commands must use explicit local package specs such as `./packages/core` and `./output/npm-bootstrap/...tgz`. A bare spec like `packages/core` can be parsed by npm as a GitHub shorthand and trigger `git ls-remote ssh://git@github.com/packages/core.git`.
 - The normal publish workflow must ensure `pnpm@10.33.0` is available after upgrading npm for Trusted Publishing; do not rely on Corepack alone if the runner cannot resolve `pnpm` in later steps.
 - Generated starter smoke tests that launch dev servers must terminate and await the full child process tree before reporting success, because open handles can leave GitHub release checks stuck after validation output is printed.
@@ -103,8 +109,11 @@ Publish candidate packages must expose:
 
 | Condition | Required behavior |
 | --- | --- |
-| Publish candidate versions are not lockstep | Fail before producing workflow confirmation or promotion commands. |
-| Workflow confirmation does not match current version | Fail before install/build/publish steps. |
+| Normal publish/promote command omits package selection | Fail before producing registry-mutating commands. |
+| Package selection names a workspace outside the publish-candidate whitelist | Fail before producing registry-mutating commands. |
+| Dependency-aware core selection includes unrelated `ui` or `create-super-admin` packages | Fail release-plan tests. |
+| CLI-only selection prints `@super-admin-org/*` publish or promote commands | Fail command-printer tests. |
+| Workflow confirmation does not match selected package versions | Fail before install/build/publish steps. |
 | Local normal `npm publish` is attempted | Fail in `prepublishOnly`. |
 | Bootstrap publish uses a non-bootstrap tag or version | Fail in `prepublishOnly`. |
 | Bootstrap version is treated as a valid default install channel | Reject; bootstrap is package-name creation only. |
@@ -118,12 +127,15 @@ Publish candidate packages must expose:
 | Publish manifest exposes `workspace:` dependency ranges | Fail in `prepublishOnly` or pack validation. |
 | Publish artifact targets are missing from `dist` | Fail in `prepublishOnly` or pack validation. |
 | Packed `create-super-admin` cannot generate a starter unless repo-root `apps/admin` exists | Fail in release readiness before publish; build/package the runtime template into the CLI tarball. |
+| Generated starter uses the CLI version for every `@super-admin-org/*` dependency | Fail generator tests; use the package-specific version range map. |
 | Registry smoke for `next` fails after a version was published | Do not promote `latest`; fix forward with a new patch version on `next` because npm package versions are immutable. |
 
 ### 5. Good/Base/Bad Cases
 
-- Good: maintainer runs `pnpm changeset`, `pnpm release version`, `pnpm release check`, pushes, then manually runs the `Publish next` workflow with the dynamic confirmation text.
-- Base: `pnpm release commands promote-latest` prints `npm dist-tag add ... latest` commands after registry smoke passes.
+- Good: maintainer runs `pnpm changeset`, `pnpm release plan --changed create-super-admin`, `pnpm release version`, `pnpm release check`, pushes, then manually runs the `Publish next` workflow with `changed_packages=create-super-admin` and the dynamic confirmation text.
+- Good: a CLI-only release prints and publishes only `create-super-admin`.
+- Good: a core release prints and publishes `core`, the theme runtime, and theme profile packages, but not unrelated `ui` or `create-super-admin`.
+- Base: `pnpm release commands promote-latest --changed create-super-admin` prints one `npm dist-tag add ... latest` command after registry smoke passes.
 - Good: `0.1.0` is published to `next`, smoke-tested from the registry, then promoted to `latest`.
 - Good: an intentional beta uses a version such as `0.2.0-beta.1` and publishes under `beta`, not `latest`.
 - Base: npm may temporarily show `latest: 0.0.0-bootstrap.0` immediately after brand-new package bootstrap; this is a registry artifact to replace with the first real release after smoke, not a release announcement.
@@ -134,7 +146,10 @@ Publish candidate packages must expose:
 ### 6. Tests Required
 
 - Unit tests for workflow confirmation helpers.
+- Unit tests for dependency-aware release plan calculation.
 - Unit tests for registry command mode normalization.
+- Unit tests for selected publish/promote command generation.
+- CLI generator tests for package-specific generated starter dependency ranges.
 - Unit tests for `prepublishOnly` guard behavior:
   - normal local publish blocked
   - bootstrap path allowed
