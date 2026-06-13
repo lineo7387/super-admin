@@ -162,6 +162,52 @@ describe('create-super-admin starter generation', () => {
     await expect(validateGeneratedStarterStatic(join(tempRoot, 'demo-admin'), { themes: ['base'] })).resolves.toEqual([])
   })
 
+  it('prints CLI help without generating a starter', async () => {
+    const tempRoot = await createTempRoot()
+    const output = []
+
+    const exitCode = await runCreateSuperAdmin(['--help'], {
+      cwd: tempRoot,
+      stderr: (message) => output.push(`error:${message}`),
+      stdout: (message) => output.push(message)
+    })
+
+    expect(exitCode).toBe(0)
+    expect(output.join('\n')).toContain('Usage: create-super-admin <project>')
+    expect(output.join('\n')).toContain('--themes base,cyberpunk')
+    await expect(readdir(tempRoot)).resolves.toEqual([])
+  })
+
+  it('prints CLI help for the short help flag', async () => {
+    const tempRoot = await createTempRoot()
+    const output = []
+
+    const exitCode = await runCreateSuperAdmin(['-h'], {
+      cwd: tempRoot,
+      stderr: (message) => output.push(`error:${message}`),
+      stdout: (message) => output.push(message)
+    })
+
+    expect(exitCode).toBe(0)
+    expect(output.join('\n')).toContain('Usage: create-super-admin <project>')
+    await expect(readdir(tempRoot)).resolves.toEqual([])
+  })
+
+  it('prints usage guidance when the project name is missing', async () => {
+    const tempRoot = await createTempRoot()
+    const output = []
+
+    const exitCode = await runCreateSuperAdmin([], {
+      cwd: tempRoot,
+      stderr: (message) => output.push(`error:${message}`),
+      stdout: (message) => output.push(message)
+    })
+
+    expect(exitCode).toBe(1)
+    expect(output.join('\n')).toContain('Usage: create-super-admin <project>')
+    await expect(readdir(tempRoot)).resolves.toEqual([])
+  })
+
   it('runs from the packed CLI package without a repo apps/admin source tree', async () => {
     const tempRoot = await createTempRoot()
     const unpackRoot = join(tempRoot, 'unpacked')

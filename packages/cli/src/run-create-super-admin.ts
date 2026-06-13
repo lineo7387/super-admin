@@ -1,6 +1,27 @@
 import { generateStarter } from './generate-starter.js'
 import { parseCreateSuperAdminArgs } from './parse-args.js'
 
+const HELP_TEXT = `Usage: create-super-admin <project> [options]
+
+Create a frontend-first, mock-backed Super Admin starter.
+
+Options:
+  --theme <id>             Generate with one theme. Default: base
+  --themes <ids>           Generate with multiple comma-separated themes, for example base,cyberpunk
+  --i18n                   Include zh-CN and en-US locale catalogs and a language switcher
+  --pm <name>              Package manager for printed next steps: pnpm, npm, yarn, or bun
+  --package-manager <name> Alias for --pm
+  -h, --help               Show this help message
+
+Defaults:
+  create-super-admin <project> generates a single Vite app with zh-CN, the base theme,
+  mock data, and no backend, docs site, tests, lint, or e2e tooling.
+
+Examples:
+  create-super-admin my-admin
+  create-super-admin my-admin --theme base
+  create-super-admin my-admin --themes base,cyberpunk --i18n --pm pnpm`
+
 export type CreateSuperAdminIo = {
   cwd?: string
   sourceRoot?: string
@@ -26,8 +47,17 @@ function writeError(writer: ((message: string) => void) | undefined, message: st
   console.error(message)
 }
 
+function isHelpRequested(argv: string[]): boolean {
+  return argv.includes('--help') || argv.includes('-h')
+}
+
 export async function runCreateSuperAdmin(argv: string[], io: CreateSuperAdminIo = {}): Promise<number> {
   try {
+    if (isHelpRequested(argv)) {
+      writeLine(io.stdout, HELP_TEXT)
+      return 0
+    }
+
     const input = parseCreateSuperAdminArgs(argv, {
       cwd: io.cwd
     })

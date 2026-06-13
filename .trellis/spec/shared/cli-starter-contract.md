@@ -22,6 +22,8 @@ create-super-admin <project> --theme base
 create-super-admin <project> --themes base,cyberpunk
 create-super-admin <project> --i18n
 create-super-admin <project> --pm pnpm
+create-super-admin --help
+create-super-admin -h
 ```
 
 Later infrastructure commands may include:
@@ -198,6 +200,7 @@ Generated template derivation:
 | Both `--theme` and `--themes` passed | Fail before writing files with a mutually exclusive flag message. |
 | Unknown theme id | Fail with a clear supported-theme message; do not generate a partial project. |
 | Project name missing | Fail before writing files with usage guidance. |
+| `--help` or `-h` passed | Print usage guidance and exit successfully without generating files. |
 | Target directory exists and is not empty | Fail before writing files; do not merge generated files into user content. |
 | Theme add/remove command | Add/remove the actual npm package dependency and regenerate theme registry/config. |
 | Package manager not specified | Detect from `package.json#packageManager`, then lockfiles, then CLI invocation/default. |
@@ -248,6 +251,7 @@ Maintainer validation for generated output must cover:
 - generated app resolves `@super-admin-org/*` from package dependencies instead of package source paths
 - generated app still follows `Page -> query composable -> API adapter -> mock/user API`
 - CLI parser/generator tests cover default, single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, and non-empty targets.
+- CLI entrypoint tests cover `--help` and `-h`; help output must not materialize a starter.
 - A built-bin smoke check runs the emitted `create-super-admin` output, not only source-level generator functions, so Node ESM import-extension regressions are caught.
 - CLI-generated default and multi-theme/i18n outputs are passed to `pnpm validate:starter` with matching flags. Use `--static-only` while `@super-admin-org/*` packages are not yet published or locally packed for install/build validation.
 
