@@ -1052,3 +1052,38 @@ Aligned public README and guide wording with the current optional create-super-a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 31: 公开仓库交付面与 AI 工作流规范整理
+
+**Date**: 2026-06-13
+**Task**: 公开仓库交付面与 AI 工作流规范整理
+**Branch**: `main`
+
+### Summary
+
+修复 starter/reference 验证入口，更新公开发布状态文档，并将 public delivery 边界写入 Trellis spec 与 AI 协作入口。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4361feb` | (see git log) |
+| `f5da18c` | (see git log) |
+| `edb7511` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
