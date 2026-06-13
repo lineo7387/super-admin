@@ -984,3 +984,37 @@ Implemented dependency-aware independent npm release planning, updated publish-n
 ### Next Steps
 
 - None - task complete
+
+
+## Session 29: Chinese communication rule
+
+**Date**: 2026-06-13
+**Task**: Chinese communication rule
+**Branch**: `main`
+
+### Summary
+
+Added a project-level AGENTS.md rule to default user-facing replies to Chinese while preserving code, commands, package names, paths, API names, product names, and untranslatable technical terms in original form.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f09b643` | (see git log) |
+| `b6373f9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

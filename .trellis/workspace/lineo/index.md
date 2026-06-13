@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 28
+- **Total Sessions**: 29
 - **Last Active**: 2026-06-13
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~986 | Active |
+| `journal-1.md` | ~1020 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 29 | 2026-06-13 | Chinese communication rule | `f09b643`, `b6373f9` | `main` |
 | 28 | 2026-06-13 | Independent release model | `b318d40`, `d6d3e4a` | `main` |
 | 27 | 2026-06-08 | Fix fresh CI workspace type resolution | `be6a9ec` | `main` |
 | 26 | 2026-06-08 | Codify npm release channel policy | `b2d9dbc`, `0636305` | `main` |
