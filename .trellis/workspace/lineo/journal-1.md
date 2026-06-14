@@ -1087,3 +1087,36 @@ Aligned public README and guide wording with the current optional create-super-a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 32: GitHub public presentation polish
+
+**Date**: 2026-06-14
+**Task**: GitHub public presentation polish
+**Branch**: `main`
+
+### Summary
+
+优化 GitHub 公开展示入口：README badges、npm create 快速入口、docs/demo 截图方案、GitHub Settings 与 Release 文案清单，并明确维护者 AI 工具边界。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `973a4f2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

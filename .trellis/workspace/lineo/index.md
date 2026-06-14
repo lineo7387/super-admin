@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 31
-- **Last Active**: 2026-06-13
+- **Total Sessions**: 32
+- **Last Active**: 2026-06-14
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1089 | Active |
+| `journal-1.md` | ~1122 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 32 | 2026-06-14 | GitHub public presentation polish | `973a4f2` | `main` |
 | 31 | 2026-06-13 | 公开仓库交付面与 AI 工作流规范整理 | `4361feb`, `f5da18c`, `edb7511` | `main` |
 | 30 | 2026-06-13 | Align public docs with CLI release state | `7672dc4`, `392d898` | `main` |
 | 29 | 2026-06-13 | Chinese communication rule | `f09b643`, `b6373f9` | `main` |
