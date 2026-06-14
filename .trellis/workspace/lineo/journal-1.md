@@ -1120,3 +1120,36 @@ Aligned public README and guide wording with the current optional create-super-a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 33: Public npm starter smoke and docs demo deployment
+
+**Date**: 2026-06-14
+**Task**: Public npm starter smoke and docs demo deployment
+**Branch**: `main`
+
+### Summary
+
+验证公网 create-super-admin starter，新增 GitHub Pages docs 部署 workflow，配置 VitePress base 与公开 docs/demo URL。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ed80e57f33585e21c3b55d997a75ed7b03357aaa` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
