@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Layer boundary checks for shell, modules, API adapters, and queries."}
+{"file": ".trellis/spec/guides/pre-implementation-checklist.md", "reason": "Pre-code product and architecture checks."}
+{"file": ".trellis/spec/guides/trellis-lake-workflow.md", "reason": "Project workflow guard and artifact locations."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Shared code quality expectations."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Workspace package boundaries and root script conventions."}
+{"file": ".trellis/spec/shared/typescript.md", "reason": "Strict TypeScript and exported contract rules."}
