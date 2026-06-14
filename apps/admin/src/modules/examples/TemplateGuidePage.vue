@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileCode2, Layers3, Route, ShieldCheck } from 'lucide-vue-next'
+import { FileCode2, Layers3, Route, ShieldCheck } from '@lucide/vue'
 import { AdminAlert, AdminCard, StatusPill } from '@super-admin-org/ui'
 import { templateGuideSections, templateGuideSignals } from './template-guide'
 

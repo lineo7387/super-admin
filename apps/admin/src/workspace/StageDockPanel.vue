@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, ChevronRight, Layers2 } from 'lucide-vue-next'
+import { ArrowLeft, ChevronRight, Layers2 } from '@lucide/vue'
 import type { StageGroupView, StageWindowView } from './stage-manager'
 import StageDockThumb from './StageDockThumb.vue'
 import StageWindowActions from './StageWindowActions.vue'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown, Check } from 'lucide-vue-next'
+import { ChevronDown, Check } from '@lucide/vue'
 import { computed, nextTick, onBeforeUnmount, shallowRef, useAttrs, useTemplateRef, watch } from 'vue'
 import { cn } from '../lib/cn'
 

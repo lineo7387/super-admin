@@ -29,7 +29,7 @@ async function createStarterFixture(overrides = {}) {
       '@super-admin-org/theme-base': '^0.1.0',
       '@super-admin-org/ui': '^0.1.0',
       '@tanstack/vue-query': '^5.0.0',
-      'lucide-vue-next': '^0.555.0',
+      '@lucide/vue': '^1.18.0',
       pinia: '^3.0.0',
       vue: '^3.5.0',
       'vue-i18n': '^11.4.4',

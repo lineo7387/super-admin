@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Boxes, Command, Factory, FileText, Landmark, LayoutDashboard, Newspaper, ShieldCheck } from 'lucide-vue-next'
+import { Boxes, Command, Factory, FileText, Landmark, LayoutDashboard, Newspaper, ShieldCheck } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import GlobalPreferences from '@/shell/preferences/GlobalPreferences.vue'
 import { usePreferencesStore } from '@/stores/preferences.store'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MailPlus } from 'lucide-vue-next'
+import { MailPlus } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { AdminButton, AdminCard, EmptyState } from '@super-admin-org/ui'
 

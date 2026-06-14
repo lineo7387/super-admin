@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertTriangle, CheckCircle2, Info, XCircle } from 'lucide-vue-next'
+import { AlertTriangle, CheckCircle2, Info, XCircle } from '@lucide/vue'
 import { computed } from 'vue'
 
 const props = withDefaults(

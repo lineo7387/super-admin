@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LayoutDashboard } from 'lucide-vue-next'
+import { LayoutDashboard } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { AdminScrollArea } from '@super-admin-org/ui'
 import WorkspaceHeader from '@/workspace/WorkspaceHeader.vue'

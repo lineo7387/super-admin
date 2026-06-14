@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Plus, Search, SlidersHorizontal } from 'lucide-vue-next'
+import { Plus, Search, SlidersHorizontal } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AdminButton, AdminSelect, AdminTableFrame, AdminTableToolbar, AdminTextInput, StatusPill } from '@super-admin-org/ui'

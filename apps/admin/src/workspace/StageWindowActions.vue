@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Pin, PinOff, RotateCw, X } from 'lucide-vue-next'
+import { Pin, PinOff, RotateCw, X } from '@lucide/vue'
 import { computed } from 'vue'
 
 const props = withDefaults(

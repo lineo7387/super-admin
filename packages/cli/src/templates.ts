@@ -23,7 +23,7 @@ export function createPackageJson(input: StarterGenerationInput, options: Create
     '@super-admin-org/theme': versionRanges['@super-admin-org/theme'],
     '@super-admin-org/ui': versionRanges['@super-admin-org/ui'],
     '@tanstack/vue-query': '^5.0.0',
-    'lucide-vue-next': '^0.555.0',
+    '@lucide/vue': '^1.18.0',
     pinia: '^3.0.0',
     vue: '^3.5.0',
     'vue-i18n': '^11.4.4',
@@ -357,7 +357,7 @@ export const useAuthSessionStore = defineStore('authSession', () => {
 
 export function createLoginPage(): string {
   return `<script setup lang="ts">
-import { ArrowRight, KeyRound } from 'lucide-vue-next'
+import { ArrowRight, KeyRound } from '@lucide/vue'
 import { computed, reactive, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -812,7 +812,7 @@ export function createGlobalPreferences(options: { includeThemeSwitcher: boolean
     : ''
 
   return `<script setup lang="ts">
-import { Settings2, X } from 'lucide-vue-next'
+import { Settings2, X } from '@lucide/vue'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {

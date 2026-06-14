@@ -41,6 +41,9 @@ importers:
 
   apps/admin:
     dependencies:
+      '@lucide/vue':
+        specifier: ^1.18.0
+        version: 1.18.0(vue@3.5.35(typescript@5.9.3))
       '@super-admin-org/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -68,9 +71,6 @@ importers:
       '@tanstack/vue-query':
         specifier: ^5.0.0
         version: 5.100.14(vue@3.5.35(typescript@5.9.3))
-      lucide-vue-next:
-        specifier: ^0.555.0
-        version: 0.555.0(vue@3.5.35(typescript@5.9.3))
       pinia:
         specifier: ^3.0.0
         version: 3.0.4(typescript@5.9.3)(vue@3.5.35(typescript@5.9.3))
@@ -202,12 +202,12 @@ importers:
 
   packages/ui:
     dependencies:
+      '@lucide/vue':
+        specifier: ^1.18.0
+        version: 1.18.0(vue@3.5.35(typescript@5.9.3))
       clsx:
         specifier: ^2.1.0
         version: 2.1.1
-      lucide-vue-next:
-        specifier: ^0.555.0
-        version: 0.555.0(vue@3.5.35(typescript@5.9.3))
       tailwind-merge:
         specifier: ^3.0.0
         version: 3.6.0
@@ -904,6 +904,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lucide/vue@1.18.0':
+    resolution: {integrity: sha512-DmnUpDB85PlMZ+ofjZLcKq3JoJnaD1bk7SIj9xwUvqerfNqA6hCLa0/m3gIybH6rdrErABbqvTD8yYJdNqiZ3Q==}
+    peerDependencies:
+      vue: '>=3.0.1'
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -1753,11 +1758,6 @@ packages:
 
   lodash.startcase@4.4.0:
     resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
-
-  lucide-vue-next@0.555.0:
-    resolution: {integrity: sha512-7hczPsiMD/y+VNLpal5Q5Wv09kQxlHS0l/cM1xagrd+MA3i5umMm+PUXqllvsbgwAl3PHv27fo59h4PN02GM5A==}
-    peerDependencies:
-      vue: '>=3.0.1'
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -2859,6 +2859,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@lucide/vue@1.18.0(vue@3.5.35(typescript@5.9.3))':
+    dependencies:
+      vue: 3.5.35(typescript@5.9.3)
+
   '@manypkg/find-root@1.1.0':
     dependencies:
       '@babel/runtime': 7.29.7
@@ -3686,10 +3690,6 @@ snapshots:
       p-locate: 4.1.0
 
   lodash.startcase@4.4.0: {}
-
-  lucide-vue-next@0.555.0(vue@3.5.35(typescript@5.9.3)):
-    dependencies:
-      vue: 3.5.35(typescript@5.9.3)
 
   magic-string@0.30.21:
     dependencies:

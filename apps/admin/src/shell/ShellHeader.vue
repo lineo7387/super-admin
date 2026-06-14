@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LayoutDashboard, Search } from 'lucide-vue-next'
+import { LayoutDashboard, Search } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import PrimaryNav from './PrimaryNav.vue'
 

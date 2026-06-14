@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Building2, Send } from 'lucide-vue-next'
+import { Building2, Send } from '@lucide/vue'
 import { computed, reactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminButton, AdminField, AdminTextInput, AdminValidationSummary } from '@super-admin-org/ui'

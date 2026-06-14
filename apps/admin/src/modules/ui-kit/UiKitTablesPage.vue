@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDownAZ, ArrowUpAZ, Search, Settings2, Trash2 } from 'lucide-vue-next'
+import { ArrowDownAZ, ArrowUpAZ, Search, Settings2, Trash2 } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
 import {
   AdminBulkActionBar,

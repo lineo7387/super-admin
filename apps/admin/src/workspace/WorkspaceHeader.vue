@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronRight, Pin, PinOff, RotateCw } from 'lucide-vue-next'
+import { ChevronRight, Pin, PinOff, RotateCw } from '@lucide/vue'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'

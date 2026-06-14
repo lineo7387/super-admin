@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Keyboard, LogOut, Settings2, X } from 'lucide-vue-next'
+import { Keyboard, LogOut, Settings2, X } from '@lucide/vue'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
 
 const props = withDefaults(

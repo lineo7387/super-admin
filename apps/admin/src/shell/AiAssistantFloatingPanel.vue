@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bot, PanelRight, Sparkles, X } from 'lucide-vue-next'
+import { Bot, PanelRight, Sparkles, X } from '@lucide/vue'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'

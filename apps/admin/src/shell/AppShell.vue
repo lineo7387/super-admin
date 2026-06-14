@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Settings2 } from 'lucide-vue-next'
+import { Settings2 } from '@lucide/vue'
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'

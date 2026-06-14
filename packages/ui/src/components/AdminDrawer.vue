@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { X } from 'lucide-vue-next'
+import { X } from '@lucide/vue'
 import { onBeforeUnmount, onMounted, watch } from 'vue'
 import AdminButton from './AdminButton.vue'
 import AdminScrollArea from './AdminScrollArea.vue'

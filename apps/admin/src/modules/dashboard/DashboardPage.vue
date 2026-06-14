@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, AlertTriangle, Database, RadioTower } from 'lucide-vue-next'
+import { Activity, AlertTriangle, Database, RadioTower } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
 import { AdminAlert, AdminCard, AdminSkeleton, MetricTile, StatusPill } from '@super-admin-org/ui'
 import { useDashboardOverviewQuery } from './dashboard.queries'

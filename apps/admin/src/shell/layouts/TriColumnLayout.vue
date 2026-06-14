@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, Circle, Palette } from 'lucide-vue-next'
+import { BookOpen, Circle, Palette } from '@lucide/vue'
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'

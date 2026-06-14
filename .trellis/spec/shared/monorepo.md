@@ -101,6 +101,7 @@ Publish candidate packages must expose:
 - The normal publish workflow must ensure `pnpm@10.33.0` is available after upgrading npm for Trusted Publishing; do not rely on Corepack alone if the runner cannot resolve `pnpm` in later steps.
 - Generated starter smoke tests that launch dev servers must terminate and await the full child process tree before reporting success, because open handles can leave GitHub release checks stuck after validation output is printed.
 - Release workflow validation steps should have a timeout before any `npm publish` step so hangs fail closed before registry mutation begins.
+- Generated starter dependency migrations must release every publishable package that can affect the install tree, not only `create-super-admin`. If the starter warning/error comes from a dependency owned by `@super-admin-org/ui`, `@super-admin-org/theme`, or another publish candidate, include that package in the changeset and selected release set; a CLI-only release will keep registry starters consuming the old transitive dependency.
 - The local bootstrap path is allowed only for version `0.0.0-bootstrap.0` with `--tag bootstrap`.
 - Trusted Publishing setup must use an npm CLI whose `npm trust github --help` supports `--allow-publish`; older npm 11 builds may reject the flag even though the major version is 11.
 - If npm temporarily leaves `latest` pointing at a first bootstrap version and refuses to delete it before any replacement release exists, do not promote beta/next to latest as a workaround and do not unpublish without explicit approval. Proceed to Trusted Publishing, publish the real version to `next`, smoke test, then move `latest` to the real version.
@@ -128,12 +129,14 @@ Publish candidate packages must expose:
 | Publish artifact targets are missing from `dist` | Fail in `prepublishOnly` or pack validation. |
 | Packed `create-super-admin` cannot generate a starter unless repo-root `apps/admin` exists | Fail in release readiness before publish; build/package the runtime template into the CLI tarball. |
 | Generated starter uses the CLI version for every `@super-admin-org/*` dependency | Fail generator tests; use the package-specific version range map. |
+| Generated starter still warns about a deprecated transitive dependency after a CLI template migration | Treat the dependency-owning published package as missing from the release set; add a changeset for that package and re-run starter smoke against packed artifacts. |
 | Registry smoke for `next` fails after a version was published | Do not promote `latest`; fix forward with a new patch version on `next` because npm package versions are immutable. |
 
 ### 5. Good/Base/Bad Cases
 
 - Good: maintainer runs `pnpm changeset`, `pnpm release plan --changed create-super-admin`, `pnpm release version`, `pnpm release check`, pushes, then manually runs the `Publish next` workflow with `changed_packages=create-super-admin` and the dynamic confirmation text.
 - Good: a CLI-only release prints and publishes only `create-super-admin`.
+- Good: a starter dependency migration from a deprecated package publishes both `create-super-admin` and the publishable package that owns the transitive dependency, such as `@super-admin-org/ui`.
 - Good: a core release prints and publishes `core`, the theme runtime, and theme profile packages, but not unrelated `ui` or `create-super-admin`.
 - Base: `pnpm release commands promote-latest --changed create-super-admin` prints one `npm dist-tag add ... latest` command after registry smoke passes.
 - Good: `0.1.0` is published to `next`, smoke-tested from the registry, then promoted to `latest`.
@@ -142,6 +145,7 @@ Publish candidate packages must expose:
 - Bad: a script silently runs `npm publish`, `npm trust`, or `npm dist-tag add` without an explicit human approval phase.
 - Bad: each package repeats the full lint/typecheck/test/build suite in `prepublishOnly`; the package hook should stay a lightweight guard.
 - Bad: publishing a placeholder bootstrap version and leaving it as the default install channel after a real release is available.
+- Bad: changing only the generated starter template while published `@super-admin-org/ui` still pulls the deprecated dependency that caused the starter install warning.
 
 ### 6. Tests Required
 

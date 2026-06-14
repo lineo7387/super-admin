@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, KeyRound } from 'lucide-vue-next'
+import { ArrowRight, KeyRound } from '@lucide/vue'
 import { computed, reactive, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
