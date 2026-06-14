@@ -1,0 +1,12 @@
+{"file": ".trellis/spec/frontend/api-adapters.md", "reason": "Mock API and user API adapter pattern."}
+{"file": ".trellis/spec/frontend/components.md", "reason": "Vue component splitting and accessibility rules."}
+{"file": ".trellis/spec/frontend/css-design.md", "reason": "Tailwind, CSS variables, and layout stability rules."}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "App, package, and module directory conventions."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend guideline entry point."}
+{"file": ".trellis/spec/frontend/quality.md", "reason": "Frontend verification and visual QA checklist."}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Frontend contract and route meta typing rules."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Layer boundary checks for shell, modules, API adapters, and queries."}
+{"file": ".trellis/spec/guides/pre-implementation-checklist.md", "reason": "Pre-code product and architecture checks."}
+{"file": ".trellis/spec/guides/trellis-lake-workflow.md", "reason": "Project workflow guard and artifact locations."}
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Verify public docs and maintainer/user boundary."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Verify monorepo docs/scripts boundaries."}
