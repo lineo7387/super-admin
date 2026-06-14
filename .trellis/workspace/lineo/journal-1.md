@@ -1385,3 +1385,36 @@ Localized first-run admin example chrome, route metadata, AI assistant context, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 41: 准备控制中心 starter 修复发布
+
+**Date**: 2026-06-14
+**Task**: 准备控制中心 starter 修复发布
+**Branch**: `main`
+
+### Summary
+
+确认 starter 修复需要同时发布 create-super-admin 与 @super-admin-org/ui，完成 0.1.4 release version、changelog、UI dependency range 更新，并通过 release check。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f488e22` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
