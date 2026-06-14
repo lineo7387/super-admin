@@ -1285,3 +1285,36 @@ Migrated app, UI package, and create-super-admin starter templates from deprecat
 ### Next Steps
 
 - None - task complete
+
+
+## Session 38: Fix release check after lucide versioning
+
+**Date**: 2026-06-14
+**Task**: Fix release check after lucide versioning
+**Branch**: `main`
+
+### Summary
+
+Reproduced pnpm release check failure after release versioning, fixed the registry command printer test to read the current CLI package version, preserved Changesets release-version output, codified the release-test rule, and verified pnpm release check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3489dfd` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
