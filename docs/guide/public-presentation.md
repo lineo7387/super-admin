@@ -4,10 +4,11 @@ Use this checklist when polishing the GitHub repository, npm package pages, docs
 
 ## Current Public State
 
-As of 2026-06-13:
+As of 2026-06-14:
 
 - The repository is public at `lineo7387/super-admin`.
 - npm `latest` and `next` point to `0.1.2` for `create-super-admin` and the `@super-admin-org/*` publish candidate packages.
+- The GitHub Pages docs/demo URL is `https://lineo7387.github.io/super-admin/` after the docs deployment workflow succeeds.
 - The public install path is available:
 
 ```bash
@@ -23,7 +24,7 @@ These settings are managed in GitHub, not in repository files.
 Recommended values:
 
 - Description: `Frontend-first Vue admin template with reusable UI primitives, runtime themes, mock data, and replaceable API adapters.`
-- Website: set this to the hosted docs or demo URL after deployment. Leave it blank until the URL is real.
+- Website: `https://lineo7387.github.io/super-admin/` after the GitHub Pages workflow has deployed successfully.
 - Topics: `vue`, `vite`, `typescript`, `admin-dashboard`, `admin-template`, `frontend`, `design-system`, `pinia`, `tanstack-query`, `vitepress`.
 - Social preview: use a screenshot or composed preview image of the admin shell, theme/profile switching, and example modules.
 
@@ -34,10 +35,10 @@ The README should keep these above the fold:
 - npm badge for `create-super-admin`.
 - package or license badges that reflect current public state.
 - `npm create super-admin@latest my-admin`.
-- docs links for getting started, examples, API adapters, themes/layouts, and public presentation.
+- docs links for the hosted docs/demo, getting started, examples, API adapters, themes/layouts, and public presentation.
 - a clear statement that backend, database, auth provider, AI provider, and generated schema are optional.
 
-Avoid release badges until a GitHub Release exists. Avoid demo badges until a hosted demo exists.
+Avoid release badges until a GitHub Release exists. Use the docs/demo badge only after the GitHub Pages workflow is present.
 
 ## Docs And Demo Links
 
@@ -45,10 +46,10 @@ Use these link positions:
 
 - README: short "Preview And Docs" section near Quick Start.
 - VitePress nav/sidebar: include this public presentation guide alongside releasing and open-source workflow.
-- GitHub About website: hosted docs/demo URL only after deployment.
+- GitHub About website: `https://lineo7387.github.io/super-admin/` after deployment succeeds.
 - Release notes: link to README, Getting Started, Examples, API adapters, Themes and layouts, and Releasing.
 
-Until a hosted demo exists, treat the local app as the demo:
+For a full interactive admin preview, run the local app:
 
 ```bash
 pnpm install

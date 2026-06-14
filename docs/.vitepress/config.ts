@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'Super Admin',
   description: 'Frontend-first admin template with replaceable API adapters.',
   cleanUrls: true,
+  base: '/super-admin/',
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },

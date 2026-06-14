@@ -5,7 +5,7 @@ Frontend-first Vue admin template with reusable UI primitives, runtime design pr
 [![create-super-admin npm version](https://img.shields.io/npm/v/create-super-admin?label=create-super-admin)](https://www.npmjs.com/package/create-super-admin)
 [![core package npm version](https://img.shields.io/npm/v/%40super-admin-org%2Fcore?label=%40super-admin-org%2Fcore)](https://www.npmjs.com/package/@super-admin-org/core)
 [![MIT license](https://img.shields.io/github/license/lineo7387/super-admin)](LICENSE)
-[![docs](https://img.shields.io/badge/docs-VitePress-646CFF)](docs/guide/getting-started.md)
+[![docs](https://img.shields.io/badge/docs-GitHub%20Pages-646CFF)](https://lineo7387.github.io/super-admin/)
 
 Super Admin is designed for teams who want a flexible admin-console foundation without being forced into a backend, database, auth provider, AI provider, or generated API schema on day one.
 
@@ -73,13 +73,14 @@ pnpm build
 
 ## Preview And Docs
 
+- [Hosted docs/demo](https://lineo7387.github.io/super-admin/)
 - [Getting started](docs/guide/getting-started.md)
 - [Examples guide](docs/guide/examples.md)
 - [API adapters](docs/guide/api-adapters.md)
 - [Themes and layouts](docs/guide/themes-layouts.md)
 - [Public presentation checklist](docs/guide/public-presentation.md)
 
-There is no hosted public demo configured yet. Until one is deployed, run `pnpm dev` locally for the interactive admin preview and set the GitHub About website only after the docs/demo URL exists.
+The hosted docs/demo is deployed from `docs/` through GitHub Pages. Use `pnpm dev` locally for the full interactive admin preview.
 
 ## Feature Preview Plan
 

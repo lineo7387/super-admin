@@ -64,6 +64,17 @@ Public docs must match the real repository and npm state.
 - When GitHub public pages lag local commits, call out that `main` is ahead of `origin/main` before assuming the remote state is wrong.
 - GitHub About metadata, topics, releases, and demo links are repository settings; document them as maintainer follow-up when they cannot be changed from files.
 
+## GitHub Pages Docs/Demo
+
+The first hosted docs/demo surface is the VitePress docs site deployed to GitHub Pages.
+
+- Use `https://lineo7387.github.io/super-admin/` as the repository Website after the Pages deployment succeeds.
+- Keep `docs/.vitepress/config.ts` configured with `base: '/super-admin/'` while deploying as a GitHub Pages project site.
+- Keep the Pages workflow under `.github/workflows/docs-pages.yml`.
+- The Pages workflow should build with `pnpm docs:build` and deploy `docs/.vitepress/dist`.
+- Do not copy the docs site, Pages workflow, or repository deployment config into generated starters.
+- If switching to a custom domain or another host later, update README, `docs/guide/public-presentation.md`, VitePress `base`, and this section together.
+
 ## Validation Scripts
 
 Root scripts should be directly runnable and named honestly.
