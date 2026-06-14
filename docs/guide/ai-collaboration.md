@@ -1,64 +1,64 @@
-# AI Collaboration
+# AI 协作
 
-Super Admin is designed to work well with AI coding tools, but those tools need the project boundary up front.
+Super Admin 适合和 AI coding tools 一起使用，但这些工具需要先理解项目边界。
 
-## Core Rule
+## 核心规则
 
-The default scaffold is frontend-first and mock-backed. AI agents should not make a backend, database, auth provider, AI provider, generated schema, or maintainer-only tool required for ordinary use.
+默认 scaffold 是前端优先、mock-backed 的。AI agents 不应让后端、数据库、auth provider、AI provider、generated schema 或维护者专用工具成为普通使用的必需条件。
 
-## Data Flow
+## 数据流
 
-Use this path for data-backed features:
+Data-backed features 使用这条路径：
 
 ```text
 Page -> module query composable -> API adapter -> api/mock data or user API
 ```
 
-Tell AI tools:
+告诉 AI tools：
 
-- Vue pages should not call `fetch`, Axios, Hono clients, or backend SDKs directly.
-- Query composables call API adapters.
-- API adapters normalize mock data or user API responses into module frontend types.
-- Mock data lives in `apps/admin/src/api/mock/`.
-- Reference backend helpers live under optional reference adapter files only.
+- Vue pages 不应直接调用 `fetch`、Axios、Hono clients 或 backend SDKs。
+- Query composables 调用 API adapters。
+- API adapters 把 mock data 或 user API responses 归一化成 module frontend types。
+- Mock data 位于 `apps/admin/src/api/mock/`。
+- Reference backend helpers 只应存在于 optional reference adapter files 下。
 
 ## State Ownership
 
-- Pinia owns client state: preferences, shell layout, workspace tabs, runtime auth session.
-- TanStack Query owns server/cache state.
-- Do not duplicate server cache in Pinia.
-- Do not persist bearer tokens or secrets in local storage.
+- Pinia 负责 client state：preferences、shell layout、workspace tabs、runtime auth session。
+- TanStack Query 负责 server/cache state。
+- 不要在 Pinia 中重复 server cache。
+- 不要把 bearer tokens 或 secrets 持久化到 local storage。
 
-## User-Facing Text
+## 用户可见文案
 
-Super Admin is moving toward `zh-CN` as the default locale with optional `en-US` support. When AI agents add or change user-facing UI text, they should provide the default Chinese message and avoid adding new English-only copy.
+Super Admin 以 `zh-CN` 作为默认 locale，并提供 `en-US` 文档。AI agents 新增或修改用户可见 UI 文案时，应提供默认中文消息，避免新增 English-only copy。
 
-Do not translate internal route names, API fields, test IDs, package names, or maintainer-only tool names.
+不要翻译 internal route names、API fields、test IDs、package names 或 maintainer-only tool names。
 
-## Adapter-Only vs Full Reshape
+## 只换 Adapter vs 完整重塑
 
-Use adapter-only replacement when the screen already fits the business workflow.
+当 screen 已经符合业务工作流时，使用 adapter-only replacement。
 
-Reshape the module when the workflow differs. Update these together:
+当 workflow 不同时，重塑 module。以下内容要一起更新：
 
-- page and module components
+- page 和 module components
 - module types
 - query params
 - query composables
 - API adapter
 
-Do not force the user's backend into an example module type if the business workflow is different.
+不要为了复用示例 module type，反过来强迫用户的 backend 适配示例形状。
 
 ## Prompt Starter
 
-When using an AI tool on a generated or cloned Super Admin project, include this context:
+在生成或克隆的 Super Admin 项目中使用 AI tool 时，可以附上这段上下文：
 
 ```text
 This is a frontend-first Vue admin template. Keep data access on Page -> query composable -> API adapter -> mock/user API. Do not call transport directly from Vue pages. Pinia is for client state; TanStack Query is for server/cache state. The backend, auth provider, database, AI provider, and CodeGraph are optional unless I explicitly ask to add them.
 Use zh-CN as the default for new user-facing UI copy unless I explicitly ask for another locale.
 ```
 
-## Good Requests
+## 好的请求
 
 ```text
 Replace the users API adapter with my REST API while keeping the page and query composable unchanged.
@@ -72,7 +72,7 @@ Reshape the users module into an approvals workflow. Update the page, types, que
 Add a new UI primitive to packages/ui and show it in the UI Kit without adding business-specific copy.
 ```
 
-## Risky Requests
+## 风险请求
 
 ```text
 Fetch users directly in UsersAllPage.vue.
@@ -86,12 +86,12 @@ Put API responses in the Pinia preferences store.
 Make the default scaffold require the reference backend.
 ```
 
-These bypass the template boundaries and make the project harder to adapt.
+这些会绕开模板边界，让项目更难适配。
 
-## Maintainer Tools
+## 维护者工具
 
-CodeGraph may be available through `.mcp.json` in this repository. It is a maintainer-side code navigation aid. Generated projects should not depend on it.
+CodeGraph 可能通过此仓库的 `.mcp.json` 可用。它是维护者侧的代码导航辅助。生成项目不应依赖它。
 
-Trellis, Codex, Claude, CodeGraph, and other AI workflow files in the source repository are maintainer workflow aids. They may help contributors work on this repository, but they are not part of the generated starter contract and should not be described as required user setup.
+源码仓库里的 Trellis、Codex、Claude、CodeGraph 和其他 AI workflow files 是维护者工作流辅助。它们可以帮助贡献者开发这个仓库，但不是 generated starter contract 的一部分，也不应被描述成必需用户设置。
 
-When asking an AI to change public docs, package scripts, generated starter output, release guidance, or repository-root workflow files, tell it to read `.trellis/spec/shared/public-delivery.md` first. That spec records the public delivery boundary: what ordinary users should receive, what belongs to maintainers, and how docs should stay aligned with the real npm/package state.
+当要求 AI 修改 public docs、package scripts、generated starter output、release guidance 或 repository-root workflow files 时，请先告诉它读取 `.trellis/spec/shared/public-delivery.md`。这个 spec 记录了 public delivery boundary：普通用户应收到什么、维护者内容放在哪里，以及 docs 如何与真实 npm/package 状态保持一致。

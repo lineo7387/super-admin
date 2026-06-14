@@ -74,6 +74,17 @@ GitHub Pages docs are user-first. The default reader is evaluating or using `cre
 - Do not hide maintainer docs, but do not place them in the same undifferentiated guide group as starter usage.
 - Generated starter docs should describe the generated app, not this monorepo's release, GitHub Pages, Trellis, Codex, Claude, or maintainer validation workflows.
 
+## Docs Internationalization
+
+The VitePress docs are bilingual.
+
+- Use Simplified Chinese (`zh-CN`) as the root GitHub Pages locale because early maintainers and Chinese developers should have a first-class reading path.
+- Keep English (`en-US`) under `docs/en/` and `/en/`.
+- Keep user/maintainer navigation structure parallel across locales.
+- When changing public docs, update both locales in the same task unless the task explicitly records a temporary locale gap.
+- Keep code identifiers, package names, command names, file paths, API fields, and maintainer tool names in their original technical form when translating docs.
+- Do not copy VitePress docs locale directories into generated starters.
+
 ## GitHub Pages Docs/Demo
 
 The first hosted docs/demo surface is the VitePress docs site deployed to GitHub Pages.

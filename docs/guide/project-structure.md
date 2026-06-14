@@ -1,72 +1,72 @@
-# Project Structure
+# 项目结构
 
-Super Admin has two shapes:
+Super Admin 有两种形态：
 
-- a generated starter project for your own admin app
-- this source repository, which is a pnpm monorepo used to develop and publish Super Admin itself
+- 给你自己的 admin app 使用的生成项目
+- 用来开发和发布 Super Admin 本身的 pnpm monorepo 源码仓库
 
-Most users start in the generated starter. Contributors and maintainers work in the source repository.
+大多数用户从生成项目开始。贡献者和维护者才需要在源码仓库里工作。
 
-## Generated Starter
+## 生成项目
 
-A project created with `npm create super-admin@latest my-admin` is a focused Vue admin app. It does not include this documentation site, release automation, optional reference backend validation, or maintainer AI workflow files.
+通过 `npm create super-admin@latest my-admin` 创建的项目，是一个聚焦的 Vue admin app。它不包含这个文档站点、发布自动化、可选 reference backend validation 或维护者 AI workflow 文件。
 
-The app code follows the same frontend layers as the source template:
+应用代码沿用源码模板里的前端层次：
 
 ```text
 src/
-  app/                 # app bootstrap and providers
+  app/                 # app bootstrap 和 providers
   api/                 # API adapters
-  api/mock/            # mock API data sources
-  i18n/                # locale messages and locale setup
-  modules/             # feature and example modules
+  api/mock/            # mock API 数据源
+  i18n/                # locale messages 和 locale setup
+  modules/             # feature 和 example modules
   router/              # route registration
-  shell/               # app shell and layout presets
+  shell/               # app shell 和 layout presets
   stores/              # global Pinia stores
-  styles/              # global CSS and Tailwind entrypoints
+  styles/              # global CSS 和 Tailwind entrypoints
   super-admin/         # template bootstrap helpers
-  workspace/           # workspace tabs and route surfaces
+  workspace/           # workspace tabs 和 route surfaces
 ```
 
-## Source Repository
+## 源码仓库
 
-The `lineo7387/super-admin` repository is the development workspace for the template, packages, docs, CLI, and maintainer validation.
+`lineo7387/super-admin` 仓库是模板、packages、docs、CLI 和维护者验证的开发工作区。
 
 ```text
 apps/
   admin/              # Vue admin app
-  api/                # optional reference API for maintainer validation
+  api/                # optional reference API，用于 maintainer validation
 packages/
   core/               # Shared frontend contracts
-  theme/              # Design profiles and token helpers
+  theme/              # Design profiles 和 token helpers
   ui/                 # Admin UI primitives
   cli/                # create-super-admin scaffolder
 docs/                 # VitePress documentation site
-scripts/              # maintainer validation and release scripts
+scripts/              # maintainer validation 和 release scripts
 ```
 
 ## Admin App
 
-The source template app lives in `apps/admin/`. Generated starter projects use the same internal shape under their own `src/` directory.
+源码模板 app 位于 `apps/admin/`。生成项目使用相同的内部结构，但目录在自己的 `src/` 下。
 
 ```text
 apps/admin/src/
-  app/                 # app bootstrap, providers, router registration
+  app/                 # app bootstrap、providers、router registration
   api/                 # API adapters
-  api/mock/            # mock API data sources
-  i18n/                # locale messages and locale setup
-  modules/             # feature and example modules
+  api/mock/            # mock API 数据源
+  i18n/                # locale messages 和 locale setup
+  modules/             # feature 和 example modules
   router/              # route registration
-  shell/               # app shell and layout presets
+  shell/               # app shell 和 layout presets
   stores/              # global Pinia stores
-  styles/              # global CSS and Tailwind entrypoints
+  styles/              # global CSS 和 Tailwind entrypoints
   super-admin/         # template bootstrap helpers
-  workspace/           # workspace tabs and route surfaces
+  workspace/           # workspace tabs 和 route surfaces
 ```
 
-## Module Shape
+## 模块形态
 
-A data-backed module usually follows this shape:
+一个 data-backed module 通常长这样：
 
 ```text
 modules/users/
@@ -77,12 +77,12 @@ modules/users/
   components/
 ```
 
-The page composes UI and calls module query composables. Query composables call API adapters. API adapters normalize mock data or your real API responses into the module's frontend types.
+页面负责组合 UI，并调用 module query composables。Query composables 调用 API adapters。API adapters 把 mock 数据或你的真实 API 响应归一化为模块的 frontend types。
 
 ## Shared Packages
 
-- `packages/ui` owns domain-neutral admin primitives such as cards, buttons, alerts, tables, drawers, fields, selects, skeletons, and status pills.
-- `packages/theme` owns built-in design profiles.
-- `packages/core` owns shared frontend contracts and helpers.
+- `packages/ui` 负责 domain-neutral admin primitives，例如 cards、buttons、alerts、tables、drawers、fields、selects、skeletons 和 status pills。
+- `packages/theme` 负责内置 design profiles。
+- `packages/core` 负责共享 frontend contracts 和 helpers。
 
-Business-specific columns, copy, workflows, and validation rules should stay in modules rather than shared packages.
+业务专属 columns、copy、workflows 和 validation rules 应留在 modules 中，而不是放进 shared packages。

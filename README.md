@@ -79,7 +79,8 @@ pnpm build
 
 User docs:
 
-- [Hosted docs/demo](https://lineo7387.github.io/super-admin/)
+- [Hosted docs/demo 中文](https://lineo7387.github.io/super-admin/)
+- [Hosted docs/demo English](https://lineo7387.github.io/super-admin/en/)
 - [Getting started](docs/guide/getting-started.md)
 - [Examples guide](docs/guide/examples.md)
 - [API adapters](docs/guide/api-adapters.md)

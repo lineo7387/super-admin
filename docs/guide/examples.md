@@ -1,16 +1,16 @@
-# Examples
+# 示例
 
-Examples show how the template pieces fit together.
+示例展示模板里的各个部分如何组合。
 
 ## Template Guide
 
-Open the admin app and visit:
+打开 admin app 并访问：
 
 ```text
 /examples/template-guide
 ```
 
-This page maps the current replacement seams:
+这个页面会标出当前可替换边界：
 
 - mock API data
 - API adapters
@@ -21,22 +21,22 @@ This page maps the current replacement seams:
 
 ## Dashboard
 
-`/examples/dashboard` shows a metric and activity surface backed by a Dashboard API adapter.
+`/examples/dashboard` 展示由 Dashboard API adapter 支撑的 metrics 和 activity surface。
 
 ## Workbench
 
-`/examples/workbench` shows operational job cards and queue states.
+`/examples/workbench` 展示 operational job cards 和 queue states。
 
 ## Users
 
-`/examples/users/all` shows a richer CRUD-style table with filters, pagination, drawer forms, and mock API scenarios.
+`/examples/users/all` 展示更完整的 CRUD-style table，包括 filters、pagination、drawer forms 和 mock API scenarios。
 
 ## Access
 
-`/examples/access` shows frontend-level permission metadata. It does not require a real auth backend.
+`/examples/access` 展示 frontend-level permission metadata。它不要求真实 auth backend。
 
 ## UI Kit
 
-`/ui-kit/foundations` and related UI Kit routes demonstrate reusable admin primitives from `packages/ui`.
+`/ui-kit/foundations` 以及相关 UI Kit routes 展示来自 `packages/ui` 的 reusable admin primitives。
 
-Use UI Kit for primitives. Use Examples for module composition.
+使用 UI Kit 查看 primitives。使用 Examples 查看 module composition。

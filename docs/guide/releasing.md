@@ -1,6 +1,6 @@
-# Releasing
+# 发布流程
 
-Super Admin publishes a small independent package set:
+Super Admin 发布一组小而独立的 packages：
 
 - `@super-admin-org/core`
 - `@super-admin-org/ui`
@@ -12,33 +12,33 @@ Super Admin publishes a small independent package set:
 - `@super-admin-org/theme-newsprint`
 - `create-super-admin`
 
-The root app, admin app, and optional API reference app are not published.
+Root app、admin app 和 optional API reference app 不发布。
 
 ## Version And Channel Policy
 
-Version numbers describe release stability and compatibility. npm dist-tags describe install channels.
+Version numbers 表示 release stability 和 compatibility。npm dist-tags 表示 install channels。
 
 | Version form | npm dist-tag | Purpose |
 | --- | --- | --- |
-| `0.0.0-bootstrap.0` | `bootstrap` | Package-name creation only. Do not document or recommend this as an installable release. |
-| `0.1.0-beta.1` | `beta` | Optional public beta prerelease, only when the project intentionally wants beta testers. |
-| `0.1.0-rc.1` | `rc` | Optional release candidate, only when a final release is expected after candidate validation. |
-| `0.1.0` | `next` | Real release candidate published by GitHub Actions for registry smoke testing. |
-| `0.1.0` | `latest` | Smoke-verified release promoted only after explicit approval. |
+| `0.0.0-bootstrap.0` | `bootstrap` | 只用于创建 package name。不要把它写成可安装 release。 |
+| `0.1.0-beta.1` | `beta` | 可选 public beta prerelease，只在项目明确需要 beta testers 时使用。 |
+| `0.1.0-rc.1` | `rc` | 可选 release candidate，只在准备 final release 后使用。 |
+| `0.1.0` | `next` | 由 GitHub Actions 发布、用于 registry smoke testing 的真实 release candidate。 |
+| `0.1.0` | `latest` | 只有 smoke-verified 且明确批准后才 promotion。 |
 
-Use `latest` only for smoke-verified releases that should be installed by default with `npm install <package>` or `pnpm add <package>`. Do not move `latest` to `bootstrap`, `beta`, `rc`, or `next` versions.
+只有经过 smoke verification、适合作为默认安装版本的 release 才使用 `latest`。不要把 `latest` 指向 `bootstrap`、`beta`、`rc` 或未验证的 `next`。
 
-The first real Super Admin release used `0.1.0` for the initial package set. Future releases are independent: a package version changes only when that package is part of the selected release set.
+首个真实 Super Admin release 使用 `0.1.0`。未来 releases 独立演进：只有进入 selected release set 的 package 才变更版本。
 
 ## Daily Release Preparation
 
-Create a changeset when a publishable package changes:
+当 publishable package 改动时创建 changeset：
 
 ```bash
 pnpm changeset
 ```
 
-Publish candidates are no longer configured as a fixed Changesets group. Select the changed package names, then let the release planner expand internal dependents:
+Publish candidates 不再使用固定 Changesets group。选择变更 package names，然后让 release planner 展开 internal dependents：
 
 ```bash
 pnpm release plan --changed create-super-admin
@@ -46,71 +46,71 @@ pnpm release plan --changed @super-admin-org/theme-base
 pnpm release plan --changed @super-admin-org/core
 ```
 
-Dependency-aware selection rules:
+Dependency-aware selection rules：
 
-- `create-super-admin` changes select only `create-super-admin`.
-- A single `@super-admin-org/theme-*` profile change selects only that theme profile.
-- `@super-admin-org/theme` changes select only the theme runtime unless another package declares a real dependency on it.
-- `@super-admin-org/core` changes select `core`, the theme runtime, and the theme profile packages because they depend on `core`.
-- `@super-admin-org/ui` is selected only when `ui` itself changes or another package later declares a dependency on it.
+- `create-super-admin` changes 只选择 `create-super-admin`。
+- 单个 `@super-admin-org/theme-*` profile change 只选择那个 theme profile。
+- `@super-admin-org/theme` changes 只选择 theme runtime，除非另一个 package 声明了真实 dependency。
+- `@super-admin-org/core` changes 会选择 `core`、theme runtime 和 theme profile packages，因为它们依赖 `core`。
+- `@super-admin-org/ui` 只有在 `ui` 本身变更，或未来另一个 package 声明依赖它时才被选择。
 
-When preparing a release commit, apply the pending changesets:
+准备 release commit 时应用 pending changesets：
 
 ```bash
 pnpm release version
 ```
 
-This updates package versions, internal dependency ranges, changelogs, lockfile metadata, and the generated `create-super-admin` starter dependency range map. The generated starter uses package-specific `@super-admin-org/*` ranges, so a CLI-only release must not force starter dependencies to the CLI version.
+这会更新 package versions、internal dependency ranges、changelogs、lockfile metadata，以及 generated `create-super-admin` starter dependency range map。Generated starter 使用 package-specific `@super-admin-org/*` ranges，因此 CLI-only release 不应强迫 starter dependencies 跟 CLI 版本一致。
 
-Run the full local release gate before pushing:
+Push 前运行完整本地 release gate：
 
 ```bash
 pnpm release check
 ```
 
-This runs lint, typecheck, tests, package builds, local `npm pack` validation, generated starter install/typecheck/build, and startup smoke. It does not publish anything.
+它会运行 lint、typecheck、tests、package builds、local `npm pack` validation、generated starter install/typecheck/build 和 startup smoke。它不会发布任何内容。
 
-The release gate validates the generated starter by running the packed `create-super-admin` tarball, not only the local monorepo CLI. This catches registry and `pnpm dlx` runtime issues such as missing package-local starter templates before publish.
+Release gate 会通过打包后的 `create-super-admin` tarball 验证 generated starter，而不只是 monorepo 里的 local CLI。这可以在 publish 前发现 registry 和 `pnpm dlx` runtime 问题，例如 package-local starter template 缺失。
 
 ## First-Time Package Bootstrap
 
-Brand-new npm package names must exist before Trusted Publishing can be configured. Prepare bootstrap tarballs locally:
+全新 npm package names 必须先存在，才能配置 Trusted Publishing。先本地准备 bootstrap tarballs：
 
 ```bash
 pnpm release bootstrap:prepare
 ```
 
-Then print the bootstrap commands:
+再打印 bootstrap commands：
 
 ```bash
 pnpm release commands bootstrap
 ```
 
-Only run the printed `npm publish ... --tag bootstrap` commands after explicitly approving that registry mutation. The bootstrap version is `0.0.0-bootstrap.0` and exists only to create the package names.
+只有明确批准 registry mutation 后，才运行打印出来的 `npm publish ... --tag bootstrap` commands。Bootstrap version 是 `0.0.0-bootstrap.0`，只用于创建 package names。
 
-npm may leave `latest` pointing at the first bootstrap version for brand-new package names, and the registry may reject deleting `latest` while no replacement release exists. Treat this as a temporary registry bootstrap artifact, not as a valid default install channel. Continue with Trusted Publishing, publish the real release to `next`, smoke test it, then promote that real release to `latest`.
+npm 可能在全新 package names 创建后临时让 `latest` 指向第一个 bootstrap version，并且在没有 replacement release 前拒绝删除 `latest`。把它看成临时 registry bootstrap artifact，而不是有效默认安装 channel。继续配置 Trusted Publishing，发布真实版本到 `next`，smoke test 后再把真实版本 promotion 到 `latest`。
 
 ## Trusted Publishing Setup
 
-After bootstrap packages exist, print the Trusted Publishing commands:
+Bootstrap packages 存在后，打印 Trusted Publishing commands：
 
 ```bash
 pnpm release commands trust
 ```
 
-Only run the printed `npm trust github ... --allow-publish` commands after explicitly approving that registry mutation.
+只有明确批准 registry mutation 后，才运行打印出来的 `npm trust github ... --allow-publish` commands。
 
-Use an npm CLI that supports the `--allow-publish` trust permission flag. If `npm trust github --help` does not list `--allow-publish`, run the printed `npm install -g npm@^11.10.0` update or use a temporary modern CLI such as `npx npm@11.16.0 ...` for the trust commands.
+使用支持 `--allow-publish` trust permission flag 的 npm CLI。如果 `npm trust github --help` 没有列出 `--allow-publish`，运行打印出的 `npm install -g npm@^11.10.0` update，或用临时现代 CLI，例如 `npx npm@11.16.0 ...`。
 
 ## Publish To Next
 
-Push the release commit to GitHub, then run the `Publish next` workflow manually. The workflow requires the same changed package list used for planning. Generate the confirmation text locally:
+把 release commit push 到 GitHub 后，手动运行 `Publish next` workflow。Workflow 需要与 planning 相同的 changed package list。先本地生成 confirmation text：
 
 ```bash
 pnpm release plan --changed create-super-admin
 ```
 
-For example, a CLI-only release prints:
+例如 CLI-only release 会打印：
 
 ```text
 Selected release packages:
@@ -118,15 +118,15 @@ Selected release packages:
 Workflow confirmation: publish-super-admin-next-create-super-admin-0.1.3
 ```
 
-Enter `create-super-admin` as `changed_packages` and the printed confirmation as `confirm`.
+把 `create-super-admin` 填到 `changed_packages`，把打印的 confirmation 填到 `confirm`。
 
-The workflow runs `pnpm release check` before publishing. Package `prepublishOnly` guards block accidental normal local publishes and allow normal publishes only from the configured GitHub Actions workflow with the `next` tag and provenance. The workflow publishes only the dependency-aware selected package set.
+Workflow 会在发布前运行 `pnpm release check`。Package `prepublishOnly` guards 会阻止意外的 normal local publishes，并且只允许来自配置好的 GitHub Actions workflow、带 `next` tag 和 provenance 的 normal publishes。Workflow 只发布 dependency-aware selected package set。
 
-Publish commands for local package directories must use explicit local paths such as `./packages/core`. Do not write bare paths like `packages/core`; npm may parse them as GitHub shorthand package specs instead of local directories.
+本地 package directories 的 publish commands 必须使用明确 local paths，例如 `./packages/core`。不要写 `packages/core` 这种裸路径；npm 可能把它解析成 GitHub shorthand package spec，而不是 local directory。
 
 ## Smoke Test Next
 
-After the workflow publishes to `next`, run registry smoke for the selected release set. For changes that affect the starter, core contracts, theme runtime, theme profiles, or UI consumed by starters, verify the CLI from the registry:
+Workflow 发布到 `next` 后，对 selected release set 运行 registry smoke。对于影响 starter、core contracts、theme runtime、theme profiles 或 starter 消费的 UI 的改动，从 registry 验证 CLI：
 
 ```bash
 pnpm dlx create-super-admin@next my-admin --pm pnpm
@@ -137,29 +137,29 @@ pnpm build
 pnpm dev
 ```
 
-If registry smoke fails, do not promote `latest`. npm package versions are immutable, so fix the issue, create a new patch release, publish that new version to `next`, and smoke test again. For example, if `0.1.0` was already published to `next` and fails smoke, the fix should publish `0.1.1` to `next`; only promote `0.1.1` after its registry smoke passes.
+如果 registry smoke 失败，不要 promote `latest`。npm package versions 不可变，所以修复问题、创建新的 patch release、把新版本发布到 `next`，并重新 smoke test。例如 `0.1.0` 已经发布到 `next` 且 smoke 失败，那么修复应发布 `0.1.1` 到 `next`；只有 `0.1.1` smoke 通过后才 promotion。
 
 ## Promote Latest
 
-After the registry smoke test passes, print the promotion commands for the same changed package list:
+Registry smoke test 通过后，用同一个 changed package list 打印 promotion commands：
 
 ```bash
 pnpm release commands promote-latest --changed create-super-admin
 ```
 
-Only run the printed `npm dist-tag add ... latest` commands after explicitly approving that registry mutation.
+只有明确批准 registry mutation 后，才运行打印出的 `npm dist-tag add ... latest` commands。
 
-Promotion must move `latest` only for the smoke-verified selected package versions. It must not promote bootstrap or prerelease versions, and it must not promote unrelated packages.
+Promotion 只能移动 smoke-verified selected package versions 的 `latest`。不能 promote bootstrap 或 prerelease versions，也不能 promote unrelated packages。
 
 ## Promote Latest Workflow Draft
 
-To avoid repeated local npm Touch ID prompts, promotion can move to a manual GitHub workflow later. Do not enable this until the repository has:
+为了避免本地重复 npm Touch ID prompts，promotion 以后可以迁移到 manual GitHub workflow。启用前仓库需要：
 
-- a GitHub environment such as `npm-latest` with required reviewers
-- an npm automation token or trusted registry mechanism that can run `npm dist-tag add`
-- a repository secret such as `NPM_TOKEN` scoped to that environment
+- 带 required reviewers 的 GitHub environment，例如 `npm-latest`
+- 能运行 `npm dist-tag add` 的 npm automation token 或 trusted registry mechanism
+- 绑定到该 environment 的 repository secret，例如 `NPM_TOKEN`
 
-Draft workflow shape:
+Draft workflow shape：
 
 ```yaml
 name: Promote latest
@@ -225,7 +225,7 @@ jobs:
           NODE
 ```
 
-The workflow approval happens once at the GitHub environment gate, then the job promotes the selected package set without one local Touch ID prompt per package.
+Workflow approval 在 GitHub environment gate 发生一次，然后 job 无需每个 package 一次本地 Touch ID prompt，就可以 promotion selected package set。
 
 ## Command Reference
 
@@ -241,4 +241,4 @@ pnpm release commands promote-latest --changed <package[,package]>
 pnpm release commands all --changed <package[,package]>
 ```
 
-`pnpm release commands ...` only prints registry-mutating commands. It does not execute them.
+`pnpm release commands ...` 只打印 registry-mutating commands，不会执行它们。

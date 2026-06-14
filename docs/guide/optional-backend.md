@@ -1,33 +1,33 @@
-# Optional Backend
+# 可选后端
 
-The default scaffold is frontend-first. It should run without a backend, database, auth provider, AI provider, or generated API schema.
+默认 scaffold 是前端优先的。它应该无需后端、数据库、auth provider、AI provider 或 generated API schema 即可运行。
 
-## What Is Optional
+## 什么是可选的
 
-Optional/reference surfaces include:
+可选/reference surfaces 包括：
 
 - Hono-style reference API
-- database or ORM examples
+- database 或 ORM examples
 - auth provider examples
 - AI provider integration
 - formal API contract validation
 - `create-super-admin` CLI scaffold generation
 
-These should validate or generate the frontend template boundary. They should not redefine the default scaffold as a full-stack framework.
+这些内容应围绕前端模板边界做验证或生成，不应该把默认 scaffold 重新定义成 full-stack framework。
 
-## Current Recommended Path
+## 当前推荐路径
 
-For real projects today:
+真实项目里建议：
 
-1. Start with the admin app.
-2. Inspect the example module that is closest to your workflow.
-3. If the screen fits, replace the API adapter.
-4. If the workflow differs, reshape the page, components, types, queries, and adapter together.
-5. Keep backend-specific clients out of Vue pages.
+1. 从 admin app 开始。
+2. 找到最接近你业务工作流的 example module。
+3. 如果 screen 已经匹配，只替换 API adapter。
+4. 如果 workflow 不同，请一起重塑 page、components、types、queries 和 adapter。
+5. 不要把 backend-specific clients 放进 Vue pages。
 
-## Maintainer Validation Path
+## 维护者验证路径
 
-The optional backend and CLI surfaces are validation tools around the same frontend-first boundary:
+可选 backend 和 CLI surfaces 是围绕同一条 frontend-first boundary 的验证工具：
 
 ```text
 API contract validation
@@ -36,4 +36,4 @@ API contract validation
       -> release acceptance QA
 ```
 
-The CLI is available as an optional generated-project path. It does not make the optional backend mandatory, and backend-specific clients should still stay behind API adapters rather than inside Vue pages.
+CLI 已经可作为可选 generated-project path。它不会让 optional backend 变成必需；backend-specific clients 也仍应放在 API adapters 后面，而不是 Vue pages 里。

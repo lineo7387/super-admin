@@ -1,14 +1,14 @@
-# API Adapters
+# API 适配器
 
-The default data flow is:
+默认数据流是：
 
 ```text
 Page -> module query composable -> API adapter -> api/mock data or user API
 ```
 
-This keeps pages free from transport details and keeps server/cache state in TanStack Query instead of Pinia.
+这样可以让 pages 远离 transport 细节，也让 server/cache state 留在 TanStack Query，而不是 Pinia。
 
-## Files
+## 文件位置
 
 ```text
 apps/admin/src/api/
@@ -27,9 +27,9 @@ apps/admin/src/modules/users/
   users.types.ts
 ```
 
-## Adapter-Only Replacement
+## 只替换 Adapter
 
-When an example screen already fits your business workflow, replace the module API adapter with your own API call and normalize the response into the module frontend type.
+当示例页面已经符合你的业务工作流时，只需要把模块 API adapter 替换成你的 API 调用，并把响应归一化为模块 frontend type。
 
 ```ts
 export async function listUsers(params: UserListParams): Promise<UserListResult> {
@@ -45,35 +45,35 @@ export async function listUsers(params: UserListParams): Promise<UserListResult>
 }
 ```
 
-The exact transport is your choice. REST, RPC, GraphQL, or a custom SDK can all sit behind the adapter as long as pages keep calling module queries.
+具体 transport 由你决定。REST、RPC、GraphQL 或自定义 SDK 都可以放在 adapter 后面，只要 pages 继续调用 module queries。
 
-Super Admin is designed for open-source, partial adoption. You can use only the UI primitives, copy one example module, or replace every API adapter without adopting future backend, CLI, auth, database, or provider work.
+Super Admin 面向开源和局部采用设计。你可以只使用 UI primitives、复制一个示例模块，或替换所有 API adapters，而不必采用未来的 backend、CLI、auth、database 或 provider 工作。
 
-## Full Module Reshape
+## 完整重塑模块
 
-If your business workflow is different, do not force your API into the example shape. Reshape these together:
+如果你的业务工作流不同，不要强行把 API 塞进示例 shape。请一起重塑：
 
-- page and module components
+- page 和 module components
 - module types
 - query params
 - query composables
 - API adapter
 
-Example module types are frontend example contracts, not universal backend schemas.
+示例 module types 是前端示例 contracts，不是通用 backend schemas。
 
 ## Contract Helpers
 
-`@super-admin-org/core` exposes small TypeScript-first contract helpers for common adapter shapes:
+`@super-admin-org/core` 暴露了少量 TypeScript-first contract helpers，用于常见 adapter shape：
 
-- `createPageListResult` for page-based admin tables
-- `createCursorListResult` for stream-like lists
-- `createMutationSuccess` and `createMutationFailure` for structured mutation feedback
-- `normalizeAdapterError` for small UI-facing error payloads
+- `createPageListResult`：page-based admin tables
+- `createCursorListResult`：stream-like lists
+- `createMutationSuccess` 和 `createMutationFailure`：结构化 mutation feedback
+- `normalizeAdapterError`：小型 UI-facing error payloads
 
-These helpers are optional. They do not add a runtime schema library and they do not require your backend to match the example modules.
+这些 helpers 是可选的。它们不会引入 runtime schema library，也不要求你的后端匹配示例模块。
 
 ## Mock Data
 
-Mock data belongs in `apps/admin/src/api/mock/`. Mock files can use simulated API field names. API adapters adapt those shapes into module frontend types.
+Mock data 放在 `apps/admin/src/api/mock/`。Mock files 可以使用模拟 API field names。API adapters 负责把这些 shapes 适配成 module frontend types。
 
-Do not make `api/mock` import module types. That separation keeps mock data feeling like an external source and keeps the adapter boundary honest.
+不要让 `api/mock` import module types。这个分离会让 mock data 更像外部数据源，也让 adapter boundary 更诚实。

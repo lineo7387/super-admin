@@ -1,55 +1,55 @@
-# Public Presentation
+# 公开展示
 
-Use this checklist when polishing the GitHub repository, npm package pages, docs links, release notes, or social preview for Super Admin.
+当你打磨 Super Admin 的 GitHub repository、npm package pages、docs links、release notes 或 social preview 时，使用这份清单。
 
-## Current Public State
+## 当前公开状态
 
-As of 2026-06-14:
+截至 2026-06-14：
 
-- The repository is public at `lineo7387/super-admin`.
-- npm `latest` and `next` point to `0.1.2` for `create-super-admin` and the `@super-admin-org/*` publish candidate packages.
-- The GitHub Pages docs/demo URL is `https://lineo7387.github.io/super-admin/` after the docs deployment workflow succeeds.
-- The public install path is available:
+- 仓库公开地址是 `lineo7387/super-admin`。
+- `create-super-admin` 和 `@super-admin-org/*` publish candidate packages 的 npm `latest` 与 `next` 指向 `0.1.2`。
+- GitHub Pages docs/demo URL 是 `https://lineo7387.github.io/super-admin/`。
+- 公开安装路径可用：
 
 ```bash
 npm create super-admin@latest my-admin
 ```
 
-The root package is private and is not published. The published package set is documented in [Releasing](./releasing.md).
+Root package 是 private，不会发布。已发布 package set 见 [发布流程](./releasing.md)。
 
 ## GitHub About Settings
 
-These settings are managed in GitHub, not in repository files.
+这些设置在 GitHub 管理，不在仓库文件里。
 
-Recommended values:
+推荐值：
 
 - Description: `Frontend-first Vue admin template with reusable UI primitives, runtime themes, mock data, and replaceable API adapters.`
-- Website: `https://lineo7387.github.io/super-admin/` after the GitHub Pages workflow has deployed successfully.
-- Topics: `vue`, `vite`, `typescript`, `admin-dashboard`, `admin-template`, `frontend`, `design-system`, `pinia`, `tanstack-query`, `vitepress`.
-- Social preview: use a screenshot or composed preview image of the admin shell, theme/profile switching, and example modules.
+- Website: `https://lineo7387.github.io/super-admin/`
+- Topics: `vue`, `vite`, `typescript`, `admin-dashboard`, `admin-template`, `frontend`, `design-system`, `pinia`, `tanstack-query`, `vitepress`
+- Social preview: 使用 admin shell、theme/profile switching 和 example modules 的截图或组合预览图。
 
 ## README Surface
 
-The README should keep these above the fold:
+README 首屏应保留：
 
-- npm badge for `create-super-admin`.
-- package or license badges that reflect current public state.
-- `npm create super-admin@latest my-admin`.
-- docs links for the hosted docs/demo, getting started, examples, API adapters, themes/layouts, and public presentation.
-- a clear statement that backend, database, auth provider, AI provider, and generated schema are optional.
+- `create-super-admin` 的 npm badge。
+- 反映当前公开状态的 package 或 license badges。
+- `npm create super-admin@latest my-admin`。
+- hosted docs/demo、getting started、examples、API adapters、themes/layouts 和 public presentation 链接。
+- 明确说明 backend、database、auth provider、AI provider 和 generated schema 都是可选的。
 
-Avoid release badges until a GitHub Release exists. Use the docs/demo badge only after the GitHub Pages workflow is present.
+没有 GitHub Release 前避免使用 release badge。只有 GitHub Pages workflow 存在后才使用 docs/demo badge。
 
 ## Docs And Demo Links
 
-Use these link positions:
+链接放置建议：
 
-- README: short "Preview And Docs" section near Quick Start.
-- VitePress nav/sidebar: include this public presentation guide alongside releasing and open-source workflow.
-- GitHub About website: `https://lineo7387.github.io/super-admin/` after deployment succeeds.
-- Release notes: link to README, Getting Started, Examples, API adapters, Themes and layouts, and Releasing.
+- README：Quick Start 附近放短的 "Preview And Docs" 区块。
+- VitePress nav/sidebar：public presentation 与 releasing、open-source workflow 一起放进维护者区域。
+- GitHub About website：部署成功后使用 `https://lineo7387.github.io/super-admin/`。
+- Release notes：链接到 README、Getting Started、Examples、API adapters、Themes and layouts 和 Releasing。
 
-For a full interactive admin preview, run the local app:
+完整交互 admin preview 请本地运行：
 
 ```bash
 pnpm install
@@ -58,29 +58,29 @@ pnpm dev
 
 ## Screenshot And GIF Plan
 
-Recommended assets for the first public preview:
+首批公开预览资产建议：
 
-- `docs/public/super-admin-shell.png`: admin shell with workspace tabs and example modules.
-- `docs/public/super-admin-themes.gif`: short loop switching design profiles.
-- `docs/public/create-super-admin.gif`: terminal flow from `npm create super-admin@latest my-admin` to `npm run dev`.
+- `docs/public/super-admin-shell.png`：带 workspace tabs 和 example modules 的 admin shell。
+- `docs/public/super-admin-themes.gif`：切换 design profiles 的短循环。
+- `docs/public/create-super-admin.gif`：从 `npm create super-admin@latest my-admin` 到 `npm run dev` 的终端流程。
 
-Capture at desktop width first, then add one mobile or narrow-width screenshot if the public page needs responsive proof. Do not commit dark, blurred, or purely atmospheric images; visitors should be able to inspect the actual product UI.
+先捕获 desktop 宽度；如果公开页面需要 responsive proof，再添加一张 mobile 或窄屏截图。不要提交暗、模糊或纯氛围图；访问者应该能看清真实产品 UI。
 
 ## Release And Tag Copy
 
-Suggested first GitHub release title:
+推荐首个 GitHub release title：
 
 ```text
 Super Admin v0.1.2 - first public npm-ready starter line
 ```
 
-Suggested summary:
+推荐 summary：
 
 ```text
 Super Admin now has published 0.1.x packages, a create-super-admin starter path, frontend-first docs, runtime themes, reusable UI primitives, and maintainer validation for generated starters.
 ```
 
-Suggested highlights:
+推荐 highlights：
 
 - `npm create super-admin@latest my-admin`
 - published package line at `0.1.2`
@@ -89,17 +89,17 @@ Suggested highlights:
 - reusable UI primitives and runtime design profiles
 - optional reference backend validation remains maintainer-only
 
-Create tags/releases only after confirming the release commit, npm dist-tags, and generated starter smoke result.
+只有确认 release commit、npm dist-tags 和 generated starter smoke result 后，才创建 tags/releases。
 
 ## Maintainer Tooling Boundary
 
-The source repository may include `.trellis/`, `.agents/`, `.agent/`, `.claude/`, `.codex/`, `.mcp.json`, `skills-lock.json`, and CodeGraph-related files. These are maintainer workflow aids.
+源码仓库可以包含 `.trellis/`、`.agents/`、`.agent/`、`.claude/`、`.codex/`、`.mcp.json`、`skills-lock.json` 和 CodeGraph-related files。这些是维护者 workflow aids。
 
-Conservative policy:
+保守策略：
 
-- Do not remove or migrate them during public-presentation polish.
-- Do not copy them into generated starters.
-- Do not describe them as required setup for ordinary users.
-- Explain them as optional maintainer/contributor aids when they appear in public docs.
+- 不要在 public-presentation polish 中移除或迁移它们。
+- 不要复制进 generated starters。
+- 不要描述成普通用户必需设置。
+- 当它们出现在 public docs 中时，解释为可选 maintainer/contributor aids。
 
-Create a separate migration task only if the team decides the public tree should split maintainer workflow tooling into another repository or package.
+只有团队决定把 public tree 中的维护者 workflow tooling 拆到另一个 repository 或 package 时，才创建单独迁移任务。
