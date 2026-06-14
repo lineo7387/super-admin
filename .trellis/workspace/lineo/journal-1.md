@@ -1351,3 +1351,37 @@ Localized first-run admin example chrome, route metadata, AI assistant context, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 40: 控制中心布局预览与密度兼容
+
+**Date**: 2026-06-14
+**Task**: 控制中心布局预览与密度兼容
+**Branch**: `main`
+
+### Summary
+
+修复 admin 与 create-super-admin 控制中心布局预览缺失，移除可见全局 density 选择并记录兼容规则；完成验证、提交与任务归档。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b01d861` | (see git log) |
+| `6c9eed7` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 39
+- **Total Sessions**: 40
 - **Last Active**: 2026-06-14
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1353 | Active |
+| `journal-1.md` | ~1387 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 40 | 2026-06-14 | 控制中心布局预览与密度兼容 | `b01d861`, `6c9eed7` | `main` |
 | 39 | 2026-06-14 | First-run i18n onboarding | `a1af65c` | `main` |
 | 38 | 2026-06-14 | Fix release check after lucide versioning | `3489dfd` | `main` |
 | 37 | 2026-06-14 | Migrate lucide Vue dependency | `ce7e904` | `main` |
