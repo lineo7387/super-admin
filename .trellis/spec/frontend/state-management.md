@@ -4,7 +4,7 @@
 
 Use Pinia for app/client state:
 
-- `profileId`, `colorMode`, `layoutPreset`, density.
+- `profileId`, `colorMode`, `layoutPreset`, and compatibility-only `density`.
 - Dock/sidebar/context panel open state.
 - Workspace tabs: opened tabs, active tab, pinned tabs, tab order.
 - Command/preferences popover state.
@@ -18,7 +18,7 @@ Persist only safe preferences:
 
 - Appearance settings.
 - Layout preference.
-- Density.
+- Compatibility-only `density` when present in existing appearance payloads. Do not expose a visible global density selector just because the field is persisted; add visible density UI only when global CSS/tokens consume it meaningfully.
 - Workspace tab metadata if desired.
 - Column visibility or local view preferences.
 

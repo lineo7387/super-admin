@@ -202,6 +202,8 @@ Generated template derivation:
 - Generated default i18n is `zh-CN` only with no visible runtime locale switcher; `--i18n` may add optional locale catalogs and switching.
 - Generated default theme registry imports only `@super-admin-org/theme-base`; multi-theme generation imports exactly the selected theme packages.
 - Generated default Control Center must not expose runtime theme/profile or locale switching when only one theme/locale is installed.
+- Generated Control Center layout choices must render visual layout previews, not text-only cards, and stay in parity with the monorepo admin app.
+- Generated Control Center must not expose a global density selector by default. Keep persisted `density` compatibility only until global density tokens/CSS make the setting visibly meaningful.
 - Generated output excludes `src/**/*.test.ts`, `src/api/reference/`, `dist/`, `node_modules/`, `*.tsbuildinfo`, docs, optional backend code, and reference smoke tooling.
 
 ### 4. Validation & Error Matrix

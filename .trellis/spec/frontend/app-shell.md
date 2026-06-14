@@ -34,11 +34,11 @@ The shell decides where those regions appear.
 
 ## Global Control Center
 
-Theme, light/dark/system mode, layout, density, workspace tools, and AI status belong in a persistent global Control Center. Do not hide these only inside a Settings page.
+Theme, light/dark/system mode, layout, workspace tools, and AI status belong in a persistent global Control Center. Do not hide these only inside a Settings page. `density` may remain in the internal appearance state for backwards compatibility, but do not expose it as a visible global Control Center choice until it has a real global CSS/token effect.
 
 The first-phase shell uses a large live configuration modal, not a small popover. Primary choices should be direct controls: segmented choices, highlighted option cards, icon toggles, switches, and visual layout thumbnails. Avoid default select dropdowns for the main appearance/layout/workspace decisions.
 
-Changes apply immediately. The Control Center is not a save/cancel form for shell appearance; selecting a profile, color mode, layout, density, Workspace Tabs toggle, or Stage Manager toggle updates the active UI at once.
+Changes apply immediately. The Control Center is not a save/cancel form for shell appearance; selecting a profile, color mode, layout, Workspace Tabs toggle, or Stage Manager toggle updates the active UI at once.
 
 **Contract**:
 
@@ -47,7 +47,7 @@ type ShellAppearancePreferences = {
   profileId: DesignProfileId
   colorMode: ColorMode
   layoutPreset: LayoutPresetId
-  density: Density
+  density: Density // persisted compatibility only; not shown by default without global density behavior
   workspaceTabs: { enabled: boolean }
   stageManager: {
     enabled: boolean
@@ -56,7 +56,7 @@ type ShellAppearancePreferences = {
 }
 ```
 
-**Check**: Open Control Center, change each appearance/workspace option, and confirm the shell updates without closing the modal or losing open routes.
+**Check**: Open Control Center, change each visible appearance/workspace option, and confirm the shell updates without closing the modal or losing open routes. Layout choices must render visual thumbnails in both `apps/admin` and generated starter output.
 
 ## Auth Guard And Session Controls
 
@@ -165,7 +165,7 @@ The Control Center trigger and modal must be mounted above layout preset compone
 
 The Control Center is a project/workspace configuration surface, not a personal account setting. Its trigger must be a fixed, right-side, vertically centered floating gear button mounted from `AppShell`, outside all layout preset components and outside `ShellAccountMenu`.
 
-The modal remains mounted once with `GlobalPreferences trigger="none"` above layout presets so live theme, density, workspace-tab, Stage Manager, and layout changes do not close it.
+The modal remains mounted once with `GlobalPreferences trigger="none"` above layout presets so live theme, workspace-tab, Stage Manager, and layout changes do not close it.
 
 **Correct shape**:
 
