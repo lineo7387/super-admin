@@ -1,7 +1,29 @@
 <script setup lang="ts">
 import { FileCode2, Layers3, Route, ShieldCheck } from '@lucide/vue'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminCard, StatusPill } from '@super-admin-org/ui'
 import { templateGuideSections, templateGuideSignals } from './template-guide'
+
+const { t } = useI18n()
+const sections = computed(() =>
+  templateGuideSections.map((section) => ({
+    ...section,
+    title: t(section.titleKey),
+    summary: t(section.summaryKey),
+    items: section.items.map((item) => ({
+      ...item,
+      label: t(item.labelKey),
+      guidance: t(item.guidanceKey)
+    }))
+  }))
+)
+const signals = computed(() =>
+  templateGuideSignals.map((signal) => ({
+    ...signal,
+    label: t(signal.labelKey)
+  }))
+)
 
 function sectionIcon(sectionId: string) {
   if (sectionId === 'source-boundaries') {
@@ -26,16 +48,15 @@ function itemIcon(itemId: string) {
       <AdminCard>
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="min-w-0">
-            <p class="text-xs font-semibold uppercase text-[var(--muted-foreground)]">Template baseline</p>
-            <h1 class="mt-2 [font-family:var(--font-display)] text-2xl text-[var(--foreground)]">Frontend Example Template</h1>
+            <p class="text-xs font-semibold uppercase text-[var(--muted-foreground)]">{{ t('examples.templateGuide.eyebrow') }}</p>
+            <h1 class="mt-2 [font-family:var(--font-display)] text-2xl text-[var(--foreground)]">{{ t('examples.templateGuide.title') }}</h1>
             <p class="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted-foreground)]">
-              The examples are copyable frontend modules. Keep the screen when it fits, replace the adapter when only data changes,
-              or reshape the full module when the business workflow is different.
+              {{ t('examples.templateGuide.description') }}
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
             <StatusPill
-              v-for="signal in templateGuideSignals"
+              v-for="signal in signals"
               :key="signal.id"
               :label="signal.label"
               :tone="signal.tone"
@@ -46,13 +67,13 @@ function itemIcon(itemId: string) {
 
       <AdminAlert
         tone="warning"
-        title="Default scaffold boundary"
-        description="Backend, auth, database, AI providers, API contracts, and CLI generation stay optional follow-up surfaces."
+        :title="t('examples.templateGuide.boundaryTitle')"
+        :description="t('examples.templateGuide.boundaryDescription')"
       />
     </section>
 
     <section class="grid gap-4 xl:grid-cols-2">
-      <AdminCard v-for="section in templateGuideSections" :key="section.id">
+      <AdminCard v-for="section in sections" :key="section.id">
         <div class="flex items-start gap-3">
           <div class="grid size-10 place-items-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-raised)]">
             <component :is="sectionIcon(section.id)" class="size-5 text-[var(--primary)]" />

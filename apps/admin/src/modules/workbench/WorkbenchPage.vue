@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { Play, RotateCcw, TimerReset } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminButton, AdminCard, AdminSkeleton, StatusPill } from '@super-admin-org/ui'
 import { useWorkbenchJobsQuery } from './workbench.queries'
 import type { WorkbenchJobListParams } from './workbench.types'
 
+const { t } = useI18n()
 const state = shallowRef<WorkbenchJobListParams['state']>('all')
 const scenario = shallowRef<WorkbenchJobListParams['scenario']>('normal')
 const queryParams = computed<WorkbenchJobListParams>(() => ({
@@ -27,17 +29,17 @@ function refreshJobs(): void {
     <AdminCard>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 class="[font-family:var(--font-display)] text-2xl text-[var(--foreground)]">Scheduler Console</h1>
-          <p class="mt-1 text-sm text-[var(--muted-foreground)]">A desktop-control-center style surface for operational jobs.</p>
+          <h1 class="[font-family:var(--font-display)] text-2xl text-[var(--foreground)]">{{ t('examples.workbench.title') }}</h1>
+          <p class="mt-1 text-sm text-[var(--muted-foreground)]">{{ t('examples.workbench.description') }}</p>
         </div>
         <div class="flex gap-2">
           <AdminButton variant="secondary" size="sm" @click="refreshJobs">
             <RotateCcw class="size-4" />
-            Refresh
+            {{ t('examples.workbench.refresh') }}
           </AdminButton>
           <AdminButton variant="primary" size="sm">
             <Play class="size-4" />
-            Run batch
+            {{ t('examples.workbench.runBatch') }}
           </AdminButton>
         </div>
       </div>
@@ -46,14 +48,14 @@ function refreshJobs(): void {
     <AdminAlert
       v-if="isError"
       tone="danger"
-      title="Unable to load workbench jobs"
-      description="The Workbench API adapter can point at a real job endpoint when this screen fits."
+      :title="t('examples.workbench.loadErrorTitle')"
+      :description="t('examples.workbench.loadErrorDescription')"
     />
     <AdminAlert
       v-else-if="isEmpty"
       tone="warning"
-      title="No jobs in this queue"
-      description="The Workbench API adapter returned an empty mock job list."
+      :title="t('examples.workbench.emptyTitle')"
+      :description="t('examples.workbench.emptyDescription')"
     />
 
     <section class="grid gap-3 lg:grid-cols-3">
@@ -72,7 +74,7 @@ function refreshJobs(): void {
         </div>
         <div class="mt-6 flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
           <TimerReset class="size-4 text-[var(--primary)]" />
-          Next checkpoint {{ job.eta }}
+          {{ t('examples.workbench.nextCheckpoint', { eta: job.eta }) }}
         </div>
       </AdminCard>
     </section>

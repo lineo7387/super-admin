@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { ShieldCheck } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminCard, AdminSkeleton, StatusPill } from '@super-admin-org/ui'
 import { useAccessMatrixQuery } from './access.queries'
 import type { AccessMatrixParams } from './access.types'
 
+const { t } = useI18n()
 const scenario = shallowRef<AccessMatrixParams['scenario']>('normal')
 const queryParams = computed<AccessMatrixParams>(() => ({
   scenario: scenario.value
 }))
 const matrixQuery = useAccessMatrixQuery(queryParams)
 const roles = computed(() => matrixQuery.data.value?.roles ?? [])
-const integrationNote = computed(() => matrixQuery.data.value?.integrationNote ?? '')
 const isLoading = computed(() => matrixQuery.isLoading.value)
 const isError = computed(() => matrixQuery.isError.value)
 const isEmpty = computed(() => !isLoading.value && !isError.value && roles.value.length === 0)
@@ -25,8 +26,8 @@ const isEmpty = computed(() => !isLoading.value && !isError.value && roles.value
           <ShieldCheck class="size-5 text-[var(--primary)]" />
         </div>
         <div>
-          <h1 class="[font-family:var(--font-display)] text-2xl text-[var(--foreground)]">Permission Matrix</h1>
-          <p class="mt-1 text-sm text-[var(--muted-foreground)]">Demo permissions stay frontend metadata, not a required auth backend.</p>
+          <h1 class="[font-family:var(--font-display)] text-2xl text-[var(--foreground)]">{{ t('examples.access.title') }}</h1>
+          <p class="mt-1 text-sm text-[var(--muted-foreground)]">{{ t('examples.access.description') }}</p>
         </div>
       </div>
 
@@ -35,14 +36,14 @@ const isEmpty = computed(() => !isLoading.value && !isError.value && roles.value
         <AdminAlert
           v-else-if="isError"
           tone="danger"
-          title="Unable to load access matrix"
-          description="The Access API adapter produced this mock error state."
+          :title="t('examples.access.loadErrorTitle')"
+          :description="t('examples.access.loadErrorDescription')"
         />
         <AdminAlert
           v-else-if="isEmpty"
           tone="warning"
-          title="No roles in this matrix"
-          description="The Access API adapter returned an empty mock role list."
+          :title="t('examples.access.emptyTitle')"
+          :description="t('examples.access.emptyDescription')"
         />
         <div
           v-for="role in roles"
@@ -57,9 +58,9 @@ const isEmpty = computed(() => !isLoading.value && !isError.value && roles.value
     </AdminCard>
 
     <AdminCard>
-      <h2 class="[font-family:var(--font-display)] text-lg text-[var(--foreground)]">Integration note</h2>
+      <h2 class="[font-family:var(--font-display)] text-lg text-[var(--foreground)]">{{ t('examples.access.integrationTitle') }}</h2>
       <p class="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">
-        {{ integrationNote }}
+        {{ t('examples.access.integrationDescription') }}
       </p>
     </AdminCard>
   </div>

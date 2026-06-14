@@ -1,72 +1,72 @@
 export type TemplateGuideItem = {
+  guidanceKey: string
   id: string
-  label: string
+  labelKey: string
   path: string
-  guidance: string
 }
 
 export type TemplateGuideSection = {
   id: string
-  title: string
-  summary: string
+  summaryKey: string
+  titleKey: string
   items: TemplateGuideItem[]
 }
 
 export const templateGuideSections: TemplateGuideSection[] = [
   {
     id: 'source-boundaries',
-    title: 'Source boundaries',
-    summary: 'The default scaffold keeps data access replaceable while the examples stay frontend-first.',
+    titleKey: 'examples.templateGuide.sections.sourceBoundaries.title',
+    summaryKey: 'examples.templateGuide.sections.sourceBoundaries.summary',
     items: [
       {
         id: 'mock-data',
-        label: 'Mock API data',
+        labelKey: 'examples.templateGuide.sections.sourceBoundaries.items.mockData.label',
         path: 'apps/admin/src/api/mock/',
-        guidance: 'Keep starter datasets here so the scaffold runs without a backend, database, auth service, or provider setup.'
+        guidanceKey: 'examples.templateGuide.sections.sourceBoundaries.items.mockData.guidance'
       },
       {
         id: 'api-adapters',
-        label: 'API adapters',
+        labelKey: 'examples.templateGuide.sections.sourceBoundaries.items.apiAdapters.label',
         path: 'apps/admin/src/api/*.api.ts',
-        guidance: 'When the example screen fits your workflow, replace the API adapter with a real request and keep the page shape stable.'
+        guidanceKey: 'examples.templateGuide.sections.sourceBoundaries.items.apiAdapters.guidance'
       },
       {
         id: 'module-queries',
-        label: 'Module queries',
+        labelKey: 'examples.templateGuide.sections.sourceBoundaries.items.moduleQueries.label',
         path: 'apps/admin/src/modules/<module>/<module>.queries.ts',
-        guidance: 'Pages call query composables, and query composables call API adapters, so server/cache state stays out of Pinia.'
+        guidanceKey: 'examples.templateGuide.sections.sourceBoundaries.items.moduleQueries.guidance'
       },
       {
         id: 'module-types',
-        label: 'Module types',
+        labelKey: 'examples.templateGuide.sections.sourceBoundaries.items.moduleTypes.label',
         path: 'apps/admin/src/modules/<module>/<module>.types.ts',
-        guidance: 'Treat these as frontend example contracts, not universal API schemas for every user backend.'
+        guidanceKey: 'examples.templateGuide.sections.sourceBoundaries.items.moduleTypes.guidance'
       }
     ]
   },
   {
     id: 'change-paths',
-    title: 'Change paths',
-    summary: 'Users can choose a small adapter replacement or a full module reshape based on how much the business screen changes.',
+    titleKey: 'examples.templateGuide.sections.changePaths.title',
+    summaryKey: 'examples.templateGuide.sections.changePaths.summary',
     items: [
       {
         id: 'adapter-only',
-        label: 'Adapter-only replacement',
+        labelKey: 'examples.templateGuide.sections.changePaths.items.adapterOnly.label',
         path: 'Page -> queries -> API adapter -> user API',
-        guidance: 'Use this path when the page semantics fit and only the data source changes; replace the API adapter and normalize the response.'
+        guidanceKey: 'examples.templateGuide.sections.changePaths.items.adapterOnly.guidance'
       },
       {
         id: 'full-reshape',
-        label: 'Full module reshape',
+        labelKey: 'examples.templateGuide.sections.changePaths.items.fullReshape.label',
         path: 'page/components/types/queries/adapter',
-        guidance: 'Use this path when the workflow differs; reshape the page, components, types, queries, and adapter together.'
+        guidanceKey: 'examples.templateGuide.sections.changePaths.items.fullReshape.guidance'
       }
     ]
   }
 ]
 
 export const templateGuideSignals = [
-  { id: 'frontend-first', label: 'Frontend-first', tone: 'success' },
-  { id: 'mock-backed', label: 'Mock-backed', tone: 'neutral' },
-  { id: 'backend-optional', label: 'Backend optional', tone: 'warning' }
+  { id: 'frontend-first', labelKey: 'examples.templateGuide.signals.frontendFirst', tone: 'success' },
+  { id: 'mock-backed', labelKey: 'examples.templateGuide.signals.mockBacked', tone: 'neutral' },
+  { id: 'backend-optional', labelKey: 'examples.templateGuide.signals.backendOptional', tone: 'warning' }
 ] as const

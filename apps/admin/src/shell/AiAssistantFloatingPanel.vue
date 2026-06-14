@@ -4,22 +4,31 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AdminButton, StatusPill } from '@super-admin-org/ui'
+import { translateRouteDescription, translateRouteTitle } from '@/i18n/navigation'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
 const route = useRoute()
 const { t } = useI18n()
 const preferences = usePreferencesStore()
+const pageTitle = computed(() =>
+  translateRouteTitle(t, route.path, typeof route.meta.title === 'string' ? route.meta.title : t('workspace.fallbackTitle'))
+)
+const pageDescription = computed(() =>
+  translateRouteDescription(t, route.path, typeof route.meta.description === 'string' ? route.meta.description : '')
+)
 
 const aiStatusMessage = computed(() => {
   if (preferences.aiAvailability.state === 'ready') {
-    return `${preferences.aiAvailability.providerName} is connected.`
+    return t('shell.assistant.providerConnected', {
+      provider: preferences.aiAvailability.providerName
+    })
   }
 
   if (preferences.aiAvailability.state === 'error') {
     return preferences.aiAvailability.message
   }
 
-  return preferences.aiAvailability.reason
+  return t('shell.assistant.providerUnavailableMessage')
 })
 </script>
 
@@ -51,7 +60,7 @@ const aiStatusMessage = computed(() => {
           </span>
           <div class="min-w-0">
             <h2 id="ai-assistant-title" class="[font-family:var(--font-display)] text-base leading-tight">{{ t('shell.assistant.title') }}</h2>
-            <p class="truncate text-xs text-[var(--muted-foreground)]">{{ route.meta.title }}</p>
+            <p class="truncate text-xs text-[var(--muted-foreground)]">{{ pageTitle }}</p>
           </div>
         </div>
         <AdminButton variant="ghost" size="icon" :title="t('shell.assistant.close')" @click="preferences.closeAiAssistant()">
@@ -67,7 +76,7 @@ const aiStatusMessage = computed(() => {
               {{ t('shell.assistant.pageContext') }}
             </div>
             <p class="mt-1 text-xs leading-5 text-[var(--muted-foreground)]">
-              {{ route.meta.description }}
+              {{ pageDescription }}
             </p>
           </div>
           <StatusPill :label="t('shell.assistant.hidden')" />

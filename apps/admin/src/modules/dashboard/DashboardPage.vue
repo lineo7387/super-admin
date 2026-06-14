@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { Activity, AlertTriangle, Database, RadioTower } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminCard, AdminSkeleton, MetricTile, StatusPill } from '@super-admin-org/ui'
 import { useDashboardOverviewQuery } from './dashboard.queries'
 import type { DashboardOverviewParams, DashboardSignalIcon } from './dashboard.types'
 
+const { t } = useI18n()
 const scenario = shallowRef<DashboardOverviewParams['scenario']>('normal')
 const queryParams = computed<DashboardOverviewParams>(() => ({
   scenario: scenario.value
@@ -51,26 +53,26 @@ function signalIcon(icon: DashboardSignalIcon) {
     <AdminAlert
       v-if="isError"
       tone="danger"
-      title="Unable to load dashboard overview"
-      description="The API adapter produced this mock error state."
+      :title="t('examples.dashboard.loadErrorTitle')"
+      :description="t('examples.dashboard.loadErrorDescription')"
     />
     <AdminAlert
       v-else-if="isEmpty"
       tone="warning"
-      title="No dashboard signals"
-      description="The API adapter returned an empty mock overview."
+      :title="t('examples.dashboard.emptyTitle')"
+      :description="t('examples.dashboard.emptyDescription')"
     />
 
     <section class="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.55fr)]">
       <AdminCard>
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 class="[font-family:var(--font-display)] text-2xl text-[var(--foreground)]">Command Surface</h1>
+            <h1 class="[font-family:var(--font-display)] text-2xl text-[var(--foreground)]">{{ t('examples.dashboard.title') }}</h1>
             <p class="mt-1 max-w-2xl text-sm text-[var(--muted-foreground)]">
-              A frontend-only example module: keep this screen if it fits, or reshape the page, types, queries, and API adapter together.
+              {{ t('examples.dashboard.description') }}
             </p>
           </div>
-          <StatusPill :label="overview?.statusLabel ?? 'Mock mode'" tone="success" />
+          <StatusPill :label="t('examples.dashboard.status.mockMode')" tone="success" />
         </div>
 
         <div v-if="isLoading" class="mt-6">
@@ -96,7 +98,7 @@ function signalIcon(icon: DashboardSignalIcon) {
       <AdminCard>
         <div class="flex items-center gap-2">
           <Activity class="size-4 text-[var(--primary)]" />
-          <h2 class="[font-family:var(--font-display)] text-lg text-[var(--foreground)]">Activity Feed</h2>
+          <h2 class="[font-family:var(--font-display)] text-lg text-[var(--foreground)]">{{ t('examples.dashboard.activityTitle') }}</h2>
         </div>
         <div class="mt-4 grid gap-3">
           <div

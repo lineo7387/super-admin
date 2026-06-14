@@ -58,19 +58,19 @@ function submitRegister(): void {
       <AdminValidationSummary :errors="validationMessages" />
 
       <form class="grid gap-4" @submit.prevent="submitRegister">
-        <AdminField :label="t('auth.register.name')" for="register-name" required :error="fieldErrors.name">
+        <AdminField :label="t('auth.register.name')" for="register-name" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.name">
           <AdminTextInput id="register-name" v-model="form.name" autocomplete="name" :invalid="Boolean(fieldErrors.name)" />
         </AdminField>
 
-        <AdminField :label="t('auth.register.workEmail')" for="register-email" required :error="fieldErrors.email">
+        <AdminField :label="t('auth.register.workEmail')" for="register-email" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.email">
           <AdminTextInput id="register-email" v-model="form.email" type="email" autocomplete="email" :invalid="Boolean(fieldErrors.email)" />
         </AdminField>
 
-        <AdminField :label="t('auth.register.workspace')" for="register-organization" required :error="fieldErrors.organization">
+        <AdminField :label="t('auth.register.workspace')" for="register-organization" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.organization">
           <AdminTextInput id="register-organization" v-model="form.organization" :invalid="Boolean(fieldErrors.organization)" />
         </AdminField>
 
-        <AdminField :label="t('auth.register.password')" for="register-password" required :error="fieldErrors.password" :help="t('auth.register.passwordHelp')">
+        <AdminField :label="t('auth.register.password')" for="register-password" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.password" :help="t('auth.register.passwordHelp')">
           <AdminTextInput id="register-password" v-model="form.password" type="password" autocomplete="new-password" :invalid="Boolean(fieldErrors.password)" />
         </AdminField>
 

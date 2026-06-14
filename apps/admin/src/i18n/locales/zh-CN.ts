@@ -26,7 +26,9 @@ const zhCN = {
       hidden: '已隐藏',
       unavailable: '不可用',
       provider: 'AI 提供方',
-      pageContext: '页面上下文'
+      pageContext: '页面上下文',
+      providerConnected: '{provider} 已连接。',
+      providerUnavailableMessage: '未配置 AI 提供方。'
     },
     navigation: {
       primary: '主模板导航',
@@ -123,6 +125,97 @@ const zhCN = {
       pendingReview: '待审核',
       invites: '邀请',
       activity: '动态'
+    },
+    descriptions: {
+      templateGuide: '前端优先模板边界说明，帮助你判断何时替换 adapter、何时重塑模块。',
+      dashboard: '前端示例仪表盘，展示指标、信号和活动如何通过 API adapter 进入页面。',
+      workbench: '面向队列和运营任务的前端示例工作台。',
+      access: '前端权限元数据示例，不要求真实 auth backend。'
+    }
+  },
+  examples: {
+    templateGuide: {
+      eyebrow: '模板基线',
+      title: '前端示例模板',
+      description: '这些 examples 是可复制的前端模块。页面流程合适时保留 screen 并替换 adapter；业务流程不同则一起重塑 module。',
+      boundaryTitle: '默认 scaffold 边界',
+      boundaryDescription: 'Backend、auth、database、AI provider、API contract 和 CLI generation 都保持为可选后续接入面。',
+      signals: {
+        frontendFirst: '前端优先',
+        mockBacked: 'Mock 可运行',
+        backendOptional: '后端可选'
+      },
+      sections: {
+        sourceBoundaries: {
+          title: '源码边界',
+          summary: '默认 scaffold 保持数据接入可替换，同时让 examples 继续前端优先。',
+          items: {
+            mockData: {
+              label: 'Mock API 数据',
+              guidance: 'Starter 数据集放在这里，让 scaffold 不依赖后端、database、auth service 或 provider setup 即可运行。'
+            },
+            apiAdapters: {
+              label: 'API adapters',
+              guidance: '示例 screen 符合你的 workflow 时，替换 API adapter 为真实请求，并保持 page shape 稳定。'
+            },
+            moduleQueries: {
+              label: 'Module queries',
+              guidance: 'Pages 调用 query composables，query composables 调用 API adapters，因此 server/cache state 不进入 Pinia。'
+            },
+            moduleTypes: {
+              label: 'Module types',
+              guidance: '这些是前端示例 contracts，不是要求所有用户 backend 遵守的通用 API schemas。'
+            }
+          }
+        },
+        changePaths: {
+          title: '改造路径',
+          summary: '用户可以根据业务 screen 的变化幅度，选择轻量 adapter replacement 或完整 module reshape。',
+          items: {
+            adapterOnly: {
+              label: '只替换 adapter',
+              guidance: '当页面语义适合、只需要更换数据源时，替换 API adapter 并归一化 response。'
+            },
+            fullReshape: {
+              label: '完整重塑 module',
+              guidance: '当 workflow 不同时，一起重塑 page、components、types、queries 和 adapter。'
+            }
+          }
+        }
+      }
+    },
+    dashboard: {
+      loadErrorTitle: '无法加载仪表盘概览',
+      loadErrorDescription: '这个错误状态由 mock API adapter 生成。',
+      emptyTitle: '没有仪表盘信号',
+      emptyDescription: 'API adapter 返回了空的 mock overview。',
+      title: '指挥台',
+      description: '前端示例模块：screen 合适时保留它；业务不同则一起重塑 page、types、queries 和 API adapter。',
+      status: {
+        mockMode: 'Mock 模式'
+      },
+      activityTitle: '活动流'
+    },
+    workbench: {
+      title: '调度工作台',
+      description: '面向运营任务的桌面控制中心式前端示例。',
+      refresh: '刷新',
+      runBatch: '运行批次',
+      loadErrorTitle: '无法加载工作台任务',
+      loadErrorDescription: '当这个 screen 符合你的业务时，Workbench API adapter 可以接入真实任务 endpoint。',
+      emptyTitle: '当前队列没有任务',
+      emptyDescription: 'Workbench API adapter 返回了空的 mock job list。',
+      nextCheckpoint: '下一检查点 {eta}'
+    },
+    access: {
+      title: '权限矩阵',
+      description: 'Demo 权限保持为前端 metadata，不要求真实 auth backend。',
+      loadErrorTitle: '无法加载权限矩阵',
+      loadErrorDescription: '这个错误状态由 Access API adapter 生成。',
+      emptyTitle: '当前矩阵没有角色',
+      emptyDescription: 'Access API adapter 返回了空的 mock role list。',
+      integrationTitle: '接入说明',
+      integrationDescription: '把这里当作可复制的权限示例。如果你的角色或 screen 不同，请一起重塑 page、types、permission checks 和 API adapter。'
     }
   },
   workspace: {
@@ -298,6 +391,8 @@ const zhCN = {
     }
   },
   validation: {
+    requiredLabel: '必填',
+    optionalLabel: '可选',
     email: '请输入有效的邮箱地址。',
     nameRequired: '请输入姓名。',
     passwordRequired: '请输入密码。',

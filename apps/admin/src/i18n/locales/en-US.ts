@@ -26,7 +26,9 @@ const enUS = {
       hidden: 'Hidden',
       unavailable: 'Unavailable',
       provider: 'AI Provider',
-      pageContext: 'Page context'
+      pageContext: 'Page context',
+      providerConnected: '{provider} is connected.',
+      providerUnavailableMessage: 'No AI provider is configured.'
     },
     navigation: {
       primary: 'Primary template navigation',
@@ -123,6 +125,97 @@ const enUS = {
       pendingReview: 'Pending Review',
       invites: 'Invites',
       activity: 'Activity'
+    },
+    descriptions: {
+      templateGuide: 'Frontend-first template boundary guide for adapter replacement and module reshaping.',
+      dashboard: 'A frontend example dashboard showing how metrics, signals, and activity flow through API adapters.',
+      workbench: 'A frontend example workbench for queues and operational jobs.',
+      access: 'Frontend permission metadata example that does not require a real auth backend.'
+    }
+  },
+  examples: {
+    templateGuide: {
+      eyebrow: 'Template baseline',
+      title: 'Frontend Example Template',
+      description: 'The examples are copyable frontend modules. Keep the screen when it fits, replace the adapter when only data changes, or reshape the full module when the business workflow is different.',
+      boundaryTitle: 'Default scaffold boundary',
+      boundaryDescription: 'Backend, auth, database, AI providers, API contracts, and CLI generation stay optional follow-up surfaces.',
+      signals: {
+        frontendFirst: 'Frontend-first',
+        mockBacked: 'Mock-backed',
+        backendOptional: 'Backend optional'
+      },
+      sections: {
+        sourceBoundaries: {
+          title: 'Source boundaries',
+          summary: 'The default scaffold keeps data access replaceable while the examples stay frontend-first.',
+          items: {
+            mockData: {
+              label: 'Mock API data',
+              guidance: 'Keep starter datasets here so the scaffold runs without a backend, database, auth service, or provider setup.'
+            },
+            apiAdapters: {
+              label: 'API adapters',
+              guidance: 'When the example screen fits your workflow, replace the API adapter with a real request and keep the page shape stable.'
+            },
+            moduleQueries: {
+              label: 'Module queries',
+              guidance: 'Pages call query composables, and query composables call API adapters, so server/cache state stays out of Pinia.'
+            },
+            moduleTypes: {
+              label: 'Module types',
+              guidance: 'Treat these as frontend example contracts, not universal API schemas for every user backend.'
+            }
+          }
+        },
+        changePaths: {
+          title: 'Change paths',
+          summary: 'Users can choose a small adapter replacement or a full module reshape based on how much the business screen changes.',
+          items: {
+            adapterOnly: {
+              label: 'Adapter-only replacement',
+              guidance: 'Use this path when the page semantics fit and only the data source changes; replace the API adapter and normalize the response.'
+            },
+            fullReshape: {
+              label: 'Full module reshape',
+              guidance: 'Use this path when the workflow differs; reshape the page, components, types, queries, and adapter together.'
+            }
+          }
+        }
+      }
+    },
+    dashboard: {
+      loadErrorTitle: 'Unable to load dashboard overview',
+      loadErrorDescription: 'The API adapter produced this mock error state.',
+      emptyTitle: 'No dashboard signals',
+      emptyDescription: 'The API adapter returned an empty mock overview.',
+      title: 'Command Surface',
+      description: 'A frontend-only example module: keep this screen if it fits, or reshape the page, types, queries, and API adapter together.',
+      status: {
+        mockMode: 'Mock mode'
+      },
+      activityTitle: 'Activity Feed'
+    },
+    workbench: {
+      title: 'Scheduler Console',
+      description: 'A desktop-control-center style surface for operational jobs.',
+      refresh: 'Refresh',
+      runBatch: 'Run batch',
+      loadErrorTitle: 'Unable to load workbench jobs',
+      loadErrorDescription: 'The Workbench API adapter can point at a real job endpoint when this screen fits.',
+      emptyTitle: 'No jobs in this queue',
+      emptyDescription: 'The Workbench API adapter returned an empty mock job list.',
+      nextCheckpoint: 'Next checkpoint {eta}'
+    },
+    access: {
+      title: 'Permission Matrix',
+      description: 'Demo permissions stay frontend metadata, not a required auth backend.',
+      loadErrorTitle: 'Unable to load access matrix',
+      loadErrorDescription: 'The Access API adapter produced this mock error state.',
+      emptyTitle: 'No roles in this matrix',
+      emptyDescription: 'The Access API adapter returned an empty mock role list.',
+      integrationTitle: 'Integration note',
+      integrationDescription: 'Use this as a copyable access example. If your roles or screens differ, reshape the page, types, permission checks, and API adapter together.'
     }
   },
   workspace: {
@@ -298,6 +391,8 @@ const enUS = {
     }
   },
   validation: {
+    requiredLabel: 'Required',
+    optionalLabel: 'Optional',
     email: 'Enter a valid email address.',
     nameRequired: 'Name is required.',
     passwordRequired: 'Password is required.',

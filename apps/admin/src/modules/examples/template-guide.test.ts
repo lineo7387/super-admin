@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { createMessageTranslator } from '@/i18n'
 import { templateGuideSections } from './template-guide'
 
 describe('template guide content', () => {
@@ -12,9 +13,10 @@ describe('template guide content', () => {
   })
 
   it('explains both adapter-only replacement and full module reshaping', () => {
-    const guidance = templateGuideSections.flatMap((section) => section.items.map((item) => item.guidance)).join(' ')
+    const t = createMessageTranslator('zh-CN')
+    const guidance = templateGuideSections.flatMap((section) => section.items.map((item) => t(item.guidanceKey))).join(' ')
 
-    expect(guidance).toContain('replace the API adapter')
-    expect(guidance).toContain('reshape the page, components, types, queries, and adapter together')
+    expect(guidance).toContain('替换 API adapter')
+    expect(guidance).toContain('重塑 page、components、types、queries 和 adapter')
   })
 })
