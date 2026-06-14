@@ -2,6 +2,11 @@
 
 Frontend-first Vue admin template with reusable UI primitives, runtime design profiles, example modules, and replaceable API adapters.
 
+[![create-super-admin npm version](https://img.shields.io/npm/v/create-super-admin?label=create-super-admin)](https://www.npmjs.com/package/create-super-admin)
+[![core package npm version](https://img.shields.io/npm/v/%40super-admin-org%2Fcore?label=%40super-admin-org%2Fcore)](https://www.npmjs.com/package/@super-admin-org/core)
+[![MIT license](https://img.shields.io/github/license/lineo7387/super-admin)](LICENSE)
+[![docs](https://img.shields.io/badge/docs-VitePress-646CFF)](docs/guide/getting-started.md)
+
 Super Admin is designed for teams who want a flexible admin-console foundation without being forced into a backend, database, auth provider, AI provider, or generated API schema on day one.
 
 ## Status
@@ -22,7 +27,19 @@ Current focus:
 Create a starter from npm:
 
 ```bash
-npm create super-admin my-admin
+npm create super-admin@latest my-admin
+cd my-admin
+npm install
+npm run dev
+```
+
+Prefer pnpm:
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --pm pnpm
+cd my-admin
+pnpm install
+pnpm dev
 ```
 
 Or run the repository locally:
@@ -53,6 +70,27 @@ pnpm typecheck
 pnpm test
 pnpm build
 ```
+
+## Preview And Docs
+
+- [Getting started](docs/guide/getting-started.md)
+- [Examples guide](docs/guide/examples.md)
+- [API adapters](docs/guide/api-adapters.md)
+- [Themes and layouts](docs/guide/themes-layouts.md)
+- [Public presentation checklist](docs/guide/public-presentation.md)
+
+There is no hosted public demo configured yet. Until one is deployed, run `pnpm dev` locally for the interactive admin preview and set the GitHub About website only after the docs/demo URL exists.
+
+## Feature Preview Plan
+
+Recommended first public preview assets:
+
+- Admin shell with workspace tabs, command/search entry, and example modules.
+- Runtime theme/profile switching across Base, Crypto, Cyberpunk, Industrial, and Newsprint.
+- API adapter replacement flow: page -> query composable -> API adapter -> mock/user API.
+- A short GIF of `npm create super-admin@latest my-admin` followed by `npm run dev`.
+
+Store final assets under `docs/public/` or another stable docs asset path before embedding them in this README.
 
 ## Project Shape
 
@@ -87,9 +125,15 @@ When a screen already fits your business workflow, replace the API adapter. When
 - [Project structure](docs/guide/project-structure.md)
 - [API adapters](docs/guide/api-adapters.md)
 - [Themes and layouts](docs/guide/themes-layouts.md)
+- [Examples](docs/guide/examples.md)
 - [Optional backend](docs/guide/optional-backend.md)
 - [AI collaboration](docs/guide/ai-collaboration.md)
+- [Public presentation](docs/guide/public-presentation.md)
 - [Open source workflow](docs/guide/open-source-workflow.md)
+
+## Maintainer Workflow Files
+
+This repository includes `.trellis/`, `.agents/`, `.agent/`, `.claude/`, `.codex/`, `.mcp.json`, and related AI workflow files for maintainers. They are not part of the generated starter contract and are not required to use `npm create super-admin`.
 
 ## Maintainer Validation
 
