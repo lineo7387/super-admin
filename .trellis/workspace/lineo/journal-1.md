@@ -1318,3 +1318,36 @@ Reproduced pnpm release check failure after release versioning, fixed the regist
 ### Next Steps
 
 - None - task complete
+
+
+## Session 39: First-run i18n onboarding
+
+**Date**: 2026-06-14
+**Task**: First-run i18n onboarding
+**Branch**: `main`
+
+### Summary
+
+Localized first-run admin example chrome, route metadata, AI assistant context, and AdminField required markers for zh-CN defaults while keeping starter boundaries frontend-first and mock-backed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a1af65c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
