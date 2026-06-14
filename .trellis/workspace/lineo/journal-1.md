@@ -1153,3 +1153,36 @@ Aligned public README and guide wording with the current optional create-super-a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 34: Docs audience split and navigation cleanup
+
+**Date**: 2026-06-14
+**Task**: Docs audience split and navigation cleanup
+**Branch**: `main`
+
+### Summary
+
+拆分公开文档的用户使用路径与维护者开发路径，更新 README、VitePress 导航、首页、Getting Started、Project Structure，并沉淀 docs audience 规则。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `23be24ffabdcc414612425415b8e971eb204b597` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
