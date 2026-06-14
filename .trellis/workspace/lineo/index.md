@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 36
+- **Total Sessions**: 37
 - **Last Active**: 2026-06-14
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1254 | Active |
+| `journal-1.md` | ~1287 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 37 | 2026-06-14 | Migrate lucide Vue dependency | `ce7e904` | `main` |
 | 36 | 2026-06-14 | Post-release public acceptance audit | `2228619` | `main` |
 | 35 | 2026-06-14 | VitePress bilingual documentation | `2ee664fbc42165554e03f47c9b4be6526bc7db3d` | `main` |
 | 34 | 2026-06-14 | Docs audience split and navigation cleanup | `23be24ffabdcc414612425415b8e971eb204b597` | `main` |

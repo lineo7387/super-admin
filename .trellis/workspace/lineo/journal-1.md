@@ -1252,3 +1252,36 @@ Ran post-release public acceptance audit across GitHub public metadata, npm regi
 ### Next Steps
 
 - None - task complete
+
+
+## Session 37: Migrate lucide Vue dependency
+
+**Date**: 2026-06-14
+**Task**: Migrate lucide Vue dependency
+**Branch**: `main`
+
+### Summary
+
+Migrated app, UI package, and create-super-admin starter templates from deprecated lucide-vue-next to @lucide/vue, added patch changeset for @super-admin-org/ui and create-super-admin, documented release-set rule, and verified with release check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ce7e904` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
