@@ -818,7 +818,6 @@ import { useI18n } from 'vue-i18n'
 import {
   builtInLayoutPresets,
   type ColorMode,
-  type Density,
 ${themeImports}  type LayoutPresetId,
   type StageManagerPresentationMode
 } from '@super-admin-org/core'
@@ -843,11 +842,6 @@ const modeOptions = computed<{ id: ColorMode; label: string; detail: string }[]>
   { id: 'system', label: t('shell.preferences.modes.system.label'), detail: t('shell.preferences.modes.system.detail') }
 ])
 ${localeOptions}
-const densityOptions = computed<{ id: Density; label: string; detail: string }[]>(() => [
-  { id: 'comfortable', label: t('shell.preferences.density.comfortable.label'), detail: t('shell.preferences.density.comfortable.detail') },
-  { id: 'compact', label: t('shell.preferences.density.compact.label'), detail: t('shell.preferences.density.compact.detail') }
-])
-
 const stagePresentationOptions = computed<{ id: StageManagerPresentationMode; label: string; detail: string }[]>(() => [
   { id: 'side-dock', label: t('shell.preferences.stageModes.sideDock.label'), detail: t('shell.preferences.stageModes.sideDock.detail') },
   { id: 'all-windows', label: t('shell.preferences.stageModes.allWindows.label'), detail: t('shell.preferences.stageModes.allWindows.detail') }
@@ -876,10 +870,6 @@ function selectMode(colorMode: ColorMode): void {
 ${selectLocale}
 function selectLayout(layoutPreset: LayoutPresetId): void {
   preferences.setLayoutPreset(layoutPreset)
-}
-
-function selectDensity(density: Density): void {
-  preferences.setDensity(density)
 }
 
 function selectStagePresentationMode(presentationMode: StageManagerPresentationMode): void {
@@ -932,7 +922,7 @@ function selectStagePresentationMode(presentationMode: StageManagerPresentationM
           <AdminScrollArea class="max-h-[calc(88vh-92px)]" view-class="grid gap-5 p-5 md:grid-cols-[1fr_1.15fr]">
             <section class="grid gap-4">${themeSection}
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
-                <h3 class="[font-family:var(--font-display)] text-lg">{{ t('shell.preferences.modeDensity') }}</h3>
+                <h3 class="[font-family:var(--font-display)] text-lg">{{ t('shell.preferences.displayMode') }}</h3>
                 <div class="mt-4 grid gap-3">${localeSection}
                   <div class="grid gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-2 sm:grid-cols-3">
                     <button
@@ -945,20 +935,6 @@ function selectStagePresentationMode(presentationMode: StageManagerPresentationM
                     >
                       <span class="block text-sm">{{ mode.label }}</span>
                       <span class="block text-[11px] opacity-75">{{ mode.detail }}</span>
-                    </button>
-                  </div>
-
-                  <div class="grid gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-2 sm:grid-cols-2">
-                    <button
-                      v-for="density in densityOptions"
-                      :key="density.id"
-                      type="button"
-                      class="rounded-[var(--radius-sm)] px-3 py-2 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                      :class="density.id === preferences.density ? 'bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)]'"
-                      @click="selectDensity(density.id)"
-                    >
-                      <span class="block text-sm">{{ density.label }}</span>
-                      <span class="block text-[11px]">{{ density.detail }}</span>
                     </button>
                   </div>
                 </div>
@@ -978,7 +954,30 @@ function selectStagePresentationMode(presentationMode: StageManagerPresentationM
                     :class="layout.id === preferences.layoutPreset ? 'border-[var(--border-strong)] shadow-[var(--glow)]' : 'border-[var(--border)] hover:border-[var(--border-strong)]'"
                     @click="selectLayout(layout.id)"
                   >
-                    <div class="[font-family:var(--font-display)] text-base">{{ layout.name }}</div>
+                    <div :data-layout-preview="layout.id" class="grid h-24 gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-sunken)] p-2">
+                      <template v-if="layout.id === 'tri-column'">
+                        <div class="grid h-full gap-1" style="grid-template-columns: 0.35fr 0.8fr 1.8fr 0.9fr;">
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--primary)]" />
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
+                        </div>
+                      </template>
+                      <template v-else-if="layout.id === 'dual-column'">
+                        <div class="grid h-full gap-1" style="grid-template-columns: 1fr 2fr;">
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div class="grid h-full gap-1" style="grid-template-rows: 0.45fr 0.55fr 2fr;">
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--primary)]" />
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
+                          <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
+                        </div>
+                      </template>
+                    </div>
+                    <div class="mt-3 [font-family:var(--font-display)] text-base">{{ layout.name }}</div>
                     <p class="mt-1 line-clamp-2 text-xs text-[var(--muted-foreground)]">{{ layout.description }}</p>
                   </button>
                 </div>

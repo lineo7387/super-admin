@@ -18,6 +18,7 @@ describe('admin i18n foundation', () => {
     expect(getActiveLocale(i18n)).toBe('zh-CN')
     expect(i18n.global.t('shell.account.signOut')).toBe('退出登录')
     expect(i18n.global.t('shell.assistant.providerUnavailableMessage')).toBe('未配置 AI 提供方。')
+    expect(i18n.global.t('shell.preferences.displayMode')).toBe('显示模式')
     expect(i18n.global.t('validation.requiredLabel')).toBe('必填')
   })
 
@@ -26,6 +27,7 @@ describe('admin i18n foundation', () => {
 
     expect(t('shell.account.signOut')).toBe('Sign out')
     expect(t('shell.assistant.providerUnavailableMessage')).toBe('No AI provider is configured.')
+    expect(t('shell.preferences.displayMode')).toBe('Display mode')
     expect(t('auth.login.submit')).toBe('Sign in')
     expect(t('validation.requiredLabel')).toBe('Required')
   })

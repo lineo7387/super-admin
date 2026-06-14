@@ -41,11 +41,11 @@ const enUS = {
       title: 'Control Center',
       live: 'Live',
       workspaceConfiguration: '{profile} workspace configuration',
-      immediateUpdate: 'Theme, layout, density, tabs, and Stage Manager update immediately.',
+      immediateUpdate: 'Theme, layout, tabs, and Stage Manager update immediately.',
       close: 'Close Control Center',
       themeProfile: 'Theme Profile',
       themeProfileDescription: 'Switch between installed design recipes.',
-      modeDensity: 'Mode & Density',
+      displayMode: 'Display mode',
       locale: 'Language',
       localeDescription: 'Switch display language for migrated surfaces.',
       layout: 'Layout',
@@ -96,16 +96,6 @@ const enUS = {
         allWindows: {
           label: 'All Windows',
           detail: 'Use a full mask and show every window without module grouping.'
-        }
-      },
-      density: {
-        comfortable: {
-          label: 'Comfortable',
-          detail: 'Room for scanning'
-        },
-        compact: {
-          label: 'Compact',
-          detail: 'Dense operator mode'
         }
       }
     }

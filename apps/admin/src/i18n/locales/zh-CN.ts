@@ -41,11 +41,11 @@ const zhCN = {
       title: '控制中心',
       live: '实时',
       workspaceConfiguration: '{profile} 工作区配置',
-      immediateUpdate: '主题、布局、密度、标签页和舞台管理器会立即生效。',
+      immediateUpdate: '主题、布局、标签页和舞台管理器会立即生效。',
       close: '关闭控制中心',
       themeProfile: '主题方案',
       themeProfileDescription: '在已安装的设计方案之间切换。',
-      modeDensity: '模式与密度',
+      displayMode: '显示模式',
       locale: '语言',
       localeDescription: '切换已迁移界面的显示语言。',
       layout: '布局',
@@ -96,16 +96,6 @@ const zhCN = {
         allWindows: {
           label: '全部窗口',
           detail: '全遮罩展示所有窗口，不做模块分组。'
-        }
-      },
-      density: {
-        comfortable: {
-          label: '舒适',
-          detail: '保留更多浏览空间'
-        },
-        compact: {
-          label: '紧凑',
-          detail: '高密度操作模式'
         }
       }
     }

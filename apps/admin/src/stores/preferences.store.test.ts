@@ -39,11 +39,12 @@ describe('preferences store shell overlays', () => {
   })
 
   it('defaults locale to zh-CN when stored preferences do not include locale', () => {
-    window.localStorage.setItem('super-admin:preferences', JSON.stringify({ profileId: 'industrial' }))
+    window.localStorage.setItem('super-admin:preferences', JSON.stringify({ profileId: 'industrial', density: 'compact' }))
 
     const preferences = usePreferencesStore()
 
     expect(preferences.profileId).toBe('industrial')
+    expect(preferences.density).toBe('compact')
     expect(preferences.locale).toBe('zh-CN')
     expect(getActiveLocale()).toBe('zh-CN')
   })
