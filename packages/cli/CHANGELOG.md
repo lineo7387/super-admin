@@ -1,5 +1,11 @@
 # create-super-admin
 
+## 0.1.4
+
+### Patch Changes
+
+- Update the generated Control Center so layout choices render visual previews, hide the ineffective global density selector, and require the UI package version that supports localized field markers.
+
 ## 0.1.3
 
 ### Patch Changes

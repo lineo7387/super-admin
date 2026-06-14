@@ -8,5 +8,5 @@ export const superAdminPackageVersionRanges = {
   '@super-admin-org/theme-cyberpunk': '^0.1.2',
   '@super-admin-org/theme-industrial': '^0.1.2',
   '@super-admin-org/theme-newsprint': '^0.1.2',
-  '@super-admin-org/ui': '^0.1.3'
+  '@super-admin-org/ui': '^0.1.4'
 } as const

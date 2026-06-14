@@ -1,5 +1,11 @@
 # @super-admin-org/ui
 
+## 0.1.4
+
+### Patch Changes
+
+- Add app-provided `requiredLabel` and `optionalLabel` props to `AdminField` so generated and app-local forms can localize field markers without package-level i18n.
+
 ## 0.1.3
 
 ### Patch Changes
