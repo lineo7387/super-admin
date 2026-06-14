@@ -1219,3 +1219,36 @@ Aligned public README and guide wording with the current optional create-super-a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 36: Post-release public acceptance audit
+
+**Date**: 2026-06-14
+**Task**: Post-release public acceptance audit
+**Branch**: `main`
+
+### Summary
+
+Ran post-release public acceptance audit across GitHub public metadata, npm registry state, generated starter smoke, docs build/navigation, hosted Pages, and maintainer workflow exposure; recorded manual follow-ups and recommended lucide dependency migration.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2228619` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
