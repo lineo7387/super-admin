@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { describe, expect, test } from 'vitest'
 
 function runCommandPrinter(...args) {
@@ -6,6 +7,10 @@ function runCommandPrinter(...args) {
     cwd: process.cwd(),
     encoding: 'utf8'
   })
+}
+
+function readPackageVersion(packageJsonPath) {
+  return JSON.parse(readFileSync(packageJsonPath, 'utf8')).version
 }
 
 describe('npm registry release command printer', () => {
@@ -35,8 +40,9 @@ describe('npm registry release command printer', () => {
 
   test('prints only CLI promote-latest commands for CLI-only releases', () => {
     const output = runCommandPrinter('promote-latest', '--changed', 'create-super-admin')
+    const cliVersion = readPackageVersion('packages/cli/package.json')
 
-    expect(output).toContain('npm dist-tag add create-super-admin@0.1.2 latest')
+    expect(output).toContain(`npm dist-tag add create-super-admin@${cliVersion} latest`)
     expect(output).not.toContain('npm dist-tag add @super-admin-org/core')
     expect(output).not.toContain('npm dist-tag add @super-admin-org/theme')
     expect(output).not.toContain('npm dist-tag add @super-admin-org/ui')

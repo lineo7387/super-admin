@@ -95,6 +95,7 @@ Publish candidate packages must expose:
 - The generated starter dependency ranges for `@super-admin-org/*` packages must come from a package-specific generated range map, not from the `create-super-admin` package version.
 - `pnpm release commands ...` prints registry-mutating commands only; it must not execute them.
 - GitHub `Publish next` workflow confirmation text must be generated from the selected package versions, for example `publish-super-admin-next-create-super-admin-0.1.3`.
+- Tests for release command output must derive mutable package versions from manifests or release plans, not hard-code historical versions that change after `pnpm release version`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
 - The normal publish workflow must accept a changed package list, run the full release check, then publish only the dependency-aware selected package set.
 - Normal publish workflow commands and generated local publish commands must use explicit local package specs such as `./packages/core` and `./output/npm-bootstrap/...tgz`. A bare spec like `packages/core` can be parsed by npm as a GitHub shorthand and trigger `git ls-remote ssh://git@github.com/packages/core.git`.
