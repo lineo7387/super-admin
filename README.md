@@ -20,9 +20,9 @@ Current focus:
 - Optional Hono reference backend for maintainer validation.
 - Documentation for adapter replacement and template boundaries.
 - Internationalization foundation with `zh-CN` as the default locale.
-- Optional `create-super-admin` CLI generation and release validation.
+- Published `create-super-admin` CLI generation and release validation.
 
-## Quick Start
+## Use The Starter
 
 Create a starter from npm:
 
@@ -42,7 +42,11 @@ pnpm install
 pnpm dev
 ```
 
-Or run the repository locally:
+This generated project is where you build your own admin app. It stays frontend-first and does not include this repository's release automation, docs site, optional reference backend validation, or maintainer AI workflow files.
+
+## Develop This Repository
+
+Use this path when you want to work on Super Admin itself: the source template, packages, docs, CLI, release scripts, or public repository presentation.
 
 Install dependencies:
 
@@ -73,11 +77,19 @@ pnpm build
 
 ## Preview And Docs
 
+User docs:
+
 - [Hosted docs/demo](https://lineo7387.github.io/super-admin/)
 - [Getting started](docs/guide/getting-started.md)
 - [Examples guide](docs/guide/examples.md)
 - [API adapters](docs/guide/api-adapters.md)
 - [Themes and layouts](docs/guide/themes-layouts.md)
+
+Maintainer docs:
+
+- [Open source workflow](docs/guide/open-source-workflow.md)
+- [AI collaboration](docs/guide/ai-collaboration.md)
+- [Releasing](docs/guide/releasing.md)
 - [Public presentation checklist](docs/guide/public-presentation.md)
 
 The hosted docs/demo is deployed from `docs/` through GitHub Pages. Use `pnpm dev` locally for the full interactive admin preview.
@@ -93,7 +105,7 @@ Recommended first public preview assets:
 
 Store final assets under `docs/public/` or another stable docs asset path before embedding them in this README.
 
-## Project Shape
+## Source Repository Shape
 
 ```text
 apps/admin/          Vue admin template app
@@ -106,6 +118,8 @@ packages/cli/        Optional create-super-admin scaffolder
 docs/                VitePress documentation
 scripts/             Maintainer validation scripts
 ```
+
+A project generated with `create-super-admin` is intentionally smaller: it is your runnable admin app, not this full source repository.
 
 ## Core Boundary
 
@@ -122,15 +136,21 @@ When a screen already fits your business workflow, replace the API adapter. When
 
 ## Documentation
 
+User-facing docs:
+
 - [Getting started](docs/guide/getting-started.md)
 - [Project structure](docs/guide/project-structure.md)
 - [API adapters](docs/guide/api-adapters.md)
 - [Themes and layouts](docs/guide/themes-layouts.md)
 - [Examples](docs/guide/examples.md)
 - [Optional backend](docs/guide/optional-backend.md)
-- [AI collaboration](docs/guide/ai-collaboration.md)
-- [Public presentation](docs/guide/public-presentation.md)
+
+Maintainer docs:
+
 - [Open source workflow](docs/guide/open-source-workflow.md)
+- [AI collaboration](docs/guide/ai-collaboration.md)
+- [Releasing](docs/guide/releasing.md)
+- [Public presentation](docs/guide/public-presentation.md)
 
 ## Maintainer Workflow Files
 

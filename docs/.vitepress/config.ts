@@ -7,25 +7,38 @@ export default defineConfig({
   base: '/super-admin/',
   themeConfig: {
     nav: [
-      { text: 'Guide', link: '/guide/getting-started' },
+      { text: 'Use Super Admin', link: '/guide/getting-started' },
       { text: 'API Adapters', link: '/guide/api-adapters' },
       { text: 'Examples', link: '/guide/examples' },
-      { text: 'Public', link: '/guide/public-presentation' }
+      {
+        text: 'Maintainers',
+        items: [
+          { text: 'Open Source Workflow', link: '/guide/open-source-workflow' },
+          { text: 'AI Collaboration', link: '/guide/ai-collaboration' },
+          { text: 'Releasing', link: '/guide/releasing' },
+          { text: 'Public Presentation', link: '/guide/public-presentation' }
+        ]
+      }
     ],
     sidebar: [
       {
-        text: 'Guide',
+        text: 'Use Super Admin',
         items: [
           { text: 'Getting Started', link: '/guide/getting-started' },
           { text: 'Project Structure', link: '/guide/project-structure' },
           { text: 'API Adapters', link: '/guide/api-adapters' },
           { text: 'Themes and Layouts', link: '/guide/themes-layouts' },
-          { text: 'Releasing', link: '/guide/releasing' },
           { text: 'Examples', link: '/guide/examples' },
-          { text: 'Public Presentation', link: '/guide/public-presentation' },
-          { text: 'Optional Backend', link: '/guide/optional-backend' },
+          { text: 'Optional Backend', link: '/guide/optional-backend' }
+        ]
+      },
+      {
+        text: 'Develop This Repository',
+        items: [
+          { text: 'Open Source Workflow', link: '/guide/open-source-workflow' },
           { text: 'AI Collaboration', link: '/guide/ai-collaboration' },
-          { text: 'Open Source Workflow', link: '/guide/open-source-workflow' }
+          { text: 'Releasing', link: '/guide/releasing' },
+          { text: 'Public Presentation', link: '/guide/public-presentation' }
         ]
       }
     ],

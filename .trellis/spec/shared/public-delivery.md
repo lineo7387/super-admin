@@ -64,6 +64,16 @@ Public docs must match the real repository and npm state.
 - When GitHub public pages lag local commits, call out that `main` is ahead of `origin/main` before assuming the remote state is wrong.
 - GitHub About metadata, topics, releases, and demo links are repository settings; document them as maintainer follow-up when they cannot be changed from files.
 
+## Docs Audience Architecture
+
+GitHub Pages docs are user-first. The default reader is evaluating or using `create-super-admin` to build their own admin app.
+
+- Keep `docs/index.md`, `docs/guide/getting-started.md`, and primary VitePress navigation focused on using Super Admin from the npm starter.
+- Keep source-repository development, release, public presentation, and AI workflow material in a clearly labeled maintainer/contributor section.
+- README quick-start content should separate "use the starter" from "develop this repository".
+- Do not hide maintainer docs, but do not place them in the same undifferentiated guide group as starter usage.
+- Generated starter docs should describe the generated app, not this monorepo's release, GitHub Pages, Trellis, Codex, Claude, or maintainer validation workflows.
+
 ## GitHub Pages Docs/Demo
 
 The first hosted docs/demo surface is the VitePress docs site deployed to GitHub Pages.
