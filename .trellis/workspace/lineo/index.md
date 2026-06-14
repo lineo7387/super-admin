@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 34
+- **Total Sessions**: 35
 - **Last Active**: 2026-06-14
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1188 | Active |
+| `journal-1.md` | ~1221 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 35 | 2026-06-14 | VitePress bilingual documentation | `2ee664fbc42165554e03f47c9b4be6526bc7db3d` | `main` |
 | 34 | 2026-06-14 | Docs audience split and navigation cleanup | `23be24ffabdcc414612425415b8e971eb204b597` | `main` |
 | 33 | 2026-06-14 | Public npm starter smoke and docs demo deployment | `ed80e57f33585e21c3b55d997a75ed7b03357aaa` | `main` |
 | 32 | 2026-06-14 | GitHub public presentation polish | `973a4f2` | `main` |

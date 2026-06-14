@@ -1186,3 +1186,36 @@ Aligned public README and guide wording with the current optional create-super-a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 35: VitePress bilingual documentation
+
+**Date**: 2026-06-14
+**Task**: VitePress bilingual documentation
+**Branch**: `main`
+
+### Summary
+
+为 VitePress 文档增加 zh-CN 根入口与 en-US /en/ 入口，保留用户/维护者导航分层，更新 README 和公开交付规范。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2ee664fbc42165554e03f47c9b4be6526bc7db3d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
