@@ -204,6 +204,7 @@ Generated template derivation:
 - Generated default theme registry imports only `@super-admin-org/theme-base`; multi-theme generation imports exactly the selected theme packages.
 - Generated default Control Center must not expose runtime theme/profile or locale switching when only one theme/locale is installed.
 - Generated Control Center layout choices must render visual layout previews, not text-only cards, and stay in parity with the monorepo admin app.
+- Generated Control Center modal height and scrolling must stay in parity with the monorepo admin app: content-height adaptive, viewport-capped, and free of fixed inner estimates such as `max-h-[calc(88vh-92px)]`. Two-theme/no-i18n output must not be forced to fill the viewport.
 - Generated Control Center must not expose a global density selector by default. Keep persisted `density` compatibility only until global density tokens/CSS make the setting visibly meaningful.
 - Generated output excludes `src/**/*.test.ts`, `src/api/reference/`, `dist/`, `node_modules/`, `*.tsbuildinfo`, docs, optional backend code, and reference smoke tooling.
 

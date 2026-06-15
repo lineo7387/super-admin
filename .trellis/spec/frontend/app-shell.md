@@ -58,6 +58,28 @@ type ShellAppearancePreferences = {
 
 **Check**: Open Control Center, change each visible appearance/workspace option, and confirm the shell updates without closing the modal or losing open routes. Layout choices must render visual thumbnails in both `apps/admin` and generated starter output.
 
+### Control Center Height And Scrolling Contract
+
+The Control Center modal must be content-height adaptive with a viewport cap. Short configurations, such as generated starters with two themes and no language switcher, should not be forced to fill the viewport. Long configurations must scroll inside the modal until the bottom settings are reachable.
+
+Use the shared `AdminScrollArea` as the viewport-bounded dialog surface, with the header inside the scroll surface and `position: sticky`:
+
+```vue
+<AdminScrollArea
+  as="section"
+  class="max-h-[min(92vh,calc(100vh-2rem))] w-full max-w-5xl overflow-hidden"
+  role="dialog"
+  aria-modal="true"
+>
+  <header class="sticky top-0">...</header>
+  <div class="grid items-start ...">...</div>
+</AdminScrollArea>
+```
+
+Avoid nested fixed-height estimates such as `max-h-[calc(88vh-92px)]` for the inner scroll region. Header copy, locale availability, and theme count vary across app and generated starter variants, so subtracting a guessed header height creates unreachable overflow or large empty space.
+
+**Check**: Browser-test one long-content app state and one short generated state. The long state must scroll to the bottom settings; the short state should have `scrollHeight <= clientHeight` and a dialog height below the viewport cap.
+
 ## Auth Guard And Session Controls
 
 ### Scenario: Frontend-First Auth Guard
