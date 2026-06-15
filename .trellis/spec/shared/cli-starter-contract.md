@@ -200,6 +200,7 @@ Generated template derivation:
 - Generated `src/env.d.ts` must not declare optional reference backend env vars in the default starter. It may declare only Vue/router types and client-safe public config such as an assistant endpoint.
 - Generated default auth and users adapters are mock/template-only; they must not import `src/api/reference/*`, require `VITE_SUPER_ADMIN_API_BASE_URL`, or use `VITE_SUPER_ADMIN_REFERENCE_TOKEN`.
 - Generated default i18n is `zh-CN` only with no visible runtime locale switcher; `--i18n` may add optional locale catalogs and switching.
+- Generated auth pages must pass app-local localized field metadata into shared UI primitives, for example `:required-label="t('validation.requiredLabel')"` on required `AdminField` controls. Do not rely on `@super-admin-org/ui` English fallback labels for generated user-facing copy.
 - Generated default theme registry imports only `@super-admin-org/theme-base`; multi-theme generation imports exactly the selected theme packages.
 - Generated default Control Center must not expose runtime theme/profile or locale switching when only one theme/locale is installed.
 - Generated Control Center layout choices must render visual layout previews, not text-only cards, and stay in parity with the monorepo admin app.
@@ -265,6 +266,7 @@ Maintainer validation for generated output must cover:
 - multi-theme generation installs exactly the selected theme packages
 - multi-theme generation imports exactly the selected theme packages
 - no runtime theme or locale switcher appears in single-theme output
+- generated auth login/register required fields pass localized required labels and do not fall back to shared UI English copy
 - generated app resolves `@super-admin-org/*` from package dependencies instead of package source paths
 - generated app still follows `Page -> query composable -> API adapter -> mock/user API`
 - CLI parser/generator tests cover single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, non-empty targets, interactive theme selection, and non-interactive missing-theme failure.
