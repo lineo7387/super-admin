@@ -23,6 +23,16 @@ async function readGeneratedText(root, filePath) {
   return readFile(join(root, filePath), 'utf8')
 }
 
+function expectControlCenterScrollingLayout(preferences) {
+  expect(preferences).toContain('<AdminScrollArea')
+  expect(preferences).toContain('as="section"')
+  expect(preferences).toContain('max-h-[min(92vh,calc(100vh-2rem))] w-full max-w-5xl overflow-hidden')
+  expect(preferences).toContain('sticky top-0')
+  expect(preferences).toContain('items-start')
+  expect(preferences).not.toContain('flex h-[min(92vh,calc(100vh-2rem))]')
+  expect(preferences).not.toContain('max-h-[calc(88vh-92px)]')
+}
+
 function runCommand(command, args, cwd) {
   return new Promise((resolveRun, reject) => {
     const stderrChunks = []
@@ -116,6 +126,7 @@ describe('create-super-admin starter generation', () => {
     expect(preferences).toContain('shell.preferences.displayMode')
     expect(preferences).not.toContain('shell.preferences.modeDensity')
     expect(preferences).toContain('data-layout-preview')
+    expectControlCenterScrollingLayout(preferences)
     expect(preferences).not.toContain('densityOptions')
     expect(preferences).not.toContain('selectDensity')
     expect(preferences).not.toContain('shell.preferences.density')
@@ -146,6 +157,7 @@ describe('create-super-admin starter generation', () => {
     expect(preferences).toContain('shell.preferences.displayMode')
     expect(preferences).not.toContain('shell.preferences.modeDensity')
     expect(preferences).toContain('data-layout-preview')
+    expectControlCenterScrollingLayout(preferences)
     expect(preferences).not.toContain('densityOptions')
     expect(preferences).not.toContain('selectDensity')
     expect(preferences).not.toContain('shell.preferences.density')
@@ -227,6 +239,8 @@ describe('create-super-admin starter generation', () => {
     expect(registry).toContain("from '@super-admin-org/theme-base'")
     expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")
     expect(preferences).toContain('selectProfile')
+    expect(preferences).not.toContain('selectLocale')
+    expectControlCenterScrollingLayout(preferences)
   })
 
   it('requires an explicit theme flag when no interactive terminal is available', async () => {

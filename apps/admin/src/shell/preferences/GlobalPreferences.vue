@@ -100,32 +100,36 @@ function selectStagePresentationMode(presentationMode: StageManagerPresentationM
     </AdminButton>
 
     <Teleport to="body">
-      <div v-if="preferences.controlCenterOpen" class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-4 backdrop-blur-sm" @keydown.esc="preferences.closeControlCenter()">
-        <section
-          class="max-h-[88vh] w-full max-w-5xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
+      <div v-if="preferences.controlCenterOpen" class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-3 backdrop-blur-sm sm:p-4" @keydown.esc="preferences.closeControlCenter()">
+        <AdminScrollArea
+          as="section"
+          class="max-h-[min(92vh,calc(100vh-2rem))] w-full max-w-5xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
+          view-class="min-h-0"
           role="dialog"
           aria-modal="true"
           aria-labelledby="control-center-title"
         >
-          <header class="flex items-start justify-between gap-4 border-b border-[var(--border)] bg-[var(--header-background)] p-5">
-            <div>
-              <div class="flex items-center gap-2">
-                <StatusPill :label="t('shell.preferences.live')" />
-                <span class="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">{{ t('shell.preferences.title') }}</span>
+          <header class="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--header-background)] p-4 sm:p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2">
+                  <StatusPill :label="t('shell.preferences.live')" />
+                  <span class="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">{{ t('shell.preferences.title') }}</span>
+                </div>
+                <h2 id="control-center-title" class="mt-2 [font-family:var(--font-display)] text-xl text-[var(--foreground)] sm:text-2xl">
+                  {{ t('shell.preferences.workspaceConfiguration', { profile: activeProfileName }) }}
+                </h2>
+                <p class="mt-1 text-sm text-[var(--muted-foreground)]">
+                  {{ t('shell.preferences.immediateUpdate') }}
+                </p>
               </div>
-              <h2 id="control-center-title" class="mt-2 [font-family:var(--font-display)] text-2xl text-[var(--foreground)]">
-                {{ t('shell.preferences.workspaceConfiguration', { profile: activeProfileName }) }}
-              </h2>
-              <p class="mt-1 text-sm text-[var(--muted-foreground)]">
-                {{ t('shell.preferences.immediateUpdate') }}
-              </p>
+              <AdminButton variant="ghost" size="icon" :title="t('shell.preferences.close')" @click="preferences.closeControlCenter()">
+                <X class="size-4" />
+              </AdminButton>
             </div>
-            <AdminButton variant="ghost" size="icon" :title="t('shell.preferences.close')" @click="preferences.closeControlCenter()">
-              <X class="size-4" />
-            </AdminButton>
           </header>
 
-          <AdminScrollArea class="max-h-[calc(88vh-92px)]" view-class="grid gap-5 p-5 md:grid-cols-[1fr_1.15fr]">
+          <div class="grid items-start gap-5 p-4 sm:p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
             <section class="grid gap-4">
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
                 <div class="flex items-center justify-between gap-3">
@@ -308,8 +312,8 @@ function selectStagePresentationMode(presentationMode: StageManagerPresentationM
                 </div>
               </div>
             </section>
-          </AdminScrollArea>
-        </section>
+          </div>
+        </AdminScrollArea>
       </div>
     </Teleport>
   </div>
