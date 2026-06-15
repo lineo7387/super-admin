@@ -561,8 +561,7 @@ export function createPreferencesStore(): string {
   type Density,
   type DesignProfileId,
   type LayoutPresetId,
-  type ResolvedColorMode,
-  type StageManagerPresentationMode
+  type ResolvedColorMode
 } from '@super-admin-org/core'
 import { defineStore } from 'pinia'
 import { computed, reactive, shallowRef } from 'vue'
@@ -570,8 +569,33 @@ import superAdminConfig from '../../super-admin.config'
 import { DEFAULT_LOCALE, resolveLocale, setActiveLocale, type Locale } from '@/i18n'
 
 const STORAGE_KEY = 'super-admin:preferences'
+const STAGE_MANAGER_DESKTOP_QUERY = '(min-width: 1280px)'
 const installedProfiles: DesignProfileId[] = [...superAdminConfig.themes.installed]
 const defaultProfile = superAdminConfig.themes.default
+
+export type StageTransitionRect = {
+  height: number
+  left: number
+  top: number
+  width: number
+}
+
+export type StageTransitionGhost = {
+  id: number
+  phase: 'source' | 'target'
+  source: StageTransitionRect
+  target: StageTransitionRect
+  title: string
+}
+
+function toStageTransitionRect(rect: DOMRect): StageTransitionRect {
+  return {
+    height: rect.height,
+    left: rect.left,
+    top: rect.top,
+    width: rect.width
+  }
+}
 
 function readStoredPreferences(): AppearanceStateInput {
   const raw = window.localStorage.getItem(STORAGE_KEY)
@@ -607,7 +631,9 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const providerMode = shallowRef<'mock' | 'custom'>('mock')
   const aiAvailability = shallowRef<AiAvailability>(defaultAiAvailability)
   const controlCenterOpen = shallowRef(false)
-  const stageManagerOpen = shallowRef(false)
+  const stageOverviewOpen = shallowRef(false)
+  const stageManagerDesktopAvailable = shallowRef(false)
+  const stageTransitionGhost = shallowRef<StageTransitionGhost | null>(null)
   const aiAssistantOpen = shallowRef(false)
 
   const profileId = computed(() => state.profileId)
@@ -658,17 +684,16 @@ export const usePreferencesStore = defineStore('preferences', () => {
     persist()
   }
 
-  function setStageManagerEnabled(enabled: boolean): void {
-    state.stageManager.enabled = enabled
-    if (!enabled) {
-      stageManagerOpen.value = false
-    }
+  function setStageRailEnabled(enabled: boolean): void {
+    state.stageManager.railEnabled = enabled
     persist()
   }
 
-  function setStageManagerPresentationMode(presentationMode: StageManagerPresentationMode): void {
-    state.stageManager.presentationMode = presentationMode
-    persist()
+  function setStageManagerDesktopAvailable(available: boolean): void {
+    stageManagerDesktopAvailable.value = available
+    if (!available) {
+      stageOverviewOpen.value = false
+    }
   }
 
   function openControlCenter(): void {
@@ -679,16 +704,43 @@ export const usePreferencesStore = defineStore('preferences', () => {
     controlCenterOpen.value = false
   }
 
-  function openStageManager(): void {
-    if (!state.stageManager.enabled) {
+  function openStageOverview(): void {
+    if (!stageManagerDesktopAvailable.value) {
       return
     }
 
-    stageManagerOpen.value = true
+    stageOverviewOpen.value = true
   }
 
-  function closeStageManager(): void {
-    stageManagerOpen.value = false
+  function closeStageOverview(): void {
+    stageOverviewOpen.value = false
+  }
+
+  function startStageTransition(sourceRect: DOMRect, title: string): void {
+    const source = toStageTransitionRect(sourceRect)
+    stageTransitionGhost.value = {
+      id: Date.now(),
+      phase: 'source',
+      source,
+      target: source,
+      title
+    }
+  }
+
+  function finishStageTransition(targetRect: DOMRect): void {
+    if (!stageTransitionGhost.value) {
+      return
+    }
+
+    stageTransitionGhost.value = {
+      ...stageTransitionGhost.value,
+      phase: 'target',
+      target: toStageTransitionRect(targetRect)
+    }
+  }
+
+  function clearStageTransition(): void {
+    stageTransitionGhost.value = null
   }
 
   function openAiAssistant(): void {
@@ -708,18 +760,29 @@ export const usePreferencesStore = defineStore('preferences', () => {
     query.addEventListener('change', update)
   }
 
+  function bindStageManagerDesktopAvailability(): void {
+    const query = window.matchMedia(STAGE_MANAGER_DESKTOP_QUERY)
+    const update = (): void => setStageManagerDesktopAvailable(query.matches)
+    update()
+    query.addEventListener('change', update)
+  }
+
   return {
     providerMode,
     aiAvailability,
     aiAssistantOpen,
     closeAiAssistant,
     closeControlCenter,
-    closeStageManager,
+    closeStageOverview,
+    clearStageTransition,
     controlCenterOpen,
+    finishStageTransition,
     openControlCenter,
     openAiAssistant,
-    openStageManager,
-    stageManagerOpen,
+    openStageOverview,
+    stageManagerDesktopAvailable,
+    stageOverviewOpen,
+    stageTransitionGhost,
     systemMode,
     summary,
     profileId,
@@ -729,15 +792,17 @@ export const usePreferencesStore = defineStore('preferences', () => {
     layoutPreset,
     workspaceTabs,
     stageManager,
+    bindStageManagerDesktopAvailability,
     bindSystemColorMode,
     setColorMode,
     setDensity,
     setLayoutPreset,
     setLocale,
     setProfile,
-    setStageManagerPresentationMode,
+    setStageManagerDesktopAvailable,
     setTabsEnabled,
-    setStageManagerEnabled
+    setStageRailEnabled,
+    startStageTransition
   }
 })
 `
@@ -818,8 +883,7 @@ import { useI18n } from 'vue-i18n'
 import {
   builtInLayoutPresets,
   type ColorMode,
-${themeImports}  type LayoutPresetId,
-  type StageManagerPresentationMode
+${themeImports}  type LayoutPresetId
 } from '@super-admin-org/core'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin-org/ui'
 ${registryImport}${localeImport}import { usePreferencesStore } from '@/stores/preferences.store'
@@ -842,11 +906,6 @@ const modeOptions = computed<{ id: ColorMode; label: string; detail: string }[]>
   { id: 'system', label: t('shell.preferences.modes.system.label'), detail: t('shell.preferences.modes.system.detail') }
 ])
 ${localeOptions}
-const stagePresentationOptions = computed<{ id: StageManagerPresentationMode; label: string; detail: string }[]>(() => [
-  { id: 'side-dock', label: t('shell.preferences.stageModes.sideDock.label'), detail: t('shell.preferences.stageModes.sideDock.detail') },
-  { id: 'all-windows', label: t('shell.preferences.stageModes.allWindows.label'), detail: t('shell.preferences.stageModes.allWindows.detail') }
-])
-
 ${activeProfile}
 const activeModeName = computed(
   () => modeOptions.value.find((mode) => mode.id === preferences.colorMode)?.label ?? preferences.colorMode
@@ -870,10 +929,6 @@ function selectMode(colorMode: ColorMode): void {
 ${selectLocale}
 function selectLayout(layoutPreset: LayoutPresetId): void {
   preferences.setLayoutPreset(layoutPreset)
-}
-
-function selectStagePresentationMode(presentationMode: StageManagerPresentationMode): void {
-  preferences.setStageManagerPresentationMode(presentationMode)
 }
 </script>
 
@@ -995,42 +1050,54 @@ function selectStagePresentationMode(presentationMode: StageManagerPresentationM
                   </div>
                   <StatusPill :label="t('shell.preferences.keepAlive')" tone="success" />
                 </div>
-                <div class="mt-4 grid gap-2 sm:grid-cols-2">
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
                   <button
                     type="button"
                     class="rounded-[var(--radius-md)] border p-3 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                    :class="preferences.workspaceTabs.enabled ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)]'"
+                    :class="preferences.workspaceTabs.enabled ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]'"
                     @click="preferences.setTabsEnabled(!preferences.workspaceTabs.enabled)"
                   >
-                    <span class="text-sm">{{ t('shell.preferences.workspaceTabs') }}</span>
-                    <span class="float-right text-xs">{{ preferences.workspaceTabs.enabled ? t('shell.preferences.on') : t('shell.preferences.off') }}</span>
+                    <span class="flex items-center justify-between gap-3">
+                      <span class="text-sm">{{ t('shell.preferences.workspaceTabs') }}</span>
+                      <span class="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px]">
+                        {{ preferences.workspaceTabs.enabled ? t('shell.preferences.on') : t('shell.preferences.off') }}
+                      </span>
+                    </span>
                     <span class="mt-2 block text-[11px] opacity-75">{{ t('shell.preferences.tabsDescription') }}</span>
                   </button>
 
                   <button
                     type="button"
                     class="rounded-[var(--radius-md)] border p-3 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                    :class="preferences.stageManager.enabled ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)]'"
-                    @click="preferences.setStageManagerEnabled(!preferences.stageManager.enabled)"
+                    :class="preferences.stageManager.railEnabled ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]'"
+                    @click="preferences.setStageRailEnabled(!preferences.stageManager.railEnabled)"
                   >
-                    <span class="text-sm">{{ t('shell.preferences.stageManagerShortcut') }}</span>
-                    <span class="float-right text-xs">{{ preferences.stageManager.enabled ? t('shell.preferences.on') : t('shell.preferences.off') }}</span>
-                    <span class="mt-2 block text-[11px] opacity-75">{{ t('shell.preferences.stageDescription') }}</span>
+                    <span class="flex items-center justify-between gap-3">
+                      <span class="text-sm">{{ t('shell.preferences.stageRail') }}</span>
+                      <span class="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px]">
+                        {{ preferences.stageManager.railEnabled ? t('shell.preferences.on') : t('shell.preferences.off') }}
+                      </span>
+                    </span>
+                    <span class="mt-2 block text-[11px] opacity-75">{{ t('shell.preferences.stageRailDescription') }}</span>
                   </button>
                 </div>
 
-                <div class="mt-4 grid gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-2 sm:grid-cols-2">
-                  <button
-                    v-for="stageMode in stagePresentationOptions"
-                    :key="stageMode.id"
-                    type="button"
-                    class="rounded-[var(--radius-sm)] px-3 py-2 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                    :class="stageMode.id === preferences.stageManager.presentationMode ? 'bg-[var(--active-tab-background)] text-[var(--foreground)] shadow-[var(--glow)]' : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)]'"
-                    @click="selectStagePresentationMode(stageMode.id)"
+                <div class="mt-4 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-3">
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <span class="text-sm">{{ t('shell.preferences.fullscreenOverview') }}</span>
+                      <p class="mt-1 text-xs text-[var(--muted-foreground)]">{{ t('shell.preferences.fullscreenOverviewDescription') }}</p>
+                    </div>
+                    <StatusPill :label="t('shell.preferences.desktopOnly')" />
+                  </div>
+                  <AdminButton
+                    class="mt-3 w-full"
+                    variant="secondary"
+                    :disabled="!preferences.stageManagerDesktopAvailable"
+                    @click="preferences.openStageOverview()"
                   >
-                    <span class="block text-sm">{{ stageMode.label }}</span>
-                    <span class="block text-[11px] opacity-75">{{ stageMode.detail }}</span>
-                  </button>
+                    {{ t('shell.preferences.openOverview') }}
+                  </AdminButton>
                 </div>
               </div>
             </section>

@@ -26,12 +26,12 @@ describe('preference resolution', () => {
     expect(state.locale).toBe('zh-CN')
     expect(state.layoutPreset).toBe('tri-column')
     expect(state.workspaceTabs.enabled).toBe(false)
-    expect(state.stageManager.enabled).toBe(true)
-    expect(state.stageManager.presentationMode).toBe('side-dock')
+    expect(state.stageManager.railEnabled).toBe(true)
+    expect(state.stageManager).not.toHaveProperty('presentationMode')
     expect(state.stageManager).not.toHaveProperty('scrollOverflow')
   })
 
-  it('keeps locale, layout preset, and stage manager independent', () => {
+  it('keeps locale, layout preset, and desktop stage rail independent', () => {
     const legacyStageManager = {
       enabled: false,
       scrollOverflow: true,
@@ -48,8 +48,8 @@ describe('preference resolution', () => {
     expect(state.locale).toBe('en-US')
     expect(state.layoutPreset).toBe('top-header')
     expect(state.workspaceTabs.enabled).toBe(true)
-    expect(state.stageManager.enabled).toBe(false)
-    expect(state.stageManager.presentationMode).toBe('all-windows')
+    expect(state.stageManager.railEnabled).toBe(false)
+    expect(state.stageManager).not.toHaveProperty('presentationMode')
     expect(state.stageManager).not.toHaveProperty('scrollOverflow')
   })
 

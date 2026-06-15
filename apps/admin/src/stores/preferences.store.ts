@@ -8,14 +8,38 @@ import {
   type Density,
   type DesignProfileId,
   type LayoutPresetId,
-  type ResolvedColorMode,
-  type StageManagerPresentationMode
+  type ResolvedColorMode
 } from '@super-admin-org/core'
 import { defineStore } from 'pinia'
 import { computed, reactive, shallowRef } from 'vue'
 import { DEFAULT_LOCALE, setActiveLocale, type Locale } from '@/i18n'
 
 const STORAGE_KEY = 'super-admin:preferences'
+const STAGE_MANAGER_DESKTOP_QUERY = '(min-width: 1280px)'
+
+export type StageTransitionRect = {
+  height: number
+  left: number
+  top: number
+  width: number
+}
+
+export type StageTransitionGhost = {
+  id: number
+  phase: 'source' | 'target'
+  source: StageTransitionRect
+  target: StageTransitionRect
+  title: string
+}
+
+function toStageTransitionRect(rect: DOMRect): StageTransitionRect {
+  return {
+    height: rect.height,
+    left: rect.left,
+    top: rect.top,
+    width: rect.width
+  }
+}
 
 function readStoredPreferences(): AppearanceStateInput {
   const raw = window.localStorage.getItem(STORAGE_KEY)
@@ -37,7 +61,9 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const providerMode = shallowRef<'mock' | 'custom'>('mock')
   const aiAvailability = shallowRef<AiAvailability>(defaultAiAvailability)
   const controlCenterOpen = shallowRef(false)
-  const stageManagerOpen = shallowRef(false)
+  const stageOverviewOpen = shallowRef(false)
+  const stageManagerDesktopAvailable = shallowRef(false)
+  const stageTransitionGhost = shallowRef<StageTransitionGhost | null>(null)
   const aiAssistantOpen = shallowRef(false)
 
   const profileId = computed(() => state.profileId)
@@ -88,17 +114,16 @@ export const usePreferencesStore = defineStore('preferences', () => {
     persist()
   }
 
-  function setStageManagerEnabled(enabled: boolean): void {
-    state.stageManager.enabled = enabled
-    if (!enabled) {
-      stageManagerOpen.value = false
-    }
+  function setStageRailEnabled(enabled: boolean): void {
+    state.stageManager.railEnabled = enabled
     persist()
   }
 
-  function setStageManagerPresentationMode(presentationMode: StageManagerPresentationMode): void {
-    state.stageManager.presentationMode = presentationMode
-    persist()
+  function setStageManagerDesktopAvailable(available: boolean): void {
+    stageManagerDesktopAvailable.value = available
+    if (!available) {
+      stageOverviewOpen.value = false
+    }
   }
 
   function openControlCenter(): void {
@@ -109,16 +134,43 @@ export const usePreferencesStore = defineStore('preferences', () => {
     controlCenterOpen.value = false
   }
 
-  function openStageManager(): void {
-    if (!state.stageManager.enabled) {
+  function openStageOverview(): void {
+    if (!stageManagerDesktopAvailable.value) {
       return
     }
 
-    stageManagerOpen.value = true
+    stageOverviewOpen.value = true
   }
 
-  function closeStageManager(): void {
-    stageManagerOpen.value = false
+  function closeStageOverview(): void {
+    stageOverviewOpen.value = false
+  }
+
+  function startStageTransition(sourceRect: DOMRect, title: string): void {
+    const source = toStageTransitionRect(sourceRect)
+    stageTransitionGhost.value = {
+      id: Date.now(),
+      phase: 'source',
+      source,
+      target: source,
+      title
+    }
+  }
+
+  function finishStageTransition(targetRect: DOMRect): void {
+    if (!stageTransitionGhost.value) {
+      return
+    }
+
+    stageTransitionGhost.value = {
+      ...stageTransitionGhost.value,
+      phase: 'target',
+      target: toStageTransitionRect(targetRect)
+    }
+  }
+
+  function clearStageTransition(): void {
+    stageTransitionGhost.value = null
   }
 
   function openAiAssistant(): void {
@@ -138,18 +190,29 @@ export const usePreferencesStore = defineStore('preferences', () => {
     query.addEventListener('change', update)
   }
 
+  function bindStageManagerDesktopAvailability(): void {
+    const query = window.matchMedia(STAGE_MANAGER_DESKTOP_QUERY)
+    const update = (): void => setStageManagerDesktopAvailable(query.matches)
+    update()
+    query.addEventListener('change', update)
+  }
+
   return {
     providerMode,
     aiAvailability,
     aiAssistantOpen,
     closeAiAssistant,
     closeControlCenter,
-    closeStageManager,
+    closeStageOverview,
+    clearStageTransition,
     controlCenterOpen,
+    finishStageTransition,
     openControlCenter,
     openAiAssistant,
-    openStageManager,
-    stageManagerOpen,
+    openStageOverview,
+    stageManagerDesktopAvailable,
+    stageOverviewOpen,
+    stageTransitionGhost,
     systemMode,
     summary,
     profileId,
@@ -159,14 +222,16 @@ export const usePreferencesStore = defineStore('preferences', () => {
     layoutPreset,
     workspaceTabs,
     stageManager,
+    bindStageManagerDesktopAvailability,
     bindSystemColorMode,
     setColorMode,
     setDensity,
     setLayoutPreset,
     setLocale,
     setProfile,
-    setStageManagerPresentationMode,
+    setStageManagerDesktopAvailable,
     setTabsEnabled,
-    setStageManagerEnabled
+    setStageRailEnabled,
+    startStageTransition
   }
 })

@@ -55,10 +55,12 @@ const zhCN = {
       keepAlive: '保持缓存',
       workspaceTabs: '工作区标签页',
       tabsDescription: '持久化的横向路由标签页。',
-      stageManagerShortcut: '舞台管理器快捷键',
-      stageDescription: '用于打开工作区概览层。',
-      stagePresentationMode: '台前调度展示',
-      stagePresentationDescription: '切换侧边分组或全遮罩全部窗口。',
+      stageRail: '左侧台前调度',
+      stageRailDescription: '桌面宽屏中挤压工作区的纯窗口缩略轨道。',
+      fullscreenOverview: '全屏窗口总览',
+      fullscreenOverviewDescription: '使用 Cmd/Ctrl + Shift + M 打开桌面端窗口总览。',
+      openOverview: '打开窗口总览',
+      desktopOnly: '桌面端',
       aiProvider: 'AI 提供方',
       providerUnavailable: '不可用',
       providerDescription: '提供方接口已类型化，但默认不接入任何提供方。',
@@ -86,16 +88,6 @@ const zhCN = {
         system: {
           label: '跟随系统',
           detail: '使用操作系统偏好'
-        }
-      },
-      stageModes: {
-        sideDock: {
-          label: '侧边分组',
-          detail: '左侧显示最多四个窗口或模块组。'
-        },
-        allWindows: {
-          label: '全部窗口',
-          detail: '全遮罩展示所有窗口，不做模块分组。'
         }
       }
     }

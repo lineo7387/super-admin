@@ -205,6 +205,7 @@ Generated template derivation:
 - Generated default Control Center must not expose runtime theme/profile or locale switching when only one theme/locale is installed.
 - Generated Control Center layout choices must render visual layout previews, not text-only cards, and stay in parity with the monorepo admin app.
 - Generated Control Center modal height and scrolling must stay in parity with the monorepo admin app: content-height adaptive, viewport-capped, and free of fixed inner estimates such as `max-h-[calc(88vh-92px)]`. Two-theme/no-i18n output must not be forced to fill the viewport.
+- Generated Control Center workspace settings must stay aligned with the monorepo Stage Manager contract: Workspace Tabs and `stageManager.railEnabled` are independent toggles, fullscreen Overview is a desktop-only runtime command, and no generated starter should expose the retired `side-dock | all-windows` presentation-mode selector.
 - Generated Control Center must not expose a global density selector by default. Keep persisted `density` compatibility only until global density tokens/CSS make the setting visibly meaningful.
 - Generated output excludes `src/**/*.test.ts`, `src/api/reference/`, `dist/`, `node_modules/`, `*.tsbuildinfo`, docs, optional backend code, and reference smoke tooling.
 

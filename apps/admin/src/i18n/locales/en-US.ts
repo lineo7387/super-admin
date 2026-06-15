@@ -55,10 +55,12 @@ const enUS = {
       keepAlive: 'Keep-alive',
       workspaceTabs: 'Workspace Tabs',
       tabsDescription: 'Persistent horizontal route tabs.',
-      stageManagerShortcut: 'Stage Manager Shortcut',
-      stageDescription: 'macOS-style overview layer for open workspaces.',
-      stagePresentationMode: 'Stage Manager Display',
-      stagePresentationDescription: 'Switch between grouped side dock and full-mask windows.',
+      stageRail: 'Left Stage Rail',
+      stageRailDescription: 'A desktop-wide, window-only rail that compresses the workspace.',
+      fullscreenOverview: 'Fullscreen Overview',
+      fullscreenOverviewDescription: 'Open the desktop window overview with Cmd/Ctrl + Shift + M.',
+      openOverview: 'Open overview',
+      desktopOnly: 'Desktop',
       aiProvider: 'AI provider',
       providerUnavailable: 'Unavailable',
       providerDescription: 'Provider interfaces are typed, but no provider is attached by default.',
@@ -86,16 +88,6 @@ const enUS = {
         system: {
           label: 'System',
           detail: 'Follow OS preference'
-        }
-      },
-      stageModes: {
-        sideDock: {
-          label: 'Side Groups',
-          detail: 'Show up to four windows or module groups on the left.'
-        },
-        allWindows: {
-          label: 'All Windows',
-          detail: 'Use a full mask and show every window without module grouping.'
         }
       }
     }

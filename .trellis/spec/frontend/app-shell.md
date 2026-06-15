@@ -50,8 +50,7 @@ type ShellAppearancePreferences = {
   density: Density // persisted compatibility only; not shown by default without global density behavior
   workspaceTabs: { enabled: boolean }
   stageManager: {
-    enabled: boolean
-    presentationMode: 'side-dock' | 'all-windows'
+    railEnabled: boolean
   }
 }
 ```
@@ -237,7 +236,7 @@ The account menu must close when:
 - the user chooses a menu action
 - the route changes
 
-Stage Manager should not render a permanent viewport button and should not open from the account menu's shortcuts item. When `preferences.stageManager.enabled` is true, open it with the `Cmd/Ctrl+Shift+M` shell shortcut. The Control Center still owns the enabled/disabled preference.
+Stage Manager should not render a permanent viewport button and should not open from the account menu's shortcuts item. `Cmd/Ctrl+Shift+M` opens the fullscreen Overview when the viewport is desktop-qualified. The Control Center owns the persistent side Stage Rail toggle.
 
 **Correct shape**:
 
@@ -266,25 +265,27 @@ Stage Manager should not render a permanent viewport button and should not open 
 
 Stage Manager groups workspace tabs by their active module. A module group with one tab can render like a single stage. A module group with multiple tabs must render as a stacked group. Clicking the stacked group follows macOS Stage Manager's "One at a Time" behavior: activate the group's most recent window when switching into the group, and switch to another recent window when the current route already belongs to that group.
 
-Pin, refresh, close, and activate actions still target individual tabs. The first phase does not support drag grouping, drag ungrouping, or custom shortcut bindings.
+The side Stage Rail is a left-side, layout-affecting desktop rail, not a floating overlay and not a right-side information panel. It compresses the whole app shell at `1280px+`, and disappears below that breakpoint. The rail itself is window-only: show the window preview and its window title, but do not add a rail header, "Desktop" badge, module description, current/pinned text, or persistent pin/refresh/close action controls. Fullscreen Overview may keep window actions.
 
-The secondary affordance enters a window-level view for that group. This is not a side details panel and not a text tab list: the left Stage Manager dock switches from group thumbnails to that group's window thumbnails, with each window preview selectable. Keep the dock to a macOS-like maximum of four visible windows/groups; overflow is not scrollable in side-dock mode.
+The first phase does not support drag grouping, drag ungrouping, or custom shortcut bindings.
 
-Before applying the four-slot side-dock cap, order groups by current route first and then by most recent group activation. The current group/window must never be hidden just because more than four groups are open.
+The secondary affordance enters a window-level view for that group. This is not a side details panel and not a text tab list: the left Stage Rail switches from group thumbnails to that group's window thumbnails, with each window preview selectable. Keep the rail to a macOS-like maximum of four visible windows/groups; overflow is not scrollable in side rail mode.
 
-The four-item limit is a visual contract, not just a flex item count. If dock thumbnails use 3D transforms, size the dock from the transformed bounding boxes or include an explicit perspective buffer so four complete windows/groups are visible. Do not enforce the four-item limit by putting `overflow-y: hidden` on the transformed dock/card container; that clips hover/current scale feedback. Hide items after the fourth slot explicitly and keep native vertical scrolling out of side-dock mode. Verify in a browser by checking computed overflow values, visible thumbnail count, and each hovered thumbnail's `getBoundingClientRect()` in light mode.
+Before applying the four-slot side rail cap, order groups by current route first and then by most recent group activation. The current group/window must never be hidden just because more than four groups are open.
 
-The workspace blur belongs to the left Stage Manager side mask behind the dock, not to the full modal layer and not to per-window preview backgrounds. Keep the side mask low-blur and give it a visible right border so the side dock boundary is readable. If a stacked group already has an explicit window-level cue, place that cue on the preview's lower-right corner and do not render a second small count badge inside the same card.
+The four-item limit is a visual contract, not just a flex item count. If thumbnails use 3D transforms, size the rail from the transformed bounding boxes or include an explicit perspective buffer so four complete windows/groups are visible. Do not enforce the four-item limit by putting `overflow-y: hidden` on the transformed rail/card container; that clips hover/current scale feedback. Hide items after the fourth slot explicitly and keep native vertical scrolling out of side rail mode. Verify in a browser by checking computed overflow values, visible thumbnail count, and each hovered thumbnail's `getBoundingClientRect()` in light mode.
+
+The rail material belongs to the left Stage Rail itself, not to a full modal layer and not to per-window preview backgrounds. Keep the rail low-blur and give it a visible right border so the boundary is readable. If a stacked group has an explicit window-level cue, place that cue on the preview's lower-right corner and do not render a second small count badge inside the same card.
 
 Stacked-group decoration must sit behind each thumbnail's own preview surface. Do not let a group stack background replace or tint the individual window/card preview background.
 
-Stage Manager has two presentation modes. `side-dock` is the default grouped mode: render the left dock, group by module, keep only four visible windows/groups, and keep the blur on the left side mask behind the dock. The dock lane itself must be horizontally centered within `stage-side-mask`, and side-dock thumbnails should be horizontally centered inside that lane rather than visually anchored to the right edge. `all-windows` is a full-mask overview mode: render a full-viewport blur layer and lay out every open workspace window without module grouping or stacked-group cues. This mode must fit all open windows into the available viewport with quantity-driven rows, columns, and preview scale; do not make the full-mask overview rely on scrolling. Each overview window needs max width and max height constraints. When there is exactly one overview window, use a single grid column so the card is truly horizontally and vertically centered. When there are only a few windows, keep the window group horizontally and vertically centered at modest max dimensions instead of stretching cards to fill the screen; when there are many windows, shrink the tracks within those maxima so all windows remain visible. In `all-windows`, weaken the title chrome and do not render the top close button; clicking outside a window closes Stage Manager, while clicking a window or its actions must not be treated as a backdrop click.
+Stage Manager has two separated surfaces, not a persisted presentation-mode toggle. `StageRail` is the persistent left layout rail controlled by `stageManager.railEnabled`. `StageOverview` is a fullscreen, runtime-only all-windows overlay opened by `Cmd/Ctrl+Shift+M` or a Control Center command. Fullscreen Overview renders a full-viewport blur layer and lays out every open workspace window without module grouping or stacked-group cues. This surface must fit all open windows into the available viewport with quantity-driven rows, columns, and preview scale; do not make the fullscreen overview rely on scrolling. Each overview window needs max width and max height constraints. When there is exactly one overview window, use a single grid column so the card is truly horizontally and vertically centered. When there are only a few windows, keep the window group horizontally and vertically centered at modest max dimensions instead of stretching cards to fill the screen; when there are many windows, shrink the tracks within those maxima so all windows remain visible. In fullscreen Overview, weaken the title chrome and do not render the top close button; clicking outside a window closes Overview, while clicking a window or its actions must not be treated as a backdrop click.
 
 Current and hovered Stage Manager windows/groups need an obvious theme state, but it should read as the active design profile's style rather than only as a color change. Prefer profile effect tokens such as `--glow`, `--panel-shadow`, and `--texture`, plus existing border/depth tokens, so Crypto, Industrial, Cyberpunk, and Newsprint each express their own material language. Do not reintroduce filled per-window preview surfaces or group-sized background cards to create this effect.
 
-Side-dock cards must keep their interactive hit target flat and stable. Do not put 3D perspective transforms on the clickable article/button itself; browser hit testing can fall through to the dock viewport after hover motion, making touch/click feel dead. Put 3D rotation/scale and profile effects on an inner visual surface with `pointer-events: none`, while group/window activation buttons, group-entry cues, and pin/refresh/close controls remain normal clickable elements above it. A stacked group's entry cue uses the same split: the outer cue button stays flat, above the main thumbnail hit target, and clickable; only its inner visual surface follows card tilt/scale.
+Stage Rail thumbnails must keep their interactive hit target flat and stable. Do not put 3D perspective transforms on the clickable article/button itself; browser hit testing can fall through to the rail viewport after hover motion, making touch/click feel dead. Put 3D rotation/scale and profile effects on an inner visual surface with `pointer-events: none`, while group/window activation buttons and group-entry cues remain normal clickable elements above it. A stacked group's entry cue uses the same split: the outer cue button stays flat, above the main thumbnail hit target, and clickable; only its inner visual surface follows card tilt/scale.
 
-**Check**: Open Users All, Pending Review, Invites, and Activity. Stage Manager should show one Users stack. Clicking the Users stack from outside the group should activate the most recent Users window; clicking it while already in Users should switch to another recent Users window. The secondary window-level control should replace the left dock with Users window thumbnails, not open a side panel.
+**Check**: Open Users All, Pending Review, Invites, and Activity. Stage Rail should show one Users stack on the left. Clicking the Users stack from outside the group should activate the most recent Users window; clicking it while already in Users should switch to another recent Users window. The secondary window-level control should replace the left rail with Users window thumbnails, not open a side panel. The rail should contain only window previews, window titles, and minimal stack/back affordances.
 
 ### AI Assistant Floating Surface Contract
 
@@ -441,10 +442,10 @@ This splits one module tree into two visual systems. Prefer a single tree render
 - Detail/create/edit pages may open as child tabs, drawers, or sheets depending on layout.
 - Switching theme/layout should not destroy cached tabs unnecessarily.
 - Traditional workspace tabs and Stage Manager are independent shell tools, not mutually exclusive presentations.
-- `layoutPreset`, `workspaceTabs.enabled`, and `stageManager.enabled` must remain independent so changing layout, toggling tabs, or opening the Stage Manager overlay does not close routes or change route-view keys.
+- `layoutPreset`, `workspaceTabs.enabled`, and `stageManager.railEnabled` must remain independent so changing layout, toggling tabs, or opening fullscreen Overview does not close routes or change route-view keys.
 - Traditional tabs render as conventional horizontal tabs above the workspace surface in every layout when enabled.
 - When traditional tabs overflow horizontally, keep them on one row, preserve horizontal scrolling through `AdminScrollArea`, hide the scroll area's own bar, show left/right arrow controls on hover or focus as overlays that do not reserve tab-list width, translate mouse-wheel movement over the tab strip into horizontal scrolling, and automatically scroll the active tab into view. Disabled overlay arrows should still block pointer passthrough to tabs underneath.
-- Stage Manager is a global overlay launched from a stable top-right button when `stageManager.enabled` is true. It should float above all layouts, show real workspace previews where possible, and avoid being embedded into sidebars or layout-owned rails.
+- Stage Rail is mounted by `AppShell` as a left layout rail at desktop widths; fullscreen Overview is a runtime overlay opened by shortcut or Control Center command. Do not add a separate permanent Stage Manager viewport button.
 - Stage Manager may use layout/theme tokens for visual language, but the open route model and keep-alive cache remain owned by the workspace tab store.
 
 ### Convention: Workspace Tools Are Additive
@@ -455,7 +456,7 @@ This splits one module tree into two visual systems. Prefer a single tree render
 type AppearanceState = {
   layoutPreset: LayoutPresetId
   workspaceTabs: { enabled: boolean }
-  stageManager: { enabled: boolean }
+  stageManager: { railEnabled: boolean }
 }
 ```
 
@@ -464,13 +465,16 @@ type AppearanceState = {
 **Correct shape**:
 
 ```vue
-<component :is="activeLayout">
-  <template #workspace>
-    <WorkspaceTabs />
-    <WorkspaceRouterView />
-  </template>
-</component>
-<StageManagerOverlay />
+<div class="stage-shell-frame">
+  <StageRail v-if="showStageRail" />
+  <component :is="activeLayout">
+    <template #workspace>
+      <WorkspaceTabs />
+      <WorkspaceRouterView />
+    </template>
+  </component>
+</div>
+<StageOverview />
 <GlobalPreferences />
 ```
 
@@ -483,7 +487,7 @@ type AppearanceState = {
 }
 ```
 
-**Check**: Open several routes, confirm tabs are visible, open Stage Manager, then switch layout/theme or toggle either workspace tool in Control Center. The route list and eligible keep-alive state must survive.
+**Check**: Open several routes, confirm tabs are visible, open fullscreen Overview, then switch layout/theme or toggle either workspace tool in Control Center. The route list and eligible keep-alive state must survive.
 
 ### Scenario: Workspace Tab Lifecycle Controls
 
@@ -533,7 +537,7 @@ function refreshWorkspaceTab(
 - The compact tab bar must not repeat refresh controls per tab. Place current-workspace refresh and pin/unpin actions in a workspace header next to the breadcrumb.
 - Persist only safe pinned tab metadata in local storage under `super-admin:workspace-tabs`.
 - Restore pinned tabs only when `workspaceTabs.restorePinnedTabs` is enabled.
-- Stage Manager uses the same tab store and must reflect pin/refresh/close behavior from Workspace Tabs.
+- Stage Manager uses the same tab store. Fullscreen Overview must reflect pin/refresh/close behavior from Workspace Tabs; the side Stage Rail is activation-first and should not duplicate persistent action chrome.
 
 #### 4. Validation & Error Matrix
 
@@ -559,7 +563,7 @@ function refreshWorkspaceTab(
 - Unit test `refreshWorkspaceTab` for `refreshKey` increments without tab removal.
 - Browser check workspace header refresh against a page with local state.
 - Browser check pinned tab restore after reload.
-- Browser check Stage Manager shows the same pinned/refresh controls.
+- Browser check fullscreen Overview shows the same pinned/refresh controls and Stage Rail remains window-only.
 
 #### 7. Wrong vs Correct
 

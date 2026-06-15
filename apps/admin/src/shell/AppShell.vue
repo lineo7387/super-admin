@@ -6,7 +6,9 @@ import { useI18n } from 'vue-i18n'
 import { AdminButton } from '@super-admin-org/ui'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { translateRouteTitle } from '@/i18n/navigation'
-import StageManagerOverlay from '@/workspace/StageManagerOverlay.vue'
+import StageOverview from '@/workspace/StageOverview.vue'
+import StageRail from '@/workspace/StageRail.vue'
+import StageTransitionGhost from '@/workspace/StageTransitionGhost.vue'
 import WorkspaceRouterView from '@/workspace/WorkspaceRouterView.vue'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 import AiAssistantFloatingPanel from './AiAssistantFloatingPanel.vue'
@@ -32,6 +34,7 @@ const activeLayout = computed(() => {
   }
   return TriColumnLayout
 })
+const showStageRail = computed(() => preferences.stageManagerDesktopAvailable && preferences.stageManager.railEnabled)
 
 function openControlCenter(): void {
   preferences.openControlCenter()
@@ -55,11 +58,16 @@ watch(
 </script>
 
 <template>
-  <component :is="activeLayout">
-    <template #workspace>
-      <WorkspaceRouterView />
-    </template>
-  </component>
+  <div class="stage-shell-frame" :data-stage-rail-open="showStageRail">
+    <StageRail v-if="showStageRail" />
+    <div class="stage-shell-frame__app">
+      <component :is="activeLayout">
+        <template #workspace>
+          <WorkspaceRouterView />
+        </template>
+      </component>
+    </div>
+  </div>
   <AdminButton
     variant="secondary"
     size="icon"
@@ -70,6 +78,32 @@ watch(
     <Settings2 class="size-4" />
   </AdminButton>
   <AiAssistantFloatingPanel />
-  <StageManagerOverlay />
+  <StageOverview />
+  <StageTransitionGhost />
   <GlobalPreferences trigger="none" />
 </template>
+
+<style scoped>
+.stage-shell-frame {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--app-background);
+  transition: grid-template-columns 240ms var(--easing);
+}
+
+.stage-shell-frame[data-stage-rail-open="true"] {
+  grid-template-columns: 14rem minmax(0, 1fr);
+}
+
+.stage-shell-frame__app {
+  min-width: 0;
+}
+
+@media (max-width: 1279px) {
+  .stage-shell-frame,
+  .stage-shell-frame[data-stage-rail-open="true"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>

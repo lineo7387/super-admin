@@ -21,7 +21,7 @@ export function useShellShortcuts(): void {
     }
 
     event.preventDefault()
-    preferences.openStageManager()
+    preferences.openStageOverview()
   }
 
   onMounted(() => {

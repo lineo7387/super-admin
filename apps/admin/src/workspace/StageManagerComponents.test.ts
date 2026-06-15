@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import stageDockPanelSource from './StageDockPanel.vue?raw'
 import stageDockThumbSource from './StageDockThumb.vue?raw'
 import stageOverviewCardSource from './StageOverviewCard.vue?raw'
+import stageRailSource from './StageRail.vue?raw'
 import stageWindowActionsSource from './StageWindowActions.vue?raw'
 import stageWindowPreviewSource from './StageWindowPreview.vue?raw'
 
@@ -33,12 +33,14 @@ describe('stage manager child components', () => {
     expect(stageWindowActionsSource).not.toContain('group-hover:opacity-100')
   })
 
-  it('keeps side-dock hit targets flat while moving tilt to a non-interactive surface', () => {
+  it('keeps stage thumbnail hit targets flat while moving tilt to a non-interactive surface', () => {
     const thumbBlock = stageDockThumbSource.match(/\.stage-thumb \{[\s\S]*?\n\}/)?.[0] ?? ''
     const surfaceBlock = stageDockThumbSource.match(/\.stage-thumb__surface \{[\s\S]*?\n\}/)?.[0] ?? ''
 
     expect(stageDockThumbSource).toContain('defineEmits')
-    expect(stageDockThumbSource).toContain('activate')
+    expect(stageDockThumbSource).toContain('activate: [sourceRect: DOMRect]')
+    expect(stageDockThumbSource).toContain("orientation?: 'left' | 'right'")
+    expect(stageDockThumbSource).toContain('getBoundingClientRect()')
     expect(stageDockThumbSource).toContain('stage-thumb__button')
     expect(stageDockThumbSource).toContain('stage-thumb__surface')
     expect(stageDockThumbSource).toContain('stage-action-host')
@@ -49,25 +51,33 @@ describe('stage manager child components', () => {
     expect(stageDockThumbSource).not.toContain('.stage-thumb:focus-within :deep(.stage-action--reveal)')
   })
 
-  it('composes the side-dock group and window views without importing stores or router', () => {
-    expect(stageDockPanelSource).toContain('StageDockThumb')
-    expect(stageDockPanelSource).toContain('StageWindowPreview')
-    expect(stageDockPanelSource).toContain('StageWindowActions')
-    expect(stageDockPanelSource.match(/visibility="reveal"/g)?.length).toBe(2)
-    expect(stageDockPanelSource).toContain('stage-dock--clipped')
-    expect(stageDockPanelSource).not.toContain('scrollOverflow')
-    expect(stageDockPanelSource).not.toContain('stage-dock--scrollable')
-    expect(stageDockPanelSource).not.toContain('overflow-y: auto;')
-    expect(stageDockPanelSource).toContain(':aria-label="props.labels.stages"')
-    expect(stageDockPanelSource).toContain('enterGroup')
-    expect(stageDockPanelSource).toContain('exitGroup')
-    expect(stageDockPanelSource).not.toContain('useWorkspaceTabsStore')
-    expect(stageDockPanelSource).not.toContain('useRouter')
+  it('composes the left-side Stage Rail as a window-only layout surface', () => {
+    expect(stageRailSource).toContain('StageDockThumb')
+    expect(stageRailSource).toContain('StageWindowPreview')
+    expect(stageRailSource).toContain('stage-rail')
+    expect(stageRailSource).toContain('orientation="left"')
+    expect(stageRailSource).toContain('stage-rail__window-title')
+    expect(stageRailSource).toContain('{{ stageGroup.activeTabTitle }}')
+    expect(stageRailSource).toContain('{{ stage.title }}')
+    expect(stageRailSource).not.toContain('scrollOverflow')
+    expect(stageRailSource).not.toContain('stage-dock--scrollable')
+    expect(stageRailSource).not.toContain('overflow-y: auto;')
+    expect(stageRailSource).toContain(':aria-label="t(\'workspace.stage.stages\')"')
+    expect(stageRailSource).toContain('enterWindowGroup')
+    expect(stageRailSource).toContain('exitWindowGroup')
+    expect(stageRailSource).toContain('useWorkspaceTabsStore')
+    expect(stageRailSource).toContain('useRoute')
+    expect(stageRailSource).not.toContain('StageWindowActions')
+    expect(stageRailSource).not.toContain('stage-rail__header')
+    expect(stageRailSource).not.toContain('StatusPill')
+    expect(stageRailSource).not.toContain('{{ stageGroup.label }}')
+    expect(stageRailSource).not.toContain('<Teleport')
   })
 
-  it('renders all-windows cards with the same reveal action behavior and no stacked chrome', () => {
+  it('renders fullscreen overview cards with the same reveal action behavior and no stacked chrome', () => {
     expect(stageOverviewCardSource).toContain('defineEmits')
-    expect(stageOverviewCardSource).toContain('activate')
+    expect(stageOverviewCardSource).toContain('activate: [sourceRect: DOMRect]')
+    expect(stageOverviewCardSource).toContain('getBoundingClientRect()')
     expect(stageOverviewCardSource).toContain('StageWindowPreview')
     expect(stageOverviewCardSource).toContain('StageWindowActions')
     expect(stageOverviewCardSource).toContain('visibility="reveal"')

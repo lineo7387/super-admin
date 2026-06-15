@@ -6,8 +6,7 @@ import {
   builtInLayoutPresets,
   type ColorMode,
   type DesignProfileId,
-  type LayoutPresetId,
-  type StageManagerPresentationMode
+  type LayoutPresetId
 } from '@super-admin-org/core'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin-org/ui'
 import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'
@@ -35,11 +34,6 @@ const modeOptions = computed<{ id: ColorMode; label: string; detail: string }[]>
 const localeOptions = computed<{ id: Locale; label: string; detail: string }[]>(() => [
   { id: 'zh-CN', label: t('shell.preferences.locales.zhCN.label'), detail: t('shell.preferences.locales.zhCN.detail') },
   { id: 'en-US', label: t('shell.preferences.locales.enUS.label'), detail: t('shell.preferences.locales.enUS.detail') }
-])
-
-const stagePresentationOptions = computed<{ id: StageManagerPresentationMode; label: string; detail: string }[]>(() => [
-  { id: 'side-dock', label: t('shell.preferences.stageModes.sideDock.label'), detail: t('shell.preferences.stageModes.sideDock.detail') },
-  { id: 'all-windows', label: t('shell.preferences.stageModes.allWindows.label'), detail: t('shell.preferences.stageModes.allWindows.detail') }
 ])
 
 const activeProfileName = computed(
@@ -75,10 +69,6 @@ function selectLocale(locale: Locale): void {
 
 function selectLayout(layoutPreset: LayoutPresetId): void {
   preferences.setLayoutPreset(layoutPreset)
-}
-
-function selectStagePresentationMode(presentationMode: StageManagerPresentationMode): void {
-  preferences.setStageManagerPresentationMode(presentationMode)
 }
 
 </script>
@@ -267,38 +257,35 @@ function selectStagePresentationMode(presentationMode: StageManagerPresentationM
                   <button
                     type="button"
                     class="rounded-[var(--radius-md)] border p-3 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                    :class="preferences.stageManager.enabled ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]'"
-                    @click="preferences.setStageManagerEnabled(!preferences.stageManager.enabled)"
+                    :class="preferences.stageManager.railEnabled ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]'"
+                    @click="preferences.setStageRailEnabled(!preferences.stageManager.railEnabled)"
                   >
                     <span class="flex items-center justify-between gap-3">
-                      <span class="text-sm">{{ t('shell.preferences.stageManagerShortcut') }}</span>
+                      <span class="text-sm">{{ t('shell.preferences.stageRail') }}</span>
                       <span class="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px]">
-                        {{ preferences.stageManager.enabled ? t('shell.preferences.on') : t('shell.preferences.off') }}
+                        {{ preferences.stageManager.railEnabled ? t('shell.preferences.on') : t('shell.preferences.off') }}
                       </span>
                     </span>
-                    <span class="mt-2 block text-[11px] opacity-75">{{ t('shell.preferences.stageDescription') }}</span>
+                    <span class="mt-2 block text-[11px] opacity-75">{{ t('shell.preferences.stageRailDescription') }}</span>
                   </button>
-
                 </div>
 
                 <div class="mt-4 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-3">
-                  <div class="flex items-center justify-between gap-3 pb-2">
-                    <span class="text-sm">{{ t('shell.preferences.stagePresentationMode') }}</span>
-                    <span class="text-[11px] text-[var(--muted-foreground)]">{{ t('shell.preferences.stagePresentationDescription') }}</span>
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <span class="text-sm">{{ t('shell.preferences.fullscreenOverview') }}</span>
+                      <p class="mt-1 text-xs text-[var(--muted-foreground)]">{{ t('shell.preferences.fullscreenOverviewDescription') }}</p>
+                    </div>
+                    <StatusPill :label="t('shell.preferences.desktopOnly')" />
                   </div>
-                  <div class="grid gap-2 sm:grid-cols-2">
-                    <button
-                      v-for="stageMode in stagePresentationOptions"
-                      :key="stageMode.id"
-                      type="button"
-                      class="rounded-[var(--radius-sm)] px-3 py-2 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                      :class="stageMode.id === preferences.stageManager.presentationMode ? 'bg-[var(--active-tab-background)] text-[var(--foreground)] shadow-[var(--glow)]' : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'"
-                      @click="selectStagePresentationMode(stageMode.id)"
-                    >
-                      <span class="block text-sm">{{ stageMode.label }}</span>
-                      <span class="block text-[11px] opacity-75">{{ stageMode.detail }}</span>
-                    </button>
-                  </div>
+                  <AdminButton
+                    class="mt-3 w-full"
+                    variant="secondary"
+                    :disabled="!preferences.stageManagerDesktopAvailable"
+                    @click="preferences.openStageOverview()"
+                  >
+                    {{ t('shell.preferences.openOverview') }}
+                  </AdminButton>
                 </div>
 
                 <div class="mt-4 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-3">

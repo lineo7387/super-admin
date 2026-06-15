@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
+import { useTemplateRef, type Component } from 'vue'
 import StageWindowActions from './StageWindowActions.vue'
 import StageWindowPreview from './StageWindowPreview.vue'
 
@@ -23,11 +23,22 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  activate: []
+  activate: [sourceRect: DOMRect]
   close: []
   refresh: []
   togglePin: []
 }>()
+
+const buttonRef = useTemplateRef<HTMLButtonElement>('button')
+
+function activate(): void {
+  const sourceRect = buttonRef.value?.getBoundingClientRect()
+  if (!sourceRect) {
+    return
+  }
+
+  emit('activate', sourceRect)
+}
 </script>
 
 <template>
@@ -35,11 +46,12 @@ const emit = defineEmits<{
     class="stage-overview-card stage-action-host"
     :class="props.active ? 'stage-overview-card--active' : ''"
     @click.stop
-  >
+    >
     <button
+      ref="button"
       type="button"
       class="stage-overview-card__button block h-full w-full text-left focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-      @click="emit('activate')"
+      @click="activate"
     >
       <StageWindowPreview
         :component="props.component"

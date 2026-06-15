@@ -5,6 +5,7 @@
 Use Pinia for app/client state:
 
 - `profileId`, `colorMode`, `layoutPreset`, and compatibility-only `density`.
+- Stage Manager persisted preference: `stageManager.railEnabled` only. Fullscreen overview open state, desktop breakpoint availability, and transition ghost geometry are runtime-only state.
 - Dock/sidebar/context panel open state.
 - Workspace tabs: opened tabs, active tab, pinned tabs, tab order.
 - Command/preferences popover state.
@@ -19,6 +20,7 @@ Persist only safe preferences:
 - Appearance settings.
 - Layout preference.
 - Compatibility-only `density` when present in existing appearance payloads. Do not expose a visible global density selector just because the field is persisted; add visible density UI only when global CSS/tokens consume it meaningfully.
+- `stageManager.railEnabled` when present in appearance payloads. Retired `stageManager.enabled`, `presentationMode`, and scroll-overflow fields may be read for compatibility, but they must not be written back.
 - Workspace tab metadata if desired.
 - Column visibility or local view preferences.
 

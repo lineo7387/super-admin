@@ -1,18 +1,33 @@
 <script setup lang="ts">
+import { useTemplateRef } from 'vue'
+
 const props = withDefaults(
   defineProps<{
     active?: boolean
+    orientation?: 'left' | 'right'
     stacked?: boolean
   }>(),
   {
     active: false,
+    orientation: 'left',
     stacked: false
   }
 )
 
 const emit = defineEmits<{
-  activate: []
+  activate: [sourceRect: DOMRect]
 }>()
+
+const buttonRef = useTemplateRef<HTMLButtonElement>('button')
+
+function activate(): void {
+  const sourceRect = buttonRef.value?.getBoundingClientRect()
+  if (!sourceRect) {
+    return
+  }
+
+  emit('activate', sourceRect)
+}
 </script>
 
 <template>
@@ -20,13 +35,15 @@ const emit = defineEmits<{
     class="stage-thumb stage-action-host"
     :class="{
       'stage-thumb--active': props.active,
+      'stage-thumb--right': props.orientation === 'right',
       'stage-thumb--stacked': props.stacked
     }"
   >
     <button
+      ref="button"
       type="button"
       class="stage-thumb__button block h-full w-full text-left focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-      @click="emit('activate')"
+      @click="activate"
     >
       <div class="stage-thumb__surface">
         <slot />
@@ -101,14 +118,18 @@ const emit = defineEmits<{
   transform: perspective(1000px) rotateY(9deg) scale(1);
 }
 
+.stage-thumb--right .stage-thumb__surface {
+  transform: perspective(1000px) rotateY(-16deg) scale(0.9);
+}
+
+.stage-thumb--right:hover .stage-thumb__surface {
+  transform: perspective(1000px) rotateY(-7deg) scale(1);
+}
+
 .stage-thumb--active :deep(.stage-window-preview),
 .stage-thumb:hover :deep(.stage-window-preview) {
   border-color: var(--border-strong);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent), var(--glow);
-}
-
-.stage-thumb:hover :deep(.stage-group-cue__surface) {
-  transform: perspective(1000px) rotateY(9deg) scale(1);
 }
 
 @media (max-width: 760px) {

@@ -13,8 +13,7 @@ export type WorkspaceTabPreferences = {
 export type StageManagerPresentationMode = 'side-dock' | 'all-windows'
 
 export type StageManagerPreferences = {
-  enabled: boolean
-  presentationMode: StageManagerPresentationMode
+  railEnabled: boolean
 }
 
 export type AppearanceState = {
@@ -29,7 +28,10 @@ export type AppearanceState = {
 
 export type AppearanceStateInput = Partial<Omit<AppearanceState, 'workspaceTabs' | 'stageManager'>> & {
   workspaceTabs?: Partial<WorkspaceTabPreferences>
-  stageManager?: Partial<StageManagerPreferences>
+  stageManager?: Partial<StageManagerPreferences> & {
+    enabled?: boolean
+    presentationMode?: StageManagerPresentationMode
+  }
 }
 
 export const defaultAppearanceState: AppearanceState = {
@@ -44,15 +46,13 @@ export const defaultAppearanceState: AppearanceState = {
     closeStrategy: 'activate-nearest'
   },
   stageManager: {
-    enabled: true,
-    presentationMode: 'side-dock'
+    railEnabled: true
   }
 }
 
-function mergeStageManagerPreferences(input?: Partial<StageManagerPreferences>): StageManagerPreferences {
+function mergeStageManagerPreferences(input?: AppearanceStateInput['stageManager']): StageManagerPreferences {
   return {
-    enabled: input?.enabled ?? defaultAppearanceState.stageManager.enabled,
-    presentationMode: input?.presentationMode ?? defaultAppearanceState.stageManager.presentationMode
+    railEnabled: input?.railEnabled ?? input?.enabled ?? defaultAppearanceState.stageManager.railEnabled
   }
 }
 

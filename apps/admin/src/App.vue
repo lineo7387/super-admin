@@ -20,6 +20,7 @@ function applyTheme(): void {
 
 onMounted(() => {
   preferences.bindSystemColorMode()
+  preferences.bindStageManagerDesktopAvailability()
   applyTheme()
 })
 

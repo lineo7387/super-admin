@@ -14,14 +14,16 @@ function routeViewKey(route: RouteLocationNormalizedLoaded): string {
 </script>
 
 <template>
-  <RouterView v-slot="{ Component, route }">
-    <KeepAlive :max="8">
-      <component
-        :is="Component"
-        v-if="route.meta.keepAlive?.enabled"
-        :key="routeViewKey(route)"
-      />
-    </KeepAlive>
-    <component :is="Component" v-if="!route.meta.keepAlive?.enabled" :key="routeViewKey(route)" />
-  </RouterView>
+  <div class="min-h-full" data-stage-transition-target>
+    <RouterView v-slot="{ Component, route }">
+      <KeepAlive :max="8">
+        <component
+          :is="Component"
+          v-if="route.meta.keepAlive?.enabled"
+          :key="routeViewKey(route)"
+        />
+      </KeepAlive>
+      <component :is="Component" v-if="!route.meta.keepAlive?.enabled" :key="routeViewKey(route)" />
+    </RouterView>
+  </div>
 </template>

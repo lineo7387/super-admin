@@ -57,8 +57,7 @@ describe('preferences store shell overlays', () => {
     preferences.setDensity('compact')
     preferences.setLayoutPreset('top-header')
     preferences.setTabsEnabled(false)
-    preferences.setStageManagerEnabled(false)
-    preferences.setStageManagerPresentationMode('all-windows')
+    preferences.setStageRailEnabled(false)
     preferences.setLocale('en-US')
 
     const stored = JSON.parse(window.localStorage.getItem('super-admin:preferences') ?? '{}') as Record<string, unknown>
@@ -71,13 +70,27 @@ describe('preferences store shell overlays', () => {
     expect(preferences.density).toBe('compact')
     expect(preferences.layoutPreset).toBe('top-header')
     expect(preferences.workspaceTabs.enabled).toBe(false)
-    expect(preferences.stageManager.enabled).toBe(false)
-    expect(preferences.stageManager.presentationMode).toBe('all-windows')
+    expect(preferences.stageManager.railEnabled).toBe(false)
     expect(stored.stageManager).not.toHaveProperty('scrollOverflow')
-    expect((stored.stageManager as { presentationMode?: string }).presentationMode).toBe('all-windows')
+    expect(stored.stageManager).not.toHaveProperty('presentationMode')
   })
 
-  it('drops retired stage manager scroll preferences from persisted state', () => {
+  it('keeps fullscreen overview as desktop-only runtime state', () => {
+    const preferences = usePreferencesStore()
+
+    preferences.openStageOverview()
+    expect(preferences.stageOverviewOpen).toBe(false)
+
+    preferences.setStageManagerDesktopAvailable(true)
+    preferences.openStageOverview()
+    expect(preferences.stageOverviewOpen).toBe(true)
+
+    preferences.closeStageOverview()
+    expect(preferences.stageOverviewOpen).toBe(false)
+    expect(window.localStorage.getItem('super-admin:preferences')).toBeNull()
+  })
+
+  it('drops retired stage manager scroll and presentation preferences from persisted state', () => {
     window.localStorage.setItem(
       'super-admin:preferences',
       JSON.stringify({
@@ -92,11 +105,14 @@ describe('preferences store shell overlays', () => {
     const preferences = usePreferencesStore()
 
     expect(preferences.stageManager).not.toHaveProperty('scrollOverflow')
+    expect(preferences.stageManager).not.toHaveProperty('presentationMode')
+    expect(preferences.stageManager.railEnabled).toBe(true)
 
     preferences.setLocale('en-US')
 
     const stored = JSON.parse(window.localStorage.getItem('super-admin:preferences') ?? '{}') as Record<string, unknown>
 
     expect(stored.stageManager).not.toHaveProperty('scrollOverflow')
+    expect(stored.stageManager).not.toHaveProperty('presentationMode')
   })
 })
