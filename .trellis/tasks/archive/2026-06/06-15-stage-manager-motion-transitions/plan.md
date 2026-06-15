@@ -1,0 +1,31 @@
+# Implementation Plan
+
+- [x] Add tests that lock the new semantics:
+  - Motion transition component imports/uses `motion-v`.
+  - Old CSS ghost transition strings and hard-coded ghost timer are absent.
+  - Control Center opens Overview through the store behavior that closes Control Center.
+  - Outer Stage Rail group activation returns the group's active tab instead of cycling.
+  - Generated package output includes `motion-v`.
+- [x] Add `motion-v` dependency to `apps/admin` and generated starter package output.
+- [x] Refactor Stage transition runtime state:
+  - Keep source/target rect state runtime-only.
+  - Add status needed by Motion without stale `phase` naming if useful.
+  - Remove manual transition-duration coupling from activation.
+- [x] Rewrite `StageTransitionGhost.vue` as a Motion-managed bridge:
+  - Animate fixed source rect to target rect with scale/position/opacity.
+  - Use `useReducedMotion` for shorter fade/scale fallback.
+  - Avoid old `left/top/width/height` CSS transition lists.
+- [x] Fix Control Center -> Overview:
+  - Ensure `openStageOverview()` hides Control Center or otherwise makes Overview the top visible surface.
+  - Sync the generated starter preferences store template.
+- [x] Fix Stage Rail group activation and stack visuals:
+  - Simplify `resolveNextGroupWindow` semantics or rename it to match behavior.
+  - Update Stage Rail to use active group window deterministically.
+  - Add explicit stacked-card preview layers without extra rail text/actions.
+- [x] Update generated starter templates and tests for parity.
+- [x] Tune follow-up UX:
+  - Hide Stage Rail while there is only one workspace route.
+  - Animate Stage Rail into the left layout once multiple workspace routes exist.
+  - Set Motion bridge timing to about 300ms.
+- [x] Run targeted tests, then browser verification.
+- [x] Run final gates: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm validate:starter`.
