@@ -1,6 +1,6 @@
 {
   "name": "create-super-admin",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "type": "module",
   "bin": {
     "create-super-admin": "./dist/cli.js"

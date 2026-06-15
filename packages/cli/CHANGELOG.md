@@ -1,5 +1,11 @@
 # create-super-admin
 
+## 0.1.5
+
+### Patch Changes
+
+- Pass the generated starter's localized required-field marker into auth forms so the default `zh-CN` login and register screens show `必填` instead of the UI package's English fallback.
+
 ## 0.1.4
 
 ### Patch Changes

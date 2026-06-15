@@ -97,6 +97,8 @@ describe('create-super-admin starter generation', () => {
 
     const packageJson = await readGeneratedJson(input.targetDirectory, 'package.json')
     const config = await readGeneratedText(input.targetDirectory, 'super-admin.config.ts')
+    const loginPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/LoginPage.vue')
+    const registerPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/RegisterPage.vue')
     const preferences = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferences.vue')
 
     expect(packageJson.scripts).toEqual({
@@ -118,6 +120,8 @@ describe('create-super-admin starter generation', () => {
     expect(preferences).not.toContain('selectDensity')
     expect(preferences).not.toContain('shell.preferences.density')
     expect(preferences).not.toContain('preferences.setDensity')
+    expect(loginPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
+    expect(registerPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
 
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { themes: ['base'] })).resolves.toEqual([])
   })

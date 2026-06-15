@@ -431,11 +431,11 @@ async function submitLogin(): Promise<void> {
       <AdminValidationSummary :errors="validationMessages" />
 
       <form class="grid gap-4" @submit.prevent="submitLogin">
-        <AdminField :label="t('auth.login.email')" for="auth-email" required :error="fieldErrors.email">
+        <AdminField :label="t('auth.login.email')" for="auth-email" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.email">
           <AdminTextInput id="auth-email" v-model="form.email" type="email" :invalid="Boolean(fieldErrors.email)" autocomplete="email" />
         </AdminField>
 
-        <AdminField :label="t('auth.login.password')" for="auth-password" required :error="fieldErrors.password">
+        <AdminField :label="t('auth.login.password')" for="auth-password" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.password">
           <AdminTextInput id="auth-password" v-model="form.password" type="password" :invalid="Boolean(fieldErrors.password)" autocomplete="current-password" />
         </AdminField>
 
