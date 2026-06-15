@@ -1452,3 +1452,38 @@ Localized first-run admin example chrome, route metadata, AI assistant context, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 43: Fix Control Center layout scrolling
+
+**Date**: 2026-06-15
+**Task**: Fix Control Center layout scrolling
+**Branch**: `main`
+
+### Summary
+
+Made Control Center height content-adaptive with viewport-capped AdminScrollArea scrolling, synced the generated starter template, added regression coverage, documented the scrolling contract, and verified full repo gates plus browser checks for long app content and two-theme/no-i18n starter output.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `09054a7` | (see git log) |
+| `21f775c` | (see git log) |
+| `4b89272` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
