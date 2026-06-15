@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 41
-- **Last Active**: 2026-06-14
+- **Total Sessions**: 42
+- **Last Active**: 2026-06-15
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1420 | Active |
+| `journal-1.md` | ~1454 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 42 | 2026-06-15 | 修复 generated auth 字段标记本地化 | `a3fdbf8`, `92efbca` | `main` |
 | 41 | 2026-06-14 | 准备控制中心 starter 修复发布 | `f488e22` | `main` |
 | 40 | 2026-06-14 | 控制中心布局预览与密度兼容 | `b01d861`, `6c9eed7` | `main` |
 | 39 | 2026-06-14 | First-run i18n onboarding | `a1af65c` | `main` |

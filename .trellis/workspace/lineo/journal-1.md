@@ -1418,3 +1418,37 @@ Localized first-run admin example chrome, route metadata, AI assistant context, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 42: 修复 generated auth 字段标记本地化
+
+**Date**: 2026-06-15
+**Task**: 修复 generated auth 字段标记本地化
+**Branch**: `main`
+
+### Summary
+
+修复 create-super-admin 生成登录页 required label 使用 UI 英文 fallback 的问题，补 generator 回归测试，准备 create-super-admin 0.1.5 patch，并将生成器本地化契约写入 cli-starter spec。验证包括 CLI 测试、validate:starter、release check，以及本地 0.1.5 tarball 生成 starter 后的浏览器 smoke。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a3fdbf8` | (see git log) |
+| `92efbca` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
