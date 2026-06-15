@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 44
+- **Total Sessions**: 45
 - **Last Active**: 2026-06-15
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1522 | Active |
+| `journal-1.md` | ~1555 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 45 | 2026-06-15 | Stage Manager Motion Transitions | `4f79ca6` | `main` |
 | 44 | 2026-06-15 | Stage Manager 左侧调度与全屏概览 | `068dc96` | `main` |
 | 43 | 2026-06-15 | Fix Control Center layout scrolling | `09054a7`, `21f775c`, `4b89272` | `main` |
 | 42 | 2026-06-15 | 修复 generated auth 字段标记本地化 | `a3fdbf8`, `92efbca` | `main` |

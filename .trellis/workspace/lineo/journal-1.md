@@ -1520,3 +1520,36 @@ Made Control Center height content-adaptive with viewport-capped AdminScrollArea
 ### Next Steps
 
 - None - task complete
+
+
+## Session 45: Stage Manager Motion Transitions
+
+**Date**: 2026-06-15
+**Task**: Stage Manager Motion Transitions
+**Branch**: `main`
+
+### Summary
+
+Implemented Motion-powered Stage Manager transitions, fixed Control Center overview visibility and grouped Stage Rail activation, added stacked rail visuals, synchronized generated starter dependency parity, documented the Stage Manager contract, and verified typecheck/lint/test/build/validate:starter.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4f79ca6` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
