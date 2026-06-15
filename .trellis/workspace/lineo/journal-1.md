@@ -1487,3 +1487,36 @@ Made Control Center height content-adaptive with viewport-capped AdminScrollArea
 ### Next Steps
 
 - None - task complete
+
+
+## Session 44: Stage Manager 左侧调度与全屏概览
+
+**Date**: 2026-06-15
+**Task**: Stage Manager 左侧调度与全屏概览
+**Branch**: `main`
+
+### Summary
+
+拆分 Stage Manager 为左侧布局 rail 与全屏 Overview，恢复 rail 窗口标题，加入源到工作区 ghost 过渡，同步 Control Center、generated starter、测试与 Trellis spec。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `068dc96` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
