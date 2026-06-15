@@ -118,6 +118,7 @@ describe('create-super-admin starter generation', () => {
       typecheck: 'vue-tsc --noEmit'
     })
     expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.2')
+    expect(packageJson.dependencies['motion-v']).toBe('^2.3.0')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
     expect(config).toContain("installed: ['base']")
     expect(config).toContain("switcher: 'off'")
@@ -155,6 +156,7 @@ describe('create-super-admin starter generation', () => {
 
     expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.2')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.2')
+    expect(packageJson.dependencies['motion-v']).toBe('^2.3.0')
     expect(packageJson.dependencies['@super-admin-org/theme-crypto']).toBeUndefined()
     expect(registry).toContain("from '@super-admin-org/theme-base'")
     expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")

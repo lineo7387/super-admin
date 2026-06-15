@@ -26,8 +26,8 @@ export type StageTransitionRect = {
 
 export type StageTransitionGhost = {
   id: number
-  phase: 'source' | 'target'
   source: StageTransitionRect
+  status: 'measuring' | 'animating'
   target: StageTransitionRect
   title: string
 }
@@ -139,6 +139,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
       return
     }
 
+    controlCenterOpen.value = false
     stageOverviewOpen.value = true
   }
 
@@ -150,8 +151,8 @@ export const usePreferencesStore = defineStore('preferences', () => {
     const source = toStageTransitionRect(sourceRect)
     stageTransitionGhost.value = {
       id: Date.now(),
-      phase: 'source',
       source,
+      status: 'measuring',
       target: source,
       title
     }
@@ -164,7 +165,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
 
     stageTransitionGhost.value = {
       ...stageTransitionGhost.value,
-      phase: 'target',
+      status: 'animating',
       target: toStageTransitionRect(targetRect)
     }
   }

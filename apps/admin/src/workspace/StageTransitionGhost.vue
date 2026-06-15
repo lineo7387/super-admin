@@ -1,34 +1,92 @@
 <script setup lang="ts">
 import { computed, type CSSProperties } from 'vue'
+import { motion, useReducedMotion } from 'motion-v'
 import { usePreferencesStore } from '@/stores/preferences.store'
+import type { StageTransitionRect } from '@/stores/preferences.store'
+
+type StageMotionTarget = {
+  filter: string
+  height: number
+  opacity: number
+  scale: number
+  width: number
+  x: number
+  y: number
+}
 
 const preferences = usePreferencesStore()
+const prefersReducedMotion = useReducedMotion()
 
-const ghostStyle = computed<CSSProperties>(() => {
+const baseStyle = computed<CSSProperties>(() => ({
+  height: '0px',
+  left: '0px',
+  position: 'fixed',
+  top: '0px',
+  width: '0px'
+}))
+
+const initialRect = computed<StageMotionTarget>(() => {
   const ghost = preferences.stageTransitionGhost
-  if (!ghost) {
-    return {}
-  }
-
-  const rect = ghost.phase === 'source' ? ghost.source : ghost.target
-
-  return {
-    height: `${rect.height}px`,
-    left: `${rect.left}px`,
-    opacity: ghost.phase === 'source' ? '0.86' : '0',
-    top: `${rect.top}px`,
-    width: `${rect.width}px`
-  }
+  return createMotionTarget(ghost?.source, 0.92)
 })
+
+const targetRect = computed<StageMotionTarget>(() => {
+  const ghost = preferences.stageTransitionGhost
+  if (!ghost || ghost.status === 'measuring') {
+    return createMotionTarget(ghost?.source, 0.92)
+  }
+
+  return createMotionTarget(ghost.target, 0)
+})
+
+const motionTransition = computed(() =>
+  prefersReducedMotion.value
+    ? { duration: 0.18, ease: 'easeOut' }
+    : {
+        default: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+        opacity: { duration: 0.3, ease: [0.4, 0, 0.2, 1] }
+      }
+)
+
+function createMotionTarget(rect: StageTransitionRect | undefined, opacity: number): StageMotionTarget {
+  return {
+    filter: opacity === 0 ? 'blur(1.5px)' : 'blur(0px)',
+    height: rect?.height ?? 0,
+    opacity,
+    scale: prefersReducedMotion.value && opacity === 0 ? 0.98 : 1,
+    width: rect?.width ?? 0,
+    x: rect?.left ?? 0,
+    y: rect?.top ?? 0
+  }
+}
+
+function isStageMotionTarget(value: unknown): value is StageMotionTarget {
+  return typeof value === 'object' && value !== null && 'opacity' in value
+}
+
+function handleMotionComplete(definition: unknown): void {
+  if (preferences.stageTransitionGhost?.status !== 'animating') {
+    return
+  }
+
+  if (!isStageMotionTarget(definition) || definition.opacity !== 0) {
+    return
+  }
+
+  preferences.clearStageTransition()
+}
 </script>
 
 <template>
-  <div
+  <motion.div
     v-if="preferences.stageTransitionGhost"
     :key="preferences.stageTransitionGhost.id"
     class="stage-transition-ghost"
-    :data-phase="preferences.stageTransitionGhost.phase"
-    :style="ghostStyle"
+    :initial="initialRect"
+    :animate="targetRect"
+    :style="baseStyle"
+    :transition="motionTransition"
+    :on-animation-complete="handleMotionComplete"
     aria-hidden="true"
   >
     <div class="stage-transition-ghost__chrome">
@@ -39,12 +97,11 @@ const ghostStyle = computed<CSSProperties>(() => {
         <span />
       </div>
     </div>
-  </div>
+  </motion.div>
 </template>
 
 <style scoped>
 .stage-transition-ghost {
-  position: fixed;
   z-index: 90;
   overflow: hidden;
   border: 1px solid var(--border-strong);
@@ -56,13 +113,7 @@ const ghostStyle = computed<CSSProperties>(() => {
     color-mix(in srgb, var(--surface-raised) 82%, transparent);
   box-shadow: var(--glow), var(--panel-shadow);
   transform-origin: center center;
-  transition:
-    left 320ms var(--easing),
-    top 320ms var(--easing),
-    width 320ms var(--easing),
-    height 320ms var(--easing),
-    opacity 320ms ease;
-  will-change: left, top, width, height, opacity;
+  will-change: transform, width, height, opacity, filter;
 }
 
 .stage-transition-ghost__chrome {
@@ -70,14 +121,14 @@ const ghostStyle = computed<CSSProperties>(() => {
   height: 100%;
   min-height: 0;
   grid-template-rows: auto 1fr;
-  padding: clamp(0.55rem, 1vw, 1rem);
+  padding: clamp(0.55rem, 1rem, 1rem);
 }
 
 .stage-transition-ghost__title {
   max-width: 24rem;
   overflow: hidden;
   color: var(--foreground);
-  font-size: clamp(0.75rem, 1vw, 0.95rem);
+  font-size: 0.88rem;
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -86,13 +137,13 @@ const ghostStyle = computed<CSSProperties>(() => {
 .stage-transition-ghost__bars {
   display: grid;
   align-content: center;
-  gap: clamp(0.4rem, 0.8vw, 0.75rem);
+  gap: 0.62rem;
   opacity: 0.6;
 }
 
 .stage-transition-ghost__bars span {
   display: block;
-  height: clamp(0.3rem, 0.55vw, 0.55rem);
+  height: 0.45rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--primary) 36%, var(--surface));
 }
@@ -103,11 +154,5 @@ const ghostStyle = computed<CSSProperties>(() => {
 
 .stage-transition-ghost__bars span:nth-child(3) {
   width: 44%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .stage-transition-ghost {
-    transition: opacity 120ms ease;
-  }
 }
 </style>

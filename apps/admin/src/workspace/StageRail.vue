@@ -8,7 +8,7 @@ import { createWorkspaceTabGroups, findActiveModule, findModuleRoute } from '@su
 import { translateRouteTitle } from '@/i18n/navigation'
 import { registeredModules } from '@/modules/module-registry'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
-import { resolveNextGroupWindow, sortStageGroupsForDock } from './stage-manager'
+import { resolveStageGroupWindow, sortStageGroupsForDock } from './stage-manager'
 import type { StageGroupView, StageWindowView } from './stage-manager'
 import StageDockThumb from './StageDockThumb.vue'
 import StageWindowPreview from './StageWindowPreview.vue'
@@ -62,7 +62,7 @@ async function activateStageGroup(groupId: string, sourceRect: DOMRect): Promise
     return
   }
 
-  const nextWindow = resolveNextGroupWindow(group, route.fullPath)
+  const nextWindow = resolveStageGroupWindow(group)
   await activateStage(nextWindow.routePath, translateRouteTitle(t, nextWindow.routePath, nextWindow.title), sourceRect)
 }
 
@@ -103,11 +103,17 @@ function exitWindowGroup(): void {
           :stacked="stageGroup.isStacked"
           @activate="activateStageGroup(stageGroup.id, $event)"
         >
-          <StageWindowPreview
-            :component="stageGroup.component"
-            :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
-            :stacked="stageGroup.isStacked"
-          />
+          <div class="stage-rail__preview-stack">
+            <div v-if="stageGroup.isStacked" class="stage-rail__stack" aria-hidden="true">
+              <span class="stage-rail__stack-card stage-rail__stack-card--back" />
+              <span class="stage-rail__stack-card stage-rail__stack-card--middle" />
+            </div>
+            <StageWindowPreview
+              :component="stageGroup.component"
+              :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
+              :stacked="stageGroup.isStacked"
+            />
+          </div>
           <div class="stage-rail__window-title" :title="stageGroup.activeTabTitle">
             {{ stageGroup.activeTabTitle }}
           </div>
@@ -224,6 +230,47 @@ function exitWindowGroup(): void {
   text-overflow: ellipsis;
   text-shadow: 0 1px 8px color-mix(in srgb, var(--app-background) 78%, transparent);
   white-space: nowrap;
+}
+
+.stage-rail__preview-stack {
+  position: relative;
+  isolation: isolate;
+}
+
+.stage-rail__preview-stack :deep(.stage-window-preview) {
+  z-index: 3;
+  background: color-mix(in srgb, var(--surface-raised) 76%, transparent);
+}
+
+.stage-rail__stack {
+  position: absolute;
+  inset: -0.24rem 0.36rem 0.42rem 0.1rem;
+  z-index: 1;
+  border-radius: var(--radius-md);
+  pointer-events: none;
+  transform: perspective(1000px) rotateY(18deg) scale(0.88);
+  transform-origin: center center;
+}
+
+.stage-rail__stack-card {
+  position: absolute;
+  inset: 0.1rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border));
+  border-radius: inherit;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, transparent), transparent 52%),
+    color-mix(in srgb, var(--surface-raised) 72%, transparent);
+  box-shadow: 0 0.75rem 1.8rem color-mix(in srgb, var(--app-background) 34%, transparent);
+}
+
+.stage-rail__stack-card--back {
+  transform: translate(0.82rem, -0.56rem) scale(0.94);
+  opacity: 0.42;
+}
+
+.stage-rail__stack-card--middle {
+  transform: translate(0.42rem, -0.28rem) scale(0.97);
+  opacity: 0.64;
 }
 
 .stage-rail__group-cue {

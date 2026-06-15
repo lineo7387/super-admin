@@ -34,7 +34,9 @@ const activeLayout = computed(() => {
   }
   return TriColumnLayout
 })
-const showStageRail = computed(() => preferences.stageManagerDesktopAvailable && preferences.stageManager.railEnabled)
+const showStageRail = computed(
+  () => preferences.stageManagerDesktopAvailable && preferences.stageManager.railEnabled && tabs.state.tabs.length > 1
+)
 
 function openControlCenter(): void {
   preferences.openControlCenter()
@@ -59,7 +61,9 @@ watch(
 
 <template>
   <div class="stage-shell-frame" :data-stage-rail-open="showStageRail">
-    <StageRail v-if="showStageRail" />
+    <Transition name="stage-rail-shell">
+      <StageRail v-if="showStageRail" />
+    </Transition>
     <div class="stage-shell-frame__app">
       <component :is="activeLayout">
         <template #workspace>
@@ -89,7 +93,7 @@ watch(
   min-height: 100vh;
   grid-template-columns: minmax(0, 1fr);
   background: var(--app-background);
-  transition: grid-template-columns 240ms var(--easing);
+  transition: grid-template-columns 300ms var(--easing);
 }
 
 .stage-shell-frame[data-stage-rail-open="true"] {
@@ -98,6 +102,19 @@ watch(
 
 .stage-shell-frame__app {
   min-width: 0;
+}
+
+.stage-rail-shell-enter-active,
+.stage-rail-shell-leave-active {
+  transition:
+    opacity 300ms var(--easing),
+    transform 300ms var(--easing);
+}
+
+.stage-rail-shell-enter-from,
+.stage-rail-shell-leave-to {
+  opacity: 0;
+  transform: translateX(-0.75rem);
 }
 
 @media (max-width: 1279px) {

@@ -3,6 +3,7 @@ import appShellSource from '@/shell/AppShell.vue?raw'
 import stageOverviewSource from './StageOverview.vue?raw'
 import stageRailSource from './StageRail.vue?raw'
 import stageTransitionGhostSource from './StageTransitionGhost.vue?raw'
+import stageWindowActivationSource from './useStageWindowActivation.ts?raw'
 
 describe('stage manager desktop surfaces', () => {
   it('mounts Stage Rail as a left-side app shell region instead of a teleported side overlay', () => {
@@ -12,6 +13,10 @@ describe('stage manager desktop surfaces', () => {
     expect(appShellSource).toContain('grid-template-columns: 14rem minmax(0, 1fr);')
     expect(appShellSource).toContain('preferences.stageManagerDesktopAvailable')
     expect(appShellSource).toContain('preferences.stageManager.railEnabled')
+    expect(appShellSource).toContain('tabs.state.tabs.length > 1')
+    expect(appShellSource).toContain('<Transition name="stage-rail-shell">')
+    expect(appShellSource).toContain('grid-template-columns 300ms')
+    expect(appShellSource).toContain('.stage-rail-shell-enter-active')
     expect(appShellSource).not.toContain('StageManagerOverlay')
     expect(appShellSource).not.toContain("presentationMode === 'side-dock'")
   })
@@ -48,9 +53,28 @@ describe('stage manager desktop surfaces', () => {
 
   it('renders a runtime-only ghost for source-to-workspace transitions', () => {
     expect(appShellSource).toContain('<StageTransitionGhost />')
+    expect(stageTransitionGhostSource).toContain("import { motion, useReducedMotion } from 'motion-v'")
     expect(stageTransitionGhostSource).toContain('preferences.stageTransitionGhost')
     expect(stageTransitionGhostSource).toContain('stage-transition-ghost')
-    expect(stageTransitionGhostSource).toContain('prefers-reduced-motion')
     expect(stageTransitionGhostSource).toContain('pointer-events: none;')
+    expect(stageTransitionGhostSource).toContain(':initial="initialRect"')
+    expect(stageTransitionGhostSource).toContain(':animate="targetRect"')
+    expect(stageTransitionGhostSource).toContain('duration: 0.3')
+    expect(stageTransitionGhostSource).toContain('opacity: { duration: 0.3')
+    expect(stageTransitionGhostSource).not.toContain('transition:')
+    expect(stageTransitionGhostSource).not.toContain('left 320ms')
+    expect(stageTransitionGhostSource).not.toContain('top 320ms')
+    expect(stageWindowActivationSource).not.toContain('STAGE_TRANSITION_DURATION_MS')
+  })
+
+  it('waits for route-mounted targets without coupling cleanup to an animation duration', () => {
+    expect(stageWindowActivationSource).toContain('const STAGE_TRANSITION_TARGET_ATTEMPTS')
+    expect(stageWindowActivationSource).toContain('waitForStageTransitionTargetRect')
+    expect(stageWindowActivationSource).toContain('await waitForStageTransitionSourceFrame()')
+    expect(stageWindowActivationSource).toContain('await waitForStageTransitionTargetRect()')
+    expect(stageWindowActivationSource.indexOf('await waitForStageTransitionSourceFrame()')).toBeLessThan(
+      stageWindowActivationSource.indexOf('await router.push(path)')
+    )
+    expect(stageWindowActivationSource).not.toContain('setTimeout')
   })
 })

@@ -90,6 +90,17 @@ describe('preferences store shell overlays', () => {
     expect(window.localStorage.getItem('super-admin:preferences')).toBeNull()
   })
 
+  it('closes Control Center before opening fullscreen overview', () => {
+    const preferences = usePreferencesStore()
+
+    preferences.setStageManagerDesktopAvailable(true)
+    preferences.openControlCenter()
+    preferences.openStageOverview()
+
+    expect(preferences.controlCenterOpen).toBe(false)
+    expect(preferences.stageOverviewOpen).toBe(true)
+  })
+
   it('drops retired stage manager scroll and presentation preferences from persisted state', () => {
     window.localStorage.setItem(
       'super-admin:preferences',

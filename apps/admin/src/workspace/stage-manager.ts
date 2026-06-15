@@ -55,14 +55,6 @@ export function sortStageGroupsForDock<T extends SortableStageGroup>(groups: rea
   })
 }
 
-export function resolveNextGroupWindow(
-  group: Pick<WorkspaceTabGroup, 'activeTab' | 'isStacked' | 'tabs'>,
-  currentRoutePath: string
-): WorkspaceTab {
-  if (!group.isStacked || !group.tabs.some((tab) => tab.routePath === currentRoutePath)) {
-    return group.activeTab
-  }
-
-  const recentWindows = [...group.tabs].sort((left, right) => right.activatedAt - left.activatedAt)
-  return recentWindows.find((tab) => tab.routePath !== currentRoutePath) ?? group.activeTab
+export function resolveStageGroupWindow(group: Pick<WorkspaceTabGroup, 'activeTab'>): WorkspaceTab {
+  return group.activeTab
 }

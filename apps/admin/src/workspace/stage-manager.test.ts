@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { WorkspaceTab, WorkspaceTabGroup } from '@super-admin-org/core'
-import { resolveNextGroupWindow, resolveOverviewLayout, sortStageGroupsForDock } from './stage-manager'
+import { resolveOverviewLayout, resolveStageGroupWindow, sortStageGroupsForDock } from './stage-manager'
 
 function createTab(routePath: string, activatedAt: number): WorkspaceTab {
   return {
@@ -86,7 +86,7 @@ describe('stage manager logic', () => {
     expect(input.map((group) => group.id)).toEqual(['older', 'recent', 'active'])
   })
 
-  it('cycles to the most recent other window when clicking the current stacked group', () => {
+  it('keeps outer stacked group activation on the group active tab', () => {
     const current = createTab('/users/all', 30)
     const next = createTab('/users/pending', 50)
     const older = createTab('/users/invites', 10)
@@ -97,7 +97,7 @@ describe('stage manager logic', () => {
       isActive: true
     })
 
-    expect(resolveNextGroupWindow(group, '/users/all')).toBe(next)
+    expect(resolveStageGroupWindow(group)).toBe(current)
   })
 
   it('activates the group active tab when the current route is outside the group', () => {
@@ -108,6 +108,6 @@ describe('stage manager logic', () => {
       tabs: [activeTab, createTab('/users/pending', 20)]
     })
 
-    expect(resolveNextGroupWindow(group, '/access')).toBe(activeTab)
+    expect(resolveStageGroupWindow(group)).toBe(activeTab)
   })
 })

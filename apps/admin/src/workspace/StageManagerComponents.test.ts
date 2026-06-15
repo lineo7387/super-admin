@@ -56,6 +56,9 @@ describe('stage manager child components', () => {
     expect(stageRailSource).toContain('StageWindowPreview')
     expect(stageRailSource).toContain('stage-rail')
     expect(stageRailSource).toContain('orientation="left"')
+    expect(stageRailSource).toContain('stage-rail__stack')
+    expect(stageRailSource).toContain('stage-rail__stack-card')
+    expect(stageRailSource).toContain('resolveStageGroupWindow')
     expect(stageRailSource).toContain('stage-rail__window-title')
     expect(stageRailSource).toContain('{{ stageGroup.activeTabTitle }}')
     expect(stageRailSource).toContain('{{ stage.title }}')
@@ -72,6 +75,7 @@ describe('stage manager child components', () => {
     expect(stageRailSource).not.toContain('StatusPill')
     expect(stageRailSource).not.toContain('{{ stageGroup.label }}')
     expect(stageRailSource).not.toContain('<Teleport')
+    expect(stageRailSource).not.toContain('resolveNextGroupWindow')
   })
 
   it('renders fullscreen overview cards with the same reveal action behavior and no stacked chrome', () => {
