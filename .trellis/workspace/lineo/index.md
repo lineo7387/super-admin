@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 46
-- **Last Active**: 2026-06-16
+- **Total Sessions**: 47
+- **Last Active**: 2026-06-17
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1588 | Active |
+| `journal-1.md` | ~1621 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 47 | 2026-06-17 | Stage Manager rail actions | `ffa9352` | `main` |
 | 46 | 2026-06-16 | Improve Control Center entry prominence | `7de7653` | `main` |
 | 45 | 2026-06-15 | Stage Manager Motion Transitions | `4f79ca6` | `main` |
 | 44 | 2026-06-15 | Stage Manager 左侧调度与全屏概览 | `068dc96` | `main` |

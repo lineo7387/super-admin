@@ -1586,3 +1586,36 @@ Moved the global Control Center trigger to a prominent top-right labeled entry, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 47: Stage Manager rail actions
+
+**Date**: 2026-06-17
+**Task**: Stage Manager rail actions
+**Branch**: `main`
+
+### Summary
+
+修复 Stage Rail 1↔2 布局动画、侧边/Overview 共享窗口动作、模块组卡片级堆叠，并同步 starter parity 与规范。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ffa9352` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
