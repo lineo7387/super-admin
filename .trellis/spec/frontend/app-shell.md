@@ -184,7 +184,9 @@ The Control Center trigger and modal must be mounted above layout preset compone
 
 ### Global Control Center Placement Contract
 
-The Control Center is a project/workspace configuration surface, not a personal account setting. Its trigger must be a fixed, right-side, vertically centered floating gear button mounted from `AppShell`, outside all layout preset components and outside `ShellAccountMenu`.
+The Control Center is a project/workspace configuration surface, not a personal account setting. Its trigger must be a fixed, top-right, labeled app-shell button mounted from `AppShell`, outside all layout preset components and outside `ShellAccountMenu`.
+
+The trigger must expose the visible `控制中心` / `shell.preferences.title` label next to the settings icon. Its button material should use theme tokens such as `--surface-raised`, `--texture`, `--primary`, `--panel-shadow`, and `--glow`; its text highlight may use a short theme-colored sweep on mount/hover/focus, but must not run as a permanent flashing animation. Respect `prefers-reduced-motion` by disabling sweep/transform motion and falling back to static readable text.
 
 The modal remains mounted once with `GlobalPreferences trigger="none"` above layout presets so live theme, workspace-tab, Stage Manager, and layout changes do not close it.
 
@@ -196,7 +198,10 @@ The modal remains mounted once with `GlobalPreferences trigger="none"` above lay
     <WorkspaceRouterView />
   </template>
 </component>
-<button class="fixed right-4 top-1/2">...</button>
+<button class="fixed right-4 top-4">
+  <Settings2 />
+  <span>{{ t('shell.preferences.title') }}</span>
+</button>
 <GlobalPreferences trigger="none" />
 ```
 
@@ -208,7 +213,7 @@ The modal remains mounted once with `GlobalPreferences trigger="none"` above lay
 </ShellAccountMenu>
 ```
 
-**Check**: Verify tri-column, dual-column, and top-header layouts after login. The floating gear should stay visible on the right side and open the same live Control Center without changing routes.
+**Check**: Verify tri-column, dual-column, and top-header layouts after login. The top-right labeled trigger should stay visible, open the same live Control Center without changing routes, and keep the modal open while layout choices change.
 
 ### Account Menu Placement Contract
 

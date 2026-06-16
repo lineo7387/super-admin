@@ -4,11 +4,22 @@ import aiAssistantSource from '../AiAssistantFloatingPanel.vue?raw'
 import globalPreferencesSource from './GlobalPreferences.vue?raw'
 
 describe('global preferences shell wiring', () => {
-  it('mounts the control center modal once with a fixed right-side app-shell trigger', () => {
+  it('mounts the control center modal once with a prominent top-right app-shell trigger', () => {
     expect(appShellSource).toContain('<GlobalPreferences trigger="none" />')
     expect(appShellSource).toContain('openControlCenter')
     expect(appShellSource).toContain('Settings2')
-    expect(appShellSource).toContain('fixed right-4 top-1/2')
+    expect(appShellSource).toContain('control-center-trigger')
+    expect(appShellSource).toContain('control-center-trigger__label')
+    expect(appShellSource).toContain("{{ t('shell.preferences.title') }}")
+    expect(appShellSource).toContain('fixed right-4 top-4')
+    expect(appShellSource).toContain('var(--texture)')
+    expect(appShellSource).toContain('var(--glow)')
+    expect(appShellSource).toContain('background-clip: text')
+    expect(appShellSource).toContain('control-center-surface-sweep')
+    expect(appShellSource).toContain('control-center-title-sweep')
+    expect(appShellSource).toContain('@media (prefers-reduced-motion: reduce)')
+    expect(appShellSource).not.toContain('fixed right-4 top-1/2')
+    expect(appShellSource).not.toContain('-translate-y-1/2')
     expect(globalPreferencesSource).toContain('preferences.controlCenterOpen')
     expect(globalPreferencesSource).toContain('preferences.setLocale')
     expect(globalPreferencesSource).toContain('shell.preferences.locale')
@@ -38,7 +49,6 @@ describe('global preferences shell wiring', () => {
     expect(globalPreferencesSource).not.toContain('setStageManagerScrollOverflow')
     expect(globalPreferencesSource).not.toContain('stageManagerScroll')
     expect(globalPreferencesSource).not.toContain('stageScrollDescription')
-    expect(globalPreferencesSource).not.toContain('fixed right-4 top-3')
   })
 
   it('mounts AI assistance as a floating panel instead of a permanent context rail', () => {

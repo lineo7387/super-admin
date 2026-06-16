@@ -74,12 +74,15 @@ watch(
   </div>
   <AdminButton
     variant="secondary"
-    size="icon"
-    class="fixed right-4 top-1/2 z-[64] -translate-y-1/2 shadow-[var(--panel-shadow)]"
+    size="sm"
+    class="control-center-trigger fixed right-4 top-4 z-[64] shadow-[var(--panel-shadow)]"
     :title="t('shell.preferences.title')"
     @click="openControlCenter"
   >
-    <Settings2 class="size-4" />
+    <span class="control-center-trigger__icon" aria-hidden="true">
+      <Settings2 class="size-4" />
+    </span>
+    <span class="control-center-trigger__label">{{ t('shell.preferences.title') }}</span>
   </AdminButton>
   <AiAssistantFloatingPanel />
   <StageOverview />
@@ -115,6 +118,139 @@ watch(
 .stage-rail-shell-leave-to {
   opacity: 0;
   transform: translateX(-0.75rem);
+}
+
+.control-center-trigger {
+  position: fixed;
+  isolation: isolate;
+  overflow: hidden;
+  gap: 0.48rem;
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border-strong));
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 13%, transparent), transparent 48%),
+    var(--texture),
+    color-mix(in srgb, var(--surface-raised) 88%, var(--surface));
+  box-shadow: var(--panel-shadow), var(--glow);
+  color: var(--foreground);
+  transition:
+    border-color 180ms var(--easing),
+    box-shadow 180ms var(--easing),
+    transform 180ms var(--easing);
+}
+
+.control-center-trigger::before {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    color-mix(in srgb, var(--primary) 18%, transparent) 42%,
+    color-mix(in srgb, var(--foreground) 12%, transparent) 50%,
+    transparent 66%
+  );
+  content: '';
+  opacity: 0;
+  transform: translateX(-120%);
+  animation: control-center-surface-sweep 900ms var(--easing) 420ms both;
+}
+
+.control-center-trigger:hover,
+.control-center-trigger:focus-visible {
+  border-color: color-mix(in srgb, var(--primary) 58%, var(--border-strong));
+  box-shadow: var(--panel-shadow), 0 0 0.9rem color-mix(in srgb, var(--primary) 24%, transparent), var(--glow);
+  transform: translateY(-1px);
+}
+
+.control-center-trigger:hover::before,
+.control-center-trigger:focus-visible::before {
+  animation: control-center-surface-sweep 900ms var(--easing) both;
+}
+
+.control-center-trigger:hover .control-center-trigger__icon,
+.control-center-trigger:focus-visible .control-center-trigger__icon {
+  transform: rotate(8deg);
+}
+
+.control-center-trigger__icon {
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+  transition: transform 180ms var(--easing);
+}
+
+.control-center-trigger__label {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      100deg,
+      var(--foreground) 0%,
+      var(--foreground) 34%,
+      color-mix(in srgb, var(--primary) 76%, var(--foreground)) 48%,
+      var(--foreground) 62%,
+      var(--foreground) 100%
+    );
+  background-clip: text;
+  background-size: 230% 100%;
+  color: transparent;
+  font-weight: 800;
+  letter-spacing: 0;
+  -webkit-background-clip: text;
+  animation: control-center-title-sweep 1100ms var(--easing) 620ms both;
+}
+
+.control-center-trigger:hover .control-center-trigger__label,
+.control-center-trigger:focus-visible .control-center-trigger__label {
+  animation: control-center-title-sweep 1100ms var(--easing) both;
+}
+
+@keyframes control-center-surface-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+
+  38% {
+    opacity: 0.86;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+@keyframes control-center-title-sweep {
+  0% {
+    background-position: 120% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control-center-trigger,
+  .control-center-trigger::before,
+  .control-center-trigger__icon,
+  .control-center-trigger__label {
+    animation: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+    transform: none;
+  }
+
+  .control-center-trigger::before {
+    opacity: 0;
+  }
+
+  .control-center-trigger__label {
+    background: none;
+    color: var(--foreground);
+  }
 }
 
 @media (max-width: 1279px) {
