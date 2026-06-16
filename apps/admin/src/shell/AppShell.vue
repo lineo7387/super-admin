@@ -61,9 +61,14 @@ watch(
 
 <template>
   <div class="stage-shell-frame" :data-stage-rail-open="showStageRail">
-    <Transition name="stage-rail-shell">
-      <StageRail v-if="showStageRail" />
-    </Transition>
+    <div
+      v-if="preferences.stageManagerDesktopAvailable"
+      class="stage-rail-shell"
+      :aria-hidden="!showStageRail"
+      :inert="!showStageRail"
+    >
+      <StageRail />
+    </div>
     <div class="stage-shell-frame__app">
       <component :is="activeLayout">
         <template #workspace>
@@ -93,8 +98,10 @@ watch(
 <style scoped>
 .stage-shell-frame {
   display: grid;
+  position: relative;
   min-height: 100vh;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: 0rem minmax(0, 1fr);
+  overflow-x: clip;
   background: var(--app-background);
   transition: grid-template-columns 300ms var(--easing);
 }
@@ -104,20 +111,31 @@ watch(
 }
 
 .stage-shell-frame__app {
+  grid-column: 2;
+  grid-row: 1;
   min-width: 0;
 }
 
-.stage-rail-shell-enter-active,
-.stage-rail-shell-leave-active {
+.stage-rail-shell {
+  grid-column: 1;
+  grid-row: 1;
+  width: 14rem;
+  min-height: 100vh;
+  min-width: 0;
+  overflow: visible;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-100%);
   transition:
     opacity 300ms var(--easing),
     transform 300ms var(--easing);
+  will-change: opacity, transform;
 }
 
-.stage-rail-shell-enter-from,
-.stage-rail-shell-leave-to {
-  opacity: 0;
-  transform: translateX(-0.75rem);
+.stage-shell-frame[data-stage-rail-open="true"] .stage-rail-shell {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
 }
 
 .control-center-trigger {
@@ -256,7 +274,7 @@ watch(
 @media (max-width: 1279px) {
   .stage-shell-frame,
   .stage-shell-frame[data-stage-rail-open="true"] {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 0rem minmax(0, 1fr);
   }
 }
 </style>

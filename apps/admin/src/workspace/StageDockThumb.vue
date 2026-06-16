@@ -39,6 +39,10 @@ function activate(): void {
       'stage-thumb--stacked': props.stacked
     }"
   >
+    <div v-if="props.stacked" class="stage-thumb__card-stack" aria-hidden="true">
+      <span class="stage-thumb__stack-card stage-thumb__stack-card--back" />
+      <span class="stage-thumb__stack-card stage-thumb__stack-card--middle" />
+    </div>
     <button
       ref="button"
       type="button"
@@ -61,7 +65,40 @@ function activate(): void {
   flex: 0 0 var(--stage-thumb-height);
   border-radius: var(--radius-lg);
   background: transparent;
+  isolation: isolate;
   transform-origin: center center;
+}
+
+.stage-thumb__card-stack {
+  position: absolute;
+  inset: 0.16rem 0.28rem 0.28rem 0.16rem;
+  z-index: 1;
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+  transform: perspective(1000px) rotateY(18deg) scale(0.88);
+  transform-origin: center center;
+  transition: transform var(--duration-base) var(--easing);
+}
+
+.stage-thumb__stack-card {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border));
+  border-radius: inherit;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 12%, transparent), transparent 52%),
+    color-mix(in srgb, var(--surface-raised) 70%, transparent);
+  box-shadow: 0 0.75rem 1.8rem color-mix(in srgb, var(--app-background) 34%, transparent);
+}
+
+.stage-thumb__stack-card--back {
+  opacity: 0.4;
+  transform: translate(-1.35rem, 0.72rem) scale(0.92);
+}
+
+.stage-thumb__stack-card--middle {
+  opacity: 0.62;
+  transform: translate(-0.72rem, 0.36rem) scale(0.96);
 }
 
 .stage-thumb__button {
@@ -115,6 +152,10 @@ function activate(): void {
 }
 
 .stage-thumb:hover .stage-thumb__surface {
+  transform: perspective(1000px) rotateY(9deg) scale(1);
+}
+
+.stage-thumb:hover .stage-thumb__card-stack {
   transform: perspective(1000px) rotateY(9deg) scale(1);
 }
 

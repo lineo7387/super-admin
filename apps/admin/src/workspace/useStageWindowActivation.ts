@@ -42,7 +42,7 @@ async function waitForStageTransitionTargetRect(): Promise<DOMRect | null> {
 
 export function useStageWindowActivation(): {
   activateStage: (path: string, title: string, sourceRect: DOMRect) => Promise<void>
-  closeStage: (tabId: string, activePath: string) => Promise<void>
+  closeStage: (tabId: string) => Promise<void>
   refreshStage: (tabId: string) => void
   toggleStagePin: (tabId: string) => void
 } {
@@ -65,16 +65,19 @@ export function useStageWindowActivation(): {
     preferences.clearStageTransition()
   }
 
-  async function closeStage(tabId: string, activePath: string): Promise<void> {
+  async function closeStage(tabId: string): Promise<void> {
+    const wasActive = tabs.state.activeTabId === tabId
     const next = tabs.closeTab(tabId)
-    if (activePath === tabId && next) {
+    if (!wasActive) {
+      return
+    }
+
+    if (next) {
       await router.push(next.routePath)
       return
     }
 
-    if (activePath === tabId) {
-      await router.push('/examples/dashboard')
-    }
+    await router.push('/examples/dashboard')
   }
 
   function toggleStagePin(tabId: string): void {

@@ -33,6 +33,44 @@ function expectControlCenterScrollingLayout(preferences) {
   expect(preferences).not.toContain('max-h-[calc(88vh-92px)]')
 }
 
+function expectStageManagerStarterParity({ appShell, stageDockThumb, stageOverviewCard, stageRail }) {
+  const groupedPreviewBlock = stageRail.match(
+    /<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?\/>/
+  )?.[0] ?? ''
+
+  expect(appShell).toContain(':data-stage-rail-open="showStageRail"')
+  expect(appShell).toContain('overflow-x: clip;')
+  expect(appShell).toContain('v-if="preferences.stageManagerDesktopAvailable"')
+  expect(appShell).toContain('class="stage-rail-shell"')
+  expect(appShell).toContain(':aria-hidden="!showStageRail"')
+  expect(appShell).toContain(':inert="!showStageRail"')
+  expect(appShell).toContain('<StageRail />')
+  expect(appShell).toContain('grid-template-columns: 0rem minmax(0, 1fr);')
+  expect(appShell).toContain('grid-column: 1;')
+  expect(appShell).toContain('width: 14rem;')
+  expect(appShell).toContain('min-height: 100vh;')
+  expect(appShell).toContain('transform: translateX(-100%);')
+  expect(appShell).toContain('.stage-shell-frame[data-stage-rail-open="true"] .stage-rail-shell')
+  expect(appShell).toContain('pointer-events: none;')
+  expect(appShell).toContain('pointer-events: auto;')
+  expect(appShell).not.toContain('stage-rail-shell-leave-active')
+  expect(appShell).not.toContain('stageRailLeaving')
+  expect(stageDockThumb).toContain('stage-thumb__card-stack')
+  expect(stageDockThumb).toContain('stage-thumb__stack-card')
+  expect(stageDockThumb).toContain('transform: translate(-1.35rem, 0.72rem) scale(0.92);')
+  expect(stageDockThumb).toContain('transform: translate(-0.72rem, 0.36rem) scale(0.96);')
+  expect(stageRail).toContain('height: 100%;')
+  expect(stageRail).toContain('min-height: 100vh;')
+  expect(stageRail).toContain("import { useStageWindows } from './useStageWindows'")
+  expect(stageRail).toContain('StageWindowActions')
+  expect(stageRail).toContain('visibility="reveal"')
+  expect(groupedPreviewBlock).not.toContain(':stacked="stageGroup.isStacked"')
+  expect(stageRail).not.toContain('stage-rail__preview-stack')
+  expect(stageRail).not.toContain('stage-rail__stack-card')
+  expect(stageOverviewCard).toContain('StageWindowActions')
+  expect(stageOverviewCard).toContain('visibility="reveal"')
+}
+
 function runCommand(command, args, cwd) {
   return new Promise((resolveRun, reject) => {
     const stderrChunks = []
@@ -110,6 +148,10 @@ describe('create-super-admin starter generation', () => {
     const loginPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/LoginPage.vue')
     const registerPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/RegisterPage.vue')
     const preferences = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferences.vue')
+    const appShell = await readGeneratedText(input.targetDirectory, 'src/shell/AppShell.vue')
+    const stageDockThumb = await readGeneratedText(input.targetDirectory, 'src/workspace/StageDockThumb.vue')
+    const stageOverviewCard = await readGeneratedText(input.targetDirectory, 'src/workspace/StageOverviewCard.vue')
+    const stageRail = await readGeneratedText(input.targetDirectory, 'src/workspace/StageRail.vue')
 
     expect(packageJson.scripts).toEqual({
       build: 'vue-tsc --noEmit && vite build',
@@ -138,6 +180,7 @@ describe('create-super-admin starter generation', () => {
     expect(preferences).not.toContain('selectDensity')
     expect(preferences).not.toContain('shell.preferences.density')
     expect(preferences).not.toContain('preferences.setDensity')
+    expectStageManagerStarterParity({ appShell, stageDockThumb, stageOverviewCard, stageRail })
     expect(loginPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
     expect(registerPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
 

@@ -36,15 +36,22 @@ describe('stage manager child components', () => {
   it('keeps stage thumbnail hit targets flat while moving tilt to a non-interactive surface', () => {
     const thumbBlock = stageDockThumbSource.match(/\.stage-thumb \{[\s\S]*?\n\}/)?.[0] ?? ''
     const surfaceBlock = stageDockThumbSource.match(/\.stage-thumb__surface \{[\s\S]*?\n\}/)?.[0] ?? ''
+    const stackBlock = stageDockThumbSource.match(/\.stage-thumb__card-stack \{[\s\S]*?\n\}/)?.[0] ?? ''
 
     expect(stageDockThumbSource).toContain('defineEmits')
     expect(stageDockThumbSource).toContain('activate: [sourceRect: DOMRect]')
     expect(stageDockThumbSource).toContain("orientation?: 'left' | 'right'")
+    expect(stageDockThumbSource).toContain('<div v-if="props.stacked" class="stage-thumb__card-stack" aria-hidden="true">')
+    expect(stageDockThumbSource).toContain('stage-thumb__stack-card')
+    expect(stageDockThumbSource).toContain('transform: translate(-1.35rem, 0.72rem) scale(0.92);')
+    expect(stageDockThumbSource).toContain('transform: translate(-0.72rem, 0.36rem) scale(0.96);')
     expect(stageDockThumbSource).toContain('getBoundingClientRect()')
     expect(stageDockThumbSource).toContain('stage-thumb__button')
     expect(stageDockThumbSource).toContain('stage-thumb__surface')
     expect(stageDockThumbSource).toContain('stage-action-host')
     expect(thumbBlock).not.toContain('transform: perspective')
+    expect(stackBlock).toContain('pointer-events: none;')
+    expect(stackBlock).toContain('transform: perspective(1000px) rotateY(18deg) scale(0.88);')
     expect(surfaceBlock).toContain('pointer-events: none;')
     expect(surfaceBlock).toContain('transform: perspective(1000px) rotateY(18deg) scale(0.88);')
     expect(stageDockThumbSource).not.toContain('.stage-thumb:hover :deep(.stage-action--reveal)')
@@ -52,25 +59,35 @@ describe('stage manager child components', () => {
   })
 
   it('composes the left-side Stage Rail as a window-only layout surface', () => {
+    const groupedPreviewBlock = stageRailSource.match(
+      /<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?\/>/
+    )?.[0] ?? ''
+
     expect(stageRailSource).toContain('StageDockThumb')
     expect(stageRailSource).toContain('StageWindowPreview')
+    expect(stageRailSource).toContain('StageWindowActions')
+    expect(stageRailSource).toContain('visibility="reveal"')
     expect(stageRailSource).toContain('stage-rail')
     expect(stageRailSource).toContain('orientation="left"')
-    expect(stageRailSource).toContain('stage-rail__stack')
-    expect(stageRailSource).toContain('stage-rail__stack-card')
+    expect(stageDockThumbSource).toContain('stage-thumb__card-stack')
+    expect(stageDockThumbSource).toContain('stage-thumb__stack-card')
+    expect(stageRailSource).not.toContain('stage-rail__preview-stack')
+    expect(stageRailSource).not.toContain('stage-rail__stack-card')
     expect(stageRailSource).toContain('resolveStageGroupWindow')
     expect(stageRailSource).toContain('stage-rail__window-title')
     expect(stageRailSource).toContain('{{ stageGroup.activeTabTitle }}')
     expect(stageRailSource).toContain('{{ stage.title }}')
+    expect(stageRailSource).toContain(':stacked="stageGroup.isStacked"')
+    expect(groupedPreviewBlock).not.toContain(':stacked="stageGroup.isStacked"')
     expect(stageRailSource).not.toContain('scrollOverflow')
     expect(stageRailSource).not.toContain('stage-dock--scrollable')
     expect(stageRailSource).not.toContain('overflow-y: auto;')
     expect(stageRailSource).toContain(':aria-label="t(\'workspace.stage.stages\')"')
     expect(stageRailSource).toContain('enterWindowGroup')
     expect(stageRailSource).toContain('exitWindowGroup')
-    expect(stageRailSource).toContain('useWorkspaceTabsStore')
-    expect(stageRailSource).toContain('useRoute')
-    expect(stageRailSource).not.toContain('StageWindowActions')
+    expect(stageRailSource).toContain('useStageWindows')
+    expect(stageRailSource).not.toContain('useWorkspaceTabsStore')
+    expect(stageRailSource).not.toContain('useRoute')
     expect(stageRailSource).not.toContain('stage-rail__header')
     expect(stageRailSource).not.toContain('StatusPill')
     expect(stageRailSource).not.toContain('{{ stageGroup.label }}')

@@ -1,60 +1,25 @@
 <script setup lang="ts">
 import { ArrowLeft, Layers2 } from '@lucide/vue'
-import type { Component } from 'vue'
 import { computed, shallowRef } from 'vue'
-import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { createWorkspaceTabGroups, findActiveModule, findModuleRoute } from '@super-admin-org/core'
-import { translateRouteTitle } from '@/i18n/navigation'
-import { registeredModules } from '@/modules/module-registry'
-import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
-import { resolveStageGroupWindow, sortStageGroupsForDock } from './stage-manager'
-import type { StageGroupView, StageWindowView } from './stage-manager'
+import { resolveStageGroupWindow } from './stage-manager'
+import type { StageWindowView } from './stage-manager'
 import StageDockThumb from './StageDockThumb.vue'
+import StageWindowActions from './StageWindowActions.vue'
 import StageWindowPreview from './StageWindowPreview.vue'
-import { useStageWindowActivation } from './useStageWindowActivation'
+import { useStageWindows } from './useStageWindows'
 
-const route = useRoute()
 const { t } = useI18n()
-const tabs = useWorkspaceTabsStore()
-const { activateStage } = useStageWindowActivation()
+const { activateStage, closeStage, createWindowView, refreshStage, stageGroups, toggleStagePin } = useStageWindows()
 const activeWindowGroupId = shallowRef<string | null>(null)
 
-const stageGroups = computed<StageGroupView[]>(() =>
-  sortStageGroupsForDock(
-    createWorkspaceTabGroups(tabs.state.tabs, registeredModules).map((group) => {
-      const module = findActiveModule(registeredModules, group.activeTab.routePath)
-      const moduleRoute = findModuleRoute(module, group.activeTab.routePath)
-      const isActive = group.tabs.some((tab) => tab.routePath === route.fullPath)
-
-      return {
-        ...group,
-        activeTabTitle: translateRouteTitle(t, group.activeTab.routePath, group.activeTab.title),
-        component: moduleRoute?.component as Component | undefined,
-        isActive
-      }
-    })
-  )
-)
 const visibleStageGroups = computed(() => stageGroups.value.slice(0, 4))
 const activeWindowGroup = computed(() =>
   activeWindowGroupId.value ? stageGroups.value.find((group) => group.id === activeWindowGroupId.value) ?? null : null
 )
 const windowStages = computed<StageWindowView[]>(() =>
-  (activeWindowGroup.value?.tabs ?? []).slice(0, 4).map((tab) => ({
-    tab,
-    component: resolveTabComponent(tab.routePath),
-    isActive: tab.routePath === route.fullPath,
-    title: translateRouteTitle(t, tab.routePath, tab.title)
-  }))
+  (activeWindowGroup.value?.tabs ?? []).slice(0, 4).map(createWindowView)
 )
-
-function resolveTabComponent(routePath: string): Component | undefined {
-  const module = findActiveModule(registeredModules, routePath)
-  const moduleRoute = findModuleRoute(module, routePath)
-
-  return moduleRoute?.component as Component | undefined
-}
 
 async function activateStageGroup(groupId: string, sourceRect: DOMRect): Promise<void> {
   const group = stageGroups.value.find((item) => item.id === groupId)
@@ -63,12 +28,12 @@ async function activateStageGroup(groupId: string, sourceRect: DOMRect): Promise
   }
 
   const nextWindow = resolveStageGroupWindow(group)
-  await activateStage(nextWindow.routePath, translateRouteTitle(t, nextWindow.routePath, nextWindow.title), sourceRect)
+  await activateStage(nextWindow.routePath, createWindowView(nextWindow).title, sourceRect)
 }
 
-async function activateStageWindow(path: string, title: string, sourceRect: DOMRect): Promise<void> {
+async function activateStageWindow(stage: StageWindowView, sourceRect: DOMRect): Promise<void> {
   activeWindowGroupId.value = null
-  await activateStage(path, title, sourceRect)
+  await activateStage(stage.tab.routePath, stage.title, sourceRect)
 }
 
 function enterWindowGroup(groupId: string): void {
@@ -103,20 +68,27 @@ function exitWindowGroup(): void {
           :stacked="stageGroup.isStacked"
           @activate="activateStageGroup(stageGroup.id, $event)"
         >
-          <div class="stage-rail__preview-stack">
-            <div v-if="stageGroup.isStacked" class="stage-rail__stack" aria-hidden="true">
-              <span class="stage-rail__stack-card stage-rail__stack-card--back" />
-              <span class="stage-rail__stack-card stage-rail__stack-card--middle" />
-            </div>
-            <StageWindowPreview
-              :component="stageGroup.component"
-              :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
-              :stacked="stageGroup.isStacked"
-            />
-          </div>
+          <StageWindowPreview
+            :component="stageGroup.component"
+            :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
+          />
           <div class="stage-rail__window-title" :title="stageGroup.activeTabTitle">
             {{ stageGroup.activeTabTitle }}
           </div>
+          <template #actions>
+            <StageWindowActions
+              :can-close="!stageGroup.activeTab.pinned"
+              :close-label="t('workspace.stage.closeStage')"
+              :pin-label="t('workspace.stage.pin')"
+              :pinned="stageGroup.activeTab.pinned"
+              :refresh-label="t('workspace.stage.refresh')"
+              :unpin-label="t('workspace.stage.unpin')"
+              visibility="reveal"
+              @close="closeStage(stageGroup.activeTab.id)"
+              @refresh="refreshStage(stageGroup.activeTab.id)"
+              @toggle-pin="toggleStagePin(stageGroup.activeTab.id)"
+            />
+          </template>
           <template #cue>
             <button
               v-if="stageGroup.isStacked"
@@ -141,7 +113,7 @@ function exitWindowGroup(): void {
           :key="stage.tab.id"
           :active="stage.isActive"
           orientation="left"
-          @activate="activateStageWindow(stage.tab.routePath, stage.title, $event)"
+          @activate="activateStageWindow(stage, $event)"
         >
           <StageWindowPreview
             :component="stage.component"
@@ -150,6 +122,20 @@ function exitWindowGroup(): void {
           <div class="stage-rail__window-title" :title="stage.title">
             {{ stage.title }}
           </div>
+          <template #actions>
+            <StageWindowActions
+              :can-close="!stage.tab.pinned"
+              :close-label="t('workspace.stage.closeStage')"
+              :pin-label="t('workspace.stage.pin')"
+              :pinned="stage.tab.pinned"
+              :refresh-label="t('workspace.stage.refresh')"
+              :unpin-label="t('workspace.stage.unpin')"
+              visibility="reveal"
+              @close="closeStage(stage.tab.id)"
+              @refresh="refreshStage(stage.tab.id)"
+              @toggle-pin="toggleStagePin(stage.tab.id)"
+            />
+          </template>
         </StageDockThumb>
       </template>
     </div>
@@ -162,7 +148,8 @@ function exitWindowGroup(): void {
 
   display: flex;
   position: relative;
-  min-height: 0;
+  height: 100%;
+  min-height: 100vh;
   flex-direction: column;
   border-right: 1px solid color-mix(in srgb, var(--border-strong) 70%, transparent);
   background:
@@ -230,47 +217,6 @@ function exitWindowGroup(): void {
   text-overflow: ellipsis;
   text-shadow: 0 1px 8px color-mix(in srgb, var(--app-background) 78%, transparent);
   white-space: nowrap;
-}
-
-.stage-rail__preview-stack {
-  position: relative;
-  isolation: isolate;
-}
-
-.stage-rail__preview-stack :deep(.stage-window-preview) {
-  z-index: 3;
-  background: color-mix(in srgb, var(--surface-raised) 76%, transparent);
-}
-
-.stage-rail__stack {
-  position: absolute;
-  inset: -0.24rem 0.36rem 0.42rem 0.1rem;
-  z-index: 1;
-  border-radius: var(--radius-md);
-  pointer-events: none;
-  transform: perspective(1000px) rotateY(18deg) scale(0.88);
-  transform-origin: center center;
-}
-
-.stage-rail__stack-card {
-  position: absolute;
-  inset: 0.1rem;
-  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border));
-  border-radius: inherit;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, transparent), transparent 52%),
-    color-mix(in srgb, var(--surface-raised) 72%, transparent);
-  box-shadow: 0 0.75rem 1.8rem color-mix(in srgb, var(--app-background) 34%, transparent);
-}
-
-.stage-rail__stack-card--back {
-  transform: translate(0.82rem, -0.56rem) scale(0.94);
-  opacity: 0.42;
-}
-
-.stage-rail__stack-card--middle {
-  transform: translate(0.42rem, -0.28rem) scale(0.97);
-  opacity: 0.64;
 }
 
 .stage-rail__group-cue {

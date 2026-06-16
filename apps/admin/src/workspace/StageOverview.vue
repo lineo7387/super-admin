@@ -1,35 +1,16 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue'
-import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { findActiveModule, findModuleRoute } from '@super-admin-org/core'
-import { translateRouteTitle } from '@/i18n/navigation'
-import { registeredModules } from '@/modules/module-registry'
 import { usePreferencesStore } from '@/stores/preferences.store'
-import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 import { resolveOverviewLayout } from './stage-manager'
-import type { StageWindowView } from './stage-manager'
 import StageOverviewCard from './StageOverviewCard.vue'
-import { useStageWindowActivation } from './useStageWindowActivation'
+import { useStageWindows } from './useStageWindows'
 
 const preferences = usePreferencesStore()
-const route = useRoute()
 const { t } = useI18n()
-const tabs = useWorkspaceTabsStore()
-const { activateStage, closeStage, refreshStage, toggleStagePin } = useStageWindowActivation()
+const { activeRoutePath, allWindowStages, closeStage, refreshStage, toggleStagePin, activateStage } = useStageWindows()
 const stageViewportWidth = shallowRef(1280)
 
-const allWindowStages = computed<StageWindowView[]>(() =>
-  [...tabs.state.tabs]
-    .sort((left, right) => right.activatedAt - left.activatedAt)
-    .map((tab) => ({
-      tab,
-      component: resolveTabComponent(tab.routePath),
-      isActive: tab.routePath === route.fullPath,
-      title: translateRouteTitle(t, tab.routePath, tab.title)
-    }))
-)
 const overviewGridStyle = computed<Record<string, string>>(() => {
   const layout = resolveOverviewLayout(allWindowStages.value.length, stageViewportWidth.value)
 
@@ -54,13 +35,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', syncStageViewportWidth)
 })
-
-function resolveTabComponent(routePath: string): Component | undefined {
-  const module = findActiveModule(registeredModules, routePath)
-  const moduleRoute = findModuleRoute(module, routePath)
-
-  return moduleRoute?.component as Component | undefined
-}
 
 function closeOverviewOnBackdrop(): void {
   preferences.closeStageOverview()
@@ -117,7 +91,7 @@ async function activateOverviewStage(path: string, title: string, sourceRect: DO
             :title="stage.title"
             :unpin-label="t('workspace.stage.unpin')"
             @activate="activateOverviewStage(stage.tab.routePath, stage.title, $event)"
-            @close="closeStage(stage.tab.id, route.fullPath)"
+            @close="closeStage(stage.tab.id)"
             @refresh="refreshStage(stage.tab.id)"
             @toggle-pin="toggleStagePin(stage.tab.id)"
           />
