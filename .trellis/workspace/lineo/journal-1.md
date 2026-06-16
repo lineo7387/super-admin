@@ -1553,3 +1553,36 @@ Implemented Motion-powered Stage Manager transitions, fixed Control Center overv
 ### Next Steps
 
 - None - task complete
+
+
+## Session 46: Improve Control Center entry prominence
+
+**Date**: 2026-06-16
+**Task**: Improve Control Center entry prominence
+**Branch**: `main`
+
+### Summary
+
+Moved the global Control Center trigger to a prominent top-right labeled entry, added theme-token material and restrained text/surface motion with reduced-motion fallback, updated shell tests and frontend app-shell spec, verified in browser and full quality gates.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7de7653` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
