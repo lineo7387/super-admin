@@ -13,7 +13,11 @@ const { t } = useI18n()
 
 <template>
   <div class="super-texture min-h-screen bg-[var(--app-background)] text-[var(--foreground)]">
-    <ShellHeader />
+    <ShellHeader>
+      <template #actions>
+        <slot name="header-actions" />
+      </template>
+    </ShellHeader>
     <div class="grid h-[calc(100vh-3.5rem)] grid-cols-[minmax(240px,300px)_minmax(0,1fr)]">
       <aside class="flex min-h-0 flex-col border-r border-[var(--border)] bg-[var(--nav-background)] p-3">
         <div class="mb-4 flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface-raised)] p-3 shadow-[var(--panel-shadow)]">

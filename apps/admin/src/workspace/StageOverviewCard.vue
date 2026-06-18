@@ -79,7 +79,6 @@ function activate(): void {
       :pinned="props.pinned"
       :refresh-label="props.refreshLabel"
       :unpin-label="props.unpinLabel"
-      visibility="reveal"
       @close="emit('close')"
       @refresh="emit('refresh')"
       @toggle-pin="emit('togglePin')"

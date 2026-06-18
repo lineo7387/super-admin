@@ -1,37 +1,26 @@
 <script setup lang="ts">
 import { Pin, PinOff, RotateCw, X } from '@lucide/vue'
-import { computed } from 'vue'
 
-const props = withDefaults(
-  defineProps<{
-    canClose?: boolean
-    closeLabel: string
-    pinned: boolean
-    pinLabel: string
-    refreshLabel: string
-    unpinLabel: string
-    visibility?: 'always' | 'reveal'
-  }>(),
-  {
-    canClose: true,
-    visibility: 'always'
-  }
-)
+const props = defineProps<{
+  canClose: boolean
+  closeLabel: string
+  pinned: boolean
+  pinLabel: string
+  refreshLabel: string
+  unpinLabel: string
+}>()
 
 const emit = defineEmits<{
   close: []
   refresh: []
   togglePin: []
 }>()
-
-const visibilityClass = computed(() => `stage-action--${props.visibility}`)
 </script>
 
 <template>
   <button
     type="button"
     class="stage-action stage-action--pin"
-    :class="visibilityClass"
     :aria-label="props.pinned ? props.unpinLabel : props.pinLabel"
     :title="props.pinned ? props.unpinLabel : props.pinLabel"
     @click.stop="emit('togglePin')"
@@ -42,7 +31,6 @@ const visibilityClass = computed(() => `stage-action--${props.visibility}`)
   <button
     type="button"
     class="stage-action stage-action--refresh"
-    :class="visibilityClass"
     :aria-label="props.refreshLabel"
     :title="props.refreshLabel"
     @click.stop="emit('refresh')"
@@ -53,7 +41,6 @@ const visibilityClass = computed(() => `stage-action--${props.visibility}`)
     v-if="props.canClose"
     type="button"
     class="stage-action stage-action--close"
-    :class="visibilityClass"
     :aria-label="props.closeLabel"
     :title="props.closeLabel"
     @click.stop="emit('close')"
@@ -75,6 +62,9 @@ const visibilityClass = computed(() => `stage-action--${props.visibility}`)
   border-radius: 999px;
   background: var(--surface-raised);
   color: var(--foreground);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-2px);
   transition:
     opacity var(--duration-base) var(--easing),
     border-color var(--duration-base) var(--easing),
@@ -82,19 +72,9 @@ const visibilityClass = computed(() => `stage-action--${props.visibility}`)
     transform var(--duration-base) var(--easing);
 }
 
-.stage-action--always {
-  opacity: 0.76;
-}
-
-.stage-action--reveal {
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-2px);
-}
-
-:global(.stage-action-host:hover .stage-action--reveal),
-:global(.stage-action-host:focus-within .stage-action--reveal),
-:global(.stage-action-host:active .stage-action--reveal) {
+:global(.stage-action-host:hover .stage-action),
+:global(.stage-action-host:focus-within .stage-action),
+:global(.stage-action-host:active .stage-action) {
   pointer-events: auto;
   opacity: 0.86;
   transform: translateY(0);

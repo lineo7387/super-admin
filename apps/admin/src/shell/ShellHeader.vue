@@ -21,7 +21,7 @@ const { t } = useI18n()
 
 <template>
   <header class="relative z-50 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 border-b border-[var(--border)] bg-[var(--header-background)] px-4 backdrop-blur">
-    <div v-if="brand === 'full'" class="flex min-w-0 items-center gap-3">
+    <div v-if="brand === 'full'" class="col-start-1 flex min-w-0 items-center gap-3">
       <div class="grid size-9 place-items-center rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface-raised)] shadow-[var(--glow)]">
         <LayoutDashboard class="size-4 text-[var(--primary)]" />
       </div>
@@ -30,18 +30,18 @@ const { t } = useI18n()
         <div class="truncate text-xs text-[var(--muted-foreground)]">{{ t('shell.navigation.operatorShell') }}</div>
       </div>
     </div>
-    <div v-else class="hidden min-w-0 items-center gap-2 text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)] md:flex">
+    <div v-else class="col-start-1 hidden min-w-0 items-center gap-2 text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)] md:flex">
       <span class="size-2 rounded-full bg-[var(--primary)] shadow-[var(--glow)]" />
       {{ t('shell.navigation.operatorShell') }}
     </div>
 
-    <PrimaryNav v-if="nav === 'horizontal'" orientation="horizontal" :max-depth="navDepth" />
-    <div v-else class="hidden h-9 min-w-80 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3 text-sm text-[var(--muted-foreground)] md:flex">
+    <PrimaryNav v-if="nav === 'horizontal'" class="col-start-2" orientation="horizontal" :max-depth="navDepth" />
+    <div v-else class="col-start-2 hidden h-9 min-w-80 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3 text-sm text-[var(--muted-foreground)] md:flex">
       <Search class="size-4" />
       <span>{{ t('users.all.search') }}</span>
     </div>
 
-    <div class="flex min-w-0 items-center justify-end gap-2">
+    <div class="col-start-3 flex min-w-0 items-center justify-end gap-2">
       <slot name="actions" />
     </div>
   </header>

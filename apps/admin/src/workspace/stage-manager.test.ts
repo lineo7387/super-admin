@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { WorkspaceTab, WorkspaceTabGroup } from '@super-admin-org/core'
-import { resolveOverviewLayout, resolveStageGroupWindow, sortStageGroupsForDock } from './stage-manager'
+import { resolveOverviewLayout, sortStageGroupsForDock } from './stage-manager'
 
 function createTab(routePath: string, activatedAt: number): WorkspaceTab {
   return {
@@ -64,16 +64,6 @@ describe('stage manager logic', () => {
     })
   })
 
-  it('keeps dense mobile overviews to three columns so cards stay legible', () => {
-    expect(resolveOverviewLayout(9, 390)).toEqual({
-      columns: 3,
-      rows: 3,
-      cardWidth: '18rem',
-      cardHeight: '11.5rem',
-      scale: 0.17
-    })
-  })
-
   it('sorts the active dock group before applying the four-slot visual cap', () => {
     const inactiveRecent = createGroup({ id: 'recent', activeTab: createTab('/recent', 30) })
     const inactiveOlder = createGroup({ id: 'older', activeTab: createTab('/older', 20) })
@@ -84,30 +74,5 @@ describe('stage manager logic', () => {
 
     expect(sorted.map((group) => group.id)).toEqual(['active', 'recent', 'older'])
     expect(input.map((group) => group.id)).toEqual(['older', 'recent', 'active'])
-  })
-
-  it('keeps outer stacked group activation on the group active tab', () => {
-    const current = createTab('/users/all', 30)
-    const next = createTab('/users/pending', 50)
-    const older = createTab('/users/invites', 10)
-    const group = createGroup({
-      id: 'users',
-      activeTab: current,
-      tabs: [current, next, older],
-      isActive: true
-    })
-
-    expect(resolveStageGroupWindow(group)).toBe(current)
-  })
-
-  it('activates the group active tab when the current route is outside the group', () => {
-    const activeTab = createTab('/users/all', 50)
-    const group = createGroup({
-      id: 'users',
-      activeTab,
-      tabs: [activeTab, createTab('/users/pending', 20)]
-    })
-
-    expect(resolveStageGroupWindow(group)).toBe(activeTab)
   })
 })

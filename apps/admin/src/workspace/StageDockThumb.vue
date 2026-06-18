@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { useTemplateRef } from 'vue'
+import { shallowRef, useTemplateRef } from 'vue'
 
 const props = withDefaults(
   defineProps<{
     active?: boolean
-    orientation?: 'left' | 'right'
     stacked?: boolean
   }>(),
   {
     active: false,
-    orientation: 'left',
     stacked: false
   }
 )
@@ -19,6 +17,15 @@ const emit = defineEmits<{
 }>()
 
 const buttonRef = useTemplateRef<HTMLButtonElement>('button')
+const isPressed = shallowRef(false)
+
+function pressThumb(): void {
+  isPressed.value = true
+}
+
+function releaseThumb(): void {
+  isPressed.value = false
+}
 
 function activate(): void {
   const sourceRect = buttonRef.value?.getBoundingClientRect()
@@ -35,31 +42,43 @@ function activate(): void {
     class="stage-thumb stage-action-host"
     :class="{
       'stage-thumb--active': props.active,
-      'stage-thumb--right': props.orientation === 'right',
+      'stage-thumb--pressed': isPressed,
       'stage-thumb--stacked': props.stacked
     }"
+    @blur.capture="releaseThumb"
+    @pointercancel="releaseThumb"
+    @pointerdown="pressThumb"
+    @pointerleave="releaseThumb"
+    @pointerup="releaseThumb"
   >
-    <div v-if="props.stacked" class="stage-thumb__card-stack" aria-hidden="true">
-      <span class="stage-thumb__stack-card stage-thumb__stack-card--back" />
-      <span class="stage-thumb__stack-card stage-thumb__stack-card--middle" />
-    </div>
-    <button
-      ref="button"
-      type="button"
-      class="stage-thumb__button block h-full w-full text-left focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-      @click="activate"
-    >
-      <div class="stage-thumb__surface">
-        <slot />
+    <div class="stage-thumb__plane">
+      <div v-if="props.stacked" class="stage-thumb__card-stack" aria-hidden="true">
+        <span class="stage-thumb__stack-card stage-thumb__stack-card--back" />
+        <span class="stage-thumb__stack-card stage-thumb__stack-card--middle" />
       </div>
-    </button>
-    <slot name="cue" />
-    <slot name="actions" />
+      <button
+        ref="button"
+        type="button"
+        class="stage-thumb__button block h-full w-full text-left focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
+        @click="activate"
+      >
+        <div class="stage-thumb__surface">
+          <slot />
+        </div>
+      </button>
+      <slot name="cue" />
+      <div class="stage-thumb__actions">
+        <slot name="actions" />
+      </div>
+    </div>
   </article>
 </template>
 
 <style scoped>
 .stage-thumb {
+  --stage-thumb-hover-scale: 1;
+  --stage-thumb-rest-scale: 0.98;
+
   position: relative;
   width: 12rem;
   flex: 0 0 var(--stage-thumb-height);
@@ -69,15 +88,22 @@ function activate(): void {
   transform-origin: center center;
 }
 
+.stage-thumb__plane {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transform: scale(var(--stage-thumb-rest-scale));
+  transform-origin: left center;
+  transition: transform var(--duration-base) var(--easing);
+  will-change: transform;
+}
+
 .stage-thumb__card-stack {
   position: absolute;
   inset: 0.16rem 0.28rem 0.28rem 0.16rem;
   z-index: 1;
   border-radius: var(--radius-lg);
   pointer-events: none;
-  transform: perspective(1000px) rotateY(18deg) scale(0.88);
-  transform-origin: center center;
-  transition: transform var(--duration-base) var(--easing);
 }
 
 .stage-thumb__stack-card {
@@ -116,15 +142,13 @@ function activate(): void {
   background: transparent;
   backdrop-filter: blur(10px);
   pointer-events: none;
-  transform: perspective(1000px) rotateY(18deg) scale(0.88);
-  transform-origin: center center;
   transition:
-    transform var(--duration-base) var(--easing),
     border-color var(--duration-base) var(--easing),
     box-shadow var(--duration-base) var(--easing);
 }
 
 .stage-thumb--active .stage-thumb__surface,
+.stage-thumb--pressed .stage-thumb__surface,
 .stage-thumb:hover .stage-thumb__surface {
   border-color: var(--border-strong);
   box-shadow: var(--glow), var(--panel-shadow);
@@ -147,27 +171,27 @@ function activate(): void {
 }
 
 .stage-thumb--active .stage-thumb__surface::after,
+.stage-thumb--pressed .stage-thumb__surface::after,
 .stage-thumb:hover .stage-thumb__surface::after {
   opacity: 0.2;
 }
 
-.stage-thumb:hover .stage-thumb__surface {
-  transform: perspective(1000px) rotateY(9deg) scale(1);
+.stage-thumb__actions {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
 }
 
-.stage-thumb:hover .stage-thumb__card-stack {
-  transform: perspective(1000px) rotateY(9deg) scale(1);
-}
-
-.stage-thumb--right .stage-thumb__surface {
-  transform: perspective(1000px) rotateY(-16deg) scale(0.9);
-}
-
-.stage-thumb--right:hover .stage-thumb__surface {
-  transform: perspective(1000px) rotateY(-7deg) scale(1);
+.stage-thumb:hover .stage-thumb__plane,
+.stage-thumb:focus-within .stage-thumb__plane,
+.stage-thumb:active .stage-thumb__plane,
+.stage-thumb--pressed .stage-thumb__plane {
+  transform: scale(var(--stage-thumb-hover-scale));
 }
 
 .stage-thumb--active :deep(.stage-window-preview),
+.stage-thumb--pressed :deep(.stage-window-preview),
 .stage-thumb:hover :deep(.stage-window-preview) {
   border-color: var(--border-strong);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent), var(--glow);

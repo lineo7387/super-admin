@@ -27,7 +27,7 @@ type SortableStageGroup = {
   activeTab: Pick<WorkspaceTab, 'activatedAt'>
 }
 
-export function resolveOverviewLayout(count: number, viewportWidth = Number.POSITIVE_INFINITY): StageOverviewLayout {
+export function resolveOverviewLayout(count: number): StageOverviewLayout {
   const windowCount = Math.max(count, 1)
   const preferredColumns =
     windowCount === 1
@@ -35,7 +35,7 @@ export function resolveOverviewLayout(count: number, viewportWidth = Number.POSI
       : windowCount <= 4
         ? Math.ceil(Math.sqrt(windowCount))
         : Math.max(1, Math.ceil(Math.sqrt(windowCount * 1.25)))
-  const columns = viewportWidth <= 760 && windowCount > 4 ? Math.min(preferredColumns, 3) : preferredColumns
+  const columns = preferredColumns
   const rows = Math.max(1, Math.ceil(windowCount / columns))
   const cardWidth = windowCount <= 2 ? '22rem' : windowCount <= 4 ? '20rem' : windowCount <= 9 ? '18rem' : '16rem'
   const cardHeight = windowCount <= 2 ? '15rem' : windowCount <= 4 ? '13rem' : windowCount <= 9 ? '11.5rem' : '10rem'
@@ -53,8 +53,4 @@ export function sortStageGroupsForDock<T extends SortableStageGroup>(groups: rea
 
     return right.activeTab.activatedAt - left.activeTab.activatedAt
   })
-}
-
-export function resolveStageGroupWindow(group: Pick<WorkspaceTabGroup, 'activeTab'>): WorkspaceTab {
-  return group.activeTab
 }

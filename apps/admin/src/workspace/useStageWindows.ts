@@ -17,9 +17,9 @@ import { useStageWindowActivation } from './useStageWindowActivation'
 
 export type StageWindowsContext = {
   activateStage: (path: string, title: string, sourceRect: DOMRect) => Promise<void>
-  activeRoutePath: ComputedRef<string>
   allWindowStages: ComputedRef<StageWindowView[]>
   closeStage: (tabId: string) => Promise<void>
+  closeStageGroup: (group: Pick<StageGroupView, 'tabs'>) => Promise<void>
   createWindowView: (tab: WorkspaceTab) => StageWindowView
   refreshStage: (tabId: string) => void
   stageGroups: ComputedRef<StageGroupView[]>
@@ -67,11 +67,29 @@ export function useStageWindows(): StageWindowsContext {
     )
   )
 
+  async function closeStageGroup(group: Pick<StageGroupView, 'tabs'>): Promise<void> {
+    const activeTabId = tabs.state.activeTabId
+    if (group.tabs.some((tab) => tab.pinned)) {
+      return
+    }
+
+    for (const tab of group.tabs) {
+      if (tab.id !== activeTabId) {
+        await closeStage(tab.id)
+      }
+    }
+
+    const activeTab = group.tabs.find((tab) => tab.id === activeTabId)
+    if (activeTab) {
+      await closeStage(activeTab.id)
+    }
+  }
+
   return {
     activateStage,
-    activeRoutePath,
     allWindowStages,
     closeStage,
+    closeStageGroup,
     createWindowView,
     refreshStage,
     stageGroups,

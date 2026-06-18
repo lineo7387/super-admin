@@ -184,24 +184,28 @@ The Control Center trigger and modal must be mounted above layout preset compone
 
 ### Global Control Center Placement Contract
 
-The Control Center is a project/workspace configuration surface, not a personal account setting. Its trigger must be a fixed, top-right, labeled app-shell button mounted from `AppShell`, outside all layout preset components and outside `ShellAccountMenu`.
+The Control Center is a project/workspace configuration surface, not a personal account setting. Its trigger must be a labeled app-shell button owned by `AppShell` and passed into each layout through a `header-actions` slot. Layouts place that slot in the existing `ShellHeader` actions row. Do not position the trigger as a fixed/floating overlay, and do not create a separate top strip just for the Control Center.
 
-The trigger must expose the visible `控制中心` / `shell.preferences.title` label next to the settings icon. Its button material should use theme tokens such as `--surface-raised`, `--texture`, `--primary`, `--panel-shadow`, and `--glow`; its text highlight may use a short theme-colored sweep on mount/hover/focus, but must not run as a permanent flashing animation. Respect `prefers-reduced-motion` by disabling sweep/transform motion and falling back to static readable text.
+The trigger must expose the visible `控制中心` / `shell.preferences.title` label next to the settings icon. Reuse the shared `GlobalPreferencesTrigger` for login/auth and app-shell entries; do not duplicate button shell, icon, label splitting, or Motion code in `AppShell`, `AuthLayout`, or `GlobalPreferences`. Its button material should use the same shared trigger tokens/classes as the login Control Center entry. The app-shell label may use a persistent rhythmic attention animation, but it must be Motion-powered (`motion-v`) text motion, not CSS keyframes, not fixed-position movement, and not a simple color/gradient sweep. A good pattern is splitting the translated label into text units and animating `motion.span` glyphs with a short transform sequence, `repeat: Infinity`, and a multi-second `repeatDelay`. Respect `prefers-reduced-motion` by keeping text static when users request reduced motion.
 
-The modal remains mounted once with `GlobalPreferences trigger="none"` above layout presets so live theme, workspace-tab, Stage Manager, and layout changes do not close it.
+The modal remains mounted once with `GlobalPreferences trigger="none"` above layout presets so live theme, workspace-tab, Stage Manager, and layout changes do not close it. The trigger can remount with a layout change; the modal and open state must not.
 
 **Correct shape**:
 
 ```vue
 <component :is="activeLayout">
+  <template #header-actions>
+    <GlobalPreferencesTrigger
+      animated-label
+      :label="controlCenterLabel"
+      :title="controlCenterLabel"
+      @activate="openControlCenter"
+    />
+  </template>
   <template #workspace>
     <WorkspaceRouterView />
   </template>
 </component>
-<button class="fixed right-4 top-4">
-  <Settings2 />
-  <span>{{ t('shell.preferences.title') }}</span>
-</button>
 <GlobalPreferences trigger="none" />
 ```
 
@@ -211,9 +215,15 @@ The modal remains mounted once with `GlobalPreferences trigger="none"` above lay
 <ShellAccountMenu>
   <button @click="preferences.openControlCenter()">Control Center</button>
 </ShellAccountMenu>
+
+<button class="fixed right-4 top-4">Control Center</button>
+
+<div class="control-center-strip">
+  <button>Control Center</button>
+</div>
 ```
 
-**Check**: Verify tri-column, dual-column, and top-header layouts after login. The top-right labeled trigger should stay visible, open the same live Control Center without changing routes, and keep the modal open while layout choices change.
+**Check**: Verify tri-column, dual-column, and top-header layouts after login. The labeled trigger should appear in the header row, open the same live Control Center without changing routes, and keep the modal open while layout choices change. Browser-check that it does not cover workspace content and that the text motion continues periodically unless reduced motion is enabled.
 
 ### Account Menu Placement Contract
 
@@ -272,15 +282,19 @@ Stage Manager groups workspace tabs by their active module. A module group with 
 
 The side Stage Rail is a left-side, layout-affecting desktop rail, not a floating overlay and not a right-side information panel. It compresses the whole app shell at `1280px+`, and disappears below that breakpoint. On desktop, `AppShell` may keep the rail shell mounted so `tabs.state.tabs.length` can animate between one-window and multi-window states; below the desktop breakpoint it should not mount the rail surface. A single open workspace route must not reserve Stage Rail space: the layout column is `0rem`, the rail shell is translated left, hidden, inert, and pointer-disabled. When a second route appears, the rail shell's translate/opacity and the app grid column must transition from the same `showStageRail` state in the same frame. When the count returns from two routes to one, the rail slides left while the app layout pulls left at the same time; do not wait for a leave transition before collapsing layout, and do not let the rail reflow above the app.
 
-The rail itself is window-only: show the current window preview and its window title, but do not add a rail header, "Desktop" badge, module description, current/pinned text, or persistent action chrome. Window actions such as pin/unpin, refresh, and close are still available on Stage Rail thumbnails; they must reuse the same shared `StageWindowActions` component and reveal only on hover, touch/active, or keyboard focus, matching fullscreen Overview behavior. Do not fork one action implementation for Overview and another for Rail.
+The rail itself is window-only: show the current window preview and its window title, but do not add a rail header, "Desktop" badge, module description, current/pinned text, or persistent action chrome. Window actions such as pin/unpin, refresh, and close are still available on Stage Rail thumbnails; they must reuse the same shared `StageWindowActions` component and reveal only on hover, touch/active, or keyboard focus, matching fullscreen Overview behavior. Do not fork one action implementation for Overview and another for Rail. A stacked module-group Rail card represents the whole group, so its close affordance is a group-level action: close the entire group only when every member is closable, and keep single-window close semantics inside the secondary window-level Rail view and fullscreen Overview.
 
 The first phase does not support drag grouping, drag ungrouping, or custom shortcut bindings.
 
-The secondary affordance enters a window-level view for that group. This is not a side details panel and not a text tab list: the left Stage Rail switches from group thumbnails to that group's window thumbnails, with each window preview selectable. Keep the rail to a macOS-like maximum of four visible windows/groups; overflow is not scrollable in side rail mode.
+The secondary affordance enters a window-level view for that group. This is not a side details panel and not a text tab list: the left Stage Rail switches from group thumbnails to that group's window thumbnails, with each window preview selectable. Entering this secondary view should read as the folded card stack unfolding into individual window thumbnails, using Motion-powered staggered entry where practical and respecting reduced motion. Keep the rail to a macOS-like maximum of four visible windows/groups; overflow is not scrollable in side rail mode.
 
 Before applying the four-slot side rail cap, order groups by current route first and then by most recent group activation. The current group/window must never be hidden just because more than four groups are open.
 
 The four-item limit is a visual contract, not just a flex item count. If thumbnails use 3D transforms, size the rail from the transformed bounding boxes or include an explicit perspective buffer so four complete windows/groups are visible. Do not enforce the four-item limit by putting `overflow-y: hidden` on the transformed rail/card container; that clips hover/current scale feedback. Hide items after the fourth slot explicitly and keep native vertical scrolling out of side rail mode. Verify in a browser by checking computed overflow values, visible thumbnail count, and each hovered thumbnail's `getBoundingClientRect()` in light mode.
+
+Stage Rail 3D perspective belongs to the rail/dock plane, not to each thumbnail as separate angle profiles. The accepted macOS-like effect comes from the whole left rail living in one continuous 3D space: upper windows slope down to the right, middle windows pass through near-flat, and lower windows slope up to the right. Do not reintroduce per-window `stageThumb3dProfiles`, matrix lists, or style bindings that assign a different transform to every thumb. Individual thumbnails may scale from `0.98` to `1` on hover/touch/focus, but their own plane should not own perspective or rotation.
+
+Size the app-shell Rail column to the visual dock, not to the untransformed thumb plus excess perspective slack. The current contract uses a `12rem` Rail column matching the base thumbnail width, with dock-level padding used to visually center the rotated plane inside that column. Do not widen the app layout column to compensate for the 3D transform; that creates a blank strip between Rail and app content. If the rail angle or thumb width changes, verify the transformed thumbnail bounding box and rebalance dock padding rather than adding per-thumbnail transforms.
 
 The rail material belongs to the left Stage Rail itself, not to a full modal layer and not to per-window preview backgrounds. Keep the rail low-blur, full viewport height, and give it a visible right border so the boundary is readable. If a stacked group has an explicit window-level cue, place that cue on the preview's lower-right corner and do not render a second small count badge inside the same card.
 
@@ -292,7 +306,7 @@ Stage Manager window activation uses `motion-v` for the source-to-workspace brid
 
 Current and hovered Stage Manager windows/groups need an obvious theme state, but it should read as the active design profile's style rather than only as a color change. Prefer profile effect tokens such as `--glow`, `--panel-shadow`, and `--texture`, plus existing border/depth tokens, so Crypto, Industrial, Cyberpunk, and Newsprint each express their own material language. Do not reintroduce filled per-window preview surfaces or group-sized background cards to create this effect.
 
-Stage Rail thumbnails must keep their interactive hit target flat and stable. Do not put 3D perspective transforms on the clickable article/button itself; browser hit testing can fall through to the rail viewport after hover motion, making touch/click feel dead. Put 3D rotation/scale and profile effects on an inner visual surface with `pointer-events: none`, while group/window activation buttons and group-entry cues remain normal clickable elements above it. A stacked group's entry cue uses the same split: the outer cue button stays flat, above the main thumbnail hit target, and clickable; only its inner visual surface follows card tilt/scale.
+Stage Rail thumbnails must keep their interactive hit target flat and stable. Do not put per-thumbnail 3D perspective transforms on the clickable article/button itself; browser hit testing can fall through to the rail viewport after hover motion, making touch/click feel dead. Keep activation buttons and group-entry cues as normal clickable elements. Put only the hover/touch/focus scale on an inner thumbnail plane with `pointer-events: none`, while the rail/dock owns the continuous 3D angle. A stacked group's entry cue uses the same split: the outer cue button stays flat, above the main thumbnail hit target, and clickable; its inner visual surface may follow thumbnail scale but must not introduce a separate card angle.
 
 **Check**: With one open workspace route on desktop, Stage Rail should reserve no layout space and be translated left/inert; below `1280px`, the rail surface should not mount. Open a second route and confirm Stage Rail animates into the left layout while the app grid expands. Close from two routes back to one and confirm the app pulls left while the rail slides left, with no top-of-page reflow. Open Users All, Pending Review, Invites, and Activity. Stage Rail should show one Users stack on the left with only the current Users preview visible and card-level backs offset behind it. Clicking the Users stack from outside the group should activate the group's active Users window; clicking it while already in Users should stay on that active Users window rather than cycling unexpectedly. The secondary window-level control should replace the left rail with Users window thumbnails, not open a side panel. The rail should contain window previews, window titles, minimal stack/back affordances, and shared hover/touch/focus-revealed window action buttons. Stage Rail or Overview window clicks should show a Motion bridge for roughly 300ms before the ghost clears on Motion completion.
 

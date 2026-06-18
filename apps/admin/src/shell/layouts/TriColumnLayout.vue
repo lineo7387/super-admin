@@ -43,7 +43,11 @@ function navLabel(item: ModuleNavItem): string {
 
 <template>
   <div class="super-texture min-h-screen bg-[var(--app-background)] text-[var(--foreground)]">
-    <ShellHeader />
+    <ShellHeader>
+      <template #actions>
+        <slot name="header-actions" />
+      </template>
+    </ShellHeader>
     <div class="grid h-[calc(100vh-3.5rem)] grid-cols-[72px_minmax(168px,220px)_minmax(0,1fr)]">
       <div class="flex flex-col items-center gap-4 border-r border-[var(--border)] bg-[var(--nav-background)] p-3">
         <div

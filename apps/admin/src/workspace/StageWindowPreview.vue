@@ -5,11 +5,9 @@ const props = withDefaults(
   defineProps<{
     component?: Component
     previewUnavailableLabel: string
-    stacked?: boolean
     variant?: 'overview' | 'thumb'
   }>(),
   {
-    stacked: false,
     variant: 'thumb'
   }
 )
@@ -20,7 +18,6 @@ const props = withDefaults(
     class="stage-window-preview"
     :class="{
       'stage-window-preview--overview': props.variant === 'overview',
-      'stage-window-preview--stacked': props.stacked,
       'stage-window-preview--thumb': props.variant === 'thumb'
     }"
   >
@@ -48,12 +45,7 @@ const props = withDefaults(
 }
 
 .stage-window-preview--thumb {
-  height: 5.05rem;
-}
-
-.stage-window-preview--stacked {
-  border-color: var(--border-strong);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent);
+  height: var(--stage-preview-thumb-height, 5.05rem);
 }
 
 .stage-window-preview--overview {
@@ -71,7 +63,7 @@ const props = withDefaults(
   width: 56rem;
   height: 38rem;
   padding: 0.85rem;
-  transform: scale(0.19);
+  transform: scale(var(--stage-preview-thumb-scale, 0.19));
 }
 
 .stage-window-scale--overview {

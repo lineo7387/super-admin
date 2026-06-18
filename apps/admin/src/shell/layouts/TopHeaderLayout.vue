@@ -23,6 +23,7 @@ const activeModuleName = computed(() => translateModuleName(t, activeModule.valu
   <div class="super-texture min-h-screen bg-[var(--app-background)] text-[var(--foreground)]">
     <ShellHeader brand="full" nav="horizontal" :nav-depth="1">
       <template #actions>
+        <slot name="header-actions" />
         <ShellAccountMenu variant="header" />
       </template>
     </ShellHeader>

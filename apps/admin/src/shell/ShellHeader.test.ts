@@ -11,5 +11,6 @@ describe('shell header session controls', () => {
 
   it('exposes an actions slot for layouts that need header-right controls', () => {
     expect(shellHeaderSource).toContain('<slot name="actions" />')
+    expect(shellHeaderSource).toContain('col-start-3 flex min-w-0 items-center justify-end gap-2')
   })
 })

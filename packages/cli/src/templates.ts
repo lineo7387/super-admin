@@ -879,7 +879,7 @@ export function createGlobalPreferences(options: { includeThemeSwitcher: boolean
     : ''
 
   return `<script setup lang="ts">
-import { Settings2, X } from '@lucide/vue'
+import { X } from '@lucide/vue'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -889,6 +889,7 @@ ${themeImports}  type LayoutPresetId
 } from '@super-admin-org/core'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin-org/ui'
 ${registryImport}${localeImport}import { usePreferencesStore } from '@/stores/preferences.store'
+import GlobalPreferencesTrigger from './GlobalPreferencesTrigger.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -917,13 +918,10 @@ const triggerTitle = computed(() =>
     ? t('shell.preferences.open', { profile: activeProfileName.value, mode: activeModeName.value })
     : t('shell.preferences.title')
 )
-const triggerSize = computed(() => (props.trigger === 'auth' ? 'md' : 'icon'))
-const showTrigger = computed(() => props.trigger !== 'none')
-const triggerClass = computed(() =>
-  props.trigger === 'auth'
-    ? 'shadow-[var(--card-shadow)]'
-    : 'shadow-[var(--panel-shadow)]'
+const triggerLabel = computed(() =>
+  props.trigger === 'auth' ? \`\${activeProfileName.value} / \${activeModeName.value}\` : t('shell.preferences.title')
 )
+const showTrigger = computed(() => props.trigger !== 'none')
 ${selectProfile}
 function selectMode(colorMode: ColorMode): void {
   preferences.setColorMode(colorMode)
@@ -936,19 +934,12 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
 
 <template>
   <div>
-    <AdminButton
+    <GlobalPreferencesTrigger
       v-if="showTrigger"
-      variant="secondary"
-      :size="triggerSize"
-      :class="triggerClass"
+      :label="triggerLabel"
       :title="triggerTitle"
-      @click="preferences.openControlCenter()"
-    >
-      <Settings2 class="size-4" />
-      <span v-if="props.trigger === 'auth'" class="text-xs">
-        {{ activeProfileName }} / {{ activeModeName }}
-      </span>
-    </AdminButton>
+      @activate="preferences.openControlCenter()"
+    />
 
     <Teleport to="body">
       <div v-if="preferences.controlCenterOpen" class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-3 backdrop-blur-sm sm:p-4" @keydown.esc="preferences.closeControlCenter()">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { resolveOverviewLayout } from './stage-manager'
@@ -8,11 +8,10 @@ import { useStageWindows } from './useStageWindows'
 
 const preferences = usePreferencesStore()
 const { t } = useI18n()
-const { activeRoutePath, allWindowStages, closeStage, refreshStage, toggleStagePin, activateStage } = useStageWindows()
-const stageViewportWidth = shallowRef(1280)
+const { allWindowStages, closeStage, refreshStage, toggleStagePin, activateStage } = useStageWindows()
 
 const overviewGridStyle = computed<Record<string, string>>(() => {
-  const layout = resolveOverviewLayout(allWindowStages.value.length, stageViewportWidth.value)
+  const layout = resolveOverviewLayout(allWindowStages.value.length)
 
   return {
     '--stage-overview-columns': String(layout.columns),
@@ -21,19 +20,6 @@ const overviewGridStyle = computed<Record<string, string>>(() => {
     '--stage-overview-card-height': layout.cardHeight,
     '--stage-overview-scale': String(layout.scale)
   }
-})
-
-function syncStageViewportWidth(): void {
-  stageViewportWidth.value = window.innerWidth
-}
-
-onMounted(() => {
-  syncStageViewportWidth()
-  window.addEventListener('resize', syncStageViewportWidth)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', syncStageViewportWidth)
 })
 
 function closeOverviewOnBackdrop(): void {

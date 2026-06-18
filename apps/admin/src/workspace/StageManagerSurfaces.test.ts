@@ -4,6 +4,7 @@ import stageOverviewSource from './StageOverview.vue?raw'
 import stageRailSource from './StageRail.vue?raw'
 import stageTransitionGhostSource from './StageTransitionGhost.vue?raw'
 import stageWindowActivationSource from './useStageWindowActivation.ts?raw'
+import stageWindowsSource from './useStageWindows.ts?raw'
 
 describe('stage manager desktop surfaces', () => {
   it('mounts Stage Rail as a left-side app shell region instead of a teleported side overlay', () => {
@@ -14,8 +15,9 @@ describe('stage manager desktop surfaces', () => {
     expect(appShellSource).toContain(':aria-hidden="!showStageRail"')
     expect(appShellSource).toContain(':inert="!showStageRail"')
     expect(appShellSource).toContain('<StageRail />')
+    expect(appShellSource).toContain('--stage-rail-width: 12rem;')
     expect(appShellSource).toContain('grid-template-columns: 0rem minmax(0, 1fr);')
-    expect(appShellSource).toContain('grid-template-columns: 14rem minmax(0, 1fr);')
+    expect(appShellSource).toContain('grid-template-columns: var(--stage-rail-width) minmax(0, 1fr);')
     expect(appShellSource).toContain('preferences.stageManagerDesktopAvailable')
     expect(appShellSource).toContain('preferences.stageManager.railEnabled')
     expect(appShellSource).toContain('tabs.state.tabs.length > 1')
@@ -63,16 +65,13 @@ describe('stage manager desktop surfaces', () => {
     )?.[0] ?? ''
 
     expect(stageRailSource).toContain('StageDockThumb')
-    expect(stageRailSource).toContain('orientation="left"')
     expect(stageRailSource).toContain('stage-rail')
     expect(stageRailSource).toContain('height: 100%;')
     expect(stageRailSource).toContain('min-height: 100vh;')
     expect(stageRailSource).toContain("import { useStageWindows } from './useStageWindows'")
-    expect(stageRailSource).toContain(
-      'const { activateStage, closeStage, createWindowView, refreshStage, stageGroups, toggleStagePin } = useStageWindows()'
-    )
+    expect(stageRailSource).toContain('closeStageGroup')
+    expect(stageRailSource).toContain('createWindowView')
     expect(stageRailSource).toContain('StageWindowActions')
-    expect(stageRailSource).toContain('visibility="reveal"')
     expect(stageRailSource).toContain('activateStageGroup')
     expect(stageRailSource).toContain('enterWindowGroup')
     expect(stageRailSource).toContain('exitWindowGroup')
@@ -92,13 +91,44 @@ describe('stage manager desktop surfaces', () => {
     expect(stageRailSource).not.toContain('registeredModules')
     expect(stageRailSource).not.toContain('stage-rail__preview-stack')
     expect(stageRailSource).not.toContain('stage-rail__stack-card')
+    expect(stageRailSource).not.toContain('resolveStageGroupWindow')
+    expect(stageRailSource).not.toContain('orientation="right"')
+  })
+
+  it('treats Stage Rail stacked group close as a group-level action', () => {
+    expect(stageRailSource).toContain('@close="closeStageGroup(stageGroup)"')
+    expect(stageRailSource).toContain(':can-close="stageGroup.tabs.every((tab) => !tab.pinned)"')
+    expect(stageRailSource).not.toContain('@close="closeStage(stageGroup.activeTab.id)"')
+    expect(stageWindowsSource).toContain("closeStageGroup: (group: Pick<StageGroupView, 'tabs'>) => Promise<void>")
+    expect(stageWindowsSource).toContain('group.tabs.some((tab) => tab.pinned)')
+    expect(stageWindowsSource).toContain('if (tab.id !== activeTabId)')
+    expect(stageWindowsSource).toContain('await closeStage(activeTab.id)')
+  })
+
+  it('animates stacked group drill-in as folded windows unfolding into the secondary rail view', () => {
+    expect(stageRailSource).toContain("import { motion, useReducedMotion } from 'motion-v'")
+    expect(stageRailSource).toContain('const prefersReducedMotion = useReducedMotion()')
+    expect(stageRailSource).toContain('const isCollapsingWindowGroup = shallowRef(false)')
+    expect(stageRailSource).toContain('--stage-rail-plane-transform: perspective(860px) rotateY(34deg);')
+    expect(stageRailSource).toContain('transform: var(--stage-rail-plane-transform);')
+    expect(stageRailSource).toContain('transform-style: preserve-3d;')
+    expect(stageRailSource).not.toContain('const stageThumb3dProfiles = [')
+    expect(stageRailSource).not.toContain('function resolveStageThumbStyle(index: number)')
+    expect(stageRailSource).not.toContain(':style="resolveStageThumbStyle(index)"')
+    expect(stageRailSource).toContain('<motion.div')
+    expect(stageRailSource).toContain('v-for="(stage, index) in windowStages"')
+    expect(stageRailSource).toContain(':initial="resolveWindowItemFolded(index)"')
+    expect(stageRailSource).toContain(':animate="resolveWindowItemTarget(index)"')
+    expect(stageRailSource).toContain(':transition="resolveWindowItemTransition(index)"')
+    expect(stageRailSource).toContain(':on-animation-complete=')
+    expect(stageRailSource).toContain('isCollapsingWindowGroup.value = true')
+    expect(stageRailSource).not.toContain('@keyframes')
   })
 
   it('shares overview window metadata and action wiring with Stage Rail', () => {
     expect(stageOverviewSource).toContain("import { useStageWindows } from './useStageWindows'")
-    expect(stageOverviewSource).toContain(
-      'const { activeRoutePath, allWindowStages, closeStage, refreshStage, toggleStagePin, activateStage } = useStageWindows()'
-    )
+    expect(stageOverviewSource).toContain('allWindowStages')
+    expect(stageOverviewSource).toContain('activateStage')
     expect(stageOverviewSource).toContain('@close="closeStage(stage.tab.id)"')
     expect(stageOverviewSource).not.toContain('useWorkspaceTabsStore')
     expect(stageOverviewSource).not.toContain('findActiveModule')
