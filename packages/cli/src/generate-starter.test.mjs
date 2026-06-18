@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { validateGeneratedStarterStatic } from '../../../scripts/validate-generated-starter.mjs'
 import { generateStarter, parseCreateSuperAdminArgs, runCreateSuperAdmin } from './index.ts'
+import { superAdminPackageVersionRanges } from './package-version-ranges.generated.ts'
 import { createPackageJson } from './templates.ts'
 
 const packageDir = dirname(fileURLToPath(import.meta.url))
@@ -21,6 +22,10 @@ async function readGeneratedJson(root, filePath) {
 
 async function readGeneratedText(root, filePath) {
   return readFile(join(root, filePath), 'utf8')
+}
+
+function expectSuperAdminDependencyRange(packageJson, packageName) {
+  expect(packageJson.dependencies[packageName]).toBe(superAdminPackageVersionRanges[packageName])
 }
 
 function expectControlCenterScrollingLayout(preferences) {
@@ -219,7 +224,7 @@ describe('create-super-admin starter generation', () => {
       preview: 'vite preview',
       typecheck: 'vue-tsc --noEmit'
     })
-    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.2')
+    expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-base')
     expect(packageJson.dependencies['motion-v']).toBe('^2.3.0')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
     expect(config).toContain("installed: ['base']")
@@ -259,8 +264,8 @@ describe('create-super-admin starter generation', () => {
     const preferences = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferences.vue')
     const preferencesTrigger = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferencesTrigger.vue')
 
-    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.2')
-    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.2')
+    expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-base')
+    expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-cyberpunk')
     expect(packageJson.dependencies['motion-v']).toBe('^2.3.0')
     expect(packageJson.dependencies['@super-admin-org/theme-crypto']).toBeUndefined()
     expect(registry).toContain("from '@super-admin-org/theme-base'")
@@ -354,8 +359,8 @@ describe('create-super-admin starter generation', () => {
     const registry = await readGeneratedText(join(tempRoot, 'demo-admin'), 'src/super-admin/theme-registry.generated.ts')
     const preferences = await readGeneratedText(join(tempRoot, 'demo-admin'), 'src/shell/preferences/GlobalPreferences.vue')
     const preferencesTrigger = await readGeneratedText(join(tempRoot, 'demo-admin'), 'src/shell/preferences/GlobalPreferencesTrigger.vue')
-    expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^0.1.2')
-    expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^0.1.2')
+    expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-base')
+    expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-cyberpunk')
     expect(packageJson.dependencies['@super-admin-org/theme-crypto']).toBeUndefined()
     expect(registry).toContain("from '@super-admin-org/theme-base'")
     expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")

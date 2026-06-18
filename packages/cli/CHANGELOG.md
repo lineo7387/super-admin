@@ -1,5 +1,11 @@
 # create-super-admin
 
+## 0.1.6
+
+### Patch Changes
+
+- Release the Stage Manager `railEnabled` preference contract and refresh generated starter dependency ranges so registry starters typecheck against published package artifacts.
+
 ## 0.1.5
 
 ### Patch Changes

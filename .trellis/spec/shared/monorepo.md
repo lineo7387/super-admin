@@ -103,6 +103,7 @@ Publish candidate packages must expose:
 - Generated starter smoke tests that launch dev servers must terminate and await the full child process tree before reporting success, because open handles can leave GitHub release checks stuck after validation output is printed.
 - Release workflow validation steps should have a timeout before any `npm publish` step so hangs fail closed before registry mutation begins.
 - Generated starter dependency migrations must release every publishable package that can affect the install tree, not only `create-super-admin`. If the starter warning/error comes from a dependency owned by `@super-admin-org/ui`, `@super-admin-org/theme`, or another publish candidate, include that package in the changeset and selected release set; a CLI-only release will keep registry starters consuming the old transitive dependency.
+- Local packed-package release checks can mask registry dependency gaps because they rewrite generated starters to local tarballs for every publish candidate. If registry smoke fails with type/runtime errors from a published `@super-admin-org/*` dependency, fix forward by bumping the dependency-owning package, its dependency-aware publish set, and `create-super-admin`; do not publish another CLI-only patch against the same stale registry dependency line.
 - The local bootstrap path is allowed only for version `0.0.0-bootstrap.0` with `--tag bootstrap`.
 - Trusted Publishing setup must use an npm CLI whose `npm trust github --help` supports `--allow-publish`; older npm 11 builds may reject the flag even though the major version is 11.
 - If npm temporarily leaves `latest` pointing at a first bootstrap version and refuses to delete it before any replacement release exists, do not promote beta/next to latest as a workaround and do not unpublish without explicit approval. Proceed to Trusted Publishing, publish the real version to `next`, smoke test, then move `latest` to the real version.
@@ -132,6 +133,7 @@ Publish candidate packages must expose:
 | Generated starter uses the CLI version for every `@super-admin-org/*` dependency | Fail generator tests; use the package-specific version range map. |
 | Generated starter still warns about a deprecated transitive dependency after a CLI template migration | Treat the dependency-owning published package as missing from the release set; add a changeset for that package and re-run starter smoke against packed artifacts. |
 | Registry smoke for `next` fails after a version was published | Do not promote `latest`; fix forward with a new patch version on `next` because npm package versions are immutable. |
+| Registry smoke for `create-super-admin@next` passes local pack checks but fails against npm `@super-admin-org/*` types or runtime contracts | Treat the owning package as missing from the release set; bump it and any dependency-aware publish candidates before publishing a new `next` CLI patch. |
 
 ### 5. Good/Base/Bad Cases
 
