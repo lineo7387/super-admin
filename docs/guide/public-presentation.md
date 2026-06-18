@@ -4,10 +4,14 @@
 
 ## 当前公开状态
 
-截至 2026-06-14：
+截至 2026-06-18：
 
 - 仓库公开地址是 `lineo7387/super-admin`。
-- `create-super-admin` 和 `@super-admin-org/*` publish candidate packages 的 npm `latest` 与 `next` 指向 `0.1.2`。
+- npm `latest` 与 `next` 已指向 smoke-verified release line：
+  - `create-super-admin@0.1.6`
+  - `@super-admin-org/core@0.1.3`
+  - `@super-admin-org/theme@0.1.3` 与所有 theme profile packages `0.1.3`
+  - `@super-admin-org/ui@0.1.4`
 - GitHub Pages docs/demo URL 是 `https://lineo7387.github.io/super-admin/`。
 - 公开安装路径可用：
 
@@ -38,7 +42,7 @@ README 首屏应保留：
 - hosted docs/demo、getting started、examples、API adapters、themes/layouts 和 public presentation 链接。
 - 明确说明 backend、database、auth provider、AI provider 和 generated schema 都是可选的。
 
-没有 GitHub Release 前避免使用 release badge。只有 GitHub Pages workflow 存在后才使用 docs/demo badge。
+GitHub Release badge 可以在 `v0.1.6` 发布后使用，但应避免硬编码旧版本。只有 GitHub Pages workflow 存在后才使用 docs/demo badge。
 
 ## Docs And Demo Links
 
@@ -68,22 +72,26 @@ pnpm dev
 
 ## Release And Tag Copy
 
-推荐首个 GitHub release title：
+当前 GitHub release title：
 
 ```text
-Super Admin v0.1.2 - first public npm-ready starter line
+Super Admin v0.1.6 - Stage Manager starter release
 ```
 
 推荐 summary：
 
 ```text
-Super Admin now has published 0.1.x packages, a create-super-admin starter path, frontend-first docs, runtime themes, reusable UI primitives, and maintainer validation for generated starters.
+Super Admin v0.1.6 is the current default starter line, with the Stage Manager preference contract, refreshed generated-starter dependency ranges, and registry-smoke-verified npm latest packages.
 ```
 
 推荐 highlights：
 
 - `npm create super-admin@latest my-admin`
-- published package line at `0.1.2`
+- `create-super-admin@0.1.6` on npm `latest`
+- `@super-admin-org/core@0.1.3` and theme packages `0.1.3` on npm `latest`
+- `@super-admin-org/ui@0.1.4` remains the current shared UI package line
+- Stage Rail / Stage Overview / Control Center starter behavior aligned with the monorepo app
+- registry smoke passed for the default base starter and the multi-theme + i18n starter
 - mock-backed Vue admin template
 - replaceable API adapter boundary
 - reusable UI primitives and runtime design profiles

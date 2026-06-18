@@ -4,10 +4,14 @@ Use this checklist when polishing the GitHub repository, npm package pages, docs
 
 ## Current Public State
 
-As of 2026-06-14:
+As of 2026-06-18:
 
 - The repository is public at `lineo7387/super-admin`.
-- npm `latest` and `next` point to `0.1.2` for `create-super-admin` and the `@super-admin-org/*` publish candidate packages.
+- npm `latest` and `next` point to the smoke-verified release line:
+  - `create-super-admin@0.1.6`
+  - `@super-admin-org/core@0.1.3`
+  - `@super-admin-org/theme@0.1.3` and all theme profile packages at `0.1.3`
+  - `@super-admin-org/ui@0.1.4`
 - The GitHub Pages docs/demo URL is `https://lineo7387.github.io/super-admin/` after the docs deployment workflow succeeds.
 - The public install path is available:
 
@@ -38,7 +42,7 @@ The README should keep these above the fold:
 - docs links for the hosted docs/demo, getting started, examples, API adapters, themes/layouts, and public presentation.
 - a clear statement that backend, database, auth provider, AI provider, and generated schema are optional.
 
-Avoid release badges until a GitHub Release exists. Use the docs/demo badge only after the GitHub Pages workflow is present.
+A GitHub Release badge can be used after `v0.1.6` is published, but avoid hard-coding stale versions. Use the docs/demo badge only after the GitHub Pages workflow is present.
 
 ## Docs And Demo Links
 
@@ -68,22 +72,26 @@ Capture at desktop width first, then add one mobile or narrow-width screenshot i
 
 ## Release And Tag Copy
 
-Suggested first GitHub release title:
+Current GitHub release title:
 
 ```text
-Super Admin v0.1.2 - first public npm-ready starter line
+Super Admin v0.1.6 - Stage Manager starter release
 ```
 
 Suggested summary:
 
 ```text
-Super Admin now has published 0.1.x packages, a create-super-admin starter path, frontend-first docs, runtime themes, reusable UI primitives, and maintainer validation for generated starters.
+Super Admin v0.1.6 is the current default starter line, with the Stage Manager preference contract, refreshed generated-starter dependency ranges, and registry-smoke-verified npm latest packages.
 ```
 
 Suggested highlights:
 
 - `npm create super-admin@latest my-admin`
-- published package line at `0.1.2`
+- `create-super-admin@0.1.6` on npm `latest`
+- `@super-admin-org/core@0.1.3` and theme packages `0.1.3` on npm `latest`
+- `@super-admin-org/ui@0.1.4` remains the current shared UI package line
+- Stage Rail / Stage Overview / Control Center starter behavior aligned with the monorepo app
+- registry smoke passed for the default base starter and the multi-theme + i18n starter
 - mock-backed Vue admin template
 - replaceable API adapter boundary
 - reusable UI primitives and runtime design profiles
