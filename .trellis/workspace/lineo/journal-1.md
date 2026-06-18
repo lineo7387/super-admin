@@ -1652,3 +1652,36 @@ Finalized Stage Rail dock-level 3D cleanup, rail sizing/centering, group close a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 49: Fix registry smoke release set
+
+**Date**: 2026-06-18
+**Task**: Fix registry smoke release set
+**Branch**: `main`
+
+### Summary
+
+Published the Stage Manager dependency-aware release set to next after registry smoke exposed the CLI-only release gap; verified local release check and registry starter smoke.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `00eef0d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

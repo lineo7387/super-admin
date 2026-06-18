@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 48
+- **Total Sessions**: 49
 - **Last Active**: 2026-06-18
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1654 | Active |
+| `journal-1.md` | ~1687 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 49 | 2026-06-18 | Fix registry smoke release set | `00eef0d` | `main` |
 | 48 | 2026-06-18 | Finalize Stage Rail and Control Center surfaces | `aa6f28b` | `main` |
 | 47 | 2026-06-17 | Stage Manager rail actions | `ffa9352` | `main` |
 | 46 | 2026-06-16 | Improve Control Center entry prominence | `7de7653` | `main` |
