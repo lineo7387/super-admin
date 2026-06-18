@@ -1685,3 +1685,36 @@ Published the Stage Manager dependency-aware release set to next after registry 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 50: Publish v0.1.6 GitHub release
+
+**Date**: 2026-06-18
+**Task**: Publish v0.1.6 GitHub release
+**Branch**: `main`
+
+### Summary
+
+Updated bilingual public presentation docs for the npm latest release state and created the GitHub v0.1.6 release announcement after registry smoke verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e424f04` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
