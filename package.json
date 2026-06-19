@@ -34,5 +34,10 @@
     "vitepress": "^1.6.4",
     "vitest": "^4.1.9",
     "vue-tsc": "^3.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "tsx>esbuild": "0.28.1"
+    }
   }
 }

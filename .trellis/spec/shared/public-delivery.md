@@ -92,8 +92,9 @@ Rules:
 - Prefer patch/minor updates and lockfile-only refreshes when they resolve the advisory without changing user-facing runtime behavior.
 - Use focused PRs for safe patch/minor security updates; keep them on the protected `main` + CI flow.
 - Do not merge major-upgrade Dependabot PRs just because they contain a security fix. Treat Vite, VitePress, TypeScript, router, build tool, or framework major upgrades as independent migration tasks with their own validation scope.
+- Do not force transitive major overrides inside release tooling just to clear an alert. If an override touches Changesets, npm publish helpers, package graph discovery, or release scripts, verify the relevant CLI commands such as `pnpm changeset status`, `pnpm release plan`, and `pnpm release commands` before keeping it.
 - If a security update is `update_not_possible` because the patched version is outside the latest resolvable range, record the dependency path and defer it to the relevant migration task instead of forcing an override by default.
-- Maintainer-only lockfiles under `.agents/`, `.trellis/`, `.codex/`, or similar tooling directories may be updated to reduce repository alerts, but those updates must not make maintainer tooling part of generated starter requirements.
+- Maintainer-only lockfiles under `.agents/`, `.trellis/`, `.codex/`, or similar tooling directories may be updated to reduce repository alerts, but those updates must not make maintainer tooling part of generated starter requirements. Validate the maintainer tool's own audit/build path separately from the public app and document any existing script-path limitations.
 
 ## Bug Fix Workflow Documentation
 
