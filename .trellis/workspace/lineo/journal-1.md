@@ -1853,3 +1853,36 @@ Built and privately deployed the standalone Super Admin landing page in the sepa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 55: Stage Manager 完整缩略图收尾
+
+**Date**: 2026-06-19
+**Task**: Stage Manager 完整缩略图收尾
+**Branch**: `main`
+
+### Summary
+
+完成台前调度窗口预览调整：缩略图改为完整 app shell 框架包裹真实路由内容，切换动效回退到轻量单 ghost；相关测试、lint、typecheck 和浏览器 QA 均通过，并归档对应 Trellis task。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e106bc9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
