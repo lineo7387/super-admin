@@ -43,6 +43,38 @@ pnpm docs:preview
 
 Do not document commands as mandatory until they exist in `package.json`.
 
+## Vite 8 Build Configuration
+
+Package build scripts that call Vite's JavaScript `build()` API should use Vite 8 / Rolldown option names.
+
+- Use `build.rolldownOptions` for bundler configuration such as package externals.
+- Do not add direct `rollup` or `esbuild` dependencies for ordinary Vite 8 package builds unless a script explicitly calls those tools or opts back into an esbuild/terser minifier.
+- Keep generated starters on normal `vite` dependency ranges; do not expose maintainer-only aliases such as `rolldown-vite`.
+
+Wrong:
+
+```js
+await build({
+  build: {
+    rollupOptions: {
+      external
+    }
+  }
+})
+```
+
+Correct:
+
+```js
+await build({
+  build: {
+    rolldownOptions: {
+      external
+    }
+  }
+})
+```
+
 ## Scenario: Release Automation
 
 ### 1. Scope / Trigger

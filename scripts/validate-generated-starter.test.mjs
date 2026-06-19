@@ -42,7 +42,7 @@ async function createStarterFixture(overrides = {}) {
       '@vue/tsconfig': '^0.8.0',
       tailwindcss: '^4.0.0',
       typescript: '^5.0.0',
-      vite: '^7.0.0',
+      vite: '^8.0.0',
       'vue-tsc': '^3.0.0',
       ...overrides.devDependencies
     }
