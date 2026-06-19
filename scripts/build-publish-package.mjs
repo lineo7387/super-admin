@@ -55,7 +55,7 @@ async function buildPackage(packageDir) {
         formats: ['es']
       },
       outDir: resolve(packageDir, 'dist'),
-      rollupOptions: {
+      rolldownOptions: {
         external: createExternalMatcher(packageJson)
       },
       sourcemap: true,
