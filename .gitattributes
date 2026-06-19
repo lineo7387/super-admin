@@ -1,0 +1,10 @@
+# Maintainer-only AI workflow/tooling should not dominate GitHub language stats.
+.trellis/** linguist-vendored
+.agents/** linguist-vendored
+.agent/** linguist-vendored
+.claude/** linguist-vendored
+.codex/** linguist-vendored
+
+# Generated/local artifacts are not product source.
+.codegraph/** linguist-generated
+output/** linguist-generated

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/shared/index.md", "reason": "Shared boundary and quality entry point for public repo cleanup."}
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Defines public docs, generated starter, and maintainer-only AI workflow boundaries."}
+{"file": ".trellis/spec/guides/trellis-lake-workflow.md", "reason": "Confirms implementation plan location and Trellis task artifact expectations."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "General verification and repository quality guardrails."}
