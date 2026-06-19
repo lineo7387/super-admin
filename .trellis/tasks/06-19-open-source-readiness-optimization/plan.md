@@ -15,6 +15,11 @@ Implement Bundle A: repository safety and contribution hygiene only.
   - Update `docs/guide/open-source-workflow.md`.
   - Update `docs/en/guide/open-source-workflow.md`.
   - Update `.github/pull_request_template.md` if useful.
+- [x] Document the bug-fix workflow for users and AI tools.
+  - Add the workflow to `CONTRIBUTING.md`.
+  - Add the canonical bilingual flow to `docs/guide/open-source-workflow.md` and `docs/en/guide/open-source-workflow.md`.
+  - Point AI agents to the workflow from `AGENTS.md`.
+  - Capture the convention in `.trellis/spec/shared/public-delivery.md`.
 - [x] Verify.
   - Run `pnpm lint`.
   - Run `pnpm typecheck`.

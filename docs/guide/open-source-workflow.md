@@ -111,6 +111,51 @@ pnpm docs:build
 
 在声称 admin app 已通过真实 browser/API/token flow 连接 optional reference backend 前，先运行 `pnpm test:reference`。
 
+## Bug Fix Workflow
+
+发现 bug 后，使用这条路线，避免直接在 `main` 上修：
+
+```text
+Issue -> reproduce -> fix branch -> failing test -> fix -> verify -> PR -> CI -> merge
+```
+
+1. **记录 bug**：普通问题开 GitHub issue，写清楚现象、复现步骤、期望结果和环境。安全问题不要公开，走 `SECURITY.md` 的私密报告路径。
+2. **同步并复现**：
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+   尽量找出最小复现路径，并判断影响范围，例如 `admin`、`api`、`cli`、`docs`、`release`。
+3. **创建修复分支**：
+   ```bash
+   git checkout -b fix/<scope>-<short-bug-name>
+   ```
+   例子：`fix/auth-login-redirect`、`fix/cli-starter-theme`。
+4. **先补测试**：能用测试复现的 bug，先加 regression test。UI 行为 bug 可补组件/逻辑测试；CLI 或 generated starter bug 要补或运行 starter validation。
+5. **修复代码**：保持改动聚焦，不顺手重构无关代码。继续守住 frontend-first、mock-backed 和 adapter boundary。
+6. **运行验证**：
+   ```bash
+   pnpm lint
+   pnpm typecheck
+   pnpm test
+   pnpm build
+   ```
+   改 docs 运行 `pnpm docs:build`；影响 generated starter 运行 `pnpm validate:starter`；涉及 optional reference backend 运行 `pnpm test:reference`。
+7. **提交修复**：
+   ```bash
+   git add <files>
+   git commit -m "fix(scope): 简短中文描述"
+   ```
+8. **打开 PR**：
+   ```bash
+   git push -u origin fix/<scope>-<short-bug-name>
+   gh pr create --base main --head fix/<scope>-<short-bug-name>
+   ```
+   PR 里说明问题、原因、修复方式、验证命令和剩余风险。
+9. **合并和清理**：等待 `CI / checks` 通过并满足 protected `main` 规则后再 merge。合并后同步 `main`，删除本地修复分支。
+
+如果同类 bug 反复出现，更新 `.trellis/spec/` 或相关 docs，把复盘结论沉淀成未来 AI 和维护者能读到的规则。
+
 ## Release Direction
 
 Package publish boundaries、可选 `create-super-admin` CLI、generated starter validation 和 dependency-aware release automation 已经存在于仓库中。使用 [发布流程](./releasing.md) 作为 release preparation、selected package planning、registry smoke 和 promotion 的事实来源。

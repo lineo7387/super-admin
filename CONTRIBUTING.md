@@ -100,6 +100,28 @@ Before opening a PR:
 
 Use the pull request template when GitHub prompts for it.
 
+## Bug Fix Workflow
+
+Use the same protected-branch flow for bugs:
+
+1. Record the bug in a GitHub issue unless it is security-sensitive.
+2. Reproduce from the latest `main`.
+3. Create a focused branch such as `fix/auth-login-redirect`.
+4. Add or update a test that exposes the bug when practical.
+5. Keep the fix narrow and avoid unrelated refactors.
+6. Run the relevant checks:
+   ```bash
+   pnpm lint
+   pnpm typecheck
+   pnpm test
+   pnpm build
+   ```
+7. Also run `pnpm docs:build` for docs changes, `pnpm validate:starter` for generated starter changes, and `pnpm test:reference` for optional reference backend claims.
+8. Commit with `fix(scope): 简短中文描述`.
+9. Push the branch, open a pull request, wait for CI, and merge only after protected-branch requirements pass.
+
+Security-sensitive bugs should not be opened as public issues. Use the reporting path in `SECURITY.md`.
+
 ## AI-Assisted Contributions
 
 AI tools are welcome, but the contributor is responsible for the final result. Read `AGENTS.md` and `docs/guide/ai-collaboration.md` before asking an AI agent to modify this project.

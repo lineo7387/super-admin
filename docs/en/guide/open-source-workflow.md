@@ -111,6 +111,51 @@ pnpm docs:build
 
 Run `pnpm test:reference` before claiming that the admin app connects to the optional reference backend through a real browser/API/token flow.
 
+## Bug Fix Workflow
+
+When you find a bug, use this route instead of changing `main` directly:
+
+```text
+Issue -> reproduce -> fix branch -> failing test -> fix -> verify -> PR -> CI -> merge
+```
+
+1. **Record the bug**: open a GitHub issue for normal bugs, including symptoms, reproduction steps, expected behavior, and environment. Do not disclose security issues publicly; use the private reporting path in `SECURITY.md`.
+2. **Sync and reproduce**:
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+   Find the smallest reproduction you can, then identify the affected area such as `admin`, `api`, `cli`, `docs`, or `release`.
+3. **Create a fix branch**:
+   ```bash
+   git checkout -b fix/<scope>-<short-bug-name>
+   ```
+   Examples: `fix/auth-login-redirect`, `fix/cli-starter-theme`.
+4. **Add the test first**: when practical, add a regression test that exposes the bug. UI behavior bugs may need component or logic tests; CLI or generated starter bugs should add or run starter validation.
+5. **Fix narrowly**: avoid unrelated refactors. Preserve the frontend-first, mock-backed default and the adapter boundary.
+6. **Run verification**:
+   ```bash
+   pnpm lint
+   pnpm typecheck
+   pnpm test
+   pnpm build
+   ```
+   Run `pnpm docs:build` for docs changes, `pnpm validate:starter` for generated starter changes, and `pnpm test:reference` for optional reference backend claims.
+7. **Commit the fix**:
+   ```bash
+   git add <files>
+   git commit -m "fix(scope): 简短中文描述"
+   ```
+8. **Open a PR**:
+   ```bash
+   git push -u origin fix/<scope>-<short-bug-name>
+   gh pr create --base main --head fix/<scope>-<short-bug-name>
+   ```
+   Explain the bug, root cause, fix, verification commands, and remaining risks.
+9. **Merge and clean up**: merge only after `CI / checks` passes and protected `main` requirements are satisfied. After merge, sync `main` and delete the local fix branch.
+
+If the same class of bug appears repeatedly, update `.trellis/spec/` or the relevant docs so future AI tools and maintainers can read the lesson.
+
 ## Release Direction
 
 Package publish boundaries, the optional `create-super-admin` CLI, generated starter validation, and dependency-aware release automation are now present in the repository. Use [Releasing](./releasing.md) as the source of truth for release preparation, selected package planning, registry smoke, and promotion.
