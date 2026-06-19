@@ -1,0 +1,60 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: npm
+    directories:
+      - /
+      - /apps/admin
+      - /apps/api
+      - /packages/cli
+      - /packages/core
+      - /packages/theme
+      - /packages/theme-base
+      - /packages/theme-crypto
+      - /packages/theme-cyberpunk
+      - /packages/theme-industrial
+      - /packages/theme-newsprint
+      - /packages/ui
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:30"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      vue-vite:
+        patterns:
+          - "@vitejs/*"
+          - "@vue/*"
+          - "vite"
+          - "vitepress"
+          - "vue"
+          - "vue-i18n"
+          - "vue-router"
+          - "vue-tsc"
+      testing:
+        patterns:
+          - "vitest"
+          - "playwright"
+      tooling:
+        patterns:
+          - "@types/*"
+          - "typescript"
+          - "tsx"

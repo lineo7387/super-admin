@@ -11,6 +11,12 @@
 - [ ] `pnpm docs:build` when docs changed
 - [ ] `pnpm test:reference` when claiming real API/reference backend connectivity
 
+## Repository Hygiene
+
+- [ ] This PR targets `main` from a fork or short-lived topic branch.
+- [ ] No generated output, dependency folders, local indexes, or unrelated maintainer task archives are included.
+- [ ] Any GitHub settings change that cannot be represented in files is called out in Notes.
+
 ## Boundary Review
 
 - [ ] Default scaffold remains frontend-first and mock-backed.
