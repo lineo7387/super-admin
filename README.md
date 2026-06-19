@@ -77,6 +77,8 @@ pnpm build
 
 ## Preview And Docs
 
+![Super Admin public preview](docs/public/super-admin-preview.jpeg)
+
 User docs:
 
 - [Hosted docs/demo 中文](https://lineo7387.github.io/super-admin/)
@@ -95,9 +97,13 @@ Maintainer docs:
 
 The hosted docs/demo is deployed from `docs/` through GitHub Pages. Use `pnpm dev` locally for the full interactive admin preview.
 
-## Feature Preview Plan
+## Feature Preview Assets
 
-Recommended first public preview assets:
+Current public preview asset:
+
+- `docs/public/super-admin-preview.jpeg` — docs homepage preview for the public product story and admin visual direction.
+
+Recommended next preview assets:
 
 - Admin shell with workspace tabs, command/search entry, and example modules.
 - Runtime theme/profile switching across Base, Crypto, Cyberpunk, Industrial, and Newsprint.
