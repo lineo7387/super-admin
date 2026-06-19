@@ -9,4 +9,4 @@
 - [x] Run `pnpm docs:build`.
 - [x] Visually check the docs homepage in desktop and mobile browsers.
 - [x] Run additional lint/typecheck/test commands if the changed surface warrants them.
-- [ ] Complete Trellis quality/spec review, commit, push, and open a PR.
+- [x] Complete Trellis quality/spec review and work commits.
