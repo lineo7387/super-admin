@@ -56,6 +56,20 @@ codex/open-source-readiness
 
 `main` is the stable development branch.
 
+## Before Pushing
+
+When the user asks an AI agent to push a work branch to a remote, the agent must first synchronize the branch with the latest `main`:
+
+1. Confirm the working tree is clean and the current branch is the intended work branch.
+2. Fetch latest remote refs, including `origin/main`.
+3. Integrate latest `origin/main` into the work branch with the project-appropriate strategy, usually rebase for a topic branch or merge when preserving merge context is intentional.
+4. Resolve conflicts without discarding unrelated user work.
+5. Re-run the relevant verification commands for the changed surface.
+6. Inspect `git status`, recent commit history, and the final diff scope.
+7. Push the work branch only after the branch is based on latest `main` and verification passes.
+
+Do not direct-push to `main` for normal work. Use the protected-branch PR flow for integration unless the user explicitly requests a different owner-approved emergency path.
+
 ## Pull Requests
 
 Before opening or merging a pull request, run the relevant checks:
