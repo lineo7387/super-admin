@@ -138,6 +138,7 @@ The first hosted docs/demo surface is the VitePress docs site deployed to GitHub
 - Keep `docs/.vitepress/config.ts` configured with `base: '/super-admin/'` while deploying as a GitHub Pages project site.
 - Keep the Pages workflow under `.github/workflows/docs-pages.yml`.
 - The Pages workflow should build with `pnpm docs:build` and deploy `docs/.vitepress/dist`.
+- Store stable docs images and preview assets under `docs/public/`, and reference them from VitePress pages as root-absolute public paths such as `/super-admin-preview.jpeg` so the configured `base` is applied during build.
 - Do not copy the docs site, Pages workflow, or repository deployment config into generated starters.
 - If switching to a custom domain or another host later, update README, `docs/guide/public-presentation.md`, VitePress `base`, and this section together.
 

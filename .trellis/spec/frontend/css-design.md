@@ -58,6 +58,7 @@ class pattern.
 
 - Define stable dimensions for shell regions, tabs, icon buttons, tables, and toolbars.
 - Use `minmax`, `clamp`, `aspect-ratio`, and explicit overflow behavior where needed.
+- Set `min-width: 0` on grid/flex children that contain long labels, code snippets, command lines, or images, so their content can shrink or scroll inside the child instead of widening the page on mobile.
 - Use the shared `AdminScrollArea` primitive for custom scrollable panels. Do not reserve native scrollbar gutter space for themed scroll feedback; the component paints non-layout overlay bars.
 
 ## Responsive Rules
