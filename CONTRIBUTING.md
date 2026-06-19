@@ -38,7 +38,7 @@ pnpm docs:build
 
 External contributors should use a fork and open a pull request. Maintainers should also prefer topic branches and pull requests for normal work.
 
-Do not push directly to `main` for ordinary feature, fix, docs, or release-prep work. `main` is expected to stay protected with required CI checks and code owner review.
+Do not push directly to `main` for ordinary feature, fix, docs, or release-prep work. `main` is expected to stay protected with pull requests and required CI checks. Turn on code owner review once the project has a second trusted maintainer who can review owner-authored PRs.
 
 Personal-repository collaborators have broad write access once invited. Add collaborators only for trusted maintainers; use pull requests for everyone else. If the project later needs finer permissions such as triage-only or maintain-only roles, move it into a GitHub organization.
 

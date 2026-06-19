@@ -28,9 +28,6 @@ codex/open-source-readiness
 推荐在 GitHub `Settings -> Rules -> Rulesets` 或 `Settings -> Branches -> Branch protection rules` 中保护 `main`：
 
 - Require a pull request before merging.
-- Require at least 1 approval.
-- Require review from Code Owners, using `.github/CODEOWNERS`.
-- Dismiss stale approvals when new commits are pushed.
 - Require conversation resolution before merging.
 - Require status checks to pass before merging.
 - Require the `checks` status check from the `CI` workflow.
@@ -38,6 +35,12 @@ codex/open-source-readiness
 - Block branch deletion.
 - Apply restrictions to administrators when available.
 - Keep bypass lists empty unless there is a documented emergency reason.
+
+单人维护期推荐先不要求 approval 和 Code Owner review，否则 owner 自己开的 PR 可能无法合并。等项目有第二个可信维护者后，再开启：
+
+- Require at least 1 approval.
+- Require review from Code Owners, using `.github/CODEOWNERS`.
+- Dismiss stale approvals when new commits are pushed.
 
 推荐 repository merge settings：
 
@@ -48,7 +51,7 @@ codex/open-source-readiness
 
 ## Security Automation
 
-仓库文件已经提供 `.github/dependabot.yml`，用于 GitHub Actions 和 pnpm/npm dependencies 的定期 update PR。Dependabot PR 应和普通 PR 一样经过 branch protection、CODEOWNERS review 和 CI。
+仓库文件已经提供 `.github/dependabot.yml`，用于 GitHub Actions 和 pnpm/npm dependencies 的定期 update PR。Dependabot PR 应和普通 PR 一样经过 branch protection 和 CI；有第二个维护者后再纳入 CODEOWNERS review。
 
 推荐在 GitHub `Settings -> Advanced Security` 中开启：
 

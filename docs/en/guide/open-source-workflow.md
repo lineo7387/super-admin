@@ -28,9 +28,6 @@ Personal-repository collaborator access is broad once granted. Add collaborators
 Recommended `main` protection under GitHub `Settings -> Rules -> Rulesets` or `Settings -> Branches -> Branch protection rules`:
 
 - Require a pull request before merging.
-- Require at least 1 approval.
-- Require review from Code Owners, using `.github/CODEOWNERS`.
-- Dismiss stale approvals when new commits are pushed.
 - Require conversation resolution before merging.
 - Require status checks to pass before merging.
 - Require the `checks` status check from the `CI` workflow.
@@ -38,6 +35,12 @@ Recommended `main` protection under GitHub `Settings -> Rules -> Rulesets` or `S
 - Block branch deletion.
 - Apply restrictions to administrators when available.
 - Keep bypass lists empty unless there is a documented emergency reason.
+
+For the solo-maintainer phase, do not require approval or Code Owner review yet; otherwise owner-authored PRs may be impossible to merge. Once the project has a second trusted maintainer, enable:
+
+- Require at least 1 approval.
+- Require review from Code Owners, using `.github/CODEOWNERS`.
+- Dismiss stale approvals when new commits are pushed.
 
 Recommended repository merge settings:
 
@@ -48,7 +51,7 @@ Recommended repository merge settings:
 
 ## Security Automation
 
-The repository includes `.github/dependabot.yml` for scheduled GitHub Actions and pnpm/npm dependency update pull requests. Dependabot PRs should go through the same branch protection, CODEOWNERS review, and CI flow as human-authored PRs.
+The repository includes `.github/dependabot.yml` for scheduled GitHub Actions and pnpm/npm dependency update pull requests. Dependabot PRs should go through the same branch protection and CI flow as human-authored PRs; add CODEOWNERS review once a second maintainer is available.
 
 Recommended GitHub `Settings -> Advanced Security` features:
 

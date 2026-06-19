@@ -78,7 +78,8 @@ Rules:
 - Keep external contributors on the fork/PR path; reserve collaborator access for trusted maintainers.
 - Recommend organization migration when the project needs finer roles such as triage-only, write, maintain, and admin.
 - Document owner-only settings as maintainer follow-up actions with exact recommended values instead of pretending they were applied by a file change.
-- Keep Dependabot and security automation PRs on the same protected-branch, CI, and review path as human-authored PRs.
+- For a solo-maintainer repository, require PRs and CI for `main` but do not require approval or Code Owner review until a second trusted maintainer exists; otherwise owner-authored PRs can be impossible to merge.
+- Keep Dependabot and security automation PRs on the same protected-branch and CI path as human-authored PRs. Add Code Owner review once a second maintainer can review owner-authored PRs.
 
 ## Bug Fix Workflow Documentation
 
