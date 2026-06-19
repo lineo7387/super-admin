@@ -4,7 +4,7 @@ This project uses a lightweight open-source workflow for ongoing `0.x` developme
 
 ## Branches
 
-`main` is the stable development branch.
+`main` is the stable development branch and should be protected with GitHub branch protection or a repository ruleset.
 
 Use focused feature branches:
 
@@ -14,6 +14,52 @@ fix/auth-redirect
 docs/api-adapters
 codex/open-source-readiness
 ```
+
+External contributors should use a fork and open a pull request. Maintainers should also prefer short-lived topic branches and pull requests for normal development. Do not push directly to `main` for ordinary feature, fix, docs, or release-prep work.
+
+## Repository Permissions
+
+A public repository does not mean everyone can push. External users can contribute through forks and pull requests unless the repository owner explicitly adds them as collaborators.
+
+Personal-repository collaborator access is broad once granted. Add collaborators only for trusted maintainers; keep regular contributors on the fork/PR path. If the project later needs finer roles such as triage-only, write, maintain, and admin, move the repository into a GitHub organization.
+
+## Protected Main Checklist
+
+Recommended `main` protection under GitHub `Settings -> Rules -> Rulesets` or `Settings -> Branches -> Branch protection rules`:
+
+- Require a pull request before merging.
+- Require at least 1 approval.
+- Require review from Code Owners, using `.github/CODEOWNERS`.
+- Dismiss stale approvals when new commits are pushed.
+- Require conversation resolution before merging.
+- Require status checks to pass before merging.
+- Require the `checks` status check from the `CI` workflow.
+- Block force pushes.
+- Block branch deletion.
+- Apply restrictions to administrators when available.
+- Keep bypass lists empty unless there is a documented emergency reason.
+
+Recommended repository merge settings:
+
+- Enable squash merge as the default merge path.
+- Optionally keep rebase merge enabled for maintainer-only linear history.
+- Disable merge commits if you want compact history.
+- Enable automatically delete head branches after merge.
+
+## Security Automation
+
+The repository includes `.github/dependabot.yml` for scheduled GitHub Actions and pnpm/npm dependency update pull requests. Dependabot PRs should go through the same branch protection, CODEOWNERS review, and CI flow as human-authored PRs.
+
+Recommended GitHub `Settings -> Advanced Security` features:
+
+- Dependency graph.
+- Dependabot alerts.
+- Dependabot security updates.
+- Private vulnerability reporting.
+- Secret scanning.
+- Secret scanning push protection.
+
+Keep GitHub Actions default workflow permissions read-only and grant extra permissions only in the specific workflow that needs them. The Pages and publish-next workflows already use explicit `permissions`.
 
 ## Commits
 

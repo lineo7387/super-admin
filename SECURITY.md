@@ -13,6 +13,19 @@ For now, open a private security advisory on GitHub if available, or contact the
 - expected impact
 - any suggested fix or mitigation
 
+## Repository Security Automation
+
+Maintainers should keep these GitHub security features enabled for the public repository:
+
+- Dependency graph.
+- Dependabot alerts.
+- Dependabot security updates.
+- Private vulnerability reporting.
+- Secret scanning.
+- Secret scanning push protection.
+
+The repository includes `.github/dependabot.yml` for scheduled GitHub Actions and pnpm/npm dependency update pull requests. Dependabot PRs should go through the same protected-branch review and CI flow as human-authored PRs.
+
 ## Scope
 
 Security-sensitive areas include:

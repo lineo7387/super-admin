@@ -64,6 +64,22 @@ Public docs must match the real repository and npm state.
 - When GitHub public pages lag local commits, call out that `main` is ahead of `origin/main` before assuming the remote state is wrong.
 - GitHub About metadata, topics, releases, and demo links are repository settings; document them as maintainer follow-up when they cannot be changed from files.
 
+## GitHub Repository Governance
+
+GitHub governance has two surfaces:
+
+- Committed repository files, such as `.github/CODEOWNERS`, `.github/dependabot.yml`, issue templates, PR templates, workflows, and docs.
+- Owner-only repository settings, such as branch protection/rulesets, collaborator access, merge settings, vulnerability alerts, private vulnerability reporting, Pages settings, and default workflow permissions.
+
+Rules:
+
+- Do not imply that committed files alone protect `main`; branch protection or rulesets must be enabled in GitHub settings by an owner.
+- When documenting direct-push risk, distinguish public visibility from write access: ordinary public users cannot push, but invited personal-repository collaborators can have broad write access.
+- Keep external contributors on the fork/PR path; reserve collaborator access for trusted maintainers.
+- Recommend organization migration when the project needs finer roles such as triage-only, write, maintain, and admin.
+- Document owner-only settings as maintainer follow-up actions with exact recommended values instead of pretending they were applied by a file change.
+- Keep Dependabot and security automation PRs on the same protected-branch, CI, and review path as human-authored PRs.
+
 ## Docs Audience Architecture
 
 GitHub Pages docs are user-first. The default reader is evaluating or using `create-super-admin` to build their own admin app.

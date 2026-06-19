@@ -34,6 +34,14 @@ pnpm docs:build
 
 `pnpm test:reference` is a heavier maintainer smoke for the optional reference backend and admin adapter flow. Use it before release claims about real API connectivity.
 
+## Contribution Flow
+
+External contributors should use a fork and open a pull request. Maintainers should also prefer topic branches and pull requests for normal work.
+
+Do not push directly to `main` for ordinary feature, fix, docs, or release-prep work. `main` is expected to stay protected with required CI checks and code owner review.
+
+Personal-repository collaborators have broad write access once invited. Add collaborators only for trusted maintainers; use pull requests for everyone else. If the project later needs finer permissions such as triage-only or maintain-only roles, move it into a GitHub organization.
+
 ## Branches
 
 Use short, descriptive branches:
@@ -82,11 +90,13 @@ Keep unrelated work in separate commits. Do not include generated output, local 
 Before opening a PR:
 
 - Keep the change focused.
+- Target `main` from a fork or short-lived topic branch.
 - Update docs when behavior or public guidance changes.
 - Add or update tests for non-trivial logic.
 - Provide default `zh-CN` copy for new user-facing UI text; avoid adding English-only UI copy.
 - Run relevant checks.
 - Explain user-facing impact and remaining trade-offs.
+- Do not include generated output, local indexes, dependency folders, or maintainer task archives unless the task explicitly requires them.
 
 Use the pull request template when GitHub prompts for it.
 

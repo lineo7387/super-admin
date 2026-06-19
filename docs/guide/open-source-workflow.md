@@ -4,7 +4,7 @@
 
 ## Branches
 
-`main` 是稳定开发分支。
+`main` 是稳定开发分支，应通过 GitHub branch protection 或 repository ruleset 保护。
 
 使用聚焦的 feature branches：
 
@@ -14,6 +14,52 @@ fix/auth-redirect
 docs/api-adapters
 codex/open-source-readiness
 ```
+
+外部贡献者默认使用 fork + pull request。维护者日常开发也应使用短生命周期 topic branch + pull request；不要为了普通功能、修复、文档或 release-prep work 直接 push 到 `main`。
+
+## Repository Permissions
+
+公开仓库并不意味着任何人都能 push。外部用户只能通过 fork/PR 贡献，除非仓库 owner 把他们加入 collaborators。
+
+个人账号仓库的 collaborator 权限较宽，一旦邀请就有直接写入能力。只把可信维护者加入 collaborator；普通贡献者继续走 fork/PR。如果项目以后需要 triage-only、write、maintain、admin 等更细权限，把仓库迁移到 GitHub organization 更合适。
+
+## Protected Main Checklist
+
+推荐在 GitHub `Settings -> Rules -> Rulesets` 或 `Settings -> Branches -> Branch protection rules` 中保护 `main`：
+
+- Require a pull request before merging.
+- Require at least 1 approval.
+- Require review from Code Owners, using `.github/CODEOWNERS`.
+- Dismiss stale approvals when new commits are pushed.
+- Require conversation resolution before merging.
+- Require status checks to pass before merging.
+- Require the `checks` status check from the `CI` workflow.
+- Block force pushes.
+- Block branch deletion.
+- Apply restrictions to administrators when available.
+- Keep bypass lists empty unless there is a documented emergency reason.
+
+推荐 repository merge settings：
+
+- Enable squash merge as the default merge path.
+- Optionally keep rebase merge enabled for maintainer-only linear history.
+- Disable merge commits if you want the history to stay compact.
+- Enable automatically delete head branches after merge.
+
+## Security Automation
+
+仓库文件已经提供 `.github/dependabot.yml`，用于 GitHub Actions 和 pnpm/npm dependencies 的定期 update PR。Dependabot PR 应和普通 PR 一样经过 branch protection、CODEOWNERS review 和 CI。
+
+推荐在 GitHub `Settings -> Advanced Security` 中开启：
+
+- Dependency graph.
+- Dependabot alerts.
+- Dependabot security updates.
+- Private vulnerability reporting.
+- Secret scanning.
+- Secret scanning push protection.
+
+推荐保持 GitHub Actions default workflow permissions 为 read-only，只在特定 workflow 中声明需要的权限。当前 Pages 和 publish-next workflows 已经使用显式 `permissions`。
 
 ## Commits
 
