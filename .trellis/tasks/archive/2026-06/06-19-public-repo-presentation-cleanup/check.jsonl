@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/shared/index.md", "reason": "Shared quality and public delivery checks."}
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Audit boundary between public repository surfaces and maintainer-only AI tooling."}
+{"file": ".trellis/spec/guides/trellis-lake-workflow.md", "reason": "Ensure task artifacts remain in the Trellis lake workflow."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Verification and no-hidden-required-tooling guardrails."}
