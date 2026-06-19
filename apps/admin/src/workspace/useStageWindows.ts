@@ -8,11 +8,12 @@ import {
   findModuleRoute,
   type WorkspaceTab
 } from '@super-admin-org/core'
-import { translateRouteTitle } from '@/i18n/navigation'
+import { translateModuleName, translateRouteDescription, translateRouteTitle } from '@/i18n/navigation'
 import { registeredModules } from '@/modules/module-registry'
+import { usePreferencesStore } from '@/stores/preferences.store'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 import { sortStageGroupsForDock } from './stage-manager'
-import type { StageGroupView, StageWindowView } from './stage-manager'
+import type { StageGroupView, StageWindowPreviewModel, StageWindowPreviewTab, StageWindowView } from './stage-manager'
 import { useStageWindowActivation } from './useStageWindowActivation'
 
 export type StageWindowsContext = {
@@ -29,9 +30,53 @@ export type StageWindowsContext = {
 export function useStageWindows(): StageWindowsContext {
   const route = useRoute()
   const { t } = useI18n()
+  const preferences = usePreferencesStore()
   const tabs = useWorkspaceTabsStore()
   const { activateStage, closeStage, refreshStage, toggleStagePin } = useStageWindowActivation()
   const activeRoutePath = computed(() => route.fullPath)
+
+  function createPreviewTab(tab: WorkspaceTab, activeTab: WorkspaceTab): StageWindowPreviewTab {
+    return {
+      active: tab.id === activeTab.id,
+      id: tab.id,
+      pinned: tab.pinned,
+      routePath: tab.routePath,
+      title: resolveTabTitle(tab)
+    }
+  }
+
+  function createPreviewTabs(sourceTabs: readonly WorkspaceTab[], activeTab: WorkspaceTab): StageWindowPreviewTab[] {
+    return [...sourceTabs]
+      .sort((left, right) => {
+        const activeDelta = Number(right.id === activeTab.id) - Number(left.id === activeTab.id)
+        if (activeDelta !== 0) {
+          return activeDelta
+        }
+
+        return right.activatedAt - left.activatedAt
+      })
+      .slice(0, 4)
+      .map((tab) => createPreviewTab(tab, activeTab))
+  }
+
+  function createWindowPreview(tab: WorkspaceTab, groupTabs: readonly WorkspaceTab[] = [tab]): StageWindowPreviewModel {
+    const module = findActiveModule(registeredModules, tab.routePath)
+    const moduleRoute = findModuleRoute(module, tab.routePath)
+
+    return {
+      description: translateRouteDescription(t, moduleRoute?.path ?? tab.routePath, moduleRoute?.meta.description ?? tab.routePath),
+      layoutPreset: preferences.layoutPreset,
+      moduleName: translateModuleName(t, module, t('workspace.current')),
+      regions: moduleRoute?.meta.regions ?? ['primary'],
+      routePath: tab.routePath,
+      tabs: createPreviewTabs(groupTabs, tab),
+      title: resolveTabTitle(tab)
+    }
+  }
+
+  function resolveTabTitle(tab: WorkspaceTab): string {
+    return translateRouteTitle(t, tab.routePath, tab.title)
+  }
 
   function resolveTabComponent(routePath: string): Component | undefined {
     const module = findActiveModule(registeredModules, routePath)
@@ -40,15 +85,12 @@ export function useStageWindows(): StageWindowsContext {
     return moduleRoute?.component as Component | undefined
   }
 
-  function resolveTabTitle(tab: WorkspaceTab): string {
-    return translateRouteTitle(t, tab.routePath, tab.title)
-  }
-
   function createWindowView(tab: WorkspaceTab): StageWindowView {
     return {
       tab,
       component: resolveTabComponent(tab.routePath),
       isActive: tab.routePath === activeRoutePath.value,
+      preview: createWindowPreview(tab),
       title: resolveTabTitle(tab)
     }
   }
@@ -62,7 +104,8 @@ export function useStageWindows(): StageWindowsContext {
         ...group,
         activeTabTitle: resolveTabTitle(group.activeTab),
         component: resolveTabComponent(group.activeTab.routePath),
-        isActive: group.tabs.some((tab) => tab.routePath === activeRoutePath.value)
+        isActive: group.tabs.some((tab) => tab.routePath === activeRoutePath.value),
+        preview: createWindowPreview(group.activeTab, group.tabs)
       }))
     )
   )

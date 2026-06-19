@@ -132,6 +132,7 @@ function handleWindowItemMotionComplete(index: number): void {
         >
           <StageWindowPreview
             :component="stageGroup.component"
+            :preview="stageGroup.preview"
             :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
           />
           <div class="stage-rail__window-title" :title="stageGroup.activeTabTitle">
@@ -184,6 +185,7 @@ function handleWindowItemMotionComplete(index: number): void {
           >
             <StageWindowPreview
               :component="stage.component"
+              :preview="stage.preview"
               :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
             />
             <div class="stage-rail__window-title" :title="stage.title">

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTemplateRef, type Component } from 'vue'
+import type { StageWindowPreviewModel } from './stage-manager'
 import StageWindowActions from './StageWindowActions.vue'
 import StageWindowPreview from './StageWindowPreview.vue'
 
@@ -11,6 +12,7 @@ const props = withDefaults(
     currentLabel: string
     pinLabel: string
     pinned: boolean
+    preview: StageWindowPreviewModel
     previewUnavailableLabel: string
     refreshLabel: string
     routePath: string
@@ -55,6 +57,7 @@ function activate(): void {
     >
       <StageWindowPreview
         :component="props.component"
+        :preview="props.preview"
         :preview-unavailable-label="props.previewUnavailableLabel"
         variant="overview"
       />
