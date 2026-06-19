@@ -9,17 +9,17 @@
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
-    "mermaid": "^11.13.0",
-    "reka-ui": "^2.7.0",
+    "mermaid": "^11.15.0",
+    "reka-ui": "^2.9.10",
     "typewriter-effect": "^2.22.0",
     "vitepress-plugin-mermaid": "^2.0.17",
-    "vue": "^3.5.27",
+    "vue": "^3.5.38",
     "vue3-carousel": "^0.16.0"
   },
   "devDependencies": {
-    "@voidzero-dev/vitepress-theme": "4.8.3",
+    "@voidzero-dev/vitepress-theme": "4.8.4",
     "oxc-minify": "^0.120.0",
     "tailwindcss": "^4.1.18",
-    "vitepress": "2.0.0-alpha.15"
+    "vitepress": "2.0.0-alpha.17"
   }
 }
