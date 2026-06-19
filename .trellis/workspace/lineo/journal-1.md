@@ -1752,3 +1752,37 @@ Completed the open-source readiness task by triaging Dependabot alerts, merging 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 52: Vite 8 direct migration
+
+**Date**: 2026-06-19
+**Task**: Vite 8 direct migration
+**Branch**: `codex/archive-vite8-migration-task`
+
+### Summary
+
+Migrated direct Vite usage to Vite 8, replaced deprecated Vite build API config with rolldownOptions, verified CI and starter validation, and documented remaining docs-tooling security risk.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `40dc6b8` | (see git log) |
+| `1c2367f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
