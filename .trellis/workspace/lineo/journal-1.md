@@ -1886,3 +1886,36 @@ Built and privately deployed the standalone Super Admin landing page in the sepa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 56: Public repo presentation cleanup
+
+**Date**: 2026-06-19
+**Task**: Public repo presentation cleanup
+**Branch**: `codex/public-repo-presentation-cleanup`
+
+### Summary
+
+Added GitHub Linguist attributes so maintainer AI workflow/tooling directories do not dominate public language statistics; verified docs build and archived the Trellis task.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `31e505a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
