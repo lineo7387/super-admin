@@ -81,6 +81,20 @@ Rules:
 - For a solo-maintainer repository, require PRs and CI for `main` but do not require approval or Code Owner review until a second trusted maintainer exists; otherwise owner-authored PRs can be impossible to merge.
 - Keep Dependabot and security automation PRs on the same protected-branch and CI path as human-authored PRs. Add Code Owner review once a second maintainer can review owner-authored PRs.
 
+## Dependency Security Triage
+
+Dependabot alerts are repository governance work, not automatic permission to take broad major upgrades.
+
+Rules:
+
+- Triage open alerts by severity first: high -> medium -> low.
+- For each alert, identify the manifest path, dependency relationship, current resolved version, patched version, and dependency path before changing files.
+- Prefer patch/minor updates and lockfile-only refreshes when they resolve the advisory without changing user-facing runtime behavior.
+- Use focused PRs for safe patch/minor security updates; keep them on the protected `main` + CI flow.
+- Do not merge major-upgrade Dependabot PRs just because they contain a security fix. Treat Vite, VitePress, TypeScript, router, build tool, or framework major upgrades as independent migration tasks with their own validation scope.
+- If a security update is `update_not_possible` because the patched version is outside the latest resolvable range, record the dependency path and defer it to the relevant migration task instead of forcing an override by default.
+- Maintainer-only lockfiles under `.agents/`, `.trellis/`, `.codex/`, or similar tooling directories may be updated to reduce repository alerts, but those updates must not make maintainer tooling part of generated starter requirements.
+
 ## Bug Fix Workflow Documentation
 
 Bug-fix workflow guidance must stay durable and readable by both humans and AI tools.
