@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/shared/git-conventions.md", "reason": "Verify the documented pre-push convention is clear and aligned."}
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Check protected main / PR flow language remains consistent."}
