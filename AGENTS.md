@@ -53,4 +53,5 @@ Read when relevant:
 - `.trellis/spec/backend/index.md` for optional reference backend rules.
 - `.trellis/spec/shared/public-delivery.md` for public docs, root scripts, generated starter output, GitHub-facing guidance, and AI/maintainer workflow visibility.
 - `.trellis/spec/shared/git-conventions.md` for commit and PR conventions.
+- `docs/guide/open-source-workflow.md` for branch protection, PR flow, and bug-fix workflow.
 - `docs/guide/ai-collaboration.md` for user-facing AI collaboration guidance.

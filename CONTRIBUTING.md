@@ -38,7 +38,7 @@ pnpm docs:build
 
 External contributors should use a fork and open a pull request. Maintainers should also prefer topic branches and pull requests for normal work.
 
-Do not push directly to `main` for ordinary feature, fix, docs, or release-prep work. `main` is expected to stay protected with required CI checks and code owner review.
+Do not push directly to `main` for ordinary feature, fix, docs, or release-prep work. `main` is expected to stay protected with pull requests and required CI checks. Turn on code owner review once the project has a second trusted maintainer who can review owner-authored PRs.
 
 Personal-repository collaborators have broad write access once invited. Add collaborators only for trusted maintainers; use pull requests for everyone else. If the project later needs finer permissions such as triage-only or maintain-only roles, move it into a GitHub organization.
 
@@ -99,6 +99,28 @@ Before opening a PR:
 - Do not include generated output, local indexes, dependency folders, or maintainer task archives unless the task explicitly requires them.
 
 Use the pull request template when GitHub prompts for it.
+
+## Bug Fix Workflow
+
+Use the same protected-branch flow for bugs:
+
+1. Record the bug in a GitHub issue unless it is security-sensitive.
+2. Reproduce from the latest `main`.
+3. Create a focused branch such as `fix/auth-login-redirect`.
+4. Add or update a test that exposes the bug when practical.
+5. Keep the fix narrow and avoid unrelated refactors.
+6. Run the relevant checks:
+   ```bash
+   pnpm lint
+   pnpm typecheck
+   pnpm test
+   pnpm build
+   ```
+7. Also run `pnpm docs:build` for docs changes, `pnpm validate:starter` for generated starter changes, and `pnpm test:reference` for optional reference backend claims.
+8. Commit with `fix(scope): 简短中文描述`.
+9. Push the branch, open a pull request, wait for CI, and merge only after protected-branch requirements pass.
+
+Security-sensitive bugs should not be opened as public issues. Use the reporting path in `SECURITY.md`.
 
 ## AI-Assisted Contributions
 

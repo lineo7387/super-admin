@@ -78,7 +78,21 @@ Rules:
 - Keep external contributors on the fork/PR path; reserve collaborator access for trusted maintainers.
 - Recommend organization migration when the project needs finer roles such as triage-only, write, maintain, and admin.
 - Document owner-only settings as maintainer follow-up actions with exact recommended values instead of pretending they were applied by a file change.
-- Keep Dependabot and security automation PRs on the same protected-branch, CI, and review path as human-authored PRs.
+- For a solo-maintainer repository, require PRs and CI for `main` but do not require approval or Code Owner review until a second trusted maintainer exists; otherwise owner-authored PRs can be impossible to merge.
+- Keep Dependabot and security automation PRs on the same protected-branch and CI path as human-authored PRs. Add Code Owner review once a second maintainer can review owner-authored PRs.
+
+## Bug Fix Workflow Documentation
+
+Bug-fix workflow guidance must stay durable and readable by both humans and AI tools.
+
+Rules:
+
+- Keep the canonical public bug-fix route in `docs/guide/open-source-workflow.md` and `docs/en/guide/open-source-workflow.md`.
+- Keep `CONTRIBUTING.md` aligned with the public docs so GitHub visitors can find the workflow without opening the docs site.
+- Keep `AGENTS.md` pointing AI tools at the open-source workflow guide for branch, PR, and bug-fix flow.
+- The route should remain: issue or private security report -> reproduce from latest `main` -> focused `fix/*` branch -> regression test when practical -> narrow fix -> verification -> PR -> protected-branch checks -> merge.
+- Security-sensitive bugs must point to `SECURITY.md` and must not be routed through public issues.
+- If repeated bugs reveal a reusable lesson, update `.trellis/spec/` or the relevant public docs instead of leaving the lesson only in chat.
 
 ## Docs Audience Architecture
 
