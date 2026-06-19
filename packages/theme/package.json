@@ -19,7 +19,7 @@
     "@super-admin-org/core": "^0.1.3"
   },
   "devDependencies": {
-    "vitest": "^4.0.0"
+    "vitest": "^4.1.9"
   },
   "license": "MIT",
   "repository": {
