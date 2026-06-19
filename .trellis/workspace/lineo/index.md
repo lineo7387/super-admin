@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 54
+- **Total Sessions**: 55
 - **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1855 | Active |
+| `journal-1.md` | ~1890 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 55 | 2026-06-19 | Docs homepage public landing refresh | `8574bf5`, `ae6c8aa`, `a804577` | `codex/docs-home-public-landing` |
 | 54 | 2026-06-19 | Super Admin standalone landing page | `0bb5aa32d23743e682de41109a7120d27c2ac367` | `codex/super-admin-landing-page-wrap-up` |
 | 53 | 2026-06-19 | Docs tooling security triage | `f8486f5`, `2931bc3` | `codex/archive-docs-tooling-security-task` |
 | 52 | 2026-06-19 | Vite 8 direct migration | `40dc6b8`, `1c2367f` | `codex/archive-vite8-migration-task` |

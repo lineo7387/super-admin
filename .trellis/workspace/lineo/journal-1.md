@@ -1853,3 +1853,38 @@ Built and privately deployed the standalone Super Admin landing page in the sepa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 55: Docs homepage public landing refresh
+
+**Date**: 2026-06-19
+**Task**: Docs homepage public landing refresh
+**Branch**: `codex/docs-home-public-landing`
+
+### Summary
+
+Migrated the standalone landing page's public product expression into the bilingual VitePress docs homepage, added a stable preview asset, synchronized README entry points, and captured VitePress docs asset/layout lessons in Trellis specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8574bf5` | (see git log) |
+| `ae6c8aa` | (see git log) |
+| `a804577` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
