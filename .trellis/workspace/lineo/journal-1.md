@@ -1820,3 +1820,36 @@ Reduced docs tooling security alerts with scoped esbuild overrides, kept VitePre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 54: Super Admin standalone landing page
+
+**Date**: 2026-06-19
+**Task**: Super Admin standalone landing page
+**Branch**: `codex/super-admin-landing-page-wrap-up`
+
+### Summary
+
+Built and privately deployed the standalone Super Admin landing page in the separate Sites workspace; archived the completed Trellis task without changing product code in the main repository.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0bb5aa32d23743e682de41109a7120d27c2ac367` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
