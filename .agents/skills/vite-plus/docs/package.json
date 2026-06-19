@@ -21,5 +21,10 @@
     "oxc-minify": "^0.120.0",
     "tailwindcss": "^4.1.18",
     "vitepress": "2.0.0-alpha.17"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite>esbuild": "0.28.1"
+    }
   }
 }
