@@ -1786,3 +1786,37 @@ Migrated direct Vite usage to Vite 8, replaced deprecated Vite build API config 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 53: Docs tooling security triage
+
+**Date**: 2026-06-19
+**Task**: Docs tooling security triage
+**Branch**: `codex/archive-docs-tooling-security-task`
+
+### Summary
+
+Reduced docs tooling security alerts with scoped esbuild overrides, kept VitePress stable pending a safe release path, rejected Changesets transitive major overrides after verification, and documented the dependency triage rule.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f8486f5` | (see git log) |
+| `2931bc3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
