@@ -5,14 +5,21 @@ import stageWindowActionsSource from './StageWindowActions.vue?raw'
 import stageWindowPreviewSource from './StageWindowPreview.vue?raw'
 
 describe('stage manager child components', () => {
-  it('renders previews through a focused preview frame component without app background fills', () => {
+  it('renders real route content inside a complete app shell preview frame', () => {
     expect(stageWindowPreviewSource).toContain('defineProps')
     expect(stageWindowPreviewSource).toContain('component?: Component')
+    expect(stageWindowPreviewSource).toContain('preview?: StageWindowPreviewModel')
     expect(stageWindowPreviewSource).toContain('stage-window-preview')
     expect(stageWindowPreviewSource).toContain('stage-window-scale')
+    expect(stageWindowPreviewSource).toContain('stage-window-preview__shell')
+    expect(stageWindowPreviewSource).toContain('stage-window-preview__sidebar')
+    expect(stageWindowPreviewSource).toContain('stage-window-preview__workspace')
+    expect(stageWindowPreviewSource).toContain('stage-window-preview__route')
+    expect(stageWindowPreviewSource).toContain('<component :is="props.component" v-if="props.component" />')
+    expect(stageWindowPreviewSource).toContain(':data-stage-preview-layout="props.preview?.layoutPreset ?? \'unavailable\'"')
     expect(stageWindowPreviewSource).toContain('previewUnavailableLabel')
     expect(stageWindowPreviewSource).toContain('height: var(--stage-preview-thumb-height, 5.05rem);')
-    expect(stageWindowPreviewSource).toContain('transform: scale(var(--stage-preview-thumb-scale, 0.19));')
+    expect(stageWindowPreviewSource).toContain('transform: scale(var(--stage-preview-thumb-scale, 0.125));')
     expect(stageWindowPreviewSource).not.toContain('background: var(--app-background);')
   })
 
@@ -76,6 +83,8 @@ describe('stage manager child components', () => {
     expect(stageDockThumbSource).not.toContain('.stage-thumb:hover :deep(.stage-action--reveal)')
     expect(stageDockThumbSource).not.toContain('.stage-thumb:focus-within :deep(.stage-action--reveal)')
     expect(stageDockThumbSource).not.toContain('stage-thumb--right')
+    expect(stageDockThumbSource).not.toContain('stageRoutePath')
+    expect(stageDockThumbSource).not.toContain('data-stage-window-route')
   })
 
   it('renders fullscreen overview cards with the same reveal action behavior and no stacked chrome', () => {
@@ -83,6 +92,10 @@ describe('stage manager child components', () => {
     expect(stageOverviewCardSource).toContain('activate: [sourceRect: DOMRect]')
     expect(stageOverviewCardSource).toContain('getBoundingClientRect()')
     expect(stageOverviewCardSource).toContain('StageWindowPreview')
+    expect(stageOverviewCardSource).toContain('component?: Component')
+    expect(stageOverviewCardSource).toContain('preview: StageWindowPreviewModel')
+    expect(stageOverviewCardSource).toContain(':component="props.component"')
+    expect(stageOverviewCardSource).toContain(':preview="props.preview"')
     expect(stageOverviewCardSource).toContain('StageWindowActions')
     expect(stageOverviewCardSource).toContain('stage-action-host')
     expect(stageOverviewCardSource).not.toContain('.stage-overview-card:hover :deep(.stage-action--reveal)')
@@ -91,5 +104,6 @@ describe('stage manager child components', () => {
     expect(stageOverviewCardSource).toContain('@click.stop')
     expect(stageOverviewCardSource).not.toContain('stage-group-cue')
     expect(stageOverviewCardSource).not.toContain('stage-close--muted')
+    expect(stageOverviewCardSource).not.toContain('data-stage-window-route')
   })
 })

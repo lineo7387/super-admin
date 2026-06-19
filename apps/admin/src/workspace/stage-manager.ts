@@ -1,9 +1,28 @@
 import type { Component } from 'vue'
-import type { WorkspaceTab, WorkspaceTabGroup } from '@super-admin-org/core'
+import type { LayoutPresetId, ShellRegion, WorkspaceTab, WorkspaceTabGroup } from '@super-admin-org/core'
+
+export type StageWindowPreviewTab = {
+  active: boolean
+  id: string
+  pinned: boolean
+  routePath: string
+  title: string
+}
+
+export type StageWindowPreviewModel = {
+  description: string
+  layoutPreset: LayoutPresetId
+  moduleName: string
+  regions: ShellRegion[]
+  routePath: string
+  tabs: StageWindowPreviewTab[]
+  title: string
+}
 
 export type StageWindowView = {
   component: Component | undefined
   isActive: boolean
+  preview: StageWindowPreviewModel
   tab: WorkspaceTab
   title: string
 }
@@ -12,6 +31,7 @@ export type StageGroupView = WorkspaceTabGroup & {
   activeTabTitle: string
   component: Component | undefined
   isActive: boolean
+  preview: StageWindowPreviewModel
 }
 
 export type StageOverviewLayout = {

@@ -61,7 +61,7 @@ describe('stage manager desktop surfaces', () => {
 
   it('keeps Stage Rail grouped, left-oriented, and window-only', () => {
     const groupedPreviewBlock = stageRailSource.match(
-      /<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?\/>/
+      /<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?:preview="stageGroup\.preview"[\s\S]*?\/>/
     )?.[0] ?? ''
 
     expect(stageRailSource).toContain('StageDockThumb')
@@ -77,6 +77,10 @@ describe('stage manager desktop surfaces', () => {
     expect(stageRailSource).toContain('exitWindowGroup')
     expect(stageRailSource).toContain('@activate="activateStage')
     expect(stageRailSource).toContain('stage-rail__window-title')
+    expect(stageRailSource).toContain(':component="stageGroup.component"')
+    expect(stageRailSource).toContain(':preview="stageGroup.preview"')
+    expect(stageRailSource).toContain(':component="stage.component"')
+    expect(stageRailSource).toContain(':preview="stage.preview"')
     expect(stageRailSource).toContain('{{ stageGroup.activeTabTitle }}')
     expect(stageRailSource).toContain('{{ stage.title }}')
     expect(stageRailSource).toContain(':stacked="stageGroup.isStacked"')
@@ -93,6 +97,8 @@ describe('stage manager desktop surfaces', () => {
     expect(stageRailSource).not.toContain('stage-rail__stack-card')
     expect(stageRailSource).not.toContain('resolveStageGroupWindow')
     expect(stageRailSource).not.toContain('orientation="right"')
+    expect(stageRailSource).not.toContain('stage-route-path')
+    expect(stageRailSource).not.toContain('data-stage-window-route')
   })
 
   it('treats Stage Rail stacked group close as a group-level action', () => {
@@ -129,6 +135,8 @@ describe('stage manager desktop surfaces', () => {
     expect(stageOverviewSource).toContain("import { useStageWindows } from './useStageWindows'")
     expect(stageOverviewSource).toContain('allWindowStages')
     expect(stageOverviewSource).toContain('activateStage')
+    expect(stageOverviewSource).toContain(':component="stage.component"')
+    expect(stageOverviewSource).toContain(':preview="stage.preview"')
     expect(stageOverviewSource).toContain('@close="closeStage(stage.tab.id)"')
     expect(stageOverviewSource).not.toContain('useWorkspaceTabsStore')
     expect(stageOverviewSource).not.toContain('findActiveModule')
@@ -143,8 +151,12 @@ describe('stage manager desktop surfaces', () => {
     expect(stageTransitionGhostSource).toContain('pointer-events: none;')
     expect(stageTransitionGhostSource).toContain(':initial="initialRect"')
     expect(stageTransitionGhostSource).toContain(':animate="targetRect"')
+    expect(stageTransitionGhostSource).toContain('preferences.stageTransitionGhost.title')
     expect(stageTransitionGhostSource).toContain('duration: 0.3')
     expect(stageTransitionGhostSource).toContain('opacity: { duration: 0.3')
+    expect(stageTransitionGhostSource).not.toContain('incoming')
+    expect(stageTransitionGhostSource).not.toContain('outgoing')
+    expect(stageTransitionGhostSource).not.toContain('StageWindowPreview')
     expect(stageTransitionGhostSource).not.toContain('transition:')
     expect(stageTransitionGhostSource).not.toContain('left 320ms')
     expect(stageTransitionGhostSource).not.toContain('top 320ms')
@@ -156,9 +168,13 @@ describe('stage manager desktop surfaces', () => {
     expect(stageWindowActivationSource).toContain('waitForStageTransitionTargetRect')
     expect(stageWindowActivationSource).toContain('await waitForStageTransitionSourceFrame()')
     expect(stageWindowActivationSource).toContain('await waitForStageTransitionTargetRect()')
+    expect(stageWindowActivationSource).toContain('preferences.startStageTransition(sourceRect, title)')
     expect(stageWindowActivationSource).toContain('closeStage: (tabId: string) => Promise<void>')
     expect(stageWindowActivationSource).toContain('const wasActive = tabs.state.activeTabId === tabId')
     expect(stageWindowActivationSource).not.toContain('activePath')
+    expect(stageWindowActivationSource).not.toContain('StageActivationInput')
+    expect(stageWindowActivationSource).not.toContain('data-stage-window-route')
+    expect(stageWindowActivationSource).not.toContain('findStageTransitionRailTargetRect')
     expect(stageWindowActivationSource.indexOf('await waitForStageTransitionSourceFrame()')).toBeLessThan(
       stageWindowActivationSource.indexOf('await router.push(path)')
     )

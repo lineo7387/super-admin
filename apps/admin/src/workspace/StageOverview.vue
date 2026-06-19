@@ -71,6 +71,7 @@ async function activateOverviewStage(path: string, title: string, sourceRect: DO
             :current-label="t('workspace.stage.current')"
             :pin-label="t('workspace.stage.pin')"
             :pinned="stage.tab.pinned"
+            :preview="stage.preview"
             :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
             :refresh-label="t('workspace.stage.refresh')"
             :route-path="stage.tab.routePath"

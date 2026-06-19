@@ -54,9 +54,9 @@ function expectSharedControlCenterTrigger(preferences, trigger) {
   expect(trigger).not.toContain('animation:')
 }
 
-function expectStageManagerStarterParity({ appShell, stageDockThumb, stageOverviewCard, stageRail, useStageWindows }) {
+function expectStageManagerStarterParity({ appShell, stageDockThumb, stageOverviewCard, stageRail, stageWindowPreview, useStageWindows }) {
   const groupedPreviewBlock = stageRail.match(
-    /<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?\/>/
+    /<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?:preview="stageGroup\.preview"[\s\S]*?\/>/
   )?.[0] ?? ''
 
   expect(appShell).toContain(':data-stage-rail-open="showStageRail"')
@@ -93,6 +93,8 @@ function expectStageManagerStarterParity({ appShell, stageDockThumb, stageOvervi
   expect(stageDockThumb).toContain('transform: scale(var(--stage-thumb-hover-scale))')
   expect(stageDockThumb).toContain('.stage-thumb--pressed .stage-thumb__plane')
   expect(stageDockThumb).toContain('transform-origin: left center')
+  expect(stageDockThumb).not.toContain('stageRoutePath')
+  expect(stageDockThumb).not.toContain('data-stage-window-route')
   expect(stageDockThumb).not.toContain('--stage-thumb-projection')
   expect(stageDockThumb).not.toContain('--stage-thumb-hover-transform')
   expect(stageDockThumb).not.toContain('--stage-thumb-rest-transform')
@@ -114,6 +116,10 @@ function expectStageManagerStarterParity({ appShell, stageDockThumb, stageOvervi
   expect(stageRail).toContain("import { useStageWindows } from './useStageWindows'")
   expect(stageRail).toContain("import { motion, useReducedMotion } from 'motion-v'")
   expect(stageRail).toContain('StageWindowActions')
+  expect(stageRail).toContain(':component="stageGroup.component"')
+  expect(stageRail).toContain(':preview="stageGroup.preview"')
+  expect(stageRail).toContain(':component="stage.component"')
+  expect(stageRail).toContain(':preview="stage.preview"')
   expect(stageRail).toContain('@close="closeStageGroup(stageGroup)"')
   expect(stageRail).toContain(':can-close="stageGroup.tabs.every((tab) => !tab.pinned)"')
   expect(stageRail).toContain('const isCollapsingWindowGroup = shallowRef(false)')
@@ -129,9 +135,23 @@ function expectStageManagerStarterParity({ appShell, stageDockThumb, stageOvervi
   expect(stageRail).not.toContain('resolveStageGroupWindow')
   expect(stageRail).not.toContain('@keyframes')
   expect(useStageWindows).toContain("closeStageGroup: (group: Pick<StageGroupView, 'tabs'>) => Promise<void>")
+  expect(useStageWindows).toContain('createWindowPreview')
+  expect(useStageWindows).toContain('component: resolveTabComponent(tab.routePath)')
+  expect(useStageWindows).toContain('preview: createWindowPreview(tab)')
   expect(useStageWindows).toContain('group.tabs.some((tab) => tab.pinned)')
   expect(stageOverviewCard).toContain('StageWindowActions')
+  expect(stageOverviewCard).toContain('component?: Component')
+  expect(stageOverviewCard).toContain('preview: StageWindowPreviewModel')
+  expect(stageOverviewCard).toContain(':component="props.component"')
+  expect(stageOverviewCard).toContain(':preview="props.preview"')
+  expect(stageOverviewCard).not.toContain('data-stage-window-route')
   expect(stageOverviewCard).toContain('stage-action-host')
+  expect(stageWindowPreview).toContain('component?: Component')
+  expect(stageWindowPreview).toContain('preview?: StageWindowPreviewModel')
+  expect(stageWindowPreview).toContain('stage-window-preview__shell')
+  expect(stageWindowPreview).toContain('stage-window-preview__sidebar')
+  expect(stageWindowPreview).toContain('stage-window-preview__route')
+  expect(stageWindowPreview).toContain('<component :is="props.component" v-if="props.component" />')
 }
 
 function runCommand(command, args, cwd) {
@@ -216,6 +236,7 @@ describe('create-super-admin starter generation', () => {
     const stageDockThumb = await readGeneratedText(input.targetDirectory, 'src/workspace/StageDockThumb.vue')
     const stageOverviewCard = await readGeneratedText(input.targetDirectory, 'src/workspace/StageOverviewCard.vue')
     const stageRail = await readGeneratedText(input.targetDirectory, 'src/workspace/StageRail.vue')
+    const stageWindowPreview = await readGeneratedText(input.targetDirectory, 'src/workspace/StageWindowPreview.vue')
     const useStageWindows = await readGeneratedText(input.targetDirectory, 'src/workspace/useStageWindows.ts')
 
     expect(packageJson.scripts).toEqual({
@@ -246,7 +267,7 @@ describe('create-super-admin starter generation', () => {
     expect(preferences).not.toContain('shell.preferences.density')
     expect(preferences).not.toContain('preferences.setDensity')
     expectSharedControlCenterTrigger(preferences, preferencesTrigger)
-    expectStageManagerStarterParity({ appShell, stageDockThumb, stageOverviewCard, stageRail, useStageWindows })
+    expectStageManagerStarterParity({ appShell, stageDockThumb, stageOverviewCard, stageRail, stageWindowPreview, useStageWindows })
     expect(loginPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
     expect(registerPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
 
