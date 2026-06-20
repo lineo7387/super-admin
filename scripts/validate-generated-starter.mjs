@@ -15,6 +15,12 @@ const allowedDefaultScripts = new Set(['dev', 'build', 'typecheck', 'preview'])
 const allThemeProfilePackages = Object.values(themePackageById)
 const chartDependencyNames = new Set(['echarts', 'vue-echarts'])
 const chartSourcePrefixes = ['src/modules/charts/', 'src/shared/charts/']
+const unregisteredStandaloneManifests = [
+  'src/modules/access/access.manifest.ts',
+  'src/modules/dashboard/dashboard.manifest.ts',
+  'src/modules/users/users.manifest.ts',
+  'src/modules/workbench/workbench.manifest.ts'
+]
 const forbiddenMaintainerToolingPackages = new Set([
   '@playwright/test',
   'eslint',
@@ -328,6 +334,22 @@ function validateForbiddenOutput(root, files) {
   return failures
 }
 
+function validateNoUnregisteredStandaloneManifests(files) {
+  const leakedManifests = unregisteredStandaloneManifests.filter((file) => files.includes(file))
+
+  if (leakedManifests.length === 0) {
+    return []
+  }
+
+  return [
+    createFailure(
+      'source-no-unregistered-standalone-manifests',
+      `Generated projects must not include unregistered standalone module manifests: ${leakedManifests.join(', ')}.`,
+      leakedManifests[0]
+    )
+  ]
+}
+
 function validateReferenceEnv(textEntries) {
   const leakingFiles = textEntries
     .filter(({ file, text }) => file.startsWith('src/') && /VITE_SUPER_ADMIN_(API_BASE_URL|REFERENCE_TOKEN|USERS_API)/.test(text))
@@ -525,6 +547,7 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   failures.push(...(await validatePackedPackageManifests(options.packageManifestPaths)))
   failures.push(...validatePackageJson(packageJson, themes))
   failures.push(...validateForbiddenOutput(root, files))
+  failures.push(...validateNoUnregisteredStandaloneManifests(files))
   failures.push(...validateNoMonorepoPaths(textEntries))
   failures.push(...validateReferenceEnv(textEntries))
   failures.push(...validateDefaultSwitcherOutput(root, files, textEntries, themes, i18nEnabled))

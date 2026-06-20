@@ -8,6 +8,13 @@ const sourceAppDir = resolve(repoRoot, 'apps/admin')
 const sourceSrcDir = resolve(sourceAppDir, 'src')
 const templateRoot = resolve(repoRoot, 'packages/cli/dist/starter-template/admin')
 
+const UNREGISTERED_STANDALONE_MANIFESTS = new Set([
+  'modules/access/access.manifest.ts',
+  'modules/dashboard/dashboard.manifest.ts',
+  'modules/users/users.manifest.ts',
+  'modules/workbench/workbench.manifest.ts'
+])
+
 function toPosixPath(path) {
   return path.split(sep).join('/')
 }
@@ -17,6 +24,10 @@ function shouldCopySourcePath(sourcePath) {
 
   if (!relativePath) {
     return true
+  }
+
+  if (UNREGISTERED_STANDALONE_MANIFESTS.has(relativePath)) {
+    return false
   }
 
   if (relativePath === 'api/reference' || relativePath.startsWith('api/reference/')) {
