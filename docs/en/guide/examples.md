@@ -35,6 +35,10 @@ This page maps the current replacement seams:
 
 `/examples/access` shows frontend-level permission metadata. It does not require a real auth backend.
 
+## Charts
+
+`/examples/charts` is the optional ECharts template page. Generated projects include this page under Examples and install `echarts` plus `vue-echarts` only when ECharts is selected during setup or `--charts echarts` is passed.
+
 ## UI Kit
 
 `/ui-kit/foundations` and related UI Kit routes demonstrate reusable admin primitives from `packages/ui`.

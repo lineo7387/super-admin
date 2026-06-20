@@ -31,6 +31,11 @@ export function createPackageJson(input: StarterGenerationInput, options: Create
     'vue-router': '^4.5.0'
   }
 
+  if (input.charts.provider === 'echarts') {
+    dependencies.echarts = '^6.1.0'
+    dependencies['vue-echarts'] = '^8.0.1'
+  }
+
   for (const themeId of input.themes.installed) {
     const packageName = themeDefinitions[themeId].packageName
     dependencies[packageName] = versionRanges[packageName as SuperAdminPackageName]
@@ -138,6 +143,7 @@ ${packageManager} run build
 - 删除示例、连接 API、添加测试或 lint：查看 Super Admin 文档。
 - 修改主题：编辑 \`super-admin.config.ts\` 和 \`src/super-admin/theme-registry.generated.ts\`。
 - 修改语言：编辑 \`src/i18n/\`。
+- 图表模板：选择 ECharts 时会在 Examples 下生成图表案例、\`src/modules/charts/\` 和主题适配的 ECharts helper；未选择时不会安装图表依赖。
 `
 }
 
@@ -152,6 +158,9 @@ export function createSuperAdminConfig(input: StarterGenerationInput): string {
     installed: [${formatStringList(input.i18n.installed)}],
     defaultLocale: '${input.i18n.default}',
     switcher: ${String(input.i18n.switcher)}
+  },
+  charts: {
+    provider: '${input.charts.provider}'
   }
 } as const
 `

@@ -35,6 +35,10 @@
 
 `/examples/access` 展示 frontend-level permission metadata。它不要求真实 auth backend。
 
+## Charts
+
+`/examples/charts` 是可选 ECharts 模板页面。只有安装时选择 ECharts 或传入 `--charts echarts` 时，生成项目才会安装 `echarts`、`vue-echarts` 并在 Examples 下包含这个页面。
+
 ## UI Kit
 
 `/ui-kit/foundations` 以及相关 UI Kit routes 展示来自 `packages/ui` 的 reusable admin primitives。

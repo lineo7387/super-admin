@@ -96,6 +96,7 @@ const enUS = {
     modules: {
       examples: 'Examples',
       'ui-kit': 'UI Kit',
+      charts: 'Charts',
       dashboard: 'Dashboard',
       workbench: 'Workbench',
       users: 'Users',
@@ -110,9 +111,30 @@ const enUS = {
     },
     descriptions: {
       templateGuide: 'Frontend-first template boundary guide for adapter replacement and module reshaping.',
+      charts: 'Optional ECharts template examples showing charts adapted to the active admin theme.',
       dashboard: 'A frontend example dashboard showing how metrics, signals, and activity flow through API adapters.',
       workbench: 'A frontend example workbench for queues and operational jobs.',
       access: 'Frontend permission metadata example that does not require a real auth backend.'
+    }
+  },
+  charts: {
+    eyebrow: 'Optional chart template',
+    title: 'Theme-adapted ECharts examples',
+    description: 'These examples show how Super Admin chart recipes follow the active design profile and color mode while keeping raw ECharts options available.',
+    status: '{profile} / {mode}',
+    boundaryTitle: 'Optional dependency boundary',
+    boundaryDescription: 'The starter installs echarts and vue-echarts only when ECharts is selected during setup. Without it, the project stays lightweight.',
+    revenue: {
+      title: 'Revenue trend',
+      description: 'Line shape and area opacity come from the active chart recipe.'
+    },
+    risk: {
+      title: 'Risk mix',
+      description: 'The donut chart uses the recipe palette while leaving native ECharts options open for override.'
+    },
+    channel: {
+      title: 'Channel performance',
+      description: 'Bar radius, grid lines, and tooltip styling follow the selected design profile.'
     }
   },
   examples: {

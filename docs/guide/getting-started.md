@@ -22,6 +22,14 @@ pnpm install
 pnpm dev
 ```
 
+非交互环境里如果想生成可选 ECharts 案例页：
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --charts echarts --pm pnpm
+```
+
+交互式安装会询问是否使用 ECharts；选择后才会安装 `echarts`、`vue-echarts` 并在 Examples 下生成适配当前主题的图表案例页面。
+
 生成出来的项目就是你的应用。它会比这个源码仓库更小，不包含发布自动化、维护者 AI workflow 文件、docs 站点或可选 reference smoke 工具。
 
 ## 定制 Starter

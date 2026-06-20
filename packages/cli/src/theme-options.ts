@@ -1,8 +1,10 @@
 export const starterThemeIds = ['base', 'crypto', 'cyberpunk', 'industrial', 'newsprint'] as const
 export const starterPackageManagers = ['pnpm', 'npm', 'yarn', 'bun'] as const
+export const starterChartProviders = ['none', 'echarts'] as const
 
 export type StarterThemeId = (typeof starterThemeIds)[number]
 export type StarterPackageManager = (typeof starterPackageManagers)[number]
+export type StarterChartProvider = (typeof starterChartProviders)[number]
 export type StarterLocaleId = 'zh-CN' | 'en-US'
 
 export type ThemeDefinition = {
@@ -45,4 +47,8 @@ export function isStarterThemeId(value: string): value is StarterThemeId {
 
 export function isStarterPackageManager(value: string): value is StarterPackageManager {
   return starterPackageManagers.includes(value as StarterPackageManager)
+}
+
+export function isStarterChartProvider(value: string): value is StarterChartProvider {
+  return starterChartProviders.includes(value as StarterChartProvider)
 }

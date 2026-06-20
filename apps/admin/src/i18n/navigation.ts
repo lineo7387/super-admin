@@ -3,6 +3,7 @@ import type { MessageTranslator } from './index'
 
 const moduleNameKeys: Record<string, string> = {
   access: 'navigation.modules.access',
+  charts: 'navigation.modules.charts',
   dashboard: 'navigation.modules.dashboard',
   examples: 'navigation.modules.examples',
   'ui-kit': 'navigation.modules.ui-kit',
@@ -13,6 +14,7 @@ const moduleNameKeys: Record<string, string> = {
 const navPathKeys: Record<string, string> = {
   '/examples': 'navigation.modules.examples',
   '/examples/access': 'navigation.modules.access',
+  '/examples/charts': 'navigation.modules.charts',
   '/examples/dashboard': 'navigation.modules.dashboard',
   '/examples/template-guide': 'navigation.routes.templateGuide',
   '/examples/users': 'navigation.modules.users',
@@ -35,6 +37,7 @@ const routeTitleKeys: Record<string, string> = {
   '/auth/login': 'auth.routes.signIn',
   '/auth/register': 'auth.routes.createAccount',
   '/examples/access': 'navigation.modules.access',
+  '/examples/charts': 'navigation.modules.charts',
   '/examples/dashboard': 'navigation.modules.dashboard',
   '/examples/template-guide': 'navigation.routes.templateGuide',
   '/examples/users/activity': 'navigation.routes.activity',
@@ -46,6 +49,7 @@ const routeTitleKeys: Record<string, string> = {
 
 const routeDescriptionKeys: Record<string, string> = {
   '/examples/access': 'navigation.descriptions.access',
+  '/examples/charts': 'navigation.descriptions.charts',
   '/examples/dashboard': 'navigation.descriptions.dashboard',
   '/examples/template-guide': 'navigation.descriptions.templateGuide',
   '/examples/users/activity': 'users.secondary.activityDescription',

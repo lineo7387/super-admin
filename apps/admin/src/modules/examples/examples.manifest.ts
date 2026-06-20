@@ -26,6 +26,11 @@ export const examplesManifest: ModuleManifest = {
         path: '/examples/dashboard'
       },
       {
+        label: 'Charts',
+        path: '/examples/charts',
+        icon: 'charts'
+      },
+      {
         label: 'Workbench',
         path: '/examples/workbench'
       },
@@ -77,6 +82,17 @@ export const examplesManifest: ModuleManifest = {
         title: 'Operations Dashboard',
         description: 'Live control surface for revenue, risk, jobs, and audit signals.',
         regions: ['summary', 'primary', 'activity', 'context'],
+        keepAlive: { enabled: true }
+      }
+    },
+    {
+      path: '/examples/charts',
+      name: 'examples-charts',
+      component: () => import('../charts/ChartsPage.vue'),
+      meta: {
+        title: 'Charts',
+        description: 'Theme-adapted ECharts examples that users can keep, override, or remove.',
+        regions: ['summary', 'primary', 'context'],
         keepAlive: { enabled: true }
       }
     },

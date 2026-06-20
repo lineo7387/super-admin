@@ -13,6 +13,8 @@ export const themePackageById = {
 
 const allowedDefaultScripts = new Set(['dev', 'build', 'typecheck', 'preview'])
 const allThemeProfilePackages = Object.values(themePackageById)
+const chartDependencyNames = new Set(['echarts', 'vue-echarts'])
+const chartSourcePrefixes = ['src/modules/charts/', 'src/shared/charts/']
 const forbiddenMaintainerToolingPackages = new Set([
   '@playwright/test',
   'eslint',
@@ -403,6 +405,104 @@ function validateDataBoundary(files, textEntries) {
   return failures
 }
 
+function validateChartTemplate(packageJson, files, textEntries, chartProvider = 'none') {
+  const failures = []
+  const dependencies = packageJson.dependencies ?? {}
+  const chartDependencies = Object.keys(dependencies).filter((name) => chartDependencyNames.has(name))
+  const chartSourceFiles = files.filter((file) => chartSourcePrefixes.some((prefix) => file.startsWith(prefix)))
+  const chartRouteFiles = textEntries
+    .filter(({ file }) => file === 'src/modules/examples/examples.manifest.ts' || file === 'src/modules/module-registry.ts')
+    .filter(({ text }) => text.includes('/examples/charts') || text.includes("../charts/ChartsPage.vue"))
+    .map(({ file }) => file)
+  const echartsImportFiles = textEntries
+    .filter(({ text }) => /from\s+['"](?:echarts|echarts\/[^'"]+|vue-echarts)['"]/.test(text))
+    .map(({ file }) => file)
+
+  if (chartProvider === 'none') {
+    if (chartDependencies.length > 0) {
+      failures.push(
+        createFailure(
+          'charts-disabled-no-echarts-dependencies',
+          `Generated no-chart starters must not include ECharts dependencies: ${chartDependencies.join(', ')}.`,
+          'package.json'
+        )
+      )
+    }
+
+    if (chartSourceFiles.length > 0) {
+      failures.push(
+        createFailure(
+          'charts-disabled-no-chart-source',
+          `Generated no-chart starters must not include chart template source: ${chartSourceFiles.join(', ')}.`,
+          chartSourceFiles[0]
+        )
+      )
+    }
+
+    if (echartsImportFiles.length > 0) {
+      failures.push(
+        createFailure(
+          'charts-disabled-no-echarts-imports',
+          `Generated no-chart starters must not import ECharts or vue-echarts: ${echartsImportFiles.join(', ')}.`,
+          echartsImportFiles[0]
+        )
+      )
+    }
+
+    if (chartRouteFiles.length > 0) {
+      failures.push(
+        createFailure(
+          'charts-disabled-no-chart-route',
+          `Generated no-chart starters must not expose chart example routes: ${chartRouteFiles.join(', ')}.`,
+          chartRouteFiles[0]
+        )
+      )
+    }
+
+    return failures
+  }
+
+  if (chartProvider !== 'echarts') {
+    failures.push(createFailure('charts-provider-supported', `Unsupported chart provider: ${chartProvider}.`, 'package.json'))
+    return failures
+  }
+
+  const missingDependencies = [...chartDependencyNames].filter((name) => !(name in dependencies))
+  if (missingDependencies.length > 0) {
+    failures.push(
+      createFailure(
+        'charts-echarts-dependencies-present',
+        `ECharts starters must include chart dependencies: ${missingDependencies.join(', ')}.`,
+        'package.json'
+      )
+    )
+  }
+
+  const requiredFiles = ['src/modules/charts/ChartsPage.vue', 'src/shared/charts/echarts-options.ts']
+  const missingFiles = requiredFiles.filter((file) => !files.includes(file))
+  if (missingFiles.length > 0) {
+    failures.push(
+      createFailure(
+        'charts-echarts-source-present',
+        `ECharts starters must include chart template source: ${missingFiles.join(', ')}.`,
+        missingFiles[0]
+      )
+    )
+  }
+
+  if (!chartRouteFiles.includes('src/modules/examples/examples.manifest.ts')) {
+    failures.push(
+      createFailure(
+        'charts-echarts-route-present',
+        'ECharts starters must expose the chart example under Examples navigation.',
+        'src/modules/examples/examples.manifest.ts'
+      )
+    )
+  }
+
+  return failures
+}
+
 export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   const root = resolve(projectDir)
   const themes = normalizeThemes(options.themes)
@@ -420,6 +520,7 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   const packageJson = await readJson(packageJsonPath)
   const files = await collectFiles(root)
   const textEntries = await readTextFiles(root, files)
+  const chartProvider = options.charts ?? 'none'
 
   failures.push(...(await validatePackedPackageManifests(options.packageManifestPaths)))
   failures.push(...validatePackageJson(packageJson, themes))
@@ -428,6 +529,7 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   failures.push(...validateReferenceEnv(textEntries))
   failures.push(...validateDefaultSwitcherOutput(root, files, textEntries, themes, i18nEnabled))
   failures.push(...validateDataBoundary(files, textEntries))
+  failures.push(...validateChartTemplate(packageJson, files, textEntries, chartProvider))
 
   if (await pathExists(tsconfigPath)) {
     failures.push(...validateTsconfig(await readText(tsconfigPath)))
@@ -665,6 +767,17 @@ function parseArgs(argv) {
       continue
     }
 
+    if (arg === '--charts') {
+      options.charts = args[index + 1]
+      index += 1
+      continue
+    }
+
+    if (arg === '--no-charts') {
+      options.charts = 'none'
+      continue
+    }
+
     if (arg === '--package-manifest') {
       options.packageManifestPaths = [...(options.packageManifestPaths ?? []), args[index + 1]]
       index += 1
@@ -696,7 +809,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const { options, projectDir } = parseArgs(process.argv.slice(2))
 
   if (!projectDir) {
-    console.error('Usage: node scripts/validate-generated-starter.mjs <project-dir> [--static-only] [--theme base] [--themes base,cyberpunk] [--i18n] [--pm pnpm] [--package-manifest path]')
+    console.error('Usage: node scripts/validate-generated-starter.mjs <project-dir> [--static-only] [--theme base] [--themes base,cyberpunk] [--charts echarts] [--no-charts] [--i18n] [--pm pnpm] [--package-manifest path]')
     process.exitCode = 1
   } else {
     validateGeneratedStarter(projectDir, options)

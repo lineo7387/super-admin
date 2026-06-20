@@ -3,6 +3,7 @@ import stageDockThumbSource from './StageDockThumb.vue?raw'
 import stageOverviewCardSource from './StageOverviewCard.vue?raw'
 import stageWindowActionsSource from './StageWindowActions.vue?raw'
 import stageWindowPreviewSource from './StageWindowPreview.vue?raw'
+import useStageWindowsSource from './useStageWindows.ts?raw'
 
 describe('stage manager child components', () => {
   it('renders real route content inside a complete app shell preview frame', () => {
@@ -21,6 +22,11 @@ describe('stage manager child components', () => {
     expect(stageWindowPreviewSource).toContain('height: var(--stage-preview-thumb-height, 5.05rem);')
     expect(stageWindowPreviewSource).toContain('transform: scale(var(--stage-preview-thumb-scale, 0.125));')
     expect(stageWindowPreviewSource).not.toContain('background: var(--app-background);')
+  })
+
+  it('wraps async route components before rendering stage previews', () => {
+    expect(useStageWindowsSource).toContain("import { computed, defineAsyncComponent } from 'vue'")
+    expect(useStageWindowsSource).toContain('defineAsyncComponent(loader)')
   })
 
   it('keeps stage window actions shared while supporting reveal controls', () => {

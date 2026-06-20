@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, Boxes, ChevronDown, ChevronRight, Circle, Gauge, Palette, ShieldCheck, Users } from '@lucide/vue'
+import { BarChart3, BookOpen, Boxes, ChevronDown, ChevronRight, Circle, Gauge, Palette, ShieldCheck, Users } from '@lucide/vue'
 import { computed, onMounted, onUnmounted, reactive, shallowRef, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -29,6 +29,7 @@ const { t } = useI18n()
 const icons = {
   examples: BookOpen,
   'ui-kit': Palette,
+  charts: BarChart3,
   dashboard: Gauge,
   workbench: Boxes,
   users: Users,

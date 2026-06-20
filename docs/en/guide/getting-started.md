@@ -22,6 +22,14 @@ pnpm install
 pnpm dev
 ```
 
+To generate the optional ECharts example page in a non-interactive setup:
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --charts echarts --pm pnpm
+```
+
+Interactive setup asks whether to use ECharts. Selecting yes installs `echarts` and `vue-echarts` and generates a theme-adapted chart example page under Examples.
+
 The generated project is your application. It is intentionally smaller than this source repository and does not include release automation, maintainer AI workflow files, the docs site, or optional reference smoke tooling.
 
 ## Customize The Starter

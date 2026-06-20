@@ -20,6 +20,8 @@ MVP creation commands are flags-first, with an interactive theme selector when n
 create-super-admin <project>
 create-super-admin <project> --theme base
 create-super-admin <project> --themes base,cyberpunk
+create-super-admin <project> --charts echarts
+create-super-admin <project> --no-charts
 create-super-admin <project> --i18n
 create-super-admin <project> --pm pnpm
 create-super-admin --help
@@ -53,6 +55,8 @@ node scripts/validate-generated-starter.mjs <generated-project-dir>
 node scripts/validate-generated-starter.mjs <generated-project-dir> --static-only
 node scripts/validate-generated-starter.mjs <generated-project-dir> --theme base
 node scripts/validate-generated-starter.mjs <generated-project-dir> --themes base,cyberpunk
+node scripts/validate-generated-starter.mjs <generated-project-dir> --charts echarts
+node scripts/validate-generated-starter.mjs <generated-project-dir> --no-charts
 node scripts/validate-generated-starter.mjs <generated-project-dir> --i18n
 node scripts/validate-generated-starter.mjs <generated-project-dir> --pm pnpm
 node scripts/validate-generated-starter.mjs <generated-project-dir> --package-manifest <packed-package-json>
@@ -70,6 +74,9 @@ export default {
   i18n: {
     defaultLocale: 'zh-CN',
     switcher: false
+  },
+  charts: {
+    provider: 'none'
   }
 }
 ```
@@ -95,13 +102,14 @@ Base-theme generated output:
 - installs only `@super-admin-org/theme` and `@super-admin-org/theme-base` for theming
 - no runtime theme switcher
 - no language switcher
+- no ECharts, `vue-echarts`, or chart template source unless the user explicitly selects the ECharts template
 - no VitePress docs site
 - no backend scaffold
 - no optional Hono reference API
 - no test files
 - no lint, format, unit test, e2e, docs build, or reference smoke tooling
 - scripts only: `dev`, `build`, `typecheck`, `preview`
-- all current removable examples by default: Dashboard, Workbench, Users, Access, Template Guide, UI Kit, auth login/register pages, and shell/workspace experiences
+- all current removable examples by default: Dashboard, Workbench, Users, Access, Template Guide, UI Kit, auth login/register pages, and shell/workspace experiences; optional Charts examples appear only when ECharts is selected
 
 Default scripts:
 
@@ -145,6 +153,8 @@ Published package consumption boundary:
 - `@super-admin-org/theme` owns theme runtime/core and must not require every built-in theme profile.
 - Selected `@super-admin-org/theme-*` packages own profile constants.
 - Generated theme composition belongs in real generated app files such as `src/super-admin/theme-registry.generated.ts`.
+- `@super-admin-org/theme` may expose dependency-light chart recipe helpers, but it must not import ECharts, `vue-echarts`, or ECharts-specific types.
+- ECharts integration belongs in generated app-local source or a future optional package, and only when selected through `--charts echarts` or the interactive ECharts prompt.
 
 Theme package naming:
 
@@ -202,6 +212,8 @@ Generated template derivation:
 - Generated default i18n is `zh-CN` only with no visible runtime locale switcher; `--i18n` may add optional locale catalogs and switching.
 - Generated auth pages must pass app-local localized field metadata into shared UI primitives, for example `:required-label="t('validation.requiredLabel')"` on required `AdminField` controls. Do not rely on `@super-admin-org/ui` English fallback labels for generated user-facing copy.
 - Generated default theme registry imports only `@super-admin-org/theme-base`; multi-theme generation imports exactly the selected theme packages.
+- Generated default output excludes ECharts dependencies, ECharts imports, and chart template source.
+- Generated ECharts output installs `echarts` and `vue-echarts`, includes app-local ECharts helper/source files, exposes the chart page under Examples navigation, and keeps raw ECharts options available to users.
 - Generated default Control Center must not expose runtime theme/profile or locale switching when only one theme/locale is installed.
 - Generated Control Center layout choices must render visual layout previews, not text-only cards, and stay in parity with the monorepo admin app.
 - Generated Control Center modal height and scrolling must stay in parity with the monorepo admin app: content-height adaptive, viewport-capped, and free of fixed inner estimates such as `max-h-[calc(88vh-92px)]`. Two-theme/no-i18n output must not be forced to fill the viewport.
@@ -218,6 +230,9 @@ Generated template derivation:
 | `--theme <id>` passed | Install only `@super-admin-org/theme` plus that one theme package, set it as default, and omit runtime theme switching. |
 | `--themes <a,b>` passed | Install exactly the selected theme packages and enable/configure runtime theme switching as needed. |
 | Both `--theme` and `--themes` passed | Fail before writing files with a mutually exclusive flag message. |
+| `--charts echarts` passed | Install `echarts` and `vue-echarts`, then generate the theme-adapted chart example page under Examples and app-local ECharts helpers. |
+| `--no-charts` passed | Do not install ECharts dependencies and do not generate chart template source. |
+| Both `--charts` and `--no-charts` passed | Fail before writing files with a mutually exclusive flag message. |
 | Unknown theme id | Fail with a clear supported-theme message; do not generate a partial project. |
 | Project name missing | Fail before writing files with usage guidance. |
 | `--help` or `-h` passed | Print usage guidance and exit successfully without generating files. |

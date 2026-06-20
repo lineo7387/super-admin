@@ -21,9 +21,11 @@
     "@super-admin-org/ui": "workspace:*",
     "@tanstack/vue-query": "^5.0.0",
     "@lucide/vue": "^1.18.0",
+    "echarts": "^6.1.0",
     "motion-v": "^2.3.0",
     "pinia": "^3.0.0",
     "vue": "^3.5.0",
+    "vue-echarts": "^8.0.1",
     "vue-i18n": "^11.4.4",
     "vue-router": "^4.5.0"
   },
