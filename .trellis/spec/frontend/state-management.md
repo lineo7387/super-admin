@@ -9,6 +9,7 @@ Use Pinia for app/client state:
 - Dock/sidebar/context panel open state.
 - Workspace tabs: opened tabs, active tab, pinned tabs, tab order.
 - Command/preferences popover state.
+- Keyboard shortcut bindings: default definitions plus user overrides. Command palette open state is runtime-only.
 - Safe local UI preferences.
 
 Do not store server lists/details as primary data in Pinia. Use TanStack Query for that.
@@ -22,6 +23,7 @@ Persist only safe preferences:
 - Compatibility-only `density` when present in existing appearance payloads. Do not expose a visible global density selector just because the field is persisted; add visible density UI only when global CSS/tokens consume it meaningfully.
 - `stageManager.railEnabled` when present in appearance payloads. Retired `stageManager.enabled`, `presentationMode`, and scroll-overflow fields may be read for compatibility, but they must not be written back.
 - Workspace tab metadata if desired.
+- Shortcut user overrides under `super-admin:shortcuts`. Store only the user overrides on top of code-defined defaults; do not persist full binding tables.
 - Column visibility or local view preferences.
 
 Do not persist sensitive tokens or full form contents by default.

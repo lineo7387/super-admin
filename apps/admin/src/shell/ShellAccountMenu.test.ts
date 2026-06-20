@@ -14,16 +14,21 @@ describe('shell account menu', () => {
     expect(shellAccountMenuSource).not.toContain('preferences.openStageManager')
   })
 
-  it('opens a read-only shortcuts viewer instead of opening Stage Manager directly', () => {
+  it('opens a rebindable shortcuts panel with per-shortcut combo display and rebind controls', () => {
     expect(shellAccountMenuSource).toContain('shortcutsPanelOpen')
     expect(shellAccountMenuSource).toContain('shell.shortcuts.title')
-    expect(shellAccountMenuSource).toContain('shell.shortcuts.readOnly')
-    expect(shellAccountMenuSource).toContain('shell.shortcuts.stageManager')
-    expect(shellAccountMenuSource).toContain('Cmd/Ctrl + Shift + M')
-    expect(shellAccountMenuSource).toContain('shell.shortcuts.controlCenter')
-    expect(shellAccountMenuSource).toContain('shell.shortcuts.aiAssistant')
-    expect(shellAccountMenuSource).toContain('shell.shortcuts.commandPalette')
-    expect(shellAccountMenuSource).toContain('shell.shortcuts.unbound')
+    expect(shellAccountMenuSource).toContain('shell.shortcuts.description')
+    expect(shellAccountMenuSource).toContain('shortcuts.definitions')
+    expect(shellAccountMenuSource).toContain('formatComboLabel')
+    expect(shellAccountMenuSource).toContain('shortcuts.getCombo')
+    expect(shellAccountMenuSource).toContain('shell.shortcuts.rebind')
+    expect(shellAccountMenuSource).toContain('shell.shortcuts.resetDefault')
+    expect(shellAccountMenuSource).toContain('shell.shortcuts.resetAll')
+    expect(shellAccountMenuSource).toContain('handleRebindKeydown')
+    expect(shellAccountMenuSource).toContain('rebindingId')
+    expect(shellAccountMenuSource).not.toContain('shell.shortcuts.readOnly')
+    expect(shellAccountMenuSource).not.toContain('shell.shortcuts.unbound')
+    expect(shellAccountMenuSource).not.toContain('Cmd/Ctrl + Shift + M')
   })
 
   it('keeps the account menu light and closes it when clicking outside', () => {

@@ -10,6 +10,7 @@ import StageTransitionGhost from '@/workspace/StageTransitionGhost.vue'
 import WorkspaceRouterView from '@/workspace/WorkspaceRouterView.vue'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 import AiAssistantFloatingPanel from './AiAssistantFloatingPanel.vue'
+import CommandPalette from './CommandPalette.vue'
 import DualColumnLayout from './layouts/DualColumnLayout.vue'
 import TopHeaderLayout from './layouts/TopHeaderLayout.vue'
 import TriColumnLayout from './layouts/TriColumnLayout.vue'
@@ -86,6 +87,7 @@ watch(
     </div>
   </div>
   <AiAssistantFloatingPanel />
+  <CommandPalette :open="preferences.commandPaletteOpen" @close="preferences.closeCommandPalette()" />
   <StageOverview />
   <StageTransitionGhost />
   <GlobalPreferences trigger="none" />

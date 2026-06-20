@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Keyboard, LogOut, Settings2, X } from '@lucide/vue'
+import { Keyboard, LogOut, RotateCcw, Settings2, X } from '@lucide/vue'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
+import { useShortcutsStore } from '@/stores/shortcuts.store'
+import { formatComboLabel, normalizeCombo, type ShortcutId } from './shortcuts/registry'
 
 const props = withDefaults(
   defineProps<{
@@ -18,9 +20,12 @@ const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const session = useAuthSessionStore()
+const shortcuts = useShortcutsStore()
 const open = shallowRef(false)
 const shortcutsPanelOpen = shallowRef(false)
+const rebindError = shallowRef<string | null>(null)
 const menuRoot = useTemplateRef<HTMLElement>('menuRoot')
+const shortcutsPanel = useTemplateRef<HTMLElement>('shortcutsPanel')
 
 const user = computed(() => session.currentUser)
 const initials = computed(() => {
@@ -53,6 +58,87 @@ function closeMenu(): void {
 
 function closeShortcutsPanel(): void {
   shortcutsPanelOpen.value = false
+  cancelRebind()
+}
+
+function startRebind(id: ShortcutId): void {
+  shortcuts.beginRebind(id)
+  rebindError.value = null
+}
+
+function cancelRebind(): void {
+  shortcuts.endRebind()
+  rebindError.value = null
+}
+
+function handleRebindKeydown(event: KeyboardEvent): void {
+  if (!shortcuts.isRebinding) {
+    return
+  }
+
+  event.preventDefault()
+
+  if (event.key === 'Escape') {
+    cancelRebind()
+    return
+  }
+
+  const id = shortcuts.rebindingId
+  if (!id) {
+    return
+  }
+
+  const combo = normalizeCombo(event)
+  const result = shortcuts.rebind(id, combo)
+
+  if (result.ok) {
+    event.stopImmediatePropagation()
+    shortcuts.endRebind()
+    rebindError.value = null
+    return
+  }
+
+  if (result.reason === 'conflict') {
+    const conflictDef = shortcuts.definitions.find((d) => d.id === result.conflictId)
+    rebindError.value = t('shell.shortcuts.rebindConflict', {
+      name: conflictDef ? t(conflictDef.labelKey) : result.conflictId
+    })
+    return
+  }
+
+  if (result.reason === 'browser-reserved') {
+    rebindError.value = t('shell.shortcuts.rebindBrowserReserved')
+    return
+  }
+
+  if (result.reason === 'modifier-only') {
+    rebindError.value = t('shell.shortcuts.rebindModifierOnly')
+  }
+}
+
+watch(
+  () => shortcuts.isRebinding,
+  (rebinding) => {
+    if (rebinding) {
+      window.addEventListener('keydown', handleRebindKeydown, true)
+    } else {
+      window.removeEventListener('keydown', handleRebindKeydown, true)
+    }
+  }
+)
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleRebindKeydown, true)
+})
+
+function resetShortcut(id: ShortcutId): void {
+  shortcuts.resetShortcut(id)
+  cancelRebind()
+}
+
+function resetAllShortcuts(): void {
+  shortcuts.resetAll()
+  cancelRebind()
 }
 
 function handlePointerDown(event: PointerEvent): void {
@@ -72,6 +158,7 @@ function openProfileSettings(): void {
 function openShortcutsPanel(): void {
   closeMenu()
   shortcutsPanelOpen.value = true
+  nextTick(() => shortcutsPanel.value?.focus())
 }
 
 async function signOut(): Promise<void> {
@@ -173,20 +260,22 @@ onUnmounted(() => {
       <div
         v-if="shortcutsPanelOpen"
         class="fixed inset-0 z-[78] grid place-items-center bg-black/35 p-4 backdrop-blur-sm"
-        @keydown.esc="closeShortcutsPanel"
+        @click.self="closeShortcutsPanel"
       >
         <section
-          class="w-full max-w-md overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
+          ref="shortcutsPanel"
+          class="w-full max-w-md overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)] outline-none"
           role="dialog"
           aria-modal="true"
           aria-labelledby="shortcuts-panel-title"
+          tabindex="-1"
         >
           <header class="flex items-start justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-raised)] p-4">
             <div>
               <h2 id="shortcuts-panel-title" class="[font-family:var(--font-display)] text-lg text-[var(--foreground)]">
                 {{ t('shell.shortcuts.title') }}
               </h2>
-              <p class="mt-1 text-xs text-[var(--muted-foreground)]">{{ t('shell.shortcuts.readOnly') }}</p>
+              <p class="mt-1 text-xs text-[var(--muted-foreground)]">{{ t('shell.shortcuts.description') }}</p>
             </div>
             <button
               type="button"
@@ -199,23 +288,55 @@ onUnmounted(() => {
           </header>
 
           <div class="grid gap-2 p-3">
-            <div class="shortcut-row">
-              <span>{{ t('shell.shortcuts.stageManager') }}</span>
-              <kbd>Cmd/Ctrl + Shift + M</kbd>
-            </div>
-            <div class="shortcut-row">
-              <span>{{ t('shell.shortcuts.controlCenter') }}</span>
-              <span class="shortcut-row__empty">{{ t('shell.shortcuts.unbound') }}</span>
-            </div>
-            <div class="shortcut-row">
-              <span>{{ t('shell.shortcuts.aiAssistant') }}</span>
-              <span class="shortcut-row__empty">{{ t('shell.shortcuts.unbound') }}</span>
-            </div>
-            <div class="shortcut-row">
-              <span>{{ t('shell.shortcuts.commandPalette') }}</span>
-              <span class="shortcut-row__empty">{{ t('shell.shortcuts.unbound') }}</span>
+            <div v-for="def in shortcuts.definitions" :key="def.id" class="shortcut-row">
+              <span class="shortcut-row__label">{{ t(def.labelKey) }}</span>
+
+              <template v-if="shortcuts.rebindingId === def.id">
+                <span class="shortcut-row__rebinding">{{ t('shell.shortcuts.rebinding') }}</span>
+                <button
+                  type="button"
+                  class="shortcut-row__btn"
+                  @click="cancelRebind"
+                >
+                  {{ t('shell.shortcuts.cancelRebind') }}
+                </button>
+              </template>
+              <template v-else>
+                <kbd class="shortcut-row__combo">{{ formatComboLabel(shortcuts.getCombo(def.id)) }}</kbd>
+                <button
+                  type="button"
+                  class="shortcut-row__btn"
+                  @click="startRebind(def.id)"
+                >
+                  {{ t('shell.shortcuts.rebind') }}
+                </button>
+                <button
+                  v-if="!shortcuts.isUsingDefault(def.id)"
+                  type="button"
+                  class="shortcut-row__btn shortcut-row__btn--icon"
+                  :title="t('shell.shortcuts.resetDefault')"
+                  @click="resetShortcut(def.id)"
+                >
+                  <RotateCcw class="size-3.5" />
+                </button>
+              </template>
+
+              <p v-if="shortcuts.rebindingId === def.id && rebindError" class="shortcut-row__error">
+                {{ rebindError }}
+              </p>
             </div>
           </div>
+
+          <footer class="border-t border-[var(--border)] p-3">
+            <button
+              type="button"
+              class="shortcut-row__btn shortcut-row__btn--full"
+              @click="resetAllShortcuts"
+            >
+              <RotateCcw class="size-3.5" />
+              {{ t('shell.shortcuts.resetAll') }}
+            </button>
+          </footer>
         </section>
       </div>
     </Teleport>
@@ -256,10 +377,11 @@ onUnmounted(() => {
 
 .shortcut-row {
   display: flex;
+  flex-wrap: wrap;
   min-height: 2.75rem;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--surface-sunken);
@@ -268,8 +390,13 @@ onUnmounted(() => {
   font-size: 0.875rem;
 }
 
-.shortcut-row kbd,
-.shortcut-row__empty {
+.shortcut-row__label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.shortcut-row__combo,
+.shortcut-row__rebinding {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--surface);
@@ -277,5 +404,55 @@ onUnmounted(() => {
   color: var(--muted-foreground);
   font-size: 0.6875rem;
   line-height: 1.2;
+  white-space: nowrap;
+}
+
+.shortcut-row__rebinding {
+  color: var(--primary);
+  border-color: var(--primary);
+  animation: shortcut-pulse 1.2s ease-in-out infinite;
+}
+
+.shortcut-row__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 0.2rem 0.55rem;
+  color: var(--muted-foreground);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  transition:
+    background var(--duration-base) var(--easing),
+    color var(--duration-base) var(--easing);
+}
+
+.shortcut-row__btn:hover {
+  background: var(--surface-raised);
+  color: var(--foreground);
+}
+
+.shortcut-row__btn--icon {
+  padding: 0.2rem 0.35rem;
+}
+
+.shortcut-row__btn--full {
+  width: 100%;
+  justify-content: center;
+}
+
+.shortcut-row__error {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.6875rem;
+  line-height: 1.3;
+}
+
+@keyframes shortcut-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }
 </style>
