@@ -34,6 +34,13 @@ type TransformContext = {
   input: StarterGenerationInput
 }
 
+const UNREGISTERED_STANDALONE_MANIFESTS = new Set([
+  'modules/access/access.manifest.ts',
+  'modules/dashboard/dashboard.manifest.ts',
+  'modules/users/users.manifest.ts',
+  'modules/workbench/workbench.manifest.ts'
+])
+
 function getDefaultSourceAppDir(): string {
   return resolve(dirname(fileURLToPath(import.meta.url)), 'starter-template/admin')
 }
@@ -73,6 +80,10 @@ async function writeText(root: string, filePath: string, content: string): Promi
 }
 
 function shouldSkipSourceFile(relativePath: string, context: TransformContext): boolean {
+  if (UNREGISTERED_STANDALONE_MANIFESTS.has(relativePath)) {
+    return true
+  }
+
   if (relativePath.startsWith('api/reference/')) {
     return true
   }

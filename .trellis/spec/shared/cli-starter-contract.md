@@ -220,6 +220,7 @@ Generated template derivation:
 - Generated Control Center workspace settings must stay aligned with the monorepo Stage Manager contract: Workspace Tabs and `stageManager.railEnabled` are independent toggles, fullscreen Overview is a desktop-only runtime command, and no generated starter should expose the retired `side-dock | all-windows` presentation-mode selector.
 - Generated Control Center must not expose a global density selector by default. Keep persisted `density` compatibility only until global density tokens/CSS make the setting visibly meaningful.
 - Generated output excludes `src/**/*.test.ts`, `src/api/reference/`, `dist/`, `node_modules/`, `*.tsbuildinfo`, docs, optional backend code, and reference smoke tooling.
+- Generated output must not include standalone module manifest files that are not registered by `src/modules/module-registry.ts`. If example pages are folded under `src/modules/examples/examples.manifest.ts`, keep the pages/data files but exclude the old per-module manifest files from generated starters.
 
 ### 4. Validation & Error Matrix
 
@@ -247,6 +248,7 @@ Generated template derivation:
 | Packed `create-super-admin` tarball omits its runtime starter template | Reject during pack validation before publish; registry/dlx consumers do not have repo-root `apps/admin`. |
 | Published CLI default path attempts to read repository-root `apps/admin` | Reject; only explicit maintainer test hooks may read repo source. |
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
+| Generated starter includes standalone module manifests that are not imported by `src/modules/module-registry.ts` | Reject; generated output should expose only active registered manifests and user-editable example source. |
 | Generated single-theme output exposes runtime theme or language switching with one installed theme/locale | Reject; single-theme output is fixed to that theme and `zh-CN`. |
 | Publish-ready package export points at source TypeScript instead of emitted package output | Reject for publish-ready package work; source exports are only acceptable as a temporary monorepo development state. |
 | Theme runtime package bundles all theme profiles | Reject; selected theme packages must remain dependency-granular. |
@@ -278,6 +280,7 @@ Maintainer validation for generated output must cover:
 - no monorepo package paths appear in generated Tailwind/CSS source scanning
 - no optional reference backend imports or reference env tokens appear in default generated source
 - no backend/docs/test/lint/e2e/reference-smoke tooling appears in default output
+- no unregistered standalone module manifest files appear in generated output
 - default theme dependencies are only `@super-admin-org/theme` and `@super-admin-org/theme-base`
 - default theme registry imports only `@super-admin-org/theme-base`
 - multi-theme generation installs exactly the selected theme packages

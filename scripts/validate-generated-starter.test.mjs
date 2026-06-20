@@ -234,6 +234,24 @@ describe('generated starter validator', () => {
     expect(failureIds(failures)).toContain('module-pages-no-direct-transport')
   })
 
+  it('rejects unregistered standalone module manifests', async () => {
+    const root = await createStarterFixture({
+      files: {
+        'src/modules/access/access.manifest.ts': 'export const accessManifest = {}\n',
+        'src/modules/dashboard/dashboard.manifest.ts': 'export const dashboardManifest = {}\n',
+        'src/modules/users/users.manifest.ts': 'export const usersManifest = {}\n',
+        'src/modules/workbench/workbench.manifest.ts': 'export const workbenchManifest = {}\n'
+      }
+    })
+
+    const failures = await validateGeneratedStarterStatic(root, { themes: ['base'] })
+
+    expect(failureIds(failures)).toContain('source-no-unregistered-standalone-manifests')
+    const manifestFailure = failures.find((failure) => failure.id === 'source-no-unregistered-standalone-manifests')
+    expect(manifestFailure.message).toContain('src/modules/access/access.manifest.ts')
+    expect(manifestFailure.message).toContain('src/modules/workbench/workbench.manifest.ts')
+  })
+
   it('rejects ECharts dependencies and source when charts are not selected', async () => {
     const root = await createStarterFixture({
       dependencies: {
