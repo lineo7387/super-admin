@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 57
-- **Last Active**: 2026-06-19
+- **Total Sessions**: 58
+- **Last Active**: 2026-06-20
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1954 | Active |
+| `journal-1.md` | ~1987 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 58 | 2026-06-20 | 可选 ECharts 图表示例模板 | `a8443e8` | `codex/admin-chart-template-option` |
 | 57 | 2026-06-19 | Document push flow convention | `31e0781` | `codex/push-flow-convention` |
 | 56 | 2026-06-19 | Public repo presentation cleanup | `31e505a` | `codex/public-repo-presentation-cleanup` |
 | 55 | 2026-06-19 | Stage Manager 完整缩略图收尾 | `e106bc9` | `main` |

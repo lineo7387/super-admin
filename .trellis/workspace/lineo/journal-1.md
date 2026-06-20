@@ -1952,3 +1952,36 @@ Recorded the required pre-push synchronization flow in shared git conventions so
 ### Next Steps
 
 - None - task complete
+
+
+## Session 58: 可选 ECharts 图表示例模板
+
+**Date**: 2026-06-20
+**Task**: 可选 ECharts 图表示例模板
+**Branch**: `codex/admin-chart-template-option`
+
+### Summary
+
+新增主题 chart recipe、可选 ECharts 示例页、CLI/generator/validator 支持；Charts 挂在 Examples 下并修复 Stage Rail 两 tab 时的图表页挤压。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a8443e8` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
