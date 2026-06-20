@@ -7,8 +7,8 @@
 ## Current Status
 
 <!-- @@@auto:current-status -->
-- **Active File**: `journal-1.md`
-- **Total Sessions**: 58
+- **Active File**: `journal-2.md`
+- **Total Sessions**: 59
 - **Last Active**: 2026-06-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,8 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1987 | Active |
+| `journal-2.md` | ~40 | Active |
+| `journal-1.md` | ~1987 | Archived |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 59 | 2026-06-20 | 完善后台模板基础组件 | `c45138e` | `codex/admin-basic-components` |
 | 58 | 2026-06-20 | 可选 ECharts 图表示例模板 | `a8443e8` | `codex/admin-chart-template-option` |
 | 57 | 2026-06-19 | Document push flow convention | `31e0781` | `codex/push-flow-convention` |
 | 56 | 2026-06-19 | Public repo presentation cleanup | `31e505a` | `codex/public-repo-presentation-cleanup` |
