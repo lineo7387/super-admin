@@ -9,6 +9,8 @@ withDefaults(
     cancelLabel?: string
     submitLabel?: string
     submittingLabel?: string
+    dirtyLabel?: string
+    cleanLabel?: string
   }>(),
   {
     dirty: false,
@@ -16,7 +18,9 @@ withDefaults(
     statusText: undefined,
     cancelLabel: 'Cancel',
     submitLabel: 'Save changes',
-    submittingLabel: 'Saving...'
+    submittingLabel: 'Saving...',
+    dirtyLabel: 'Unsaved changes',
+    cleanLabel: 'No changes yet'
   }
 )
 
@@ -28,7 +32,7 @@ const emit = defineEmits<{
 
 <template>
   <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] bg-[var(--surface)] p-4">
-    <p class="text-sm text-[var(--muted-foreground)]">{{ statusText ?? (dirty ? 'Unsaved changes' : 'No changes yet') }}</p>
+    <p class="text-sm text-[var(--muted-foreground)]">{{ statusText ?? (dirty ? dirtyLabel : cleanLabel) }}</p>
     <div class="flex items-center gap-2">
       <AdminButton variant="ghost" @click="emit('cancel')">{{ cancelLabel }}</AdminButton>
       <AdminButton variant="primary" :disabled="submitting" @click="emit('submit')">

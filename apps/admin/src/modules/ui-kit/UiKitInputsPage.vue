@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminCard, AdminCheckbox, AdminField, AdminRadioGroup, AdminSelect, AdminSwitch, AdminTextInput, AdminTextarea } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
+const { t } = useI18n()
 const name = shallowRef('Mira Chen')
 const role = shallowRef('Owner')
 const notes = shallowRef('Reviews regional approvals before handoff.')
@@ -11,74 +13,74 @@ const reviewed = shallowRef(false)
 const partial = shallowRef(false)
 const approvalMode = shallowRef('manual')
 
-const approvalOptions = [
+const approvalOptions = computed(() => [
   {
     value: 'manual',
-    label: 'Manual review',
-    description: 'Operators approve each workflow before it becomes active.'
+    label: t('uiKit.inputs.approval.manual'),
+    description: t('uiKit.inputs.approval.manualDescription')
   },
   {
     value: 'scheduled',
-    label: 'Scheduled window',
-    description: 'Changes wait for a maintenance window before publishing.'
+    label: t('uiKit.inputs.approval.scheduled'),
+    description: t('uiKit.inputs.approval.scheduledDescription')
   },
   {
     value: 'locked',
-    label: 'Locked by policy',
-    description: 'Disabled options keep layout stable while showing unavailable choices.',
+    label: t('uiKit.inputs.approval.locked'),
+    description: t('uiKit.inputs.approval.lockedDescription'),
     disabled: true
   }
-]
+])
 
-const roleOptions = [
-  { value: 'Owner', label: 'Owner' },
-  { value: 'Operator', label: 'Operator' },
-  { value: 'Auditor', label: 'Auditor' }
-]
+const roleOptions = computed(() => [
+  { value: 'Owner', label: t('uiKit.inputs.roles.owner') },
+  { value: 'Operator', label: t('uiKit.inputs.roles.operator') },
+  { value: 'Auditor', label: t('uiKit.inputs.roles.auditor') }
+])
 </script>
 
 <template>
-  <UiKitPage title="Inputs" description="Field controls that inherit theme tokens and expose typed v-model contracts for forms and filters.">
+  <UiKitPage :title="t('uiKit.page.inputs.title')" :description="t('uiKit.page.inputs.description')">
     <AdminAlert
       tone="success"
-      title="Inputs use typed v-model contracts"
-      description="Text, select, switch, and checkbox primitives keep form state explicit while the module decides validation and persistence."
+      :title="t('uiKit.inputs.alertTitle')"
+      :description="t('uiKit.inputs.alertDescription')"
     />
 
     <section class="grid gap-4 lg:grid-cols-2">
       <AdminCard>
-        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">Text Inputs</h2>
+        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">{{ t('uiKit.inputs.textInputs') }}</h2>
         <div class="mt-4 grid gap-4">
-          <AdminField label="Name" for="kit-name" help="Default text input">
+          <AdminField :label="t('uiKit.inputs.fieldName')" for="kit-name" :help="t('uiKit.inputs.nameHelp')">
             <AdminTextInput id="kit-name" v-model="name" />
           </AdminField>
-          <AdminField label="Email" for="kit-email" error="Enter a valid email address.">
+          <AdminField :label="t('uiKit.inputs.fieldNameEmail')" for="kit-email" :error="t('uiKit.inputs.emailError')">
             <AdminTextInput id="kit-email" v-model="name" type="email" invalid />
           </AdminField>
-          <AdminField label="Generated slug" for="kit-slug" optional help="Readonly and disabled states preserve layout without custom one-off classes.">
+          <AdminField :label="t('uiKit.inputs.fieldNameSlug')" for="kit-slug" optional :optional-label="t('validation.optionalLabel')" :help="t('uiKit.inputs.slugHelp')">
             <AdminTextInput id="kit-slug" model-value="north-star-review" readonly />
           </AdminField>
-          <AdminField label="Locked provider" for="kit-locked">
+          <AdminField :label="t('uiKit.inputs.fieldNameLocked')" for="kit-locked">
             <AdminTextInput id="kit-locked" model-value="Configured by workspace policy" disabled />
           </AdminField>
         </div>
       </AdminCard>
       <AdminCard>
-        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">Select, Textarea, Switch</h2>
+        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">{{ t('uiKit.inputs.selectTextareaSwitch') }}</h2>
         <div class="mt-4 grid gap-4">
-          <AdminField label="Role" for="kit-role">
+          <AdminField :label="t('uiKit.inputs.fieldRole')" for="kit-role">
             <AdminSelect id="kit-role" v-model="role" :options="roleOptions" />
           </AdminField>
-          <AdminField label="Notes" for="kit-notes">
+          <AdminField :label="t('uiKit.inputs.fieldNotes')" for="kit-notes">
             <AdminTextarea id="kit-notes" v-model="notes" />
           </AdminField>
-          <AdminSwitch v-model="enabled" label="Enable workspace notices" />
-          <AdminSwitch v-model="partial" label="Disabled switch" disabled />
+          <AdminSwitch v-model="enabled" :label="t('uiKit.inputs.switchEnable')" />
+          <AdminSwitch v-model="partial" :label="t('uiKit.inputs.switchDisabled')" disabled />
           <div class="grid gap-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] p-3">
-            <AdminCheckbox v-model="reviewed" label="Mark policy reviewed" description="Checkboxes are useful for confirmations and table selection." />
-            <AdminCheckbox v-model="partial" label="Partially selected team" description="Indeterminate state mirrors bulk-selection tables." indeterminate />
+            <AdminCheckbox v-model="reviewed" :label="t('uiKit.inputs.checkboxReviewed')" :description="t('uiKit.inputs.checkboxReviewedDescription')" />
+            <AdminCheckbox v-model="partial" :label="t('uiKit.inputs.checkboxPartial')" :description="t('uiKit.inputs.checkboxPartialDescription')" indeterminate />
           </div>
-          <AdminField label="Approval mode" for="kit-approval-mode" help="Radio groups use the same profile-aware control styling as checkbox selections.">
+          <AdminField :label="t('uiKit.inputs.fieldApprovalMode')" for="kit-approval-mode" :help="t('uiKit.inputs.approvalModeHelp')">
             <AdminRadioGroup v-model="approvalMode" name="kit-approval-mode" :options="approvalOptions" />
           </AdminField>
         </div>

@@ -55,7 +55,7 @@ function submitRegister(): void {
         :description="notice"
       />
 
-      <AdminValidationSummary :errors="validationMessages" />
+      <AdminValidationSummary :title="t('common.primitives.validationTitle')" :errors="validationMessages" />
 
       <form class="grid gap-4" @submit.prevent="submitRegister">
         <AdminField :label="t('auth.register.name')" for="register-name" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.name">

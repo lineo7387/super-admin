@@ -2,7 +2,7 @@
 import { Plus, Search, SlidersHorizontal } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AdminButton, AdminSelect, AdminTableFrame, AdminTableToolbar, AdminTextInput, StatusPill } from '@super-admin-org/ui'
+import { AdminButton, AdminCheckbox, AdminSelect, AdminTableFrame, AdminTableToolbar, AdminTextInput, StatusPill } from '@super-admin-org/ui'
 import UsersTable from './components/UsersTable.vue'
 import UserDrawerForm from './components/UserDrawerForm.vue'
 import { useUsersQuery } from './users.queries'
@@ -104,12 +104,7 @@ function handleSaved(input: { name: string }): void {
           <template #filters>
             <label class="flex h-9 min-w-64 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3">
               <Search class="size-4 text-[var(--muted-foreground)]" />
-              <input
-                v-model="keyword"
-                class="min-w-0 flex-1 bg-transparent text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
-                :placeholder="t('users.all.search')"
-                @input="resetPage"
-              />
+              <AdminTextInput v-model="keyword" class="border-0 bg-transparent px-0 shadow-none" :placeholder="t('users.all.search')" @update:model-value="resetPage" />
             </label>
             <AdminSelect v-model="status" class="w-40" :fluid="false" :options="statusOptions" @change="resetPage" />
             <AdminSelect v-model="scenario" class="w-36" :fluid="false" :options="scenarioOptions" @change="resetPage" />
@@ -125,12 +120,15 @@ function handleSaved(input: { name: string }): void {
             </AdminButton>
           </template>
         </AdminTableToolbar>
-        <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-[var(--muted-foreground)]">
+        <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-[var(--muted-foreground)]">
           <span>{{ t('users.all.columns') }}</span>
-          <label v-for="column in ['name', 'email', 'role', 'region', 'status']" :key="column" class="inline-flex items-center gap-1">
-            <input type="checkbox" :checked="visibleColumns.includes(column)" @change="toggleColumn(column)" />
-            <span>{{ columnLabels[column] ?? column }}</span>
-          </label>
+          <AdminCheckbox
+            v-for="column in ['name', 'email', 'role', 'region', 'status']"
+            :key="column"
+            :model-value="visibleColumns.includes(column)"
+            :label="columnLabels[column] ?? column"
+            @update:model-value="toggleColumn(column)"
+          />
           <StatusPill v-if="lastSavedName" :label="t('users.all.saved', { name: lastSavedName })" tone="success" />
         </div>
       </template>
