@@ -237,12 +237,14 @@ The modal remains mounted once with `GlobalPreferences trigger="none"` above lay
 
 The personal settings entry is user-scoped. It may route to or reserve space for account/profile details, but it must not open the project/workspace Control Center.
 
-The shortcuts entry opens a read-only shortcuts surface. In the first phase it lists:
+The shortcuts entry opens a rebindable shortcuts surface. It lists the current keyboard shortcut bindings and allows users to rebind each shortcut, with conflict detection, browser-reserved combination rejection, modifier-only rejection, and reset-to-default per shortcut or for all shortcuts. Default bindings:
 
 - Stage Manager: `Cmd/Ctrl + Shift + M`
-- Control Center: unbound
-- AI Assistant: unbound
-- Search / Command Palette: unbound
+- Control Center: `Cmd/Ctrl + Shift + C`
+- AI Assistant: `Cmd/Ctrl + Shift + A`
+- Search / Command Palette: `Cmd/Ctrl + K`
+
+User custom bindings persist to `localStorage` under `super-admin:shortcuts` and are owned by the shortcuts Pinia store. The command palette opens via `Cmd/Ctrl + K` or by clicking the header search trigger.
 
 The account menu must close when:
 
@@ -284,7 +286,7 @@ The side Stage Rail is a left-side, layout-affecting desktop rail, not a floatin
 
 The rail itself is window-only: show the current window preview and its window title, but do not add a rail header, "Desktop" badge, module description, current/pinned text, or persistent action chrome. Window actions such as pin/unpin, refresh, and close are still available on Stage Rail thumbnails; they must reuse the same shared `StageWindowActions` component and reveal only on hover, touch/active, or keyboard focus, matching fullscreen Overview behavior. Do not fork one action implementation for Overview and another for Rail. A stacked module-group Rail card represents the whole group, so its close affordance is a group-level action: close the entire group only when every member is closable, and keep single-window close semantics inside the secondary window-level Rail view and fullscreen Overview.
 
-The first phase does not support drag grouping, drag ungrouping, or custom shortcut bindings.
+The first phase does not support drag grouping or drag ungrouping.
 
 The secondary affordance enters a window-level view for that group. This is not a side details panel and not a text tab list: the left Stage Rail switches from group thumbnails to that group's window thumbnails, with each window preview selectable. Entering this secondary view should read as the folded card stack unfolding into individual window thumbnails, using Motion-powered staggered entry where practical and respecting reduced motion. Keep the rail to a macOS-like maximum of four visible windows/groups; overflow is not scrollable in side rail mode.
 

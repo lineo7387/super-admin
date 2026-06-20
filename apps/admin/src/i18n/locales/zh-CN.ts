@@ -11,13 +11,47 @@ const zhCN = {
     },
     shortcuts: {
       title: '快捷方式',
-      readOnly: '当前版本仅供查看，暂不支持自定义快捷键。',
+      description: '点击「重绑」修改快捷键；重绑时按 Esc 取消重绑。',
       close: '关闭快捷方式',
       stageManager: '台前调度',
       controlCenter: '控制中心',
       aiAssistant: 'AI 助手',
       commandPalette: '搜索 / 命令面板',
-      unbound: '未绑定'
+      rebind: '重绑',
+      rebinding: '按下组合键…（Esc 取消）',
+      cancelRebind: '取消',
+      resetDefault: '恢复默认',
+      resetAll: '全部恢复默认',
+      rebindConflict: '与「{name}」冲突，请选择其他组合',
+      rebindBrowserReserved: '该组合被浏览器保留，请选择其他组合',
+      rebindModifierOnly: '请按完整组合键（不能仅使用修饰键）'
+    },
+    commandPalette: {
+      title: '命令面板',
+      placeholder: '搜索页面或命令...',
+      trigger: '搜索页面或命令',
+      close: '关闭命令面板',
+      empty: '没有找到结果',
+      groups: {
+        navigation: '页面导航',
+        actions: '快捷操作'
+      },
+      actions: {
+        openControlCenter: '打开控制中心',
+        openAiAssistant: '打开 AI 助手',
+        openStageOverview: '打开台前调度',
+        setColorMode: '切换色彩模式：{mode}',
+        setLocale: '切换语言：{locale}'
+      },
+      modes: {
+        light: '浅色',
+        dark: '深色',
+        system: '跟随系统'
+      },
+      locales: {
+        zhCN: '简体中文',
+        enUS: 'English'
+      }
     },
     assistant: {
       open: '打开 AI 助手',

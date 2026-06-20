@@ -65,6 +65,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const stageManagerDesktopAvailable = shallowRef(false)
   const stageTransitionGhost = shallowRef<StageTransitionGhost | null>(null)
   const aiAssistantOpen = shallowRef(false)
+  const commandPaletteOpen = shallowRef(false)
 
   const profileId = computed(() => state.profileId)
   const locale = computed(() => state.locale)
@@ -182,6 +183,14 @@ export const usePreferencesStore = defineStore('preferences', () => {
     aiAssistantOpen.value = false
   }
 
+  function openCommandPalette(): void {
+    commandPaletteOpen.value = true
+  }
+
+  function closeCommandPalette(): void {
+    commandPaletteOpen.value = false
+  }
+
   function bindSystemColorMode(): void {
     const query = window.matchMedia('(prefers-color-scheme: dark)')
     const update = (): void => {
@@ -203,13 +212,16 @@ export const usePreferencesStore = defineStore('preferences', () => {
     aiAvailability,
     aiAssistantOpen,
     closeAiAssistant,
+    closeCommandPalette,
     closeControlCenter,
     closeStageOverview,
     clearStageTransition,
     controlCenterOpen,
+    commandPaletteOpen,
     finishStageTransition,
     openControlCenter,
     openAiAssistant,
+    openCommandPalette,
     openStageOverview,
     stageManagerDesktopAvailable,
     stageOverviewOpen,

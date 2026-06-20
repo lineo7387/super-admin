@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { LayoutDashboard, Search } from '@lucide/vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { usePreferencesStore } from '@/stores/preferences.store'
+import { useShortcutsStore } from '@/stores/shortcuts.store'
+import { formatComboLabel } from './shortcuts/registry'
 import PrimaryNav from './PrimaryNav.vue'
 
 withDefaults(
@@ -17,6 +21,13 @@ withDefaults(
 )
 
 const { t } = useI18n()
+const preferences = usePreferencesStore()
+const shortcuts = useShortcutsStore()
+
+const paletteHint = computed(() => {
+  const combo = shortcuts.getCombo('command-palette')
+  return formatComboLabel(combo)
+})
 </script>
 
 <template>
@@ -36,10 +47,17 @@ const { t } = useI18n()
     </div>
 
     <PrimaryNav v-if="nav === 'horizontal'" class="col-start-2" orientation="horizontal" :max-depth="navDepth" />
-    <div v-else class="col-start-2 hidden h-9 min-w-80 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3 text-sm text-[var(--muted-foreground)] md:flex">
+    <button
+      v-else
+      type="button"
+      class="col-start-2 hidden h-9 min-w-80 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3 text-sm text-[var(--muted-foreground)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--foreground)] md:flex"
+      :aria-label="t('shell.commandPalette.trigger')"
+      @click="preferences.openCommandPalette()"
+    >
       <Search class="size-4" />
-      <span>{{ t('users.all.search') }}</span>
-    </div>
+      <span>{{ t('shell.commandPalette.trigger') }}</span>
+      <kbd class="ml-auto rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--muted-foreground)]">{{ paletteHint }}</kbd>
+    </button>
 
     <div class="col-start-3 flex min-w-0 items-center justify-end gap-2">
       <slot name="actions" />

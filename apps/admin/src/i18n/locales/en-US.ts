@@ -11,13 +11,47 @@ const enUS = {
     },
     shortcuts: {
       title: 'Shortcuts',
-      readOnly: 'This first version is read-only and does not support custom shortcuts.',
+      description: 'Click "Rebind" to change a shortcut. Press Esc to cancel while rebinding.',
       close: 'Close shortcuts',
       stageManager: 'Stage Manager',
       controlCenter: 'Control Center',
       aiAssistant: 'AI Assistant',
       commandPalette: 'Search / Command Palette',
-      unbound: 'Unbound'
+      rebind: 'Rebind',
+      rebinding: 'Press a key combination… (Esc to cancel)',
+      cancelRebind: 'Cancel',
+      resetDefault: 'Reset to default',
+      resetAll: 'Reset all to defaults',
+      rebindConflict: 'Conflicts with "{name}". Choose a different combination.',
+      rebindBrowserReserved: 'This combination is reserved by the browser. Choose a different one.',
+      rebindModifierOnly: 'Press a full key combination (modifier-only is not allowed).'
+    },
+    commandPalette: {
+      title: 'Command Palette',
+      placeholder: 'Search pages or commands...',
+      trigger: 'Search pages or commands',
+      close: 'Close command palette',
+      empty: 'No results found',
+      groups: {
+        navigation: 'Navigation',
+        actions: 'Actions'
+      },
+      actions: {
+        openControlCenter: 'Open Control Center',
+        openAiAssistant: 'Open AI Assistant',
+        openStageOverview: 'Open Stage Overview',
+        setColorMode: 'Set color mode: {mode}',
+        setLocale: 'Set language: {locale}'
+      },
+      modes: {
+        light: 'Light',
+        dark: 'Dark',
+        system: 'System'
+      },
+      locales: {
+        zhCN: '简体中文',
+        enUS: 'English'
+      }
     },
     assistant: {
       open: 'Open AI Assistant',
