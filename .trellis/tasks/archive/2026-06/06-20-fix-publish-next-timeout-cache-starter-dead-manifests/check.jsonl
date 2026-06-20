@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Verify generated starter and release workflow changes respect public delivery boundaries."}
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "Verify generated starter output remains within contract."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Verify focused implementation and relevant tests."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Verify release workflow/package boundary changes remain consistent."}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Verify no unintended ModuleManifest semantic changes."}

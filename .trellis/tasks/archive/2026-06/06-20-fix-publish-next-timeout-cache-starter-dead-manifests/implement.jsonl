@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Generated starter, release workflow, validation, and maintainer/user boundary rules."}
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "Generated starter output contract and package/runtime template boundaries."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Cross-cutting implementation and test quality rules."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Workspace package and release script boundary rules."}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "ModuleManifest and route metadata type-safety guidance if manifest semantics are touched."}
+{"file": ".trellis/tasks/archive/2026-06/06-08-fix-publish-next-pnpm-setup/research/publish-next-run-27137076615.md", "reason": "Historical publish-next failure context; confirms current timeout/cache issue is not intentionally preserved."}
