@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ArrowDownAZ, ArrowUpAZ, Search, Settings2, Trash2 } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   AdminBulkActionBar,
   AdminButton,
@@ -11,19 +12,26 @@ import {
   AdminTableToolbar,
   AdminTextInput,
   StatusPill,
+  getAdminPaginationRange,
   getAdminSelectionState
 } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
+type ViewRowStatus = 'Ready' | 'Review' | 'Blocked'
+type ViewRowRisk = 'Low' | 'Medium' | 'High'
+type ViewRowUpdated = 'today' | 'yesterday' | 'twoDays'
+type ViewRowName = 'revenueReview' | 'accessAudit' | 'queueHealth' | 'providerDrift'
+
 type ViewRow = {
   id: string
-  name: string
+  nameKey: ViewRowName
   owner: string
-  status: 'Ready' | 'Review' | 'Blocked'
-  risk: 'Low' | 'Medium' | 'High'
-  updated: string
+  status: ViewRowStatus
+  risk: ViewRowRisk
+  updatedKey: ViewRowUpdated
 }
 
+const { t } = useI18n()
 const search = shallowRef('')
 const page = shallowRef(1)
 const density = shallowRef<'compact' | 'comfortable'>('comfortable')
@@ -31,20 +39,20 @@ const sortDirection = shallowRef<'asc' | 'desc'>('asc')
 const selectedIds = shallowRef<string[]>(['view-1', 'view-3'])
 
 const rows: ViewRow[] = [
-  { id: 'view-1', name: 'Revenue Review', owner: 'Mira Chen', status: 'Ready', risk: 'Low', updated: 'Today' },
-  { id: 'view-2', name: 'Access Audit', owner: 'Jon Bell', status: 'Review', risk: 'Medium', updated: 'Yesterday' },
-  { id: 'view-3', name: 'Queue Health', owner: 'Ana Torres', status: 'Ready', risk: 'Low', updated: 'Today' },
-  { id: 'view-4', name: 'Provider Drift', owner: 'Iris Park', status: 'Blocked', risk: 'High', updated: '2 days ago' }
+  { id: 'view-1', nameKey: 'revenueReview', owner: 'Mira Chen', status: 'Ready', risk: 'Low', updatedKey: 'today' },
+  { id: 'view-2', nameKey: 'accessAudit', owner: 'Jon Bell', status: 'Review', risk: 'Medium', updatedKey: 'yesterday' },
+  { id: 'view-3', nameKey: 'queueHealth', owner: 'Ana Torres', status: 'Ready', risk: 'Low', updatedKey: 'today' },
+  { id: 'view-4', nameKey: 'providerDrift', owner: 'Iris Park', status: 'Blocked', risk: 'High', updatedKey: 'twoDays' }
 ]
 
 const visibleRows = computed(() => {
   const keyword = search.value.trim().toLowerCase()
   const filteredRows = keyword
-    ? rows.filter((row) => [row.name, row.owner, row.status, row.risk].some((value) => value.toLowerCase().includes(keyword)))
+    ? rows.filter((row) => [t(`uiKit.tables.rows.${row.nameKey}`), row.owner, row.status, row.risk].some((value) => value.toLowerCase().includes(keyword)))
     : rows
 
   return [...filteredRows].sort((left, right) => {
-    const comparison = left.name.localeCompare(right.name)
+    const comparison = t(`uiKit.tables.rows.${left.nameKey}`).localeCompare(t(`uiKit.tables.rows.${right.nameKey}`))
     return sortDirection.value === 'asc' ? comparison : -comparison
   })
 })
@@ -56,12 +64,34 @@ const selectionState = computed(() =>
     totalCount: visibleRows.value.length
   })
 )
+const bulkSelectionLabel = computed(() => {
+  const { selectedCount, totalCount, checked, indeterminate } = selectionState.value
+  if (checked) {
+    return t('common.primitives.bulkSelectionAll', { count: totalCount })
+  }
+  if (indeterminate) {
+    return t('common.primitives.bulkSelectionSome', { selected: selectedCount, total: totalCount })
+  }
+  return t('common.primitives.bulkSelectionNone')
+})
+
+const paginationRange = computed(() => getAdminPaginationRange({ page: page.value, pageSize: 4, total: 24 }))
+const paginationRangeLabel = computed(() =>
+  t('uiKit.tables.paginationRange', { start: paginationRange.value.start, end: paginationRange.value.end, total: 24 })
+)
+const paginationPageLabel = computed(() =>
+  t('uiKit.tables.paginationPage', { page: paginationRange.value.page, pageCount: paginationRange.value.pageCount })
+)
 
 function rowPadding(): string {
   return density.value === 'compact' ? 'py-2' : 'py-3'
 }
 
-function statusTone(status: ViewRow['status']): 'success' | 'warning' | 'danger' {
+function rowName(row: ViewRow): string {
+  return t(`uiKit.tables.rows.${row.nameKey}`)
+}
+
+function statusTone(status: ViewRowStatus): 'success' | 'warning' | 'danger' {
   if (status === 'Ready') {
     return 'success'
   }
@@ -71,7 +101,11 @@ function statusTone(status: ViewRow['status']): 'success' | 'warning' | 'danger'
   return 'danger'
 }
 
-function riskTone(risk: ViewRow['risk']): 'neutral' | 'warning' | 'danger' {
+function statusLabel(status: ViewRowStatus): string {
+  return t(`uiKit.tables.statusLabels.${status.toLowerCase()}`)
+}
+
+function riskTone(risk: ViewRowRisk): 'neutral' | 'warning' | 'danger' {
   if (risk === 'High') {
     return 'danger'
   }
@@ -79,6 +113,14 @@ function riskTone(risk: ViewRow['risk']): 'neutral' | 'warning' | 'danger' {
     return 'warning'
   }
   return 'neutral'
+}
+
+function riskLabel(risk: ViewRowRisk): string {
+  return t(`uiKit.tables.riskLabels.${risk.toLowerCase()}`)
+}
+
+function updatedLabel(updatedKey: ViewRowUpdated): string {
+  return t(`uiKit.tables.updatedLabels.${updatedKey}`)
 }
 
 function isSelected(id: string): boolean {
@@ -95,33 +137,40 @@ function setAllSelected(selected: boolean): void {
 </script>
 
 <template>
-  <UiKitPage title="Tables" description="Composable table frame, toolbar, loading/empty/error states, status pills, and pagination controls.">
-    <AdminTableFrame title="Operational Views" description="A compact data-table composition using the shared table primitives.">
+  <UiKitPage :title="t('uiKit.page.tables.title')" :description="t('uiKit.page.tables.description')">
+    <AdminTableFrame :title="t('uiKit.tables.frameTitle')" :description="t('uiKit.tables.frameDescription')">
       <template #toolbar>
         <AdminTableToolbar>
           <template #filters>
             <label class="flex h-9 min-w-64 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3">
               <Search class="size-4 text-[var(--muted-foreground)]" />
-              <AdminTextInput v-model="search" class="border-0 bg-transparent px-0 shadow-none" placeholder="Search views" />
+              <AdminTextInput v-model="search" class="border-0 bg-transparent px-0 shadow-none" :placeholder="t('uiKit.tables.searchViews')" />
             </label>
           </template>
           <template #actions>
             <AdminButton size="sm" variant="secondary" @click="density = density === 'compact' ? 'comfortable' : 'compact'">
               <Settings2 class="size-4" />
-              {{ density === 'compact' ? 'Comfortable' : 'Compact' }}
+              {{ density === 'compact' ? t('uiKit.tables.comfortable') : t('uiKit.tables.compact') }}
             </AdminButton>
             <AdminButton size="sm" variant="secondary" @click="sortDirection = sortDirection === 'asc' ? 'desc' : 'asc'">
               <component :is="sortDirection === 'asc' ? ArrowDownAZ : ArrowUpAZ" class="size-4" />
-              Sort
+              {{ t('uiKit.tables.sort') }}
             </AdminButton>
-            <AdminButton size="sm" variant="primary">New view</AdminButton>
+            <AdminButton size="sm" variant="primary">{{ t('uiKit.tables.newView') }}</AdminButton>
           </template>
         </AdminTableToolbar>
       </template>
-      <AdminBulkActionBar :selected-count="selectedCount" :total-count="visibleRows.length" @clear="selectedIds = []">
+      <AdminBulkActionBar
+        :selected-count="selectedCount"
+        :total-count="visibleRows.length"
+        :selection-label="bulkSelectionLabel"
+        :description-label="t('common.primitives.bulkDescription')"
+        :clear-label="t('common.primitives.clear')"
+        @clear="selectedIds = []"
+      >
         <template #actions>
-          <AdminButton size="sm" variant="secondary">Assign owner</AdminButton>
-          <AdminButton size="sm" variant="danger"><Trash2 class="size-4" />Archive</AdminButton>
+          <AdminButton size="sm" variant="secondary">{{ t('uiKit.tables.assignOwner') }}</AdminButton>
+          <AdminButton size="sm" variant="danger"><Trash2 class="size-4" />{{ t('uiKit.tables.archive') }}</AdminButton>
         </template>
       </AdminBulkActionBar>
       <AdminDataTable state="idle" :density="density" :column-count="7">
@@ -131,76 +180,85 @@ function setAllSelected(selected: boolean): void {
               <AdminCheckbox
                 :model-value="selectionState.checked"
                 :indeterminate="selectionState.indeterminate"
-                aria-label="Select all rows"
+                :aria-label="t('uiKit.tables.selectAll')"
                 @update:model-value="setAllSelected"
               />
             </th>
-            <th class="px-3 py-3 font-medium">Name</th>
-            <th class="px-3 py-3 font-medium">Owner</th>
-            <th class="px-3 py-3 font-medium">Status</th>
-            <th class="px-3 py-3 font-medium">Risk</th>
-            <th class="px-3 py-3 font-medium">Updated</th>
-            <th class="w-16 px-3 py-3 font-medium"><span class="sr-only">Actions</span></th>
+            <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.name') }}</th>
+            <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.owner') }}</th>
+            <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.status') }}</th>
+            <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.risk') }}</th>
+            <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.updated') }}</th>
+            <th class="w-16 px-3 py-3 font-medium"><span class="sr-only">{{ t('uiKit.tables.columns.actions') }}</span></th>
           </tr>
         </template>
         <tr v-for="row in visibleRows" :key="row.id" class="border-t border-[var(--border)] bg-[var(--surface)]">
           <td class="px-3" :class="rowPadding()">
-            <AdminCheckbox :model-value="isSelected(row.id)" :aria-label="`Select ${row.name}`" @update:model-value="setRowSelected(row.id, $event)" />
+            <AdminCheckbox :model-value="isSelected(row.id)" :aria-label="t('uiKit.tables.selectRow', { name: rowName(row) })" @update:model-value="setRowSelected(row.id, $event)" />
           </td>
-          <td class="px-3 font-medium text-[var(--foreground)]" :class="rowPadding()">{{ row.name }}</td>
+          <td class="px-3 font-medium text-[var(--foreground)]" :class="rowPadding()">{{ rowName(row) }}</td>
           <td class="px-3 text-[var(--muted-foreground)]" :class="rowPadding()">{{ row.owner }}</td>
           <td class="px-3" :class="rowPadding()">
-            <StatusPill :label="row.status" :tone="statusTone(row.status)" />
+            <StatusPill :label="statusLabel(row.status)" :tone="statusTone(row.status)" />
           </td>
           <td class="px-3" :class="rowPadding()">
-            <StatusPill :label="row.risk" :tone="riskTone(row.risk)" />
+            <StatusPill :label="riskLabel(row.risk)" :tone="riskTone(row.risk)" />
           </td>
-          <td class="px-3 text-[var(--muted-foreground)]" :class="rowPadding()">{{ row.updated }}</td>
+          <td class="px-3 text-[var(--muted-foreground)]" :class="rowPadding()">{{ updatedLabel(row.updatedKey) }}</td>
           <td class="px-3" :class="rowPadding()">
-            <AdminButton size="sm" variant="ghost">Open</AdminButton>
+            <AdminButton size="sm" variant="ghost">{{ t('uiKit.tables.open') }}</AdminButton>
           </td>
         </tr>
       </AdminDataTable>
-      <AdminPagination :page="page" :page-size="4" :total="24" @page-change="page = $event" />
+      <AdminPagination
+        :page="page"
+        :page-size="4"
+        :total="24"
+        :next-label="t('common.primitives.next')"
+        :page-label="paginationPageLabel"
+        :previous-label="t('common.primitives.previous')"
+        :range-label="paginationRangeLabel"
+        @page-change="page = $event"
+      />
     </AdminTableFrame>
 
     <section class="grid gap-4 lg:grid-cols-3">
-      <AdminTableFrame title="Loading" description="Skeleton rows preserve table structure while a query resolves.">
+      <AdminTableFrame :title="t('uiKit.tables.loadingTitle')" :description="t('uiKit.tables.loadingDescription')">
         <AdminDataTable state="loading" density="compact" :column-count="4">
           <template #head>
             <tr>
-              <th class="px-3 py-3 font-medium">Name</th>
-              <th class="px-3 py-3 font-medium">Owner</th>
-              <th class="px-3 py-3 font-medium">Status</th>
-              <th class="px-3 py-3 font-medium">Updated</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.name') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.owner') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.status') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.updated') }}</th>
             </tr>
           </template>
         </AdminDataTable>
       </AdminTableFrame>
-      <AdminTableFrame title="Empty" description="Empty states stay inside the table body.">
-        <AdminDataTable state="empty" density="compact" :column-count="4" empty-title="No matching views" empty-description="Change filters or create the first operational view.">
+      <AdminTableFrame :title="t('uiKit.tables.emptyTitle')" :description="t('uiKit.tables.emptyDescription')">
+        <AdminDataTable state="empty" density="compact" :column-count="4" :empty-title="t('uiKit.tables.emptyTitle')" :empty-description="t('uiKit.tables.emptyDescription')">
           <template #head>
             <tr>
-              <th class="px-3 py-3 font-medium">Name</th>
-              <th class="px-3 py-3 font-medium">Owner</th>
-              <th class="px-3 py-3 font-medium">Status</th>
-              <th class="px-3 py-3 font-medium">Updated</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.name') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.owner') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.status') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.updated') }}</th>
             </tr>
           </template>
         </AdminDataTable>
       </AdminTableFrame>
-      <AdminTableFrame title="Error" description="Recovery actions slot into the error state.">
-        <AdminDataTable state="error" density="compact" :column-count="4" error-title="Unable to load views" error-description="The API adapter can surface retry actions here.">
+      <AdminTableFrame :title="t('uiKit.tables.errorTitle')" :description="t('uiKit.tables.errorDescription')">
+        <AdminDataTable state="error" density="compact" :column-count="4" :error-title="t('uiKit.tables.errorTitle')" :error-description="t('uiKit.tables.errorDescription')">
           <template #head>
             <tr>
-              <th class="px-3 py-3 font-medium">Name</th>
-              <th class="px-3 py-3 font-medium">Owner</th>
-              <th class="px-3 py-3 font-medium">Status</th>
-              <th class="px-3 py-3 font-medium">Updated</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.name') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.owner') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.status') }}</th>
+              <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.updated') }}</th>
             </tr>
           </template>
           <template #error-action>
-            <AdminButton size="sm">Retry</AdminButton>
+            <AdminButton size="sm">{{ t('uiKit.tables.retry') }}</AdminButton>
           </template>
         </AdminDataTable>
       </AdminTableFrame>

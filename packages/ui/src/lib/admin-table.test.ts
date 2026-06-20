@@ -44,4 +44,17 @@ describe('admin table helpers', () => {
       label: 'All 12 rows selected'
     })
   })
+
+  it('lets callers localize selection labels via an optional formatter', () => {
+    const formatLabel = (selected: number, total: number) => `已选择 ${selected} / ${total}`
+    expect(getAdminSelectionState({ selectedCount: 3, totalCount: 12 }, formatLabel)).toMatchObject({
+      label: '已选择 3 / 12',
+      selectedCount: 3,
+      totalCount: 12
+    })
+
+    expect(getAdminSelectionState({ selectedCount: 0, totalCount: 12 }, formatLabel)).toMatchObject({
+      label: '已选择 0 / 12'
+    })
+  })
 })

@@ -4,6 +4,7 @@ export {
   getAdminSelectionState,
   type AdminPaginationRange,
   type AdminPaginationRangeInput,
+  type AdminSelectionLabelFormatter,
   type AdminSelectionState,
   type AdminSelectionStateInput
 } from './lib/admin-table'

@@ -438,7 +438,7 @@ async function submitLogin(): Promise<void> {
         :description="submitError"
       />
 
-      <AdminValidationSummary :errors="validationMessages" />
+      <AdminValidationSummary :title="t('common.primitives.validationTitle')" :errors="validationMessages" />
 
       <form class="grid gap-4" @submit.prevent="submitLogin">
         <AdminField :label="t('auth.login.email')" for="auth-email" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.email">

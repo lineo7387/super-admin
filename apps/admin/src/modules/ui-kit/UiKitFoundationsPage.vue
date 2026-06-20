@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminCard, AdminScrollArea, MetricTile, StatusPill } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
+
+const { t } = useI18n()
 
 const swatches = [
   { name: 'Primary', token: 'var(--primary)' },
@@ -11,42 +15,42 @@ const swatches = [
   { name: 'Danger', token: 'var(--danger)' }
 ]
 
-const scrollItems = [
-  'Route-aware workspace surfaces',
-  'Context panels and drawers',
-  'Control Center settings',
-  'Data tables with horizontal overflow',
-  'Theme-aware scrollbar tokens',
-  'Overlay bars outside content layout'
-]
+const scrollItems = computed(() => [
+  t('uiKit.foundations.scrollItems.routeAware'),
+  t('uiKit.foundations.scrollItems.contextPanels'),
+  t('uiKit.foundations.scrollItems.controlCenter'),
+  t('uiKit.foundations.scrollItems.dataTables'),
+  t('uiKit.foundations.scrollItems.scrollbarTokens'),
+  t('uiKit.foundations.scrollItems.overlayBars')
+])
 </script>
 
 <template>
-  <UiKitPage title="Foundations" description="Theme tokens, typography, radius, and status language used by the reusable primitives.">
+  <UiKitPage :title="t('uiKit.page.foundations.title')" :description="t('uiKit.page.foundations.description')">
     <AdminAlert
-      title="Primitives consume semantic tokens"
-      description="Shared components should adapt to the active design profile through CSS variables, not profile-specific branches in feature pages."
+      :title="t('uiKit.foundations.alertTitle')"
+      :description="t('uiKit.foundations.alertDescription')"
     />
 
     <section class="grid gap-3 md:grid-cols-3">
-      <MetricTile label="Profile coverage" value="3" meta="Crypto, Industrial, Cyberpunk" tone="success" />
-      <MetricTile label="Modes" value="2" meta="Light and dark required" tone="neutral" />
-      <MetricTile label="Layouts" value="3" meta="Tri, dual, top-header QA" tone="warning" />
+      <MetricTile :label="t('uiKit.foundations.metricCoverage')" value="3" :meta="t('uiKit.foundations.metricCoverageMeta')" tone="success" />
+      <MetricTile :label="t('uiKit.foundations.metricModes')" value="2" :meta="t('uiKit.foundations.metricModesMeta')" tone="neutral" />
+      <MetricTile :label="t('uiKit.foundations.metricLayouts')" value="3" :meta="t('uiKit.foundations.metricLayoutsMeta')" tone="warning" />
     </section>
 
     <section class="grid gap-4 lg:grid-cols-[1fr_1fr]">
       <AdminCard>
-        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">Type Scale</h2>
+        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">{{ t('uiKit.foundations.typeScale') }}</h2>
         <div class="mt-4 grid gap-3">
-          <div class="[font-family:var(--font-display)] text-3xl text-[var(--foreground)]">Display heading</div>
-          <div class="text-lg font-medium text-[var(--foreground)]">Section heading</div>
+          <div class="[font-family:var(--font-display)] text-3xl text-[var(--foreground)]">{{ t('uiKit.foundations.displayHeading') }}</div>
+          <div class="text-lg font-medium text-[var(--foreground)]">{{ t('uiKit.foundations.sectionHeading') }}</div>
           <p class="max-w-xl text-sm leading-6 text-[var(--muted-foreground)]">
-            Body text uses the active profile foreground tokens so every primitive adapts across light, dark, Crypto, and Industrial modes.
+            {{ t('uiKit.foundations.typeBody') }}
           </p>
         </div>
       </AdminCard>
       <AdminCard>
-        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">Status Tones</h2>
+        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">{{ t('uiKit.foundations.statusTones') }}</h2>
         <div class="mt-4 flex flex-wrap gap-2">
           <StatusPill label="Neutral" tone="neutral" />
           <StatusPill label="Success" tone="success" />
@@ -55,9 +59,9 @@ const scrollItems = [
         </div>
       </AdminCard>
       <AdminCard>
-        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">Scroll Area</h2>
+        <h2 class="[font-family:var(--font-display)] text-xl text-[var(--foreground)]">{{ t('uiKit.foundations.scrollArea') }}</h2>
         <p class="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
-          Shared scroll containers hide native tracks and paint token-aware thumbs above the content.
+          {{ t('uiKit.foundations.scrollAreaDescription') }}
         </p>
         <AdminScrollArea class="mt-4 max-h-32 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)]" view-class="p-3">
           <div class="grid gap-2">

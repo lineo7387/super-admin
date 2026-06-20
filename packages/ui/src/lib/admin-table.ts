@@ -26,8 +26,20 @@ export type AdminSelectionState = {
   label: string
 }
 
+export type AdminSelectionLabelFormatter = (selectedCount: number, totalCount: number) => string
+
 function clampCount(value: number): number {
   return Math.max(0, Math.floor(value))
+}
+
+function defaultSelectionLabel(selectedCount: number, totalCount: number): string {
+  if (totalCount > 0 && selectedCount === totalCount) {
+    return `All ${totalCount} ${totalCount === 1 ? 'row' : 'rows'} selected`
+  }
+  if (selectedCount > 0) {
+    return `${selectedCount} of ${totalCount} rows selected`
+  }
+  return 'No rows selected'
 }
 
 export function getAdminPaginationRange(input: AdminPaginationRangeInput): AdminPaginationRange {
@@ -47,19 +59,16 @@ export function getAdminPaginationRange(input: AdminPaginationRangeInput): Admin
   }
 }
 
-export function getAdminSelectionState(input: AdminSelectionStateInput): AdminSelectionState {
+export function getAdminSelectionState(
+  input: AdminSelectionStateInput,
+  formatLabel?: AdminSelectionLabelFormatter
+): AdminSelectionState {
   const totalCount = clampCount(input.totalCount)
   const selectedCount = Math.min(totalCount, clampCount(input.selectedCount))
   const checked = totalCount > 0 && selectedCount === totalCount
   const indeterminate = selectedCount > 0 && selectedCount < totalCount
   const ariaChecked = indeterminate ? 'mixed' : checked ? 'true' : 'false'
-
-  let label = 'No rows selected'
-  if (checked) {
-    label = `All ${totalCount} ${totalCount === 1 ? 'row' : 'rows'} selected`
-  } else if (indeterminate) {
-    label = `${selectedCount} of ${totalCount} rows selected`
-  }
+  const label = formatLabel ? formatLabel(selectedCount, totalCount) : defaultSelectionLabel(selectedCount, totalCount)
 
   return {
     checked,

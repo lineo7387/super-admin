@@ -84,4 +84,19 @@ describe('admin i18n foundation', () => {
     expect(authCopy).toContain('Super Admin')
     expect(authCopy).not.toMatch(/Hono|参考认证|参考访问|控制界面|控制闸口|指挥访问|保险库|Vault|Command|reference access/i)
   })
+
+  it('renders UI Kit validation messages without Vue I18n message compilation errors', () => {
+    const zhT = createMessageTranslator('zh-CN')
+    const enT = createMessageTranslator('en-US')
+
+    expect(() => zhT('uiKit.forms.errorEmail')).not.toThrow()
+    expect(() => zhT('uiKit.feedback.errorEmailAt')).not.toThrow()
+    expect(() => enT('uiKit.forms.errorEmail')).not.toThrow()
+    expect(() => enT('uiKit.feedback.errorEmailAt')).not.toThrow()
+
+    expect(zhT('uiKit.forms.errorEmail')).toBe('请输入有效的通知邮箱。')
+    expect(zhT('uiKit.feedback.errorEmailAt')).toBe('请输入有效的通知邮箱。')
+    expect(enT('uiKit.forms.errorEmail')).toBe('Enter a valid notification email address.')
+    expect(enT('uiKit.feedback.errorEmailAt')).toBe('Enter a valid notification email address.')
+  })
 })

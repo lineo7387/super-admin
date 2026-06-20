@@ -9,9 +9,13 @@ const props = withDefaults(
     open: boolean
     title: string
     description?: string
+    closeLabel?: string
+    overlayCloseLabel?: string
   }>(),
   {
-    description: undefined
+    description: undefined,
+    closeLabel: 'Close',
+    overlayCloseLabel: 'Close drawer'
   }
 )
 
@@ -42,7 +46,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
 <template>
   <Teleport to="body">
     <div v-if="open" class="fixed inset-0 z-50 flex justify-end">
-      <button class="absolute inset-0 cursor-default bg-black/45" aria-label="Close drawer" type="button" @click="emit('close')" />
+      <button class="absolute inset-0 cursor-default bg-black/45" :aria-label="overlayCloseLabel" type="button" @click="emit('close')" />
       <section
         class="relative flex h-full w-full max-w-xl flex-col border-l border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] shadow-2xl"
         role="dialog"
@@ -54,7 +58,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
             <h2 class="[font-family:var(--font-display)] text-xl">{{ title }}</h2>
             <p v-if="description" class="mt-1 text-sm text-[var(--muted-foreground)]">{{ description }}</p>
           </div>
-          <AdminButton variant="ghost" size="icon" title="Close" @click="emit('close')">
+          <AdminButton variant="ghost" size="icon" :title="closeLabel" @click="emit('close')">
             <X class="size-4" />
           </AdminButton>
         </header>

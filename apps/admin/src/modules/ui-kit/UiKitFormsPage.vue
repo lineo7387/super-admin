@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminCard, AdminField, AdminFormFooter, AdminSelect, AdminTextInput, AdminTextarea, AdminValidationSummary } from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
+const { t } = useI18n()
 const owner = shallowRef('Mira Chen')
 const status = shallowRef('active')
 const summary = shallowRef('Coordinate access changes across review windows.')
@@ -12,57 +14,62 @@ const isSubmitting = shallowRef(false)
 const validationErrors = computed(() => {
   const errors: string[] = []
   if (!owner.value.trim()) {
-    errors.push('Owner is required.')
+    errors.push(t('uiKit.forms.errorOwner'))
   }
   if (!email.value.includes('@')) {
-    errors.push('Notification email must include @.')
+    errors.push(t('uiKit.forms.errorEmail'))
   }
   if (!summary.value.trim()) {
-    errors.push('Summary is required.')
+    errors.push(t('uiKit.forms.errorSummary'))
   }
   return errors
 })
 
-const statusOptions = [
-  { value: 'active', label: 'Active' },
-  { value: 'review', label: 'Review' },
-  { value: 'paused', label: 'Paused' }
-]
+const statusOptions = computed(() => [
+  { value: 'active', label: t('uiKit.forms.statuses.active') },
+  { value: 'review', label: t('uiKit.forms.statuses.review') },
+  { value: 'paused', label: t('uiKit.forms.statuses.paused') }
+])
 </script>
 
 <template>
-  <UiKitPage title="Forms" description="Form layout primitives for labels, help text, validation, and persistent footer actions.">
+  <UiKitPage :title="t('uiKit.page.forms.title')" :description="t('uiKit.page.forms.description')">
     <AdminAlert
-      title="Keep validation module-owned"
-      description="Shared primitives render states and layout; feature modules still own field rules, business copy, and submit behavior."
+      :title="t('uiKit.forms.alertTitle')"
+      :description="t('uiKit.forms.alertDescription')"
     />
 
     <AdminCard>
       <form class="grid gap-4" @submit.prevent>
-        <AdminValidationSummary :errors="validationErrors" />
+        <AdminValidationSummary :title="t('common.primitives.validationTitle')" :errors="validationErrors" />
         <div class="grid gap-4 md:grid-cols-2">
-          <AdminField label="Owner" for="form-owner" required :error="owner.trim() ? undefined : 'Owner is required.'">
+          <AdminField :label="t('uiKit.forms.fieldOwner')" for="form-owner" required :required-label="t('validation.requiredLabel')" :error="owner.trim() ? undefined : t('uiKit.forms.fieldOwnerError')">
             <AdminTextInput id="form-owner" v-model="owner" :invalid="!owner.trim()" />
           </AdminField>
-          <AdminField label="Status" for="form-status">
+          <AdminField :label="t('uiKit.forms.fieldStatus')" for="form-status">
             <AdminSelect id="form-status" v-model="status" :options="statusOptions" />
           </AdminField>
         </div>
-        <AdminField label="Notification email" for="form-email" required error="Enter a valid email address for workflow notifications.">
+        <AdminField :label="t('uiKit.forms.fieldEmail')" for="form-email" required :required-label="t('validation.requiredLabel')" :error="t('uiKit.forms.fieldEmailError')">
           <AdminTextInput id="form-email" v-model="email" type="email" invalid />
         </AdminField>
-        <AdminField label="Reference ID" for="form-reference" optional help="Readonly fields can show API-managed or generated values without becoming editable.">
+        <AdminField :label="t('uiKit.forms.fieldReference')" for="form-reference" optional :optional-label="t('validation.optionalLabel')" :help="t('uiKit.forms.fieldReferenceHelp')">
           <AdminTextInput id="form-reference" model-value="OPS-2048" readonly />
         </AdminField>
-        <AdminField label="Summary" for="form-summary" required help="Use this layout for module-owned form copy and validation.">
+        <AdminField :label="t('uiKit.forms.fieldSummary')" for="form-summary" required :required-label="t('validation.requiredLabel')" :help="t('uiKit.forms.fieldSummaryHelp')">
           <AdminTextarea id="form-summary" v-model="summary" :invalid="!summary.trim()" />
         </AdminField>
       </form>
       <AdminFormFooter
         dirty
         :submitting="isSubmitting"
-        submit-label="Publish workflow"
-        status-text="3 fields changed"
+        :cancel-label="t('common.primitives.cancel')"
+        :submit-label="t('uiKit.forms.submit')"
+        :submitting-label="t('common.primitives.saving')"
+        :dirty-label="t('common.primitives.unsavedChanges')"
+        :clean-label="t('common.primitives.noChanges')"
+        :status-text="t('uiKit.forms.threeFieldsChanged')"
+        @cancel="isSubmitting = false"
         @submit="isSubmitting = !isSubmitting"
       />
     </AdminCard>

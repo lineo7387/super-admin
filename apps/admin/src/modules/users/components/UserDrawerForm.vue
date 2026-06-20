@@ -116,7 +116,14 @@ watch(
 </script>
 
 <template>
-  <AdminDrawer :open="open" :title="title" :description="description" @close="emit('close')">
+  <AdminDrawer
+    :open="open"
+    :title="title"
+    :description="description"
+    :close-label="t('common.primitives.close')"
+    :overlay-close-label="t('common.primitives.closeDrawer')"
+    @close="emit('close')"
+  >
     <form class="grid gap-4" @submit.prevent="submit">
       <AdminField :label="t('users.form.name')" for="user-name" :error="errors.name">
         <AdminTextInput id="user-name" v-model="form.name" placeholder="Mira Chen" :invalid="Boolean(errors.name)" />
@@ -140,7 +147,16 @@ watch(
       </AdminField>
     </form>
     <template #footer>
-      <AdminFormFooter :dirty="isDirty" @cancel="emit('close')" @submit="submit" />
+      <AdminFormFooter
+        :dirty="isDirty"
+        :cancel-label="t('common.primitives.cancel')"
+        :submit-label="t('common.primitives.save')"
+        :submitting-label="t('common.primitives.saving')"
+        :dirty-label="t('common.primitives.unsavedChanges')"
+        :clean-label="t('common.primitives.noChanges')"
+        @cancel="emit('close')"
+        @submit="submit"
+      />
     </template>
   </AdminDrawer>
 </template>

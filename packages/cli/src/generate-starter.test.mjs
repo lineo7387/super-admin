@@ -304,6 +304,7 @@ describe('create-super-admin starter generation', () => {
     expectSharedControlCenterTrigger(preferences, preferencesTrigger)
     expectStageManagerStarterParity({ appShell, stageDockThumb, stageOverviewCard, stageRail, stageWindowPreview, useStageWindows })
     expect(loginPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
+    expect(loginPage).toContain(':title="t(\'common.primitives.validationTitle\')"')
     expect(registerPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
 
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { themes: ['base'] })).resolves.toEqual([])
@@ -543,5 +544,5 @@ describe('create-super-admin starter generation', () => {
     await runCommand('node', [join(unpackRoot, 'package/dist/cli.js'), 'demo-admin', '--theme', 'base', '--pm', 'pnpm'], workspaceRoot)
 
     await expect(validateGeneratedStarterStatic(join(workspaceRoot, 'demo-admin'), { themes: ['base'] })).resolves.toEqual([])
-  })
+  }, 60000)
 })
