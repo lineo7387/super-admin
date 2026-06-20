@@ -233,4 +233,45 @@ describe('generated starter validator', () => {
 
     expect(failureIds(failures)).toContain('module-pages-no-direct-transport')
   })
+
+  it('rejects ECharts dependencies and source when charts are not selected', async () => {
+    const root = await createStarterFixture({
+      dependencies: {
+        echarts: '^6.1.0',
+        'vue-echarts': '^8.0.1'
+      },
+      files: {
+        'src/modules/examples/examples.manifest.ts': "export const examplesManifest = { nav: { children: [{ path: '/examples/charts' }] } }\n",
+        'src/modules/charts/ChartsPage.vue': '<script setup lang="ts">\nimport VChart from "vue-echarts"\n</script>\n',
+        'src/shared/charts/echarts-options.ts': 'import type { EChartsOption } from "echarts"\nexport const option: EChartsOption = {}\n'
+      }
+    })
+
+    const failures = await validateGeneratedStarterStatic(root, { themes: ['base'] })
+
+    expect(failureIds(failures)).toEqual(
+      expect.arrayContaining([
+        'charts-disabled-no-echarts-dependencies',
+        'charts-disabled-no-chart-source',
+        'charts-disabled-no-echarts-imports',
+        'charts-disabled-no-chart-route'
+      ])
+    )
+  })
+
+  it('accepts ECharts dependencies and source when charts are selected', async () => {
+    const root = await createStarterFixture({
+      dependencies: {
+        echarts: '^6.1.0',
+        'vue-echarts': '^8.0.1'
+      },
+      files: {
+        'src/modules/examples/examples.manifest.ts': "export const examplesManifest = { nav: { children: [{ path: '/examples/charts' }] }, routes: [{ path: '/examples/charts' }] }\n",
+        'src/modules/charts/ChartsPage.vue': '<script setup lang="ts">\nimport VChart from "vue-echarts"\n</script>\n',
+        'src/shared/charts/echarts-options.ts': 'import type { EChartsOption } from "echarts"\nexport const option: EChartsOption = {}\n'
+      }
+    })
+
+    await expect(validateGeneratedStarterStatic(root, { charts: 'echarts', themes: ['base'] })).resolves.toEqual([])
+  })
 })

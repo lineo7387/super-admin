@@ -42,6 +42,12 @@ pnpm install
 pnpm dev
 ```
 
+Want the optional ECharts example page during non-interactive setup:
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --charts echarts --pm pnpm
+```
+
 This generated project is where you build your own admin app. It stays frontend-first and does not include this repository's release automation, docs site, optional reference backend validation, or maintainer AI workflow files.
 
 ## Develop This Repository

@@ -52,15 +52,19 @@ describe('admin i18n foundation', () => {
     const usersChildLabels = usersNav?.children?.map((item) => translateNavItemLabel(zhT, item)) ?? []
 
     expect(rootLabel).toBe('示例')
-    expect(navLabels).toEqual(['模板指南', '仪表盘', '工作台', '用户', '权限'])
+    expect(navLabels).toEqual(['模板指南', '仪表盘', '图表', '工作台', '用户', '权限'])
     expect(usersChildLabels).toEqual(['全部用户', '待审核', '邀请', '动态'])
     expect(translateRouteTitle(zhT, '/examples/template-guide', 'Template Guide')).toBe('模板指南')
     expect(translateRouteTitle(zhT, '/examples/dashboard', 'Operations Dashboard')).toBe('仪表盘')
+    expect(translateRouteTitle(zhT, '/examples/charts', 'Charts')).toBe('图表')
     expect(translateRouteTitle(zhT, '/examples/workbench', 'Operations Workbench')).toBe('工作台')
     expect(translateRouteTitle(zhT, '/examples/access', 'Access Control')).toBe('权限')
+    expect(translateRouteDescription(zhT, '/examples/charts', 'Theme-adapted ECharts examples.')).toContain('ECharts')
     expect(translateRouteDescription(zhT, '/examples/dashboard', 'Live control surface for revenue, risk, jobs, and audit signals.')).toContain('前端示例')
     expect(translateRouteTitle(enT, '/examples/template-guide', 'Template Guide')).toBe('Template Guide')
     expect(translateRouteTitle(enT, '/examples/dashboard', 'Operations Dashboard')).toBe('Dashboard')
+    expect(translateRouteTitle(enT, '/examples/charts', 'Charts')).toBe('Charts')
+    expect(translateRouteDescription(enT, '/examples/charts', 'Theme-adapted ECharts examples.')).toContain('ECharts')
     expect(translateRouteDescription(enT, '/examples/dashboard', 'Live control surface for revenue, risk, jobs, and audit signals.')).toContain('frontend example')
   })
 

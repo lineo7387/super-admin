@@ -48,6 +48,15 @@ Use Tailwind with variables:
 - Use arbitrary Tailwind values sparingly; promote repeated values to tokens.
 - Verify every built-in profile in both modes: `base.light`, `base.dark`, `crypto.light`, `crypto.dark`, `industrial.light`, `industrial.dark`, `cyberpunk.light`, `cyberpunk.dark`, `newsprint.light`, `newsprint.dark`.
 
+## Chart Recipes
+
+- Chart recipes are Super Admin design semantics, not ECharts-specific configuration.
+- `@super-admin-org/theme` may expose dependency-light helpers such as `getChartRecipe(profile, mode)` and `mergeChartRecipe(recipe, override)`.
+- Chart recipe helpers must not import ECharts, `vue-echarts`, or ECharts-specific types.
+- App-local or future optional-package adapters may convert a chart recipe into ECharts, Chart.js, AntV, or another concrete chart library.
+- Generated starters must install ECharts only when the user selects the optional ECharts template.
+- Users must remain free to use the generated recipe defaults, partially override them, pass raw ECharts options, or remove ECharts entirely.
+
 ## Interpretation
 
 - Base is light-first and should feel like the neutral `shadcn-vue` starter: calm surfaces, readable contrast, modest radius, and minimal decoration.

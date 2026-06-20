@@ -1,11 +1,12 @@
 import type { Component, ComputedRef } from 'vue'
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
   createWorkspaceTabGroups,
   findActiveModule,
   findModuleRoute,
+  type ModuleRouteComponent,
   type WorkspaceTab
 } from '@super-admin-org/core'
 import { translateModuleName, translateRouteDescription, translateRouteTitle } from '@/i18n/navigation'
@@ -78,11 +79,24 @@ export function useStageWindows(): StageWindowsContext {
     return translateRouteTitle(t, tab.routePath, tab.title)
   }
 
+  function resolveRouteComponent(routeComponent: ModuleRouteComponent | undefined): Component | undefined {
+    if (!routeComponent) {
+      return undefined
+    }
+
+    if (typeof routeComponent === 'function') {
+      const loader = routeComponent as () => Promise<Component>
+      return defineAsyncComponent(loader)
+    }
+
+    return routeComponent as Component
+  }
+
   function resolveTabComponent(routePath: string): Component | undefined {
     const module = findActiveModule(registeredModules, routePath)
     const moduleRoute = findModuleRoute(module, routePath)
 
-    return moduleRoute?.component as Component | undefined
+    return resolveRouteComponent(moduleRoute?.component)
   }
 
   function createWindowView(tab: WorkspaceTab): StageWindowView {

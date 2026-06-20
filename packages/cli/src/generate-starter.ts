@@ -89,7 +89,33 @@ function shouldSkipSourceFile(relativePath: string, context: TransformContext): 
     return true
   }
 
+  if (context.input.charts.provider === 'none' && (relativePath.startsWith('modules/charts/') || relativePath.startsWith('shared/charts/'))) {
+    return true
+  }
+
   return false
+}
+
+function removeOptionalChartsExample(text: string): string {
+  return text
+    .replace(`      {
+        label: 'Charts',
+        path: '/examples/charts',
+        icon: 'charts'
+      },
+`, '')
+    .replace(`    {
+      path: '/examples/charts',
+      name: 'examples-charts',
+      component: () => import('../charts/ChartsPage.vue'),
+      meta: {
+        title: 'Charts',
+        description: 'Theme-adapted ECharts examples that users can keep, override, or remove.',
+        regions: ['summary', 'primary', 'context'],
+        keepAlive: { enabled: true }
+      }
+    },
+`, '')
 }
 
 function transformSourceText(relativePath: string, text: string, context: TransformContext): string {
@@ -134,6 +160,10 @@ function transformSourceText(relativePath: string, text: string, context: Transf
 
   if (relativePath === 'super-admin/theme-registry.generated.ts') {
     return createThemeRegistry(context.input.themes.installed, context.input.themes.default)
+  }
+
+  if (relativePath === 'modules/examples/examples.manifest.ts' && context.input.charts.provider === 'none') {
+    return removeOptionalChartsExample(text)
   }
 
   if (relativePath === 'styles/main.css') {

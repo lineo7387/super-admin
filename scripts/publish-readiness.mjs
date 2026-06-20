@@ -325,14 +325,15 @@ async function rewriteStarterDependencies(projectDir, tarballs) {
   await writeJson(packageJsonPath, rewriteStarterPackageJson(packageJson, tarballDependencyMap))
 }
 
-async function validateStarterVariant({ args, cliBinPath, i18n, label, outputDir, tarballs, themes }) {
-  const projectDir = resolve(outputDir, label ?? `starter-${themes.join('-')}${i18n ? '-i18n' : ''}`)
+async function validateStarterVariant({ args, charts = 'none', cliBinPath, i18n, label, outputDir, tarballs, themes }) {
+  const projectDir = resolve(outputDir, label ?? `starter-${themes.join('-')}${charts === 'echarts' ? '-echarts' : ''}${i18n ? '-i18n' : ''}`)
 
   await rm(projectDir, { force: true, recursive: true })
   await generateStarter(cliBinPath, projectDir, args)
   await rewriteStarterDependencies(projectDir, tarballs)
 
   const failures = await validateGeneratedStarter(projectDir, {
+    charts,
     i18n,
     packageManager: 'pnpm',
     packageManifestPaths: tarballs.map((tarball) => tarball.manifestPath),
@@ -350,6 +351,7 @@ async function validateLocalStarters(outputDir, tarballs) {
 
   await validateStarterVariant({
     args: ['--theme', 'base'],
+    charts: 'none',
     cliBinPath,
     i18n: false,
     label: 'starter-default',
@@ -359,11 +361,22 @@ async function validateLocalStarters(outputDir, tarballs) {
   })
   await validateStarterVariant({
     args: ['--themes', 'base,cyberpunk', '--i18n'],
+    charts: 'none',
     cliBinPath,
     i18n: true,
     outputDir: starterRoot,
     tarballs,
     themes: ['base', 'cyberpunk']
+  })
+  await validateStarterVariant({
+    args: ['--theme', 'base', '--charts', 'echarts'],
+    charts: 'echarts',
+    cliBinPath,
+    i18n: false,
+    label: 'starter-echarts',
+    outputDir: starterRoot,
+    tarballs,
+    themes: ['base']
   })
 
   await writeFile(resolve(outputDir, 'starter-smoke-root.txt'), `${starterRoot}\n`)

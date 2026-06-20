@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises'
+import { access, mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -22,6 +22,15 @@ async function readGeneratedJson(root, filePath) {
 
 async function readGeneratedText(root, filePath) {
   return readFile(join(root, filePath), 'utf8')
+}
+
+async function generatedPathExists(root, filePath) {
+  try {
+    await access(join(root, filePath))
+    return true
+  } catch {
+    return false
+  }
 }
 
 function expectSuperAdminDependencyRange(packageJson, packageName) {
@@ -195,6 +204,9 @@ describe('create-super-admin starter generation', () => {
         installed: ['zh-CN'],
         switcher: false
       },
+      charts: {
+        provider: 'none'
+      },
       packageManager: 'pnpm',
       packageName: 'demo-admin',
       projectName: 'demo-admin',
@@ -220,6 +232,22 @@ describe('create-super-admin starter generation', () => {
     expect(() => parseCreateSuperAdminArgs(['demo'], { cwd: '/tmp' })).toThrow(/Theme selection is required/)
   })
 
+  it('normalizes optional chart template CLI input', () => {
+    expect(parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--charts', 'echarts'], { cwd: '/tmp' }).charts).toEqual({
+      provider: 'echarts'
+    })
+    expect(parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--no-charts'], { cwd: '/tmp' }).charts).toEqual({
+      provider: 'none'
+    })
+
+    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--charts', 'chartjs'], { cwd: '/tmp' })).toThrow(
+      /Supported chart templates/
+    )
+    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--charts', 'echarts', '--no-charts'], { cwd: '/tmp' })).toThrow(
+      /mutually exclusive/
+    )
+  })
+
   it('generates the default single-theme starter and passes static validation', async () => {
     const tempRoot = await createTempRoot()
     const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base'], { cwd: tempRoot })
@@ -232,6 +260,7 @@ describe('create-super-admin starter generation', () => {
     const registerPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/RegisterPage.vue')
     const preferences = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferences.vue')
     const preferencesTrigger = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferencesTrigger.vue')
+    const examplesManifest = await readGeneratedText(input.targetDirectory, 'src/modules/examples/examples.manifest.ts')
     const appShell = await readGeneratedText(input.targetDirectory, 'src/shell/AppShell.vue')
     const stageDockThumb = await readGeneratedText(input.targetDirectory, 'src/workspace/StageDockThumb.vue')
     const stageOverviewCard = await readGeneratedText(input.targetDirectory, 'src/workspace/StageOverviewCard.vue')
@@ -248,6 +277,12 @@ describe('create-super-admin starter generation', () => {
     expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-base')
     expect(packageJson.dependencies['motion-v']).toBe('^2.3.0')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
+    expect(packageJson.dependencies.echarts).toBeUndefined()
+    expect(packageJson.dependencies['vue-echarts']).toBeUndefined()
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/charts/ChartsPage.vue')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/shared/charts/echarts-options.ts')).resolves.toBe(false)
+    expect(examplesManifest).not.toContain('/examples/charts')
+    expect(examplesManifest).not.toContain('../charts/ChartsPage.vue')
     expect(config).toContain("installed: ['base']")
     expect(config).toContain("switcher: 'off'")
     expect(preferences).not.toContain('selectProfile')
@@ -272,6 +307,26 @@ describe('create-super-admin starter generation', () => {
     expect(registerPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
 
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('generates the optional ECharts template when selected', async () => {
+    const tempRoot = await createTempRoot()
+    const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base', '--charts', 'echarts'], { cwd: tempRoot })
+
+    await generateStarter(input, { sourceRoot: repoRoot })
+
+    const packageJson = await readGeneratedJson(input.targetDirectory, 'package.json')
+    const moduleRegistry = await readGeneratedText(input.targetDirectory, 'src/modules/module-registry.ts')
+    const examplesManifest = await readGeneratedText(input.targetDirectory, 'src/modules/examples/examples.manifest.ts')
+
+    expect(packageJson.dependencies.echarts).toBe('^6.1.0')
+    expect(packageJson.dependencies['vue-echarts']).toBe('^8.0.1')
+    expect(moduleRegistry).not.toContain('chartsManifest')
+    expect(examplesManifest).toContain("path: '/examples/charts'")
+    expect(examplesManifest).toContain("component: () => import('../charts/ChartsPage.vue')")
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/charts/ChartsPage.vue')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/shared/charts/echarts-options.ts')).resolves.toBe(true)
+    await expect(validateGeneratedStarterStatic(input.targetDirectory, { charts: 'echarts', themes: ['base'] })).resolves.toEqual([])
   })
 
   it('generates selected multi-theme and i18n variants', async () => {
@@ -368,6 +423,7 @@ describe('create-super-admin starter generation', () => {
     const exitCode = await runCreateSuperAdmin(['demo-admin'], {
       cwd: tempRoot,
       isTTY: true,
+      promptUseEcharts: async () => false,
       promptThemes: async () => ['base', 'cyberpunk'],
       sourceRoot: repoRoot,
       stderr: (message) => output.push(`error:${message}`),
@@ -383,12 +439,31 @@ describe('create-super-admin starter generation', () => {
     expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-base')
     expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-cyberpunk')
     expect(packageJson.dependencies['@super-admin-org/theme-crypto']).toBeUndefined()
+    expect(packageJson.dependencies.echarts).toBeUndefined()
     expect(registry).toContain("from '@super-admin-org/theme-base'")
     expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")
     expect(preferences).toContain('selectProfile')
     expect(preferences).not.toContain('selectLocale')
     expectControlCenterScrollingLayout(preferences)
     expectSharedControlCenterTrigger(preferences, preferencesTrigger)
+  })
+
+  it('prompts for the optional ECharts template in an interactive terminal', async () => {
+    const tempRoot = await createTempRoot()
+
+    const exitCode = await runCreateSuperAdmin(['demo-admin'], {
+      cwd: tempRoot,
+      isTTY: true,
+      promptThemes: async () => ['base'],
+      promptUseEcharts: async () => true,
+      sourceRoot: repoRoot
+    })
+
+    expect(exitCode).toBe(0)
+
+    const packageJson = await readGeneratedJson(join(tempRoot, 'demo-admin'), 'package.json')
+    expect(packageJson.dependencies.echarts).toBe('^6.1.0')
+    await expect(generatedPathExists(join(tempRoot, 'demo-admin'), 'src/modules/charts/ChartsPage.vue')).resolves.toBe(true)
   })
 
   it('requires an explicit theme flag when no interactive terminal is available', async () => {

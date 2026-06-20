@@ -12,6 +12,8 @@ Create a frontend-first, mock-backed Super Admin starter.
 Options:
   --theme <id>             Generate with one theme and skip the interactive selector
   --themes <ids>           Generate with multiple comma-separated themes and skip the selector
+  --charts echarts         Install ECharts and generate a theme-adapted chart example under Examples
+  --no-charts              Keep the starter lightweight without chart example dependencies
   --i18n                   Include zh-CN and en-US locale catalogs and a language switcher
   --pm <name>              Package manager for printed next steps: pnpm, npm, yarn, or bun
   --package-manager <name> Alias for --pm
@@ -28,7 +30,7 @@ Generated starter:
 Examples:
   create-super-admin my-admin
   create-super-admin my-admin --theme base
-  create-super-admin my-admin --themes base,cyberpunk --i18n --pm pnpm`
+  create-super-admin my-admin --themes base,cyberpunk --charts echarts --i18n --pm pnpm`
 
 const THEME_SELECTION_REQUIRED_MESSAGE =
   'Theme selection is required. Use --theme <id>, --themes <ids>, or run create-super-admin in an interactive terminal.'
@@ -37,6 +39,7 @@ export type CreateSuperAdminIo = {
   cwd?: string
   isTTY?: boolean
   promptThemes?: () => Promise<StarterThemeId[]> | StarterThemeId[]
+  promptUseEcharts?: () => Promise<boolean> | boolean
   sourceRoot?: string
   stdout?: (message: string) => void
   stderr?: (message: string) => void
@@ -66,6 +69,10 @@ function isHelpRequested(argv: string[]): boolean {
 
 function hasThemeFlag(argv: string[]): boolean {
   return argv.includes('--theme') || argv.includes('--themes')
+}
+
+function hasChartFlag(argv: string[]): boolean {
+  return argv.includes('--charts') || argv.includes('--no-charts')
 }
 
 function validateArgsBeforePrompt(argv: string[], cwd?: string): void {
@@ -209,6 +216,81 @@ async function getPromptedThemes(io: CreateSuperAdminIo): Promise<StarterThemeId
   return normalizePromptedThemes(themes)
 }
 
+function renderEchartsSelection(output: NodeJS.WriteStream, cursorIndex: number): void {
+  const options = ['No, keep the starter lightweight', 'Yes, install ECharts and generate the theme-adapted chart example under Examples']
+
+  output.write('\x1b[2J\x1b[H')
+  output.write('Use ECharts?\n')
+  output.write('Selecting yes installs ECharts and generates a theme-adapted chart example under Examples.\n\n')
+
+  for (let index = 0; index < options.length; index += 1) {
+    const cursor = index === cursorIndex ? '>' : ' '
+    output.write(`${cursor} ${options[index]}\n`)
+  }
+}
+
+async function promptUseEchartsWithKeyboard(): Promise<boolean> {
+  const input = stdin
+  const output = stdout
+
+  if (input.isTTY !== true || output.isTTY !== true) {
+    return false
+  }
+
+  emitKeypressEvents(input)
+  input.setRawMode(true)
+  input.resume()
+
+  return new Promise((resolve, reject) => {
+    let cursorIndex = 0
+
+    function cleanup(): void {
+      input.off('keypress', onKeypress)
+      input.setRawMode(false)
+      input.pause()
+      output.write('\n')
+    }
+
+    function complete(): void {
+      cleanup()
+      resolve(cursorIndex === 1)
+    }
+
+    function fail(error: Error): void {
+      cleanup()
+      reject(error)
+    }
+
+    function onKeypress(_character: string, key: { ctrl?: boolean; name?: string }): void {
+      if (key.ctrl && key.name === 'c') {
+        fail(new Error('ECharts selection cancelled.'))
+        return
+      }
+
+      if (key.name === 'up' || key.name === 'down') {
+        cursorIndex = cursorIndex === 0 ? 1 : 0
+        renderEchartsSelection(output, cursorIndex)
+        return
+      }
+
+      if (key.name === 'return' || key.name === 'enter') {
+        complete()
+      }
+    }
+
+    input.on('keypress', onKeypress)
+    renderEchartsSelection(output, cursorIndex)
+  })
+}
+
+async function getPromptedUseEcharts(io: CreateSuperAdminIo): Promise<boolean> {
+  if (!isInteractive(io) && !io.promptUseEcharts) {
+    return false
+  }
+
+  return io.promptUseEcharts ? await io.promptUseEcharts() : await promptUseEchartsWithKeyboard()
+}
+
 export async function runCreateSuperAdmin(argv: string[], io: CreateSuperAdminIo = {}): Promise<number> {
   try {
     if (isHelpRequested(argv)) {
@@ -223,6 +305,15 @@ export async function runCreateSuperAdmin(argv: string[], io: CreateSuperAdminIo
     if (!hasThemeFlag(normalizedArgv)) {
       const themes = await getPromptedThemes(io)
       normalizedArgv.push('--themes', themes.join(','))
+    }
+
+    if (!hasChartFlag(normalizedArgv) && isInteractive(io)) {
+      const useEcharts = await getPromptedUseEcharts(io)
+      if (useEcharts) {
+        normalizedArgv.push('--charts', 'echarts')
+      } else {
+        normalizedArgv.push('--no-charts')
+      }
     }
 
     const input = parseCreateSuperAdminArgs(normalizedArgv, {

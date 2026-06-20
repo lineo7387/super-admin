@@ -96,6 +96,7 @@ const zhCN = {
     modules: {
       examples: '示例',
       'ui-kit': 'UI 组件',
+      charts: '图表',
       dashboard: '仪表盘',
       workbench: '工作台',
       users: '用户',
@@ -110,9 +111,30 @@ const zhCN = {
     },
     descriptions: {
       templateGuide: '前端优先模板边界说明，帮助你判断何时替换 adapter、何时重塑模块。',
+      charts: '可选 ECharts 图表模板，展示如何让图表自动适配当前后台主题。',
       dashboard: '前端示例仪表盘，展示指标、信号和活动如何通过 API adapter 进入页面。',
       workbench: '面向队列和运营任务的前端示例工作台。',
       access: '前端权限元数据示例，不要求真实 auth backend。'
+    }
+  },
+  charts: {
+    eyebrow: '可选图表模板',
+    title: '主题适配的 ECharts 案例',
+    description: '这些案例展示 Super Admin chart recipe 如何跟随当前设计风格和亮暗模式，同时保留 ECharts 原生 option 的自由度。',
+    status: '{profile} / {mode}',
+    boundaryTitle: '可选依赖边界',
+    boundaryDescription: '只有在安装时选择 ECharts，starter 才会安装 echarts、vue-echarts 并生成这组页面；不选择时项目保持轻量。',
+    revenue: {
+      title: '收入趋势',
+      description: '折线和面积透明度来自当前主题的 chart recipe。'
+    },
+    risk: {
+      title: '风险构成',
+      description: '环图直接使用 recipe palette，用户可以继续覆盖原生 ECharts option。'
+    },
+    channel: {
+      title: '渠道表现',
+      description: '柱图圆角、网格线和 tooltip 均跟随设计风格切换。'
     }
   },
   examples: {

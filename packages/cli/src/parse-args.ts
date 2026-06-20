@@ -1,6 +1,13 @@
 import { basename, resolve } from 'node:path'
-import { isStarterPackageManager, isStarterThemeId, starterPackageManagers, starterThemeIds } from './theme-options.js'
-import type { StarterLocaleId, StarterPackageManager, StarterThemeId } from './theme-options.js'
+import {
+  isStarterChartProvider,
+  isStarterPackageManager,
+  isStarterThemeId,
+  starterChartProviders,
+  starterPackageManagers,
+  starterThemeIds
+} from './theme-options.js'
+import type { StarterChartProvider, StarterLocaleId, StarterPackageManager, StarterThemeId } from './theme-options.js'
 
 export type StarterGenerationInput = {
   projectName: string
@@ -16,6 +23,9 @@ export type StarterGenerationInput = {
     default: StarterLocaleId
     switcher: boolean
   }
+  charts: {
+    provider: StarterChartProvider
+  }
 }
 
 export type ParseCreateSuperAdminArgsOptions = {
@@ -26,6 +36,8 @@ type ParsedFlags = {
   project?: string
   theme?: string
   themes?: string
+  charts?: string
+  noCharts: boolean
   i18n: boolean
   packageManager?: string
 }
@@ -42,7 +54,8 @@ function readFlagValue(args: string[], index: number, flag: string): string {
 
 function parseFlags(argv: string[]): ParsedFlags {
   const parsed: ParsedFlags = {
-    i18n: false
+    i18n: false,
+    noCharts: false
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -62,6 +75,17 @@ function parseFlags(argv: string[]): ParsedFlags {
     if (arg === '--themes') {
       parsed.themes = readFlagValue(argv, index, arg)
       index += 1
+      continue
+    }
+
+    if (arg === '--charts') {
+      parsed.charts = readFlagValue(argv, index, arg)
+      index += 1
+      continue
+    }
+
+    if (arg === '--no-charts') {
+      parsed.noCharts = true
       continue
     }
 
@@ -132,6 +156,22 @@ function normalizePackageManager(packageManager?: string): StarterPackageManager
   return packageManager
 }
 
+function normalizeCharts(charts: string | undefined, noCharts: boolean): StarterChartProvider {
+  if (charts && noCharts) {
+    throw new Error('--charts and --no-charts are mutually exclusive.')
+  }
+
+  if (!charts) {
+    return 'none'
+  }
+
+  if (!isStarterChartProvider(charts)) {
+    throw new Error(`Unsupported chart template "${charts}". Supported chart templates: ${starterChartProviders.join(', ')}`)
+  }
+
+  return charts
+}
+
 export function parseCreateSuperAdminArgs(
   argv: string[],
   options: ParseCreateSuperAdminArgsOptions = {}
@@ -145,6 +185,7 @@ export function parseCreateSuperAdminArgs(
 
   const packageManager = normalizePackageManager(flags.packageManager)
   const themes = normalizeThemes(flags.theme, flags.themes)
+  const charts = normalizeCharts(flags.charts, flags.noCharts)
   const projectName = basename(flags.project)
 
   return {
@@ -160,6 +201,9 @@ export function parseCreateSuperAdminArgs(
       installed: flags.i18n ? ['zh-CN', 'en-US'] : ['zh-CN'],
       default: 'zh-CN',
       switcher: flags.i18n
+    },
+    charts: {
+      provider: charts
     }
   }
 }

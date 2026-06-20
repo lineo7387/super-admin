@@ -347,6 +347,7 @@ The old Context rail is reserved for the future AI assistant experience and must
 Examples
   Dashboard
   Workbench
+  Charts
   Users
     All Users
     Pending Review
@@ -382,11 +383,11 @@ Settings
 
 ### Convention: Existing Template Pages Live Under Examples
 
-**What**: In the default template IA, existing business-looking pages such as Dashboard, Workbench, Users, and Access are `Examples` children. Keep their page names and domain demo copy stable unless the task explicitly includes copy refinement.
+**What**: In the default template IA, existing business-looking pages and optional copyable demos such as Dashboard, Workbench, Charts, Users, and Access are `Examples` children. Keep their page names and domain demo copy stable unless the task explicitly includes copy refinement.
 
 **Why**: The default app is a template showcase, not an opinionated production business domain. The `Examples` parent communicates that these pages are copyable patterns while preserving concise, familiar labels.
 
-**Check**: The default module registry should expose `Examples` and `UI Kit` as first-level entries. Dashboard, Workbench, Users, and Access should not appear as first-level modules unless a real-project registry promotes them.
+**Check**: The default module registry should expose `Examples` and `UI Kit` as first-level entries. Dashboard, Workbench, Charts, Users, and Access should not appear as first-level modules unless a real-project registry promotes them.
 
 ### Convention: Reusable UI Flows Through UI Kit First
 
