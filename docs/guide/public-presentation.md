@@ -4,14 +4,14 @@
 
 ## 当前公开状态
 
-截至 2026-06-18：
+截至 2026-06-21：
 
 - 仓库公开地址是 `lineo7387/super-admin`。
 - npm `latest` 与 `next` 已指向 smoke-verified release line：
-  - `create-super-admin@0.1.6`
+  - `create-super-admin@0.1.7`
   - `@super-admin-org/core@0.1.3`
-  - `@super-admin-org/theme@0.1.3` 与所有 theme profile packages `0.1.3`
-  - `@super-admin-org/ui@0.1.4`
+  - `@super-admin-org/theme@0.1.4` 与所有 theme profile packages `0.1.3`
+  - `@super-admin-org/ui@0.1.5`
 - GitHub Pages docs/demo URL 是 `https://lineo7387.github.io/super-admin/`。
 - 公开安装路径可用：
 
@@ -42,7 +42,7 @@ README 首屏应保留：
 - hosted docs/demo、getting started、examples、API adapters、themes/layouts 和 public presentation 链接。
 - 明确说明 backend、database、auth provider、AI provider 和 generated schema 都是可选的。
 
-GitHub Release badge 可以在 `v0.1.6` 发布后使用，但应避免硬编码旧版本。只有 GitHub Pages workflow 存在后才使用 docs/demo badge。
+GitHub Release badge 可以在 `v0.1.7` 发布后使用，但应避免硬编码旧版本。只有 GitHub Pages workflow 存在后才使用 docs/demo badge。
 
 ## Docs And Demo Links
 
@@ -75,23 +75,24 @@ pnpm dev
 当前 GitHub release title：
 
 ```text
-Super Admin v0.1.6 - Stage Manager starter release
+Super Admin v0.1.7 - ECharts 图表模板与基础组件本地化契约
 ```
 
 推荐 summary：
 
 ```text
-Super Admin v0.1.6 is the current default starter line, with the Stage Manager preference contract, refreshed generated-starter dependency ranges, and registry-smoke-verified npm latest packages.
+Super Admin v0.1.7 is the current default starter line, adding an optional `--charts echarts` template option that generates theme-adapted chart example pages, base component localization contracts via AdminField `requiredLabel`/`optionalLabel`, and dependency-light `chart-recipe` helpers in the theme package.
 ```
 
 推荐 highlights：
 
 - `npm create super-admin@latest my-admin`
-- `create-super-admin@0.1.6` on npm `latest`
-- `@super-admin-org/core@0.1.3` and theme packages `0.1.3` on npm `latest`
-- `@super-admin-org/ui@0.1.4` remains the current shared UI package line
-- Stage Rail / Stage Overview / Control Center starter behavior aligned with the monorepo app
-- registry smoke passed for the default base starter and the multi-theme + i18n starter
+- `create-super-admin@0.1.7` on npm `latest`
+- new optional `--charts echarts` template option generating theme-adapted chart example pages
+- `@super-admin-org/core@0.1.3` and theme profile packages `0.1.3` on npm `latest`
+- `@super-admin-org/theme@0.1.4` adds chart-recipe helpers so generated ECharts output can build theme-adapted options without importing ECharts itself
+- `@super-admin-org/ui@0.1.5` adds `requiredLabel`/`optionalLabel` contracts on `AdminField`, refines `AdminDrawer`, `AdminFormFooter`, `AdminBulkActionBar`, and `admin-table` primitives
+- cleaned up dead standalone manifests in generated projects and hardened publish flow validation
 - mock-backed Vue admin template
 - replaceable API adapter boundary
 - reusable UI primitives and runtime design profiles
