@@ -114,6 +114,38 @@ pnpm docs:build
 
 Run `pnpm test:reference` before claiming that the admin app connects to the optional reference backend through a real browser/API/token flow.
 
+## AI Push / PR Completion Checklist
+
+When a maintainer asks an AI agent to “push following the project workflow”, “finish the push flow”, or similar, completion does not mean only running `git push`. The AI must advance the work until a pull request is created or reused, CI status is checked, and a merge-ready report is provided.
+
+The AI must run this sequence:
+
+1. Confirm the current branch is not `main`, the working tree is clean, and the current branch is the intended work branch.
+2. Run `git fetch origin main`, then confirm the branch is based on the latest `origin/main`; if it is behind, integrate the latest `origin/main` with the project-appropriate strategy, usually rebase for a topic branch.
+3. Re-run the pre-PR checks:
+   ```bash
+   pnpm lint
+   pnpm typecheck
+   pnpm test
+   pnpm build
+   pnpm docs:build
+   ```
+   For generated starter or CLI starter output changes, also run `pnpm validate:starter`; for package publish/readiness changes, also run `pnpm validate:publish`; before claiming real optional reference backend connectivity, also run `pnpm test:reference`.
+4. Inspect `git status`, recent commits, and the `origin/main...HEAD` diff scope to confirm there are no unrelated changes.
+5. Push the topic branch. Never push directly to `main`.
+6. Use `gh pr list --head <branch>` to find an existing PR; create one if none exists. The PR body must explain the problem, root cause, fix, verification commands, and remaining risks.
+7. Check `gh pr checks <number>` and `gh pr view <number>`. If CI is still running, report “the flow is not complete yet; waiting on CI” and keep polling or wait for the user’s decision; if CI fails, report the failure and stop; only report merge-ready when CI passes and the PR merge state is clean/mergeable.
+8. Keep the topic branch until the PR is merged. Only after merge should the maintainer sync local `main` and delete the remote/local topic branch.
+
+The final AI report must include:
+
+- PR link, PR number, and base/head branches.
+- Whether local and remote branches are synchronized, plus ahead/behind relative to `origin/main`.
+- Local verification commands and results.
+- GitHub CI / `checks` result.
+- PR merge state and whether it is merge-ready.
+- Branch handling guidance: keep it before merge; delete it after merge.
+
 ## Bug Fix Workflow
 
 When you find a bug, use this route instead of changing `main` directly:
