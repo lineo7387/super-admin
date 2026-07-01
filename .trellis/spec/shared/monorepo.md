@@ -189,6 +189,7 @@ Publish candidate packages must expose:
 - Unit tests for registry command mode normalization.
 - Unit tests for selected publish/promote command generation.
 - CLI generator tests for package-specific generated starter dependency ranges.
+- CLI generator tests for source-app shell files that are copied or transformed into generated starters, including default `zh-CN` and optional `en-US`/i18n variants when runtime state or locale-sensitive actions are involved.
 - Unit tests for `prepublishOnly` guard behavior:
   - normal local publish blocked
   - bootstrap path allowed

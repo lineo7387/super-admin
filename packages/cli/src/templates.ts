@@ -13,6 +13,14 @@ function formatStringList(values: readonly string[]): string {
   return values.map((value) => `'${value}'`).join(', ')
 }
 
+function formatTypeUnion(values: readonly string[]): string {
+  return values.map((value) => `'${value}'`).join(' | ')
+}
+
+function getLocaleI18nKey(locale: StarterLocaleId): string {
+  return locale === 'zh-CN' ? 'zhCN' : 'enUS'
+}
+
 export function createPackageJson(input: StarterGenerationInput, options: CreatePackageJsonOptions = {}): string {
   const versionRanges = {
     ...superAdminPackageVersionRanges,
@@ -560,6 +568,20 @@ export const translateAdminMessage: MessageTranslator = (key, values) => i18n.gl
 `
 }
 
+export function createCommandPaletteItems(locales: StarterLocaleId[], source: string): string {
+  const localeType = formatTypeUnion(locales)
+  const localeEntries = locales.map((locale) => `  '${locale}': '${getLocaleI18nKey(locale)}'`).join(',\n')
+  const localeList = formatStringList(locales)
+
+  return source
+    .replace("type Locale = 'zh-CN' | 'en-US'", `type Locale = ${localeType}`)
+    .replace(
+      /const LOCALE_I18N_KEY: Record<Locale, string> = \{[\s\S]*?\n\}/,
+      `const LOCALE_I18N_KEY: Record<Locale, string> = {\n${localeEntries}\n}`
+    )
+    .replace("    const locales: Locale[] = ['zh-CN', 'en-US']", `    const locales: Locale[] = [${localeList}]`)
+}
+
 export function createPreferencesStore(): string {
   return `import {
   defaultAiAvailability,
@@ -645,6 +667,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const stageManagerDesktopAvailable = shallowRef(false)
   const stageTransitionGhost = shallowRef<StageTransitionGhost | null>(null)
   const aiAssistantOpen = shallowRef(false)
+  const commandPaletteOpen = shallowRef(false)
 
   const profileId = computed(() => state.profileId)
   const locale = computed(() => state.locale)
@@ -762,6 +785,14 @@ export const usePreferencesStore = defineStore('preferences', () => {
     aiAssistantOpen.value = false
   }
 
+  function openCommandPalette(): void {
+    commandPaletteOpen.value = true
+  }
+
+  function closeCommandPalette(): void {
+    commandPaletteOpen.value = false
+  }
+
   function bindSystemColorMode(): void {
     const query = window.matchMedia('(prefers-color-scheme: dark)')
     const update = (): void => {
@@ -783,13 +814,16 @@ export const usePreferencesStore = defineStore('preferences', () => {
     aiAvailability,
     aiAssistantOpen,
     closeAiAssistant,
+    closeCommandPalette,
     closeControlCenter,
     closeStageOverview,
     clearStageTransition,
     controlCenterOpen,
+    commandPaletteOpen,
     finishStageTransition,
     openControlCenter,
     openAiAssistant,
+    openCommandPalette,
     openStageOverview,
     stageManagerDesktopAvailable,
     stageOverviewOpen,

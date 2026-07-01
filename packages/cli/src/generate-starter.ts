@@ -7,6 +7,7 @@ import {
   createAuthSession,
   createAuthSessionStore,
   createAuthTypes,
+  createCommandPaletteItems,
   createEnvDts,
   createGlobalPreferences,
   createI18nIndex,
@@ -160,6 +161,10 @@ function transformSourceText(relativePath: string, text: string, context: Transf
 
   if (relativePath === 'i18n/index.ts') {
     return createI18nIndex(context.input.i18n.installed)
+  }
+
+  if (relativePath === 'shell/use-command-palette-items.ts') {
+    return createCommandPaletteItems(context.input.i18n.installed, text)
   }
 
   if (relativePath === 'shell/preferences/GlobalPreferences.vue') {
