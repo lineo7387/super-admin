@@ -83,3 +83,40 @@ pnpm docs:build
 ```
 
 Run `pnpm test:reference` before claiming real API/reference backend connectivity.
+
+## AI Push / PR Completion
+
+When the user asks an AI agent to push using the project workflow, the request means the full protected-branch path, not only `git push`.
+
+Required interpretation:
+
+```text
+sync with origin/main -> verify -> push topic branch -> create or reuse PR -> check CI -> report merge readiness
+```
+
+Rules:
+
+- Never stop after only pushing the branch unless the user explicitly says to push only.
+- Before creating or updating the PR, run `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, and `pnpm docs:build`.
+- Add focused checks for the changed surface:
+  - generated starter or CLI starter output: `pnpm validate:starter`
+  - publish/readiness/package release surfaces: `pnpm validate:publish`
+  - real optional reference backend connectivity claims: `pnpm test:reference`
+- Use `gh pr list --head <branch>` before creating a PR so an existing PR is reused instead of duplicated.
+- After PR creation, check `gh pr checks <number>` and `gh pr view <number>`.
+- If CI is pending or in progress, say the workflow is not complete yet and either keep polling or ask the user whether to wait.
+- If CI fails, report the failing check and stop; do not call the branch merge-ready.
+- Only report merge-ready when CI passes and the PR merge state is clean or mergeable.
+- Do not delete the topic branch before PR merge. Delete remote/local topic branches only after merge and after local `main` is synchronized.
+
+Final push/PR reports must include:
+
+```text
+PR: <number + URL>
+Branch: <head> -> <base>
+Sync: <local/remote sync + origin/main ahead/behind>
+Local verification: <commands and pass/fail>
+CI: <checks pass/fail/pending + link if available>
+Merge state: <clean/blocked/dirty/unknown>
+Branch cleanup: <keep until merge / safe to delete after merge>
+```

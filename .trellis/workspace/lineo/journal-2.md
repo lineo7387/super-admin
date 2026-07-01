@@ -71,3 +71,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 61: 优化 AI push/PR 流程规范
+
+**Date**: 2026-07-01
+**Task**: 优化 AI push/PR 流程规范
+**Branch**: `codex/optimize-ai-push-pr-flow`
+
+### Summary
+
+固化项目 AI push/PR 完成契约：补充中英文开源工作流、shared git 规范和 trellis-push-pr skill，明确 push 后必须创建/复用 PR、检查 CI、报告 merge-ready 状态和分支清理建议。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2519abc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

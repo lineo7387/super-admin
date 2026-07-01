@@ -114,6 +114,38 @@ pnpm docs:build
 
 在声称 admin app 已通过真实 browser/API/token flow 连接 optional reference backend 前，先运行 `pnpm test:reference`。
 
+## AI Push / PR Completion Checklist
+
+当维护者要求 AI “按照项目流程 push”、“走完整 push 流程”或类似表达时，完成定义不是只执行 `git push`。AI 必须把流程推进到 PR 已创建或复用、CI 状态已确认，并给出 merge-ready 报告。
+
+AI 必须按顺序执行：
+
+1. 确认当前分支不是 `main`，工作树干净，且当前分支是本次工作分支。
+2. `git fetch origin main`，确认分支基于最新 `origin/main`；若落后，先用适合 topic branch 的方式集成最新 `origin/main`，通常是 rebase。
+3. 重新运行 PR 前检查：
+   ```bash
+   pnpm lint
+   pnpm typecheck
+   pnpm test
+   pnpm build
+   pnpm docs:build
+   ```
+   影响 generated starter 或 CLI starter 输出时，额外运行 `pnpm validate:starter`；影响 package publish/readiness 时，额外运行 `pnpm validate:publish`；涉及 optional reference backend 真实连接声明时，额外运行 `pnpm test:reference`。
+4. 检查 `git status`、最近提交和 `origin/main...HEAD` diff scope，确认没有无关改动。
+5. push topic branch。不得直接 push 到 `main`。
+6. 使用 `gh pr list --head <branch>` 查找已有 PR；没有则创建 PR。PR body 必须说明问题、原因、修复、验证命令和剩余风险。
+7. 查询 `gh pr checks <number>` 和 `gh pr view <number>`。如果 CI 仍在运行，报告“流程未完成，正在等待 CI”，并继续轮询或等待用户决定；如果 CI 失败，报告失败并停止；只有 CI 通过且 PR merge state clean/mergeable 时，才能报告 merge-ready。
+8. PR merge 前保留 topic branch。只有 PR merge 后，才同步本地 `main` 并删除远端/本地 topic branch。
+
+AI 的最终反馈必须包含：
+
+- PR 链接、PR 编号、base/head 分支。
+- 本地分支与远端分支是否同步，以及相对 `origin/main` 的 ahead/behind。
+- 本地验证命令和结果。
+- GitHub CI / `checks` 结果。
+- PR merge state 和是否 merge-ready。
+- 分支处理建议：PR merge 前保留；merge 后再删除。
+
 ## Bug Fix Workflow
 
 发现 bug 后，使用这条路线，避免直接在 `main` 上修：
