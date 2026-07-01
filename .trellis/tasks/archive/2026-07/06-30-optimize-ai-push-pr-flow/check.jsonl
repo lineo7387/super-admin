@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Layer boundary checks for shell, modules, API adapters, and queries."}
+{"file": ".trellis/spec/guides/pre-implementation-checklist.md", "reason": "Pre-code product and architecture checks."}
+{"file": ".trellis/spec/guides/trellis-lake-workflow.md", "reason": "Project workflow guard and artifact locations."}
+{"file": ".trellis/spec/shared/git-conventions.md", "reason": "Verify push/PR completion rules are durable and unambiguous."}
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Verify public docs keep maintainer tooling optional and bilingual docs aligned."}
