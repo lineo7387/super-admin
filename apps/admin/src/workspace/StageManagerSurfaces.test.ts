@@ -22,7 +22,7 @@ describe('stage manager desktop surfaces', () => {
     expect(appShellSource).toContain('preferences.stageManager.railEnabled')
     expect(appShellSource).toContain('tabs.state.tabs.length > 1')
     expect(appShellSource).toContain('.stage-rail-shell {')
-    expect(appShellSource).toContain('.stage-shell-frame[data-stage-rail-open="true"] .stage-rail-shell')
+    expect(appShellSource).toContain(".stage-shell-frame[data-stage-rail-open='true'] .stage-rail-shell")
     expect(appShellSource).toContain('grid-template-columns 300ms')
     expect(appShellSource).not.toContain('<Transition name="stage-rail-shell"')
     expect(appShellSource).not.toContain('<StageRail v-if="showStageRail"')
@@ -60,9 +60,8 @@ describe('stage manager desktop surfaces', () => {
   })
 
   it('keeps Stage Rail grouped, left-oriented, and window-only', () => {
-    const groupedPreviewBlock = stageRailSource.match(
-      /<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?:preview="stageGroup\.preview"[\s\S]*?\/>/
-    )?.[0] ?? ''
+    const groupedPreviewBlock =
+      stageRailSource.match(/<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?:preview="stageGroup\.preview"[\s\S]*?\/>/)?.[0] ?? ''
 
     expect(stageRailSource).toContain('StageDockThumb')
     expect(stageRailSource).toContain('stage-rail')

@@ -33,18 +33,8 @@ const isEmpty = computed(() => !isLoading.value && !isError.value && roles.value
 
       <div class="mt-5 grid gap-3">
         <AdminSkeleton v-if="isLoading" :lines="5" />
-        <AdminAlert
-          v-else-if="isError"
-          tone="danger"
-          :title="t('examples.access.loadErrorTitle')"
-          :description="t('examples.access.loadErrorDescription')"
-        />
-        <AdminAlert
-          v-else-if="isEmpty"
-          tone="warning"
-          :title="t('examples.access.emptyTitle')"
-          :description="t('examples.access.emptyDescription')"
-        />
+        <AdminAlert v-else-if="isError" tone="danger" :title="t('examples.access.loadErrorTitle')" :description="t('examples.access.loadErrorDescription')" />
+        <AdminAlert v-else-if="isEmpty" tone="warning" :title="t('examples.access.emptyTitle')" :description="t('examples.access.emptyDescription')" />
         <div
           v-for="role in roles"
           :key="role.id"

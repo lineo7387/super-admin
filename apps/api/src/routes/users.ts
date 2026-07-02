@@ -12,12 +12,7 @@ const userStatuses = ['all', 'active', 'review', 'paused'] as const
 const usersListQuerySchema = z.object({
   keyword: z.string().trim().optional(),
   page: z.coerce.number().int().min(1, 'Page must be at least 1.').default(1),
-  pageSize: z.coerce
-    .number()
-    .int()
-    .min(1, 'Page size must be between 1 and 100.')
-    .max(100, 'Page size must be between 1 and 100.')
-    .default(20),
+  pageSize: z.coerce.number().int().min(1, 'Page size must be between 1 and 100.').max(100, 'Page size must be between 1 and 100.').default(20),
   status: z
     .string()
     .default('all')

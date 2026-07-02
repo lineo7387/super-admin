@@ -113,12 +113,7 @@ watch(filtered, clampSelected)
 <template>
   <Teleport to="body">
     <div v-if="open" class="fixed inset-0 z-50 flex items-start justify-center pt-[12vh]">
-      <button
-        class="absolute inset-0 cursor-default bg-black/45 backdrop-blur-sm"
-        :aria-label="t('shell.commandPalette.close')"
-        type="button"
-        @click="close"
-      />
+      <button class="absolute inset-0 cursor-default bg-black/45 backdrop-blur-sm" :aria-label="t('shell.commandPalette.close')" type="button" @click="close" />
       <section
         class="relative flex w-full max-w-xl flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] shadow-2xl"
         role="dialog"
@@ -158,9 +153,11 @@ watch(filtered, clampSelected)
               <li v-for="entry in section.entries" :key="entry.item.id">
                 <button
                   class="flex w-full items-center gap-3 px-4 py-2 text-left text-sm transition-colors"
-                  :class="entry.index === selectedIndex
-                    ? 'bg-[var(--surface-sunken)] text-[var(--foreground)]'
-                    : 'text-[var(--foreground)] hover:bg-[var(--surface-sunken)]'"
+                  :class="
+                    entry.index === selectedIndex
+                      ? 'bg-[var(--surface-sunken)] text-[var(--foreground)]'
+                      : 'text-[var(--foreground)] hover:bg-[var(--surface-sunken)]'
+                  "
                   type="button"
                   role="option"
                   :aria-selected="entry.index === selectedIndex"

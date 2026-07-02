@@ -23,14 +23,7 @@ defineProps<{
         option.disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
       ]"
     >
-      <input
-        v-model="model"
-        class="peer sr-only"
-        type="radio"
-        :name="name"
-        :value="option.value"
-        :disabled="option.disabled"
-      />
+      <input v-model="model" class="peer sr-only" type="radio" :name="name" :value="option.value" :disabled="option.disabled" />
       <span
         class="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border transition peer-focus-visible:shadow-[var(--focus-ring)]"
         :class="model === option.value ? 'border-[var(--primary)] bg-[var(--primary)]' : 'border-[var(--border-strong)] bg-[var(--surface)]'"

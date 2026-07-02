@@ -115,12 +115,9 @@ function collectExportTargets(value) {
 }
 
 function getManifestTargets(manifest) {
-  return [
-    manifest.main,
-    manifest.module,
-    manifest.types,
-    ...collectExportTargets(manifest.exports)
-  ].filter((target, index, targets) => typeof target === 'string' && targets.indexOf(target) === index)
+  return [manifest.main, manifest.module, manifest.types, ...collectExportTargets(manifest.exports)].filter(
+    (target, index, targets) => typeof target === 'string' && targets.indexOf(target) === index
+  )
 }
 
 export function createPackedManifestFailures({ files, manifest, packageName }) {
@@ -130,10 +127,7 @@ export function createPackedManifestFailures({ files, manifest, packageName }) {
 
   if (workspaceRangeNames.length > 0) {
     failures.push(
-      createFailure(
-        'packed-package-no-workspace-ranges',
-        `${packageName} packed manifest must not expose workspace ranges: ${workspaceRangeNames.join(', ')}.`
-      )
+      createFailure('packed-package-no-workspace-ranges', `${packageName} packed manifest must not expose workspace ranges: ${workspaceRangeNames.join(', ')}.`)
     )
   }
 
@@ -199,9 +193,7 @@ export function createTarballDependencyMap(projectDir, tarballs, options = {}) {
 export function rewriteStarterPackageJson(packageJson, tarballDependencyMap) {
   return {
     ...packageJson,
-    dependencies: Object.fromEntries(
-      Object.entries(packageJson.dependencies ?? {}).map(([name, version]) => [name, tarballDependencyMap[name] ?? version])
-    ),
+    dependencies: Object.fromEntries(Object.entries(packageJson.dependencies ?? {}).map(([name, version]) => [name, tarballDependencyMap[name] ?? version])),
     pnpm: {
       ...(packageJson.pnpm ?? {}),
       overrides: {
@@ -271,9 +263,7 @@ async function packCandidate(candidate, tarballDir) {
   })
 
   if (failures.length > 0) {
-    throw new Error(
-      failures.map((failure) => `${failure.id}: ${failure.message}`).join('\n')
-    )
+    throw new Error(failures.map((failure) => `${failure.id}: ${failure.message}`).join('\n'))
   }
 
   const packOutput = await runCommand('npm', ['pack', '--json', '--pack-destination', tarballDir], packageDir, { capture: true })

@@ -21,14 +21,7 @@ const unregisteredStandaloneManifests = [
   'src/modules/users/users.manifest.ts',
   'src/modules/workbench/workbench.manifest.ts'
 ]
-const forbiddenMaintainerToolingPackages = new Set([
-  '@playwright/test',
-  'eslint',
-  'playwright',
-  'prettier',
-  'vitepress',
-  'vitest'
-])
+const forbiddenMaintainerToolingPackages = new Set(['@playwright/test', 'eslint', 'playwright', 'prettier', 'vitepress', 'vitest'])
 const textFileExtensions = new Set(['.css', '.html', '.json', '.md', '.mjs', '.ts', '.tsx', '.vue', '.js'])
 
 function createFailure(id, message, file) {
@@ -88,12 +81,7 @@ async function collectFiles(root, current = root) {
 }
 
 function getDependencyGroups(packageJson) {
-  return [
-    packageJson.dependencies ?? {},
-    packageJson.devDependencies ?? {},
-    packageJson.optionalDependencies ?? {},
-    packageJson.peerDependencies ?? {}
-  ]
+  return [packageJson.dependencies ?? {}, packageJson.devDependencies ?? {}, packageJson.optionalDependencies ?? {}, packageJson.peerDependencies ?? {}]
 }
 
 function getAllDependencyEntries(packageJson) {
@@ -273,9 +261,7 @@ async function readTextFiles(root, files) {
 }
 
 function validateNoMonorepoPaths(textEntries) {
-  const leakingFiles = textEntries
-    .filter(({ text }) => text.includes('../../packages') || text.includes('../../../../packages'))
-    .map(({ file }) => file)
+  const leakingFiles = textEntries.filter(({ text }) => text.includes('../../packages') || text.includes('../../../../packages')).map(({ file }) => file)
 
   if (leakingFiles.length === 0) {
     return []
@@ -323,11 +309,7 @@ function validateForbiddenOutput(root, files) {
 
   if (generatedTests.length > 0) {
     failures.push(
-      createFailure(
-        'source-no-generated-tests',
-        `Generated projects must not include test files by default: ${generatedTests.join(', ')}.`,
-        generatedTests[0]
-      )
+      createFailure('source-no-generated-tests', `Generated projects must not include test files by default: ${generatedTests.join(', ')}.`, generatedTests[0])
     )
   }
 
@@ -372,7 +354,9 @@ function validateDefaultSwitcherOutput(root, files, textEntries, themes, i18nEna
   const failures = []
 
   if (!i18nEnabled && files.includes('src/i18n/locales/en-US.ts')) {
-    failures.push(createFailure('default-no-language-switcher', 'No-flags output must not include optional en-US runtime locale switching.', 'src/i18n/locales/en-US.ts'))
+    failures.push(
+      createFailure('default-no-language-switcher', 'No-flags output must not include optional en-US runtime locale switching.', 'src/i18n/locales/en-US.ts')
+    )
   }
 
   if (!i18nEnabled) {
@@ -406,7 +390,9 @@ function validateDataBoundary(files, textEntries) {
   }
 
   if (!files.some((file) => file.startsWith('src/modules/') && file.endsWith('.queries.ts'))) {
-    failures.push(createFailure('data-boundary-has-module-queries', 'Generated projects must keep module query composables under src/modules/.', 'src/modules/'))
+    failures.push(
+      createFailure('data-boundary-has-module-queries', 'Generated projects must keep module query composables under src/modules/.', 'src/modules/')
+    )
   }
 
   const directTransportPages = textEntries
@@ -434,11 +420,9 @@ function validateChartTemplate(packageJson, files, textEntries, chartProvider = 
   const chartSourceFiles = files.filter((file) => chartSourcePrefixes.some((prefix) => file.startsWith(prefix)))
   const chartRouteFiles = textEntries
     .filter(({ file }) => file === 'src/modules/examples/examples.manifest.ts' || file === 'src/modules/module-registry.ts')
-    .filter(({ text }) => text.includes('/examples/charts') || text.includes("../charts/ChartsPage.vue"))
+    .filter(({ text }) => text.includes('/examples/charts') || text.includes('../charts/ChartsPage.vue'))
     .map(({ file }) => file)
-  const echartsImportFiles = textEntries
-    .filter(({ text }) => /from\s+['"](?:echarts|echarts\/[^'"]+|vue-echarts)['"]/.test(text))
-    .map(({ file }) => file)
+  const echartsImportFiles = textEntries.filter(({ text }) => /from\s+['"](?:echarts|echarts\/[^'"]+|vue-echarts)['"]/.test(text)).map(({ file }) => file)
 
   if (chartProvider === 'none') {
     if (chartDependencies.length > 0) {
@@ -504,11 +488,7 @@ function validateChartTemplate(packageJson, files, textEntries, chartProvider = 
   const missingFiles = requiredFiles.filter((file) => !files.includes(file))
   if (missingFiles.length > 0) {
     failures.push(
-      createFailure(
-        'charts-echarts-source-present',
-        `ECharts starters must include chart template source: ${missingFiles.join(', ')}.`,
-        missingFiles[0]
-      )
+      createFailure('charts-echarts-source-present', `ECharts starters must include chart template source: ${missingFiles.join(', ')}.`, missingFiles[0])
     )
   }
 
@@ -563,7 +543,13 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   if (await pathExists(registryPath)) {
     failures.push(...validateThemeRegistry(await readText(registryPath), themes))
   } else {
-    failures.push(createFailure('theme-registry-present', 'Generated project must include src/super-admin/theme-registry.generated.ts.', 'src/super-admin/theme-registry.generated.ts'))
+    failures.push(
+      createFailure(
+        'theme-registry-present',
+        'Generated project must include src/super-admin/theme-registry.generated.ts.',
+        'src/super-admin/theme-registry.generated.ts'
+      )
+    )
   }
 
   return failures
@@ -714,7 +700,8 @@ async function runStartupSmoke(projectDir, packageManager) {
   try {
     await waitForHttp(`http://127.0.0.1:${port}`)
   } catch (error) {
-    throw new Error(`${error.message}\n${logs.join('')}`)
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error(`${message}\n${logs.join('')}`, { cause: error })
   } finally {
     await stopStartupProcess(child)
   }
@@ -814,7 +801,10 @@ function parseArgs(argv) {
     }
 
     if (arg === '--themes') {
-      options.themes = args[index + 1].split(',').map((theme) => theme.trim()).filter(Boolean)
+      options.themes = args[index + 1]
+        .split(',')
+        .map((theme) => theme.trim())
+        .filter(Boolean)
       index += 1
       continue
     }
@@ -832,7 +822,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const { options, projectDir } = parseArgs(process.argv.slice(2))
 
   if (!projectDir) {
-    console.error('Usage: node scripts/validate-generated-starter.mjs <project-dir> [--static-only] [--theme base] [--themes base,cyberpunk] [--charts echarts] [--no-charts] [--i18n] [--pm pnpm] [--package-manifest path]')
+    console.error(
+      'Usage: node scripts/validate-generated-starter.mjs <project-dir> [--static-only] [--theme base] [--themes base,cyberpunk] [--charts echarts] [--no-charts] [--i18n] [--pm pnpm] [--package-manifest path]'
+    )
     process.exitCode = 1
   } else {
     validateGeneratedStarter(projectDir, options)

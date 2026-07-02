@@ -44,23 +44,14 @@ function activate(): void {
 </script>
 
 <template>
-  <article
-    class="stage-overview-card stage-action-host"
-    :class="props.active ? 'stage-overview-card--active' : ''"
-    @click.stop
-    >
+  <article class="stage-overview-card stage-action-host" :class="props.active ? 'stage-overview-card--active' : ''" @click.stop>
     <button
       ref="button"
       type="button"
       class="stage-overview-card__button block h-full w-full text-left focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
       @click="activate"
     >
-      <StageWindowPreview
-        :component="props.component"
-        :preview="props.preview"
-        :preview-unavailable-label="props.previewUnavailableLabel"
-        variant="overview"
-      />
+      <StageWindowPreview :component="props.component" :preview="props.preview" :preview-unavailable-label="props.previewUnavailableLabel" variant="overview" />
       <div class="mt-2 flex min-w-0 items-center justify-between gap-2">
         <div class="min-w-0">
           <div class="truncate text-sm font-semibold text-[var(--foreground)]">
@@ -106,7 +97,7 @@ function activate(): void {
 }
 
 .stage-overview-card::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -135,7 +126,9 @@ function activate(): void {
 .stage-overview-card--active :deep(.stage-window-preview),
 .stage-overview-card:hover :deep(.stage-window-preview) {
   border-color: var(--border-strong);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent), var(--glow);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent),
+    var(--glow);
 }
 
 .stage-overview-card__button {

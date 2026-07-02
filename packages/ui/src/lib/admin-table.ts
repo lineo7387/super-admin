@@ -59,10 +59,7 @@ export function getAdminPaginationRange(input: AdminPaginationRangeInput): Admin
   }
 }
 
-export function getAdminSelectionState(
-  input: AdminSelectionStateInput,
-  formatLabel?: AdminSelectionLabelFormatter
-): AdminSelectionState {
+export function getAdminSelectionState(input: AdminSelectionStateInput, formatLabel?: AdminSelectionLabelFormatter): AdminSelectionState {
   const totalCount = clampCount(input.totalCount)
   const selectedCount = Math.min(totalCount, clampCount(input.selectedCount))
   const checked = totalCount > 0 && selectedCount === totalCount

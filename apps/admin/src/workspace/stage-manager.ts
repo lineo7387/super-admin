@@ -49,12 +49,7 @@ type SortableStageGroup = {
 
 export function resolveOverviewLayout(count: number): StageOverviewLayout {
   const windowCount = Math.max(count, 1)
-  const preferredColumns =
-    windowCount === 1
-      ? 1
-      : windowCount <= 4
-        ? Math.ceil(Math.sqrt(windowCount))
-        : Math.max(1, Math.ceil(Math.sqrt(windowCount * 1.25)))
+  const preferredColumns = windowCount === 1 ? 1 : windowCount <= 4 ? Math.ceil(Math.sqrt(windowCount)) : Math.max(1, Math.ceil(Math.sqrt(windowCount * 1.25)))
   const columns = preferredColumns
   const rows = Math.max(1, Math.ceil(windowCount / columns))
   const cardWidth = windowCount <= 2 ? '22rem' : windowCount <= 4 ? '20rem' : windowCount <= 9 ? '18rem' : '16rem'

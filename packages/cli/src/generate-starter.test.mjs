@@ -64,9 +64,8 @@ function expectSharedControlCenterTrigger(preferences, trigger) {
 }
 
 function expectStageManagerStarterParity({ appShell, stageDockThumb, stageOverviewCard, stageRail, stageWindowPreview, useStageWindows }) {
-  const groupedPreviewBlock = stageRail.match(
-    /<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?:preview="stageGroup\.preview"[\s\S]*?\/>/
-  )?.[0] ?? ''
+  const groupedPreviewBlock =
+    stageRail.match(/<StageWindowPreview\s+[\s\S]*?:component="stageGroup\.component"[\s\S]*?:preview="stageGroup\.preview"[\s\S]*?\/>/)?.[0] ?? ''
 
   expect(appShell).toContain(':data-stage-rail-open="showStageRail"')
   expect(appShell).toContain('overflow-x: clip;')
@@ -82,7 +81,7 @@ function expectStageManagerStarterParity({ appShell, stageDockThumb, stageOvervi
   expect(appShell).toContain('width: var(--stage-rail-width);')
   expect(appShell).toContain('min-height: 100vh;')
   expect(appShell).toContain('transform: translateX(-100%);')
-  expect(appShell).toContain('.stage-shell-frame[data-stage-rail-open="true"] .stage-rail-shell')
+  expect(appShell).toContain(".stage-shell-frame[data-stage-rail-open='true'] .stage-rail-shell")
   expect(appShell).toContain('pointer-events: none;')
   expect(appShell).toContain('pointer-events: auto;')
   expect(appShell).not.toContain('stage-rail-shell-leave-active')
@@ -224,9 +223,7 @@ describe('create-super-admin starter generation', () => {
       installed: ['base', 'cyberpunk']
     })
 
-    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--themes', 'cyberpunk'], { cwd: '/tmp' })).toThrow(
-      /mutually exclusive/
-    )
+    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--themes', 'cyberpunk'], { cwd: '/tmp' })).toThrow(/mutually exclusive/)
     expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'unknown'], { cwd: '/tmp' })).toThrow(/Supported themes: base/)
     expect(() => parseCreateSuperAdminArgs(['demo', '--pm', 'deno'], { cwd: '/tmp' })).toThrow(/Supported package managers/)
     expect(() => parseCreateSuperAdminArgs(['demo'], { cwd: '/tmp' })).toThrow(/Theme selection is required/)
@@ -240,12 +237,8 @@ describe('create-super-admin starter generation', () => {
       provider: 'none'
     })
 
-    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--charts', 'chartjs'], { cwd: '/tmp' })).toThrow(
-      /Supported chart templates/
-    )
-    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--charts', 'echarts', '--no-charts'], { cwd: '/tmp' })).toThrow(
-      /mutually exclusive/
-    )
+    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--charts', 'chartjs'], { cwd: '/tmp' })).toThrow(/Supported chart templates/)
+    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--charts', 'echarts', '--no-charts'], { cwd: '/tmp' })).toThrow(/mutually exclusive/)
   })
 
   it('generates the default single-theme starter and passes static validation', async () => {

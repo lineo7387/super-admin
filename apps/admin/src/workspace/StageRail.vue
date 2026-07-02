@@ -25,11 +25,9 @@ type RailItemMotionTarget = {
 
 const visibleStageGroups = computed(() => stageGroups.value.slice(0, 4))
 const activeWindowGroup = computed(() =>
-  activeWindowGroupId.value ? stageGroups.value.find((group) => group.id === activeWindowGroupId.value) ?? null : null
+  activeWindowGroupId.value ? (stageGroups.value.find((group) => group.id === activeWindowGroupId.value) ?? null) : null
 )
-const windowStages = computed<StageWindowView[]>(() =>
-  (activeWindowGroup.value?.tabs ?? []).slice(0, 4).map(createWindowView)
-)
+const windowStages = computed<StageWindowView[]>(() => (activeWindowGroup.value?.tabs ?? []).slice(0, 4).map(createWindowView))
 const railItemAnimate: RailItemMotionTarget = {
   filter: 'blur(0px)',
   opacity: 1,
@@ -179,15 +177,8 @@ function handleWindowItemMotionComplete(index: number): void {
           :transition="resolveWindowItemTransition(index)"
           :on-animation-complete="() => handleWindowItemMotionComplete(index)"
         >
-          <StageDockThumb
-            :active="stage.isActive"
-            @activate="activateStageWindow(stage, $event)"
-          >
-            <StageWindowPreview
-              :component="stage.component"
-              :preview="stage.preview"
-              :preview-unavailable-label="t('workspace.stage.previewUnavailable')"
-            />
+          <StageDockThumb :active="stage.isActive" @activate="activateStageWindow(stage, $event)">
+            <StageWindowPreview :component="stage.component" :preview="stage.preview" :preview-unavailable-label="t('workspace.stage.previewUnavailable')" />
             <div class="stage-rail__window-title" :title="stage.title">
               {{ stage.title }}
             </div>
@@ -222,15 +213,16 @@ function handleWindowItemMotionComplete(index: number): void {
   min-height: 100vh;
   flex-direction: column;
   border-right: 1px solid color-mix(in srgb, var(--border-strong) 70%, transparent);
-  background:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--app-background) 64%, transparent) 0%,
-      color-mix(in srgb, var(--app-background) 42%, transparent) 62%,
-      color-mix(in srgb, var(--app-background) 20%, transparent) 100%
-    );
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--app-background) 64%, transparent) 0%,
+    color-mix(in srgb, var(--app-background) 42%, transparent) 62%,
+    color-mix(in srgb, var(--app-background) 20%, transparent) 100%
+  );
   backdrop-filter: blur(12px);
-  box-shadow: inset -1px 0 0 color-mix(in srgb, var(--foreground) 8%, transparent), var(--panel-shadow);
+  box-shadow:
+    inset -1px 0 0 color-mix(in srgb, var(--foreground) 8%, transparent),
+    var(--panel-shadow);
 }
 
 .stage-rail__back {
@@ -339,5 +331,4 @@ function handleWindowItemMotionComplete(index: number): void {
   min-width: 0.75rem;
   text-align: center;
 }
-
 </style>

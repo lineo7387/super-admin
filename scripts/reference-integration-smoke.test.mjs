@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  buildAdminEnv,
-  createSmokeConfig,
-  findRequest,
-  getReferenceSmokeResult
-} from './reference-integration-smoke.mjs'
+import { buildAdminEnv, createSmokeConfig, findRequest, getReferenceSmokeResult } from './reference-integration-smoke.mjs'
 
 describe('reference integration smoke helpers', () => {
   it('creates isolated local service URLs from explicit ports', () => {

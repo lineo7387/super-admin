@@ -41,11 +41,7 @@ const roleOptions = computed(() => [
 
 <template>
   <UiKitPage :title="t('uiKit.page.inputs.title')" :description="t('uiKit.page.inputs.description')">
-    <AdminAlert
-      tone="success"
-      :title="t('uiKit.inputs.alertTitle')"
-      :description="t('uiKit.inputs.alertDescription')"
-    />
+    <AdminAlert tone="success" :title="t('uiKit.inputs.alertTitle')" :description="t('uiKit.inputs.alertDescription')" />
 
     <section class="grid gap-4 lg:grid-cols-2">
       <AdminCard>
@@ -57,7 +53,13 @@ const roleOptions = computed(() => [
           <AdminField :label="t('uiKit.inputs.fieldNameEmail')" for="kit-email" :error="t('uiKit.inputs.emailError')">
             <AdminTextInput id="kit-email" v-model="name" type="email" invalid />
           </AdminField>
-          <AdminField :label="t('uiKit.inputs.fieldNameSlug')" for="kit-slug" optional :optional-label="t('validation.optionalLabel')" :help="t('uiKit.inputs.slugHelp')">
+          <AdminField
+            :label="t('uiKit.inputs.fieldNameSlug')"
+            for="kit-slug"
+            optional
+            :optional-label="t('validation.optionalLabel')"
+            :help="t('uiKit.inputs.slugHelp')"
+          >
             <AdminTextInput id="kit-slug" model-value="north-star-review" readonly />
           </AdminField>
           <AdminField :label="t('uiKit.inputs.fieldNameLocked')" for="kit-locked">
@@ -78,7 +80,12 @@ const roleOptions = computed(() => [
           <AdminSwitch v-model="partial" :label="t('uiKit.inputs.switchDisabled')" disabled />
           <div class="grid gap-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] p-3">
             <AdminCheckbox v-model="reviewed" :label="t('uiKit.inputs.checkboxReviewed')" :description="t('uiKit.inputs.checkboxReviewedDescription')" />
-            <AdminCheckbox v-model="partial" :label="t('uiKit.inputs.checkboxPartial')" :description="t('uiKit.inputs.checkboxPartialDescription')" indeterminate />
+            <AdminCheckbox
+              v-model="partial"
+              :label="t('uiKit.inputs.checkboxPartial')"
+              :description="t('uiKit.inputs.checkboxPartialDescription')"
+              indeterminate
+            />
           </div>
           <AdminField :label="t('uiKit.inputs.fieldApprovalMode')" for="kit-approval-mode" :help="t('uiKit.inputs.approvalModeHelp')">
             <AdminRadioGroup v-model="approvalMode" name="kit-approval-mode" :options="approvalOptions" />

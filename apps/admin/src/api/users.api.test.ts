@@ -25,9 +25,7 @@ describe('users api adapter', () => {
 
     expect(result.items).toHaveLength(2)
     expect(result.total).toBeGreaterThanOrEqual(2)
-    expect(result.items.every((user) => [user.name, user.email, user.role].some((value) => value.toLowerCase().includes('owner')))).toBe(
-      true
-    )
+    expect(result.items.every((user) => [user.name, user.email, user.role].some((value) => value.toLowerCase().includes('owner')))).toBe(true)
   })
 
   it('returns empty results through a mock data scenario', async () => {

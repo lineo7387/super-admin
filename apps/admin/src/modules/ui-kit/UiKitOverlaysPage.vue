@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AdminAlert, AdminButton, AdminCard, AdminCheckbox, AdminDrawer, AdminField, AdminFormFooter, AdminTextInput, AdminValidationSummary } from '@super-admin-org/ui'
+import {
+  AdminAlert,
+  AdminButton,
+  AdminCard,
+  AdminCheckbox,
+  AdminDrawer,
+  AdminField,
+  AdminFormFooter,
+  AdminTextInput,
+  AdminValidationSummary
+} from '@super-admin-org/ui'
 import UiKitPage from './components/UiKitPage.vue'
 
 const { t } = useI18n()
@@ -23,11 +33,7 @@ const validationErrors = computed(() => {
 
 <template>
   <UiKitPage :title="t('uiKit.page.overlays.title')" :description="t('uiKit.page.overlays.description')">
-    <AdminAlert
-      tone="warning"
-      :title="t('uiKit.overlays.alertTitle')"
-      :description="t('uiKit.overlays.alertDescription')"
-    />
+    <AdminAlert tone="warning" :title="t('uiKit.overlays.alertTitle')" :description="t('uiKit.overlays.alertDescription')" />
 
     <AdminCard>
       <div class="flex flex-wrap items-center justify-between gap-4">

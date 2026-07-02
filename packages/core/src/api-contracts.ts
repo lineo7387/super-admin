@@ -42,9 +42,7 @@ export type MutationFailure<Field extends string = string> = {
   fieldErrors?: FieldErrors<Field>
 }
 
-export type MutationResult<Result = undefined, Field extends string = string> =
-  | MutationSuccess<Result>
-  | MutationFailure<Field>
+export type MutationResult<Result = undefined, Field extends string = string> = MutationSuccess<Result> | MutationFailure<Field>
 
 export type AdapterErrorCode = 'unknown' | 'network' | 'unauthorized' | 'forbidden' | 'not-found' | 'validation'
 
@@ -61,11 +59,7 @@ export type CapabilityState =
   | { state: 'not-configured'; providerRequirement: Exclude<ProviderRequirement, 'none'>; providerName?: string; message: string }
   | { state: 'unavailable'; reason: string; message: string }
 
-export function createPageListResult<Item>(
-  items: Item[],
-  total: number,
-  pagination: PagePaginationParams
-): PageListResult<Item> {
+export function createPageListResult<Item>(items: Item[], total: number, pagination: PagePaginationParams): PageListResult<Item> {
   return {
     items,
     total,
@@ -74,10 +68,7 @@ export function createPageListResult<Item>(
   }
 }
 
-export function createCursorListResult<Item>(
-  items: Item[],
-  options: { hasMore: boolean; nextCursor?: string }
-): CursorListResult<Item> {
+export function createCursorListResult<Item>(items: Item[], options: { hasMore: boolean; nextCursor?: string }): CursorListResult<Item> {
   return {
     items,
     hasMore: options.hasMore,
@@ -85,10 +76,7 @@ export function createCursorListResult<Item>(
   }
 }
 
-export function createMutationSuccess<Result = undefined>(
-  data?: Result,
-  message?: string
-): MutationSuccess<Result> {
+export function createMutationSuccess<Result = undefined>(data?: Result, message?: string): MutationSuccess<Result> {
   return {
     ok: true,
     ...(message ? { message } : {}),
@@ -96,10 +84,7 @@ export function createMutationSuccess<Result = undefined>(
   }
 }
 
-export function createMutationFailure<Field extends string = string>(
-  message: string,
-  fieldErrors?: FieldErrors<Field>
-): MutationFailure<Field> {
+export function createMutationFailure<Field extends string = string>(message: string, fieldErrors?: FieldErrors<Field>): MutationFailure<Field> {
   return {
     ok: false,
     message,

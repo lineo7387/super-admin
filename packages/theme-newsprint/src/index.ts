@@ -27,8 +27,7 @@ export const newsprintProfile: DesignProfile = {
         danger: '#cc0000'
       },
       shell: {
-        appBackground:
-          'radial-gradient(rgba(17, 17, 17, 0.045) 1px, transparent 1px), linear-gradient(180deg, #f9f9f7, #f1f1ed)',
+        appBackground: 'radial-gradient(rgba(17, 17, 17, 0.045) 1px, transparent 1px), linear-gradient(180deg, #f9f9f7, #f1f1ed)',
         headerBackground: '#f9f9f7',
         navBackground: '#f2f2ee',
         contextBackground: '#fbfbf8',
@@ -83,8 +82,7 @@ export const newsprintProfile: DesignProfile = {
         danger: '#ff6b60'
       },
       shell: {
-        appBackground:
-          'radial-gradient(rgba(244, 239, 230, 0.055) 1px, transparent 1px), linear-gradient(180deg, #151412, #0f0e0d)',
+        appBackground: 'radial-gradient(rgba(244, 239, 230, 0.055) 1px, transparent 1px), linear-gradient(180deg, #151412, #0f0e0d)',
         headerBackground: '#181612',
         navBackground: '#201d18',
         contextBackground: '#191714',

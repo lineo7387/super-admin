@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @source "../../../../packages/ui/src";
 
 :root {
@@ -53,17 +53,17 @@ select {
   width: 0;
 }
 
-.super-scroll__wrap[data-axis="vertical"] {
+.super-scroll__wrap[data-axis='vertical'] {
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-.super-scroll__wrap[data-axis="horizontal"] {
+.super-scroll__wrap[data-axis='horizontal'] {
   overflow-x: auto;
   overflow-y: hidden;
 }
 
-.super-scroll__wrap[data-axis="both"] {
+.super-scroll__wrap[data-axis='both'] {
   overflow: auto;
 }
 
@@ -99,7 +99,9 @@ select {
   display: block;
   height: 0;
   position: relative;
-  transition: opacity 140ms ease, background-color 140ms ease;
+  transition:
+    opacity 140ms ease,
+    background-color 140ms ease;
   width: 0;
 }
 
@@ -113,8 +115,8 @@ select {
 
 .super-scroll:hover > .super-scroll__bar,
 .super-scroll:focus-within > .super-scroll__bar,
-.super-scroll[data-always="true"] > .super-scroll__bar,
-.super-scroll[data-scrolling="true"] > .super-scroll__bar {
+.super-scroll[data-always='true'] > .super-scroll__bar,
+.super-scroll[data-scrolling='true'] > .super-scroll__bar {
   opacity: 0.78;
 }
 

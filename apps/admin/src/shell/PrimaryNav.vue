@@ -107,9 +107,12 @@ function closeDropdowns(): void {
   openDropdownPath.value = null
 }
 
-watch(() => route.path, () => {
-  openDropdownPath.value = null
-})
+watch(
+  () => route.path,
+  () => {
+    openDropdownPath.value = null
+  }
+)
 
 onMounted(() => {
   window.addEventListener('click', closeDropdowns)
@@ -121,18 +124,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav
-    class="flex gap-1"
-    :class="props.orientation === 'horizontal' ? 'flex-row items-center justify-center' : 'flex-col'"
-  >
+  <nav class="flex gap-1" :class="props.orientation === 'horizontal' ? 'flex-row items-center justify-center' : 'flex-col'">
     <div v-for="item in navItems" :key="item.path" class="relative">
       <component
         :is="shouldRenderAsButton(item) ? 'button' : RouterLink"
         :to="shouldRenderAsButton(item) ? undefined : item.path"
         :type="shouldRenderAsButton(item) ? 'button' : undefined"
-        :aria-expanded="
-          shouldRenderAsButton(item) ? (props.orientation === 'horizontal' ? isDropdownOpen(item) : isExpanded(item)) : undefined
-        "
+        :aria-expanded="shouldRenderAsButton(item) ? (props.orientation === 'horizontal' ? isDropdownOpen(item) : isExpanded(item)) : undefined"
         :aria-haspopup="shouldRenderAsButton(item) && props.orientation === 'horizontal' ? 'menu' : undefined"
         class="flex h-10 items-center rounded-[var(--radius-md)] border text-sm transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
         :class="[

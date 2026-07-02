@@ -101,10 +101,7 @@ export function useCommandPaletteItems() {
     return items
   })
 
-  const items = computed<CommandPaletteItem[]>(() => [
-    ...navigationItems.value,
-    ...actionItems.value
-  ])
+  const items = computed<CommandPaletteItem[]>(() => [...navigationItems.value, ...actionItems.value])
 
   return { items }
 }

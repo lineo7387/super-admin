@@ -98,8 +98,16 @@ async function createStarterFixture(overrides = {}) {
   await writeText(root, 'src/shell/preferences/GlobalPreferences.vue', overrides.preferences ?? '<template><div /></template>\n')
   await writeText(root, 'src/api/mock/users.mock.ts', 'export const mockUsers = []\n')
   await writeText(root, 'src/api/users.api.ts', "import { mockUsers } from './mock/users.mock'\nexport async function listUsers() { return mockUsers }\n")
-  await writeText(root, 'src/modules/users/users.queries.ts', "import { listUsers } from '@/api/users.api'\nexport function useUsersQuery() { return listUsers() }\n")
-  await writeText(root, 'src/modules/users/UsersAllPage.vue', overrides.usersPage ?? '<script setup lang="ts">\nimport { useUsersQuery } from "./users.queries"\nuseUsersQuery()\n</script>\n')
+  await writeText(
+    root,
+    'src/modules/users/users.queries.ts',
+    "import { listUsers } from '@/api/users.api'\nexport function useUsersQuery() { return listUsers() }\n"
+  )
+  await writeText(
+    root,
+    'src/modules/users/UsersAllPage.vue',
+    overrides.usersPage ?? '<script setup lang="ts">\nimport { useUsersQuery } from "./users.queries"\nuseUsersQuery()\n</script>\n'
+  )
 
   for (const [filePath, content] of Object.entries(overrides.files ?? {})) {
     await writeText(root, filePath, content)
@@ -284,7 +292,8 @@ describe('generated starter validator', () => {
         'vue-echarts': '^8.0.1'
       },
       files: {
-        'src/modules/examples/examples.manifest.ts': "export const examplesManifest = { nav: { children: [{ path: '/examples/charts' }] }, routes: [{ path: '/examples/charts' }] }\n",
+        'src/modules/examples/examples.manifest.ts':
+          "export const examplesManifest = { nav: { children: [{ path: '/examples/charts' }] }, routes: [{ path: '/examples/charts' }] }\n",
         'src/modules/charts/ChartsPage.vue': '<script setup lang="ts">\nimport VChart from "vue-echarts"\n</script>\n',
         'src/shared/charts/echarts-options.ts': 'import type { EChartsOption } from "echarts"\nexport const option: EChartsOption = {}\n'
       }

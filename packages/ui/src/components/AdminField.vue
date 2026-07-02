@@ -1,5 +1,5 @@
 <script setup lang="ts">
-withDefaults(
+const props = withDefaults(
   defineProps<{
     label: string
     for?: string
@@ -24,13 +24,13 @@ withDefaults(
 
 <template>
   <div class="grid gap-2">
-    <label :for="for" class="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
-      <span>{{ label }}</span>
-      <span v-if="required" class="text-xs font-normal text-[var(--danger)]">{{ requiredLabel }}</span>
-      <span v-else-if="optional" class="text-xs font-normal text-[var(--muted-foreground)]">{{ optionalLabel }}</span>
+    <label :for="props.for" class="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
+      <span>{{ props.label }}</span>
+      <span v-if="props.required" class="text-xs font-normal text-[var(--danger)]">{{ props.requiredLabel }}</span>
+      <span v-else-if="props.optional" class="text-xs font-normal text-[var(--muted-foreground)]">{{ props.optionalLabel }}</span>
     </label>
     <slot />
-    <p v-if="error" class="text-xs text-[var(--danger)]">{{ error }}</p>
-    <p v-else-if="help" class="text-xs leading-5 text-[var(--muted-foreground)]">{{ help }}</p>
+    <p v-if="props.error" class="text-xs text-[var(--danger)]">{{ props.error }}</p>
+    <p v-else-if="props.help" class="text-xs leading-5 text-[var(--muted-foreground)]">{{ props.help }}</p>
   </div>
 </template>

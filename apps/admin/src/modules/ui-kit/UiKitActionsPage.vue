@@ -9,10 +9,7 @@ const { t } = useI18n()
 
 <template>
   <UiKitPage :title="t('uiKit.page.actions.title')" :description="t('uiKit.page.actions.description')">
-    <AdminAlert
-      :title="t('uiKit.actions.alertTitle')"
-      :description="t('uiKit.actions.alertDescription')"
-    />
+    <AdminAlert :title="t('uiKit.actions.alertTitle')" :description="t('uiKit.actions.alertDescription')" />
 
     <section class="grid gap-4 lg:grid-cols-2">
       <AdminCard>

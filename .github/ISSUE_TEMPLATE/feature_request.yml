@@ -1,6 +1,6 @@
 name: Feature request
 description: Suggest an improvement or new capability.
-title: "feat(scope): "
+title: 'feat(scope): '
 labels:
   - enhancement
 body:

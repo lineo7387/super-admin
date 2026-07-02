@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ModuleManifest } from './module'
-import {
-  findActiveModule,
-  findModuleRoute,
-  flattenModuleNav,
-  getVisibleModuleNavTree,
-  isModuleNavItemActive
-} from './module'
+import { findActiveModule, findModuleRoute, flattenModuleNav, getVisibleModuleNavTree, isModuleNavItemActive } from './module'
 
 const usersManifest: ModuleManifest = {
   id: 'users',

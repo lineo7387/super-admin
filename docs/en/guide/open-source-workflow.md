@@ -106,6 +106,7 @@ Before opening a PR, run the relevant checks:
 
 ```bash
 pnpm lint
+pnpm format:check
 pnpm typecheck
 pnpm test
 pnpm build
@@ -125,6 +126,7 @@ The AI must run this sequence:
 3. Re-run the pre-PR checks:
    ```bash
    pnpm lint
+   pnpm format:check
    pnpm typecheck
    pnpm test
    pnpm build
@@ -171,6 +173,7 @@ Issue -> reproduce -> fix branch -> failing test -> fix -> verify -> PR -> CI ->
 6. **Run verification**:
    ```bash
    pnpm lint
+   pnpm format:check
    pnpm typecheck
    pnpm test
    pnpm build

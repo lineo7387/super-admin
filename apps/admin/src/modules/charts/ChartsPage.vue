@@ -68,22 +68,10 @@ const riskOption = computed(() => createDonutChartOption(chartRecipe.value, risk
     <AdminAlert tone="info" :title="t('charts.boundaryTitle')" :description="t('charts.boundaryDescription')" />
 
     <section class="grid min-w-0 gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr))]">
-      <ChartExamplePanel
-        :title="t('charts.revenue.title')"
-        :description="t('charts.revenue.description')"
-        :option="revenueOption"
-      />
-      <ChartExamplePanel
-        :title="t('charts.risk.title')"
-        :description="t('charts.risk.description')"
-        :option="riskOption"
-      />
+      <ChartExamplePanel :title="t('charts.revenue.title')" :description="t('charts.revenue.description')" :option="revenueOption" />
+      <ChartExamplePanel :title="t('charts.risk.title')" :description="t('charts.risk.description')" :option="riskOption" />
     </section>
 
-    <ChartExamplePanel
-      :title="t('charts.channel.title')"
-      :description="t('charts.channel.description')"
-      :option="channelOption"
-    />
+    <ChartExamplePanel :title="t('charts.channel.title')" :description="t('charts.channel.description')" :option="channelOption" />
   </div>
 </template>

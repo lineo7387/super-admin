@@ -154,7 +154,8 @@ const enUS = {
   charts: {
     eyebrow: 'Optional chart template',
     title: 'Theme-adapted ECharts examples',
-    description: 'These examples show how Super Admin chart recipes follow the active design profile and color mode while keeping raw ECharts options available.',
+    description:
+      'These examples show how Super Admin chart recipes follow the active design profile and color mode while keeping raw ECharts options available.',
     status: '{profile} / {mode}',
     boundaryTitle: 'Optional dependency boundary',
     boundaryDescription: 'The starter installs echarts and vue-echarts only when ECharts is selected during setup. Without it, the project stays lightweight.',
@@ -175,7 +176,8 @@ const enUS = {
     templateGuide: {
       eyebrow: 'Template baseline',
       title: 'Frontend Example Template',
-      description: 'The examples are copyable frontend modules. Keep the screen when it fits, replace the adapter when only data changes, or reshape the full module when the business workflow is different.',
+      description:
+        'The examples are copyable frontend modules. Keep the screen when it fits, replace the adapter when only data changes, or reshape the full module when the business workflow is different.',
       boundaryTitle: 'Default scaffold boundary',
       boundaryDescription: 'Backend, auth, database, AI providers, API contracts, and CLI generation stay optional follow-up surfaces.',
       signals: {
@@ -253,7 +255,8 @@ const enUS = {
       emptyTitle: 'No roles in this matrix',
       emptyDescription: 'The Access API adapter returned an empty mock role list.',
       integrationTitle: 'Integration note',
-      integrationDescription: 'Use this as a copyable access example. If your roles or screens differ, reshape the page, types, permission checks, and API adapter together.'
+      integrationDescription:
+        'Use this as a copyable access example. If your roles or screens differ, reshape the page, types, permission checks, and API adapter together.'
     }
   },
   workspace: {
@@ -313,7 +316,8 @@ const enUS = {
     register: {
       eyebrow: 'Open-source admin template',
       title: 'Prepare your own onboarding flow',
-      description: 'The registration page demonstrates reusable form, validation, and layout structure that can be replaced with invitations, organizations, SSO, or your own account system.',
+      description:
+        'The registration page demonstrates reusable form, validation, and layout structure that can be replaced with invitations, organizations, SSO, or your own account system.',
       heading: 'Create account',
       intro: 'This is a template example. It does not create real backend users by default.',
       noticeTitle: 'Registration flow not connected',

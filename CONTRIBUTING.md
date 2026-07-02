@@ -26,6 +26,7 @@ Useful checks:
 
 ```bash
 pnpm lint
+pnpm format:check
 pnpm typecheck
 pnpm test
 pnpm build
@@ -112,6 +113,7 @@ Use the same protected-branch flow for bugs:
 6. Run the relevant checks:
    ```bash
    pnpm lint
+   pnpm format:check
    pnpm typecheck
    pnpm test
    pnpm build

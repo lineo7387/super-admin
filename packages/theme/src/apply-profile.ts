@@ -3,12 +3,7 @@ import { getProfileMode } from '@super-admin-org/core'
 
 export type ThemeRoot = Pick<HTMLElement, 'dataset' | 'style'>
 
-export function applyDesignProfile(
-  root: ThemeRoot,
-  profile: DesignProfile,
-  mode: ResolvedColorMode,
-  density: Density
-): void {
+export function applyDesignProfile(root: ThemeRoot, profile: DesignProfile, mode: ResolvedColorMode, density: Density): void {
   const variant = getProfileMode(profile, mode)
 
   root.dataset.profile = profile.id

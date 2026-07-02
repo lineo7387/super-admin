@@ -169,10 +169,8 @@ Always solid. Never dashed or dotted except for rare decorative elements (e.g., 
 **1. Dot Grid Pattern (Main Background):**
 
 ```html
-backgroundImage: `url("data:image/svg+xml,%3Csvg
-xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4
-4'%3E%3Cpath fill='%23111111' fill-opacity='0.04' d='M1
-3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E")`
+backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23111111'
+fill-opacity='0.04' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E")`
 ```
 
 Subtle 4×4px dot pattern applied to the body background.
@@ -184,12 +182,10 @@ Subtle 4×4px dot pattern applied to the body background.
   position: relative;
 }
 .newsprint-texture::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(0deg, transparent 98%, rgba(0, 0, 0, 0.02) 100%),
-    linear-gradient(90deg, transparent 98%, rgba(0, 0, 0, 0.02) 100%);
+  background-image: linear-gradient(0deg, transparent 98%, rgba(0, 0, 0, 0.02) 100%), linear-gradient(90deg, transparent 98%, rgba(0, 0, 0, 0.02) 100%);
   background-size: 3px 3px;
   pointer-events: none;
   opacity: 0.5;
@@ -201,9 +197,7 @@ Apply `.newsprint-texture` to major sections for a fine graph-paper effect.
 **3. Radial Dot Pattern (Image Placeholders):**
 
 ```html
-<div
-  className="bg-[radial-gradient(#000_1px,transparent_1px)] opacity-10 [background-size:16px_16px]"
-/>
+<div className="bg-[radial-gradient(#000_1px,transparent_1px)] opacity-10 [background-size:16px_16px]" />
 ```
 
 Used in placeholder images to simulate halftone printing.
@@ -212,11 +206,7 @@ Used in placeholder images to simulate halftone printing.
 Use serif ornaments between major sections:
 
 ```html
-<div
-  className="py-8 text-center font-serif text-2xl text-neutral-400 tracking-[1em]"
->
-  &#x2727; &#x2727; &#x2727;
-</div>
+<div className="py-8 text-center font-serif text-2xl text-neutral-400 tracking-[1em]">&#x2727; &#x2727; &#x2727;</div>
 ```
 
 ## 3. Component Stylings
@@ -226,8 +216,7 @@ Use serif ornaments between major sections:
 **Primary Button (Default):**
 
 ```tsx
-className =
-  "bg-[#111111] text-[#F9F9F7] border border-transparent hover:bg-white hover:text-[#111111] hover:border-[#111111]";
+className = 'bg-[#111111] text-[#F9F9F7] border border-transparent hover:bg-white hover:text-[#111111] hover:border-[#111111]'
 ```
 
 - Solid black background, white text
@@ -239,8 +228,7 @@ className =
 **Secondary Button (Outline):**
 
 ```tsx
-className =
-  "border border-[#111111] bg-transparent hover:bg-[#111111] hover:text-[#F9F9F7]";
+className = 'border border-[#111111] bg-transparent hover:bg-[#111111] hover:text-[#F9F9F7]'
 ```
 
 - Transparent background, black border and text
@@ -249,7 +237,7 @@ className =
 **Ghost Button:**
 
 ```tsx
-className = "hover:bg-[#E5E5E0] hover:text-[#111111]";
+className = 'hover:bg-[#E5E5E0] hover:text-[#111111]'
 ```
 
 - No border, subtle grey background on hover
@@ -257,8 +245,7 @@ className = "hover:bg-[#E5E5E0] hover:text-[#111111]";
 **Link Button:**
 
 ```tsx
-className =
-  "text-[#111111] underline-offset-4 decoration-2 decoration-[#CC0000] hover:underline";
+className = 'text-[#111111] underline-offset-4 decoration-2 decoration-[#CC0000] hover:underline'
 ```
 
 - Text-only, red underline on hover
@@ -293,8 +280,7 @@ Ensure minimum `min-h-[44px]` and `min-w-[44px]` for mobile accessibility.
 **Style:**
 
 ```tsx
-className =
-  "border-b-2 border-[#111111] bg-transparent px-3 py-2 font-mono text-sm focus-visible:bg-[#F0F0F0] focus-visible:outline-none";
+className = 'border-b-2 border-[#111111] bg-transparent px-3 py-2 font-mono text-sm focus-visible:bg-[#F0F0F0] focus-visible:outline-none'
 ```
 
 - Transparent background
@@ -398,8 +384,8 @@ Fast, snappy, mechanical. No bouncy or organic easing.
 **Transition Classes:**
 
 ```tsx
-"transition-all duration-200 ease-out";
-"transition-colors duration-200";
+'transition-all duration-200 ease-out'
+'transition-colors duration-200'
 ```
 
 **Hover Behaviors:**
@@ -415,7 +401,7 @@ Fast, snappy, mechanical. No bouncy or organic easing.
 **Accordion Animation:**
 
 ```tsx
-className = "grid transition-all duration-300 ease-in-out";
+className = 'grid transition-all duration-300 ease-in-out'
 // Open: grid-rows-[1fr] opacity-100
 // Closed: grid-rows-[0fr] opacity-0
 ```
@@ -520,7 +506,7 @@ Even on mobile, preserve:
 ### Focus States
 
 ```tsx
-"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2";
+'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2'
 ```
 
 - Thick black ring (2px)
@@ -553,23 +539,23 @@ Even on mobile, preserve:
 Use `@import` in inline `<style>` tag:
 
 ```css
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=block");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=block');
 ```
 
 Define font classes:
 
 ```css
 .font-serif {
-  font-family: "Playfair Display", serif;
+  font-family: 'Playfair Display', serif;
 }
 .font-body {
-  font-family: "Lora", serif;
+  font-family: 'Lora', serif;
 }
 .font-sans {
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 .font-mono {
-  font-family: "JetBrains Mono", monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 ```
 

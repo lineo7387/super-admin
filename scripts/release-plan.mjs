@@ -94,11 +94,7 @@ export function createInternalDependencyGraph({ candidates = publishCandidates, 
   )
 }
 
-export function createDependencyAwareReleasePlan({
-  candidates = publishCandidates,
-  changedPackageNames,
-  manifests = readCandidateManifests()
-}) {
+export function createDependencyAwareReleasePlan({ candidates = publishCandidates, changedPackageNames, manifests = readCandidateManifests() }) {
   const normalizedChangedNames = parsePackageList(changedPackageNames)
   const candidateNames = new Set(candidates.map((candidate) => candidate.name))
 
@@ -130,11 +126,7 @@ export function createDependencyAwareReleasePlan({
   return withManifestVersions(sortedByCandidateOrder([...selected], candidates), candidates, manifests)
 }
 
-export function createExactReleasePlan({
-  candidates = publishCandidates,
-  manifests = readCandidateManifests(),
-  packageNames
-}) {
+export function createExactReleasePlan({ candidates = publishCandidates, manifests = readCandidateManifests(), packageNames }) {
   const normalizedPackageNames = parsePackageList(packageNames)
   const candidateNames = new Set(candidates.map((candidate) => candidate.name))
 
@@ -147,12 +139,7 @@ export function createExactReleasePlan({
   return withManifestVersions(sortedByCandidateOrder(normalizedPackageNames, candidates), candidates, manifests)
 }
 
-export function createReleasePlan({
-  candidates = publishCandidates,
-  changedPackageNames,
-  manifests = readCandidateManifests(),
-  packageNames
-} = {}) {
+export function createReleasePlan({ candidates = publishCandidates, changedPackageNames, manifests = readCandidateManifests(), packageNames } = {}) {
   const hasChangedPackages = parsePackageList(changedPackageNames).length > 0
   const hasExactPackages = parsePackageList(packageNames).length > 0
 
@@ -167,10 +154,7 @@ export function createReleasePlan({
   return createDependencyAwareReleasePlan({ candidates, changedPackageNames, manifests })
 }
 
-export function getSuperAdminDependencyVersionRanges({
-  candidates = publishCandidates,
-  manifests = readCandidateManifests()
-} = {}) {
+export function getSuperAdminDependencyVersionRanges({ candidates = publishCandidates, manifests = readCandidateManifests() } = {}) {
   return Object.fromEntries(
     candidates
       .filter((candidate) => candidate.name.startsWith('@super-admin-org/'))

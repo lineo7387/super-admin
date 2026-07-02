@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath, pathToFileURL } from 'node:url'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { publishCandidates } from './publish-readiness.mjs'
 
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const publishCandidateNames = new Set(publishCandidates.map((candidate) => candidate.name))
 const dependencyGroupNames = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']
 const expectedWorkflowPath = '.github/workflows/publish-next.yml'
@@ -45,12 +44,7 @@ function collectExportTargets(value) {
 }
 
 function getManifestTargets(manifest) {
-  return [
-    manifest.main,
-    manifest.module,
-    manifest.types,
-    ...collectExportTargets(manifest.exports)
-  ]
+  return [manifest.main, manifest.module, manifest.types, ...collectExportTargets(manifest.exports)]
     .filter((target) => typeof target === 'string')
     .map(normalizeTarget)
     .filter((target, index, targets) => targets.indexOf(target) === index)
@@ -73,11 +67,7 @@ function isPublishNextWorkflow(env, npmConfig) {
     env.SUPER_ADMIN_PUBLISH_WORKFLOW === 'publish-next.yml' ||
     (typeof env.GITHUB_WORKFLOW_REF === 'string' && env.GITHUB_WORKFLOW_REF.includes(expectedWorkflowPath))
 
-  return (
-    env.GITHUB_ACTIONS === 'true' &&
-    isExpectedWorkflow &&
-    npmConfig.tag === 'next'
-  )
+  return env.GITHUB_ACTIONS === 'true' && isExpectedWorkflow && npmConfig.tag === 'next'
 }
 
 export function validatePrepublishContext({ artifactExists, env = {}, manifest, npmConfig = {} }) {
@@ -89,12 +79,7 @@ export function validatePrepublishContext({ artifactExists, env = {}, manifest, 
 
   const workspaceRangeNames = getWorkspaceRangeNames(manifest)
   if (workspaceRangeNames.length > 0) {
-    failures.push(
-      createFailure(
-        'prepublish-no-workspace-ranges',
-        `${manifest.name} must not publish workspace ranges: ${workspaceRangeNames.join(', ')}.`
-      )
-    )
+    failures.push(createFailure('prepublish-no-workspace-ranges', `${manifest.name} must not publish workspace ranges: ${workspaceRangeNames.join(', ')}.`))
   }
 
   for (const target of getManifestTargets(manifest)) {
@@ -110,12 +95,7 @@ export function validatePrepublishContext({ artifactExists, env = {}, manifest, 
   const isNormalPublishNext = isPublishNextWorkflow(env, npmConfig)
 
   if (!isNormalPublishNext) {
-    failures.push(
-      createFailure(
-        'prepublish-github-actions-only',
-        'Normal publishes must run from the trusted GitHub Actions publish workflow.'
-      )
-    )
+    failures.push(createFailure('prepublish-github-actions-only', 'Normal publishes must run from the trusted GitHub Actions publish workflow.'))
   } else if (npmConfig.provenance !== 'true') {
     failures.push(createFailure('prepublish-provenance-required', 'Normal publishes must pass --provenance.'))
   }

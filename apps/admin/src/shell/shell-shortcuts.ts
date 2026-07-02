@@ -1,13 +1,7 @@
 import { onMounted, onUnmounted } from 'vue'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { useShortcutsStore } from '@/stores/shortcuts.store'
-import {
-  combosMatch,
-  DEFAULT_SHORTCUTS,
-  normalizeCombo,
-  type ShortcutEvent,
-  type ShortcutId
-} from './shortcuts/registry'
+import { combosMatch, DEFAULT_SHORTCUTS, normalizeCombo, type ShortcutEvent, type ShortcutId } from './shortcuts/registry'
 
 const TYPING_TAGS = new Set(['input', 'textarea', 'select'])
 
@@ -21,11 +15,7 @@ function isTypingInInput(target: EventTarget | null): boolean {
 
 export function isStageManagerShortcut(event: ShortcutEvent): boolean {
   const combo = normalizeCombo(event)
-  return (
-    (combo.metaKey || combo.ctrlKey) &&
-    combo.shiftKey &&
-    combo.key === 'm'
-  )
+  return (combo.metaKey || combo.ctrlKey) && combo.shiftKey && combo.key === 'm'
 }
 
 type ShortcutActions = Partial<Record<ShortcutId, () => void>>

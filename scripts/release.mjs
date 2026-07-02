@@ -57,9 +57,7 @@ function getPackageConfirmName(packageName) {
 }
 
 export function getExpectedWorkflowConfirm(selectedPackages, channel = 'next') {
-  const packageSlug = selectedPackages
-    .map((selectedPackage) => `${getPackageConfirmName(selectedPackage.name)}-${selectedPackage.version}`)
-    .join('-')
+  const packageSlug = selectedPackages.map((selectedPackage) => `${getPackageConfirmName(selectedPackage.name)}-${selectedPackage.version}`).join('-')
 
   return `publish-super-admin-${channel}-${packageSlug}`
 }

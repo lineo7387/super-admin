@@ -33,12 +33,16 @@ const metrics = [
       <div class="grid min-h-0 gap-6 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,440px)] lg:items-center">
         <aside class="auth-base__workspace overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)]">
           <div class="border-b border-[var(--border)] p-5 sm:p-7">
-            <div class="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+            <div
+              class="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]"
+            >
               <LayoutDashboard class="size-4 text-[var(--primary)]" />
               {{ t('auth.layout.brand') }}
             </div>
             <p class="mt-8 text-xs uppercase tracking-[0.22em] text-[var(--muted-foreground)]">{{ props.eyebrow }}</p>
-            <h1 class="mt-4 max-w-3xl [font-family:var(--font-display)] text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-6xl">{{ props.title }}</h1>
+            <h1 class="mt-4 max-w-3xl [font-family:var(--font-display)] text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-6xl">
+              {{ props.title }}
+            </h1>
             <p class="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">{{ props.description }}</p>
           </div>
 
@@ -56,7 +60,10 @@ const metrics = [
       </div>
     </section>
 
-    <section v-else-if="preferences.profileId === 'industrial'" class="auth-industrial relative mx-auto grid min-h-screen w-full max-w-7xl px-4 pb-4 pt-20 sm:px-6 lg:px-8">
+    <section
+      v-else-if="preferences.profileId === 'industrial'"
+      class="auth-industrial relative mx-auto grid min-h-screen w-full max-w-7xl px-4 pb-4 pt-20 sm:px-6 lg:px-8"
+    >
       <div class="grid min-h-0 gap-5 lg:grid-cols-[1fr_minmax(360px,440px)] lg:items-center">
         <aside class="grid gap-4">
           <div class="auth-industrial__intro border-b border-[var(--border-strong)] pb-5">
@@ -67,7 +74,11 @@ const metrics = [
             <h1 class="mt-4 max-w-4xl [font-family:var(--font-display)] text-4xl leading-none md:text-6xl">{{ props.title }}</h1>
           </div>
           <div class="auth-industrial__rail grid gap-3">
-            <div v-for="metric in metrics" :key="metric.labelKey" class="grid grid-cols-[120px_1fr] items-center gap-4 border border-[var(--border)] bg-[var(--surface)] p-3">
+            <div
+              v-for="metric in metrics"
+              :key="metric.labelKey"
+              class="grid grid-cols-[120px_1fr] items-center gap-4 border border-[var(--border)] bg-[var(--surface)] p-3"
+            >
               <span class="text-xs uppercase tracking-[0.2em] text-[var(--muted-foreground)]">{{ t(metric.labelKey) }}</span>
               <span class="[font-family:var(--font-display)] text-2xl">{{ t(metric.valueKey) }}</span>
             </div>
@@ -86,7 +97,10 @@ const metrics = [
       </div>
     </section>
 
-    <section v-else-if="preferences.profileId === 'cyberpunk'" class="auth-cyberpunk relative mx-auto grid min-h-screen w-full max-w-7xl grid-rows-[auto_1fr] gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <section
+      v-else-if="preferences.profileId === 'cyberpunk'"
+      class="auth-cyberpunk relative mx-auto grid min-h-screen w-full max-w-7xl grid-rows-[auto_1fr] gap-4 px-4 py-4 sm:px-6 lg:px-8"
+    >
       <header class="flex flex-wrap items-start justify-between gap-4">
         <div class="auth-cyberpunk__mark">
           <Command class="size-5" />
@@ -119,11 +133,18 @@ const metrics = [
       </div>
     </section>
 
-    <section v-else-if="preferences.profileId === 'newsprint'" class="auth-newsprint relative mx-auto grid min-h-screen w-full max-w-7xl px-4 pb-4 pt-20 sm:px-6 lg:px-8">
-      <div class="grid min-h-0 border-l border-t border-[var(--border-strong)] bg-[var(--surface)] lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,440px)] lg:items-stretch">
+    <section
+      v-else-if="preferences.profileId === 'newsprint'"
+      class="auth-newsprint relative mx-auto grid min-h-screen w-full max-w-7xl px-4 pb-4 pt-20 sm:px-6 lg:px-8"
+    >
+      <div
+        class="grid min-h-0 border-l border-t border-[var(--border-strong)] bg-[var(--surface)] lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,440px)] lg:items-stretch"
+      >
         <aside class="auth-newsprint__sheet grid min-h-0 border-b border-r border-[var(--border-strong)]">
           <div class="auth-newsprint__masthead border-b-4 border-[var(--border-strong)] p-4 sm:p-5">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3 text-[10px] uppercase tracking-[0.24em] text-[var(--muted-foreground)]">
+            <div
+              class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3 text-[10px] uppercase tracking-[0.24em] text-[var(--muted-foreground)]"
+            >
               <span>Vol. 01</span>
               <span>{{ t('auth.layout.brand') }}</span>
               <span>Daily Edition</span>
@@ -140,7 +161,11 @@ const metrics = [
               <p class="auth-newsprint__lead mt-4 max-w-2xl text-base leading-7 text-[var(--foreground)]">{{ props.description }}</p>
             </div>
             <div class="grid">
-              <div v-for="metric in metrics" :key="metric.labelKey" class="grid grid-cols-[110px_1fr] items-center border-b border-[var(--border)] p-3 last:border-b-0">
+              <div
+                v-for="metric in metrics"
+                :key="metric.labelKey"
+                class="grid grid-cols-[110px_1fr] items-center border-b border-[var(--border)] p-3 last:border-b-0"
+              >
                 <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--muted-foreground)]">{{ t(metric.labelKey) }}</span>
                 <span class="[font-family:var(--font-mono)] text-sm font-semibold">{{ t(metric.valueKey) }}</span>
               </div>
@@ -170,7 +195,10 @@ const metrics = [
       </div>
     </section>
 
-    <section v-else class="auth-crypto relative mx-auto grid min-h-screen w-full max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:grid-cols-[1.1fr_minmax(360px,440px)] lg:items-center lg:px-8">
+    <section
+      v-else
+      class="auth-crypto relative mx-auto grid min-h-screen w-full max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:grid-cols-[1.1fr_minmax(360px,440px)] lg:items-center lg:px-8"
+    >
       <aside class="grid gap-6">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="auth-crypto__seal">
@@ -186,7 +214,11 @@ const metrics = [
           <h1 class="mt-8 max-w-3xl [font-family:var(--font-display)] text-5xl leading-none sm:text-7xl">{{ props.title }}</h1>
           <p class="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted-foreground)]">{{ props.description }}</p>
           <div class="mt-8 grid gap-3 sm:grid-cols-3">
-            <div v-for="metric in metrics" :key="metric.labelKey" class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
+            <div
+              v-for="metric in metrics"
+              :key="metric.labelKey"
+              class="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4"
+            >
               <div class="text-xs uppercase tracking-[0.2em] text-[var(--muted-foreground)]">{{ t(metric.labelKey) }}</div>
               <div class="mt-3 [font-family:var(--font-display)] text-2xl">{{ t(metric.valueKey) }}</div>
             </div>
@@ -211,8 +243,7 @@ const metrics = [
 .auth-shell__texture {
   background:
     radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 28rem),
-    linear-gradient(120deg, color-mix(in srgb, var(--surface-sunken) 72%, transparent), transparent),
-    var(--texture);
+    linear-gradient(120deg, color-mix(in srgb, var(--surface-sunken) 72%, transparent), transparent), var(--texture);
   opacity: 0.86;
   pointer-events: none;
 }
@@ -221,8 +252,7 @@ const metrics = [
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   background:
-    linear-gradient(150deg, color-mix(in srgb, var(--surface) 94%, transparent), color-mix(in srgb, var(--surface-raised) 84%, transparent)),
-    var(--texture);
+    linear-gradient(150deg, color-mix(in srgb, var(--surface) 94%, transparent), color-mix(in srgb, var(--surface-raised) 84%, transparent)), var(--texture);
   box-shadow: var(--panel-shadow);
   padding: clamp(1.25rem, 3vw, 2rem);
 }
@@ -240,8 +270,7 @@ const metrics = [
 
 .auth-panel--base {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface) 98%, transparent), color-mix(in srgb, var(--surface-raised) 92%, transparent)),
-    var(--texture);
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 98%, transparent), color-mix(in srgb, var(--surface-raised) 92%, transparent)), var(--texture);
 }
 
 .auth-crypto__ledger {
@@ -280,14 +309,12 @@ const metrics = [
 
 .auth-newsprint__sheet {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, transparent), color-mix(in srgb, var(--surface-sunken) 90%, transparent)),
-    var(--texture);
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, transparent), color-mix(in srgb, var(--surface-sunken) 90%, transparent)), var(--texture);
 }
 
 .auth-newsprint__masthead {
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--surface) 92%, transparent), color-mix(in srgb, var(--surface-raised) 96%, transparent)),
-    var(--texture);
+    linear-gradient(90deg, color-mix(in srgb, var(--surface) 92%, transparent), color-mix(in srgb, var(--surface-raised) 96%, transparent)), var(--texture);
 }
 
 .auth-newsprint__lead {

@@ -10,12 +10,8 @@ import { usePreferencesStore } from '@/stores/preferences.store'
 const route = useRoute()
 const { t } = useI18n()
 const preferences = usePreferencesStore()
-const pageTitle = computed(() =>
-  translateRouteTitle(t, route.path, typeof route.meta.title === 'string' ? route.meta.title : t('workspace.fallbackTitle'))
-)
-const pageDescription = computed(() =>
-  translateRouteDescription(t, route.path, typeof route.meta.description === 'string' ? route.meta.description : '')
-)
+const pageTitle = computed(() => translateRouteTitle(t, route.path, typeof route.meta.title === 'string' ? route.meta.title : t('workspace.fallbackTitle')))
+const pageDescription = computed(() => translateRouteDescription(t, route.path, typeof route.meta.description === 'string' ? route.meta.description : ''))
 
 const aiStatusMessage = computed(() => {
   if (preferences.aiAvailability.state === 'ready') {
@@ -55,7 +51,9 @@ const aiStatusMessage = computed(() => {
     >
       <header class="flex items-start justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-raised)] p-3">
         <div class="flex min-w-0 items-center gap-2">
-          <span class="grid size-8 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[var(--glow)]">
+          <span
+            class="grid size-8 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[var(--glow)]"
+          >
             <Bot class="size-4" />
           </span>
           <div class="min-w-0">

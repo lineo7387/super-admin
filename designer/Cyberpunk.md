@@ -164,22 +164,14 @@ Implemented via ::before and ::after pseudo-elements with:
 1. **Scanlines Overlay** (CSS pseudo-element):
 
 ```css
-background: repeating-linear-gradient(
-  0deg,
-  transparent,
-  transparent 2px,
-  rgba(0, 0, 0, 0.3) 2px,
-  rgba(0, 0, 0, 0.3) 4px
-);
+background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.3) 2px, rgba(0, 0, 0, 0.3) 4px);
 pointer-events: none;
 ```
 
 2. **Grid/Circuit Pattern** (subtle background):
 
 ```css
-background-image:
-  linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+background-image: linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
 background-size: 50px 50px;
 ```
 

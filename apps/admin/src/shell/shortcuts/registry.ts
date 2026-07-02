@@ -71,12 +71,7 @@ function hasCmdOrCtrl(combo: ShortcutCombo): boolean {
 }
 
 export function combosMatch(a: ShortcutCombo, b: ShortcutCombo): boolean {
-  return (
-    a.key === b.key &&
-    hasCmdOrCtrl(a) === hasCmdOrCtrl(b) &&
-    a.shiftKey === b.shiftKey &&
-    a.altKey === b.altKey
-  )
+  return a.key === b.key && hasCmdOrCtrl(a) === hasCmdOrCtrl(b) && a.shiftKey === b.shiftKey && a.altKey === b.altKey
 }
 
 export function isModifierOnlyKey(key: string): boolean {

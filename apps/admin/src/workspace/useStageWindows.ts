@@ -2,13 +2,7 @@ import type { Component, ComputedRef } from 'vue'
 import { computed, defineAsyncComponent } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import {
-  createWorkspaceTabGroups,
-  findActiveModule,
-  findModuleRoute,
-  type ModuleRouteComponent,
-  type WorkspaceTab
-} from '@super-admin-org/core'
+import { createWorkspaceTabGroups, findActiveModule, findModuleRoute, type ModuleRouteComponent, type WorkspaceTab } from '@super-admin-org/core'
 import { translateModuleName, translateRouteDescription, translateRouteTitle } from '@/i18n/navigation'
 import { registeredModules } from '@/modules/module-registry'
 import { usePreferencesStore } from '@/stores/preferences.store'

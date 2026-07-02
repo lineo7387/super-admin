@@ -12,7 +12,7 @@ describe('auth layout preferences entry', () => {
   it('mounts the auth preferences trigger once outside profile-specific branches', () => {
     const preferenceTriggerMatches = authLayoutSource.match(/<GlobalPreferences trigger="auth"/g) ?? []
     const firstPreferenceTriggerIndex = authLayoutSource.indexOf('<GlobalPreferences trigger="auth"')
-    const firstProfileBranchIndex = authLayoutSource.indexOf("v-if=\"preferences.profileId ===")
+    const firstProfileBranchIndex = authLayoutSource.indexOf('v-if="preferences.profileId ===')
 
     expect(preferenceTriggerMatches).toHaveLength(1)
     expect(firstPreferenceTriggerIndex).toBeGreaterThan(-1)
@@ -22,12 +22,12 @@ describe('auth layout preferences entry', () => {
 
   it('aligns the auth preferences trigger to the auth layout container instead of the viewport edge', () => {
     expect(authLayoutSource).toContain('auth-preferences-slot')
-    expect(globalPreferencesSource).not.toContain("fixed right-4 top-4 z-[70] max-w-[calc(100vw-2rem)]")
+    expect(globalPreferencesSource).not.toContain('fixed right-4 top-4 z-[70] max-w-[calc(100vw-2rem)]')
   })
 
   it('includes a dedicated Base auth composition before the strong-style branches', () => {
-    const baseBranchIndex = authLayoutSource.indexOf("v-if=\"preferences.profileId === 'base'\"")
-    const industrialBranchIndex = authLayoutSource.indexOf("v-else-if=\"preferences.profileId === 'industrial'\"")
+    const baseBranchIndex = authLayoutSource.indexOf('v-if="preferences.profileId === \'base\'"')
+    const industrialBranchIndex = authLayoutSource.indexOf('v-else-if="preferences.profileId === \'industrial\'"')
 
     expect(baseBranchIndex).toBeGreaterThan(-1)
     expect(industrialBranchIndex).toBeGreaterThan(-1)
@@ -39,10 +39,7 @@ describe('auth layout preferences entry', () => {
   it('keeps the industrial title inside the left control composition', () => {
     const industrialBranchIndex = authLayoutSource.indexOf("preferences.profileId === 'industrial'")
     const cyberpunkBranchIndex = authLayoutSource.indexOf("preferences.profileId === 'cyberpunk'")
-    const industrialSection = authLayoutSource.slice(
-      industrialBranchIndex,
-      cyberpunkBranchIndex
-    )
+    const industrialSection = authLayoutSource.slice(industrialBranchIndex, cyberpunkBranchIndex)
     const titleIndex = industrialSection.indexOf('{{ props.title }}')
     const railIndex = industrialSection.indexOf('auth-industrial__rail')
     const formPanelIndex = industrialSection.indexOf('auth-panel--industrial')
@@ -58,8 +55,8 @@ describe('auth layout preferences entry', () => {
   })
 
   it('includes a dedicated Newsprint auth composition before the default Crypto fallback', () => {
-    const newsprintBranchIndex = authLayoutSource.indexOf("v-else-if=\"preferences.profileId === 'newsprint'\"")
-    const cryptoFallbackIndex = authLayoutSource.indexOf('v-else class="auth-crypto')
+    const newsprintBranchIndex = authLayoutSource.indexOf('v-else-if="preferences.profileId === \'newsprint\'"')
+    const cryptoFallbackIndex = authLayoutSource.match(/v-else\s+class="auth-crypto/)?.index ?? -1
 
     expect(newsprintBranchIndex).toBeGreaterThan(-1)
     expect(cryptoFallbackIndex).toBeGreaterThan(-1)

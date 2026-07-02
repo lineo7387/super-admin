@@ -33,11 +33,7 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
         'stage-window-scale--thumb': props.variant === 'thumb'
       }"
     >
-      <div
-        v-if="props.preview"
-        class="stage-window-preview__shell"
-        :data-stage-preview-layout="props.preview.layoutPreset"
-      >
+      <div v-if="props.preview" class="stage-window-preview__shell" :data-stage-preview-layout="props.preview.layoutPreset">
         <header class="stage-window-preview__chrome">
           <span class="stage-window-preview__brand">SA</span>
           <span class="stage-window-preview__chrome-line stage-window-preview__chrome-line--strong" />
@@ -45,11 +41,7 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
         </header>
 
         <div class="stage-window-preview__layout" :data-stage-preview-layout="props.preview.layoutPreset">
-          <aside
-            v-if="props.preview.layoutPreset === 'tri-column'"
-            class="stage-window-preview__dock"
-            aria-hidden="true"
-          >
+          <aside v-if="props.preview.layoutPreset === 'tri-column'" class="stage-window-preview__dock" aria-hidden="true">
             <span />
             <span />
             <span />
@@ -68,11 +60,7 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
             <span />
           </aside>
 
-          <nav
-            v-if="props.preview.layoutPreset === 'top-header'"
-            class="stage-window-preview__top-nav"
-            aria-hidden="true"
-          >
+          <nav v-if="props.preview.layoutPreset === 'top-header'" class="stage-window-preview__top-nav" aria-hidden="true">
             <span class="stage-window-preview__top-nav-brand" />
             <span />
             <span />
@@ -81,12 +69,7 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
 
           <section class="stage-window-preview__workspace">
             <div class="stage-window-preview__tabs" aria-hidden="true">
-              <span
-                v-for="tab in visibleTabs"
-                :key="tab.id"
-                class="stage-window-preview__tab"
-                :class="tab.active ? 'stage-window-preview__tab--active' : ''"
-              >
+              <span v-for="tab in visibleTabs" :key="tab.id" class="stage-window-preview__tab" :class="tab.active ? 'stage-window-preview__tab--active' : ''">
                 <span v-if="tab.pinned" class="stage-window-preview__pin" />
                 <span class="stage-window-preview__tab-label">{{ tab.title }}</span>
               </span>
@@ -97,11 +80,7 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
               <span class="stage-window-preview__title">{{ props.preview.title }}</span>
             </div>
 
-            <div
-              class="stage-window-preview__route"
-              :aria-label="props.preview.title"
-              :data-stage-preview-route="props.preview.routePath"
-            >
+            <div class="stage-window-preview__route" :aria-label="props.preview.title" :data-stage-preview-route="props.preview.routePath">
               <component :is="props.component" v-if="props.component" />
               <div v-else class="stage-window-preview__route-empty">
                 {{ props.previewUnavailableLabel }}
@@ -125,8 +104,7 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--primary) 8%, transparent), transparent 48%),
-    color-mix(in srgb, var(--surface-raised) 72%, transparent);
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 8%, transparent), transparent 48%), color-mix(in srgb, var(--surface-raised) 72%, transparent);
 }
 
 .stage-window-preview--thumb {
@@ -216,15 +194,15 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
   padding: 0.7rem;
 }
 
-.stage-window-preview__layout[data-stage-preview-layout="tri-column"] {
+.stage-window-preview__layout[data-stage-preview-layout='tri-column'] {
   grid-template-columns: 4rem 16rem minmax(0, 1fr);
 }
 
-.stage-window-preview__layout[data-stage-preview-layout="dual-column"] {
+.stage-window-preview__layout[data-stage-preview-layout='dual-column'] {
   grid-template-columns: 17rem minmax(0, 1fr);
 }
 
-.stage-window-preview__layout[data-stage-preview-layout="top-header"] {
+.stage-window-preview__layout[data-stage-preview-layout='top-header'] {
   grid-template-rows: 3.1rem minmax(0, 1fr);
 }
 

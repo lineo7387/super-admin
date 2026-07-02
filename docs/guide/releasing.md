@@ -18,13 +18,13 @@ Root app、admin app 和 optional API reference app 不发布。
 
 Version numbers 表示 release stability 和 compatibility。npm dist-tags 表示 install channels。
 
-| Version form | npm dist-tag | Purpose |
-| --- | --- | --- |
-| `0.0.0-bootstrap.0` | `bootstrap` | 只用于创建 package name。不要把它写成可安装 release。 |
-| `0.1.0-beta.1` | `beta` | 可选 public beta prerelease，只在项目明确需要 beta testers 时使用。 |
-| `0.1.0-rc.1` | `rc` | 可选 release candidate，只在准备 final release 后使用。 |
-| `0.1.0` | `next` | 由 GitHub Actions 发布、用于 registry smoke testing 的真实 release candidate。 |
-| `0.1.0` | `latest` | 只有 smoke-verified 且明确批准后才 promotion。 |
+| Version form        | npm dist-tag | Purpose                                                                        |
+| ------------------- | ------------ | ------------------------------------------------------------------------------ |
+| `0.0.0-bootstrap.0` | `bootstrap`  | 只用于创建 package name。不要把它写成可安装 release。                          |
+| `0.1.0-beta.1`      | `beta`       | 可选 public beta prerelease，只在项目明确需要 beta testers 时使用。            |
+| `0.1.0-rc.1`        | `rc`         | 可选 release candidate，只在准备 final release 后使用。                        |
+| `0.1.0`             | `next`       | 由 GitHub Actions 发布、用于 registry smoke testing 的真实 release candidate。 |
+| `0.1.0`             | `latest`     | 只有 smoke-verified 且明确批准后才 promotion。                                 |
 
 只有经过 smoke verification、适合作为默认安装版本的 release 才使用 `latest`。不要把 `latest` 指向 `bootstrap`、`beta`、`rc` 或未验证的 `next`。
 

@@ -39,29 +39,11 @@ function signalIcon(icon: DashboardSignalIcon) {
           <AdminSkeleton :lines="3" />
         </AdminCard>
       </template>
-      <MetricTile
-        v-else
-        v-for="metric in metrics"
-        :key="metric.id"
-        :label="metric.label"
-        :value="metric.value"
-        :meta="metric.meta"
-        :tone="metric.tone"
-      />
+      <MetricTile v-else v-for="metric in metrics" :key="metric.id" :label="metric.label" :value="metric.value" :meta="metric.meta" :tone="metric.tone" />
     </section>
 
-    <AdminAlert
-      v-if="isError"
-      tone="danger"
-      :title="t('examples.dashboard.loadErrorTitle')"
-      :description="t('examples.dashboard.loadErrorDescription')"
-    />
-    <AdminAlert
-      v-else-if="isEmpty"
-      tone="warning"
-      :title="t('examples.dashboard.emptyTitle')"
-      :description="t('examples.dashboard.emptyDescription')"
-    />
+    <AdminAlert v-if="isError" tone="danger" :title="t('examples.dashboard.loadErrorTitle')" :description="t('examples.dashboard.loadErrorDescription')" />
+    <AdminAlert v-else-if="isEmpty" tone="warning" :title="t('examples.dashboard.emptyTitle')" :description="t('examples.dashboard.emptyDescription')" />
 
     <section class="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.55fr)]">
       <AdminCard>
@@ -79,16 +61,8 @@ function signalIcon(icon: DashboardSignalIcon) {
           <AdminSkeleton :lines="4" />
         </div>
         <div v-else class="mt-6 grid gap-1 divide-y divide-[var(--border)] lg:grid-cols-3 lg:divide-x lg:divide-y-0">
-          <article
-            v-for="signal in signals"
-            :key="signal.id"
-            class="px-1 py-4 lg:px-4 lg:py-1"
-          >
-            <component
-              :is="signalIcon(signal.id)"
-              class="size-5"
-              :class="signal.tone === 'warning' ? 'text-[var(--warning)]' : 'text-[var(--primary)]'"
-            />
+          <article v-for="signal in signals" :key="signal.id" class="px-1 py-4 lg:px-4 lg:py-1">
+            <component :is="signalIcon(signal.id)" class="size-5" :class="signal.tone === 'warning' ? 'text-[var(--warning)]' : 'text-[var(--primary)]'" />
             <div class="mt-5 text-sm font-medium text-[var(--foreground)]">{{ signal.title }}</div>
             <p class="mt-2 text-sm text-[var(--muted-foreground)]">{{ signal.description }}</p>
           </article>

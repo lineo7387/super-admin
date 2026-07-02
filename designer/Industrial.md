@@ -190,9 +190,7 @@ Overlay on digital displays or "screen" elements.
 - **Grid Patterns (Blueprint/Schematic Backgrounds)**:
 
 ```css
-background-image:
-  linear-gradient(#636e72 1px, transparent 1px),
-  linear-gradient(90deg, #636e72 1px, transparent 1px);
+background-image: linear-gradient(#636e72 1px, transparent 1px), linear-gradient(90deg, #636e72 1px, transparent 1px);
 background-size: 40px 40px;
 opacity: 0.1;
 ```
@@ -246,16 +244,8 @@ Cards are **physical panels bolted onto the chassis background**.
 
 ```css
 background:
-  radial-gradient(
-    circle at 12px 12px,
-    rgba(0, 0, 0, 0.15) 2px,
-    transparent 3px
-  ),
-  radial-gradient(
-    circle at calc(100%-12px) 12px,
-    rgba(0, 0, 0, 0.15) 2px,
-    transparent 3px
-  );
+  radial-gradient(circle at 12px 12px, rgba(0, 0, 0, 0.15) 2px, transparent 3px),
+  radial-gradient(circle at calc(100%-12px) 12px, rgba(0, 0, 0, 0.15) 2px, transparent 3px);
 /* repeat for bottom corners */
 ```
 

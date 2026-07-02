@@ -85,9 +85,6 @@ describe('publish readiness helpers', () => {
       packageName: 'create-super-admin'
     })
 
-    expect(failures.map((failure) => failure.id)).toEqual([
-      'packed-cli-runtime-template-present',
-      'packed-cli-runtime-template-no-reference-api'
-    ])
+    expect(failures.map((failure) => failure.id)).toEqual(['packed-cli-runtime-template-present', 'packed-cli-runtime-template-no-reference-api'])
   })
 })

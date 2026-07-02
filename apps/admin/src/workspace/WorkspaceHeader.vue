@@ -36,9 +36,7 @@ function toggleActivePin(): void {
 </script>
 
 <template>
-  <section
-    class="flex min-h-12 items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-3"
-  >
+  <section class="flex min-h-12 items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)] px-3">
     <nav :aria-label="t('workspace.breadcrumbRoot')" class="flex min-w-0 items-center gap-1.5 text-xs text-[var(--muted-foreground)]">
       <span class="shrink-0">{{ t('workspace.breadcrumbRoot') }}</span>
       <ChevronRight class="size-3 shrink-0 opacity-55" />
@@ -59,13 +57,7 @@ function toggleActivePin(): void {
         <Pin v-else class="size-3.5" />
         <span class="hidden sm:inline">{{ isPinned ? t('workspace.unpin') : t('workspace.pin') }}</span>
       </AdminButton>
-      <AdminButton
-        variant="secondary"
-        size="sm"
-        :disabled="!activeTab"
-        :title="t('workspace.refreshCurrent')"
-        @click="refreshActiveWorkspace"
-      >
+      <AdminButton variant="secondary" size="sm" :disabled="!activeTab" :title="t('workspace.refreshCurrent')" @click="refreshActiveWorkspace">
         <RotateCw class="size-3.5" />
         <span class="hidden sm:inline">{{ t('workspace.refresh') }}</span>
       </AdminButton>

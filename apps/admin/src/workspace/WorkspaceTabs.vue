@@ -184,26 +184,25 @@ onBeforeUnmount(() => {
       :aria-label="t('workspace.scrollTabsLeft')"
       :title="t('workspace.scrollTabsLeft')"
       class="pointer-events-none absolute left-1 top-1/2 z-20 grid size-7 -translate-y-1/2 place-items-center rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted-foreground)] opacity-0 shadow-[var(--panel-shadow)] transition hover:text-[var(--foreground)] focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none group-hover/tabs:pointer-events-auto group-focus-within/tabs:pointer-events-auto"
-      :class="canScrollLeft ? 'group-hover/tabs:opacity-100 group-focus-within/tabs:opacity-100' : 'group-hover/tabs:opacity-35 group-focus-within/tabs:opacity-35'"
+      :class="
+        canScrollLeft ? 'group-hover/tabs:opacity-100 group-focus-within/tabs:opacity-100' : 'group-hover/tabs:opacity-35 group-focus-within/tabs:opacity-35'
+      "
       :disabled="!canScrollLeft"
       @click="scrollTabs(-1)"
     >
       <ChevronLeft class="size-4" />
     </button>
-    <AdminScrollArea
-      ref="scrollArea"
-      axis="horizontal"
-      class="h-full"
-      view-class="flex h-full items-center gap-1 px-2"
-      :show-scrollbar="false"
-      always
-    >
+    <AdminScrollArea ref="scrollArea" axis="horizontal" class="h-full" view-class="flex h-full items-center gap-1 px-2" :show-scrollbar="false" always>
       <div
         v-for="tab in visibleTabs"
         :key="tab.id"
         :data-tab-id="tab.id"
         class="group inline-flex h-8 max-w-56 shrink-0 items-center rounded-[var(--radius-sm)] border text-xs transition"
-        :class="tab.routePath === route.fullPath ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--tab-background)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]'"
+        :class="
+          tab.routePath === route.fullPath
+            ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]'
+            : 'border-[var(--border)] bg-[var(--tab-background)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+        "
       >
         <button
           type="button"
@@ -230,7 +229,9 @@ onBeforeUnmount(() => {
       :aria-label="t('workspace.scrollTabsRight')"
       :title="t('workspace.scrollTabsRight')"
       class="pointer-events-none absolute right-1 top-1/2 z-20 grid size-7 -translate-y-1/2 place-items-center rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted-foreground)] opacity-0 shadow-[var(--panel-shadow)] transition hover:text-[var(--foreground)] focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none group-hover/tabs:pointer-events-auto group-focus-within/tabs:pointer-events-auto"
-      :class="canScrollRight ? 'group-hover/tabs:opacity-100 group-focus-within/tabs:opacity-100' : 'group-hover/tabs:opacity-35 group-focus-within/tabs:opacity-35'"
+      :class="
+        canScrollRight ? 'group-hover/tabs:opacity-100 group-focus-within/tabs:opacity-100' : 'group-hover/tabs:opacity-35 group-focus-within/tabs:opacity-35'
+      "
       :disabled="!canScrollRight"
       @click="scrollTabs(1)"
     >

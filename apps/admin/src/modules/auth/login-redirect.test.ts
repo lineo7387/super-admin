@@ -11,7 +11,7 @@ describe('login redirect handling', () => {
   })
 
   it('localizes required field markers on auth forms', () => {
-    expect(loginPageSource).toContain(":required-label=\"t('validation.requiredLabel')\"")
-    expect(registerPageSource).toContain(":required-label=\"t('validation.requiredLabel')\"")
+    expect(loginPageSource).toContain(':required-label="t(\'validation.requiredLabel\')"')
+    expect(registerPageSource).toContain(':required-label="t(\'validation.requiredLabel\')"')
   })
 })

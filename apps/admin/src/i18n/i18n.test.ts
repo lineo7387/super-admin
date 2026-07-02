@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  createAdminI18n,
-  createMessageTranslator,
-  DEFAULT_LOCALE,
-  findMissingLocaleKeys,
-  getActiveLocale,
-  messages
-} from './index'
+import { createAdminI18n, createMessageTranslator, DEFAULT_LOCALE, findMissingLocaleKeys, getActiveLocale, messages } from './index'
 import { translateNavItemLabel, translateRouteDescription, translateRouteTitle } from './navigation'
 import { examplesManifest } from '@/modules/examples/examples.manifest'
 
@@ -65,7 +58,9 @@ describe('admin i18n foundation', () => {
     expect(translateRouteTitle(enT, '/examples/dashboard', 'Operations Dashboard')).toBe('Dashboard')
     expect(translateRouteTitle(enT, '/examples/charts', 'Charts')).toBe('Charts')
     expect(translateRouteDescription(enT, '/examples/charts', 'Theme-adapted ECharts examples.')).toContain('ECharts')
-    expect(translateRouteDescription(enT, '/examples/dashboard', 'Live control surface for revenue, risk, jobs, and audit signals.')).toContain('frontend example')
+    expect(translateRouteDescription(enT, '/examples/dashboard', 'Live control surface for revenue, risk, jobs, and audit signals.')).toContain(
+      'frontend example'
+    )
   })
 
   it('uses generic open-source template copy on auth surfaces', () => {

@@ -33,10 +33,7 @@ export type WorkspaceTabGroup = {
   isStacked: boolean
 }
 
-export function createWorkspaceTab(
-  input: Omit<WorkspaceTab, 'openedAt' | 'activatedAt' | 'refreshKey'>,
-  now: number
-): WorkspaceTab {
+export function createWorkspaceTab(input: Omit<WorkspaceTab, 'openedAt' | 'activatedAt' | 'refreshKey'>, now: number): WorkspaceTab {
   return {
     ...input,
     refreshKey: 0,
@@ -67,8 +64,7 @@ export function closeWorkspaceTab(
   }
 
   const tabs = state.tabs.filter((tab) => tab.id !== tabId)
-  const activeTabId =
-    state.activeTabId === tabId ? resolveNextActiveTabId(tabs, closingIndex, closeStrategy) : state.activeTabId
+  const activeTabId = state.activeTabId === tabId ? resolveNextActiveTabId(tabs, closingIndex, closeStrategy) : state.activeTabId
 
   return { tabs, activeTabId }
 }
@@ -88,17 +84,11 @@ export function toggleWorkspaceTabPin(state: WorkspaceTabsState, tabId: Workspac
 
   return {
     activeTabId: state.activeTabId,
-    tabs: nextPinned
-      ? [nextTab, ...otherTabs]
-      : [...otherTabs.filter((tab) => tab.pinned), nextTab, ...otherTabs.filter((tab) => !tab.pinned)]
+    tabs: nextPinned ? [nextTab, ...otherTabs] : [...otherTabs.filter((tab) => tab.pinned), nextTab, ...otherTabs.filter((tab) => !tab.pinned)]
   }
 }
 
-export function refreshWorkspaceTab(
-  state: WorkspaceTabsState,
-  tabId: WorkspaceTabId,
-  now: number
-): WorkspaceTabsState {
+export function refreshWorkspaceTab(state: WorkspaceTabsState, tabId: WorkspaceTabId, now: number): WorkspaceTabsState {
   return {
     activeTabId: state.activeTabId,
     tabs: state.tabs.map((tab) =>
@@ -131,15 +121,24 @@ export function createWorkspaceTabGroups(tabs: WorkspaceTab[], manifests: Module
     })
   }
 
-  return Array.from(groups.values()).map((group) => {
-    const activeTab = group.tabs.reduce((latest, tab) => (tab.activatedAt > latest.activatedAt ? tab : latest), group.tabs[0]!)
+  const result: WorkspaceTabGroup[] = []
 
-    return {
+  for (const group of groups.values()) {
+    const [firstTab, ...remainingTabs] = group.tabs
+    if (!firstTab) {
+      continue
+    }
+
+    const activeTab = remainingTabs.reduce((latest, tab) => (tab.activatedAt > latest.activatedAt ? tab : latest), firstTab)
+
+    result.push({
       ...group,
       activeTab,
       isStacked: group.tabs.length > 1
-    }
-  })
+    })
+  }
+
+  return result
 }
 
 function resolveWorkspaceTabGroup(routePath: string, manifests: ModuleManifest[]): Omit<WorkspaceTabGroup, 'tabs' | 'activeTab' | 'isStacked'> {
@@ -156,7 +155,7 @@ function resolveWorkspaceTabGroup(routePath: string, manifests: ModuleManifest[]
   }
 
   const activeTrail = findActiveNavTrail(manifest.nav, routePath)
-  const groupNavItem = manifest.id === 'examples' ? activeTrail?.[1] ?? manifest.nav : manifest.nav
+  const groupNavItem = manifest.id === 'examples' ? (activeTrail?.[1] ?? manifest.nav) : manifest.nav
 
   return {
     id: `${manifest.id}:${groupNavItem.path}`,
@@ -198,11 +197,7 @@ function pathMatches(navPath: string, routePath: string): boolean {
   return normalizedRoutePath === normalizedNavPath || normalizedRoutePath.startsWith(`${normalizedNavPath}/`)
 }
 
-function resolveNextActiveTabId(
-  tabs: WorkspaceTab[],
-  closingIndex: number,
-  closeStrategy: WorkspaceTabCloseStrategy
-): WorkspaceTabId | null {
+function resolveNextActiveTabId(tabs: WorkspaceTab[], closingIndex: number, closeStrategy: WorkspaceTabCloseStrategy): WorkspaceTabId | null {
   if (tabs.length === 0) {
     return null
   }
