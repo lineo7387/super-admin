@@ -90,7 +90,9 @@ function statusLabel(status: UserStatus): string {
         <th v-if="isVisible('role')" class="px-3 py-3 font-medium">{{ t('users.form.role') }}</th>
         <th v-if="isVisible('region')" class="px-3 py-3 font-medium">{{ t('users.form.region') }}</th>
         <th v-if="isVisible('status')" class="px-3 py-3 font-medium">{{ t('users.form.status') }}</th>
-        <th class="w-12 px-3 py-3 font-medium"><span class="sr-only">{{ t('users.all.actions') }}</span></th>
+        <th class="w-12 px-3 py-3 font-medium">
+          <span class="sr-only">{{ t('users.all.actions') }}</span>
+        </th>
       </tr>
     </template>
     <template #error-action>

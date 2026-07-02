@@ -28,13 +28,7 @@ const emit = defineEmits<{
     <PinOff v-if="props.pinned" class="size-3" aria-hidden="true" />
     <Pin v-else class="size-3" aria-hidden="true" />
   </button>
-  <button
-    type="button"
-    class="stage-action stage-action--refresh"
-    :aria-label="props.refreshLabel"
-    :title="props.refreshLabel"
-    @click.stop="emit('refresh')"
-  >
+  <button type="button" class="stage-action stage-action--refresh" :aria-label="props.refreshLabel" :title="props.refreshLabel" @click.stop="emit('refresh')">
     <RotateCw class="size-3" aria-hidden="true" />
   </button>
   <button

@@ -32,14 +32,12 @@ function submitRegister(): void {
 </script>
 
 <template>
-  <AuthLayout
-    :eyebrow="t('auth.register.eyebrow')"
-    :title="t('auth.register.title')"
-    :description="t('auth.register.description')"
-  >
+  <AuthLayout :eyebrow="t('auth.register.eyebrow')" :title="t('auth.register.title')" :description="t('auth.register.description')">
     <div class="grid gap-5">
       <div>
-        <div class="inline-flex size-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] text-[var(--primary)] shadow-[var(--glow)]">
+        <div
+          class="inline-flex size-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] text-[var(--primary)] shadow-[var(--glow)]"
+        >
           <Building2 class="size-5" />
         </div>
         <h2 class="mt-4 [font-family:var(--font-display)] text-3xl leading-tight">{{ t('auth.register.heading') }}</h2>
@@ -48,12 +46,7 @@ function submitRegister(): void {
         </p>
       </div>
 
-      <AdminAlert
-        v-if="notice"
-        tone="warning"
-        :title="t('auth.register.noticeTitle')"
-        :description="notice"
-      />
+      <AdminAlert v-if="notice" tone="warning" :title="t('auth.register.noticeTitle')" :description="notice" />
 
       <AdminValidationSummary :title="t('common.primitives.validationTitle')" :errors="validationMessages" />
 
@@ -62,15 +55,34 @@ function submitRegister(): void {
           <AdminTextInput id="register-name" v-model="form.name" autocomplete="name" :invalid="Boolean(fieldErrors.name)" />
         </AdminField>
 
-        <AdminField :label="t('auth.register.workEmail')" for="register-email" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.email">
+        <AdminField
+          :label="t('auth.register.workEmail')"
+          for="register-email"
+          required
+          :required-label="t('validation.requiredLabel')"
+          :error="fieldErrors.email"
+        >
           <AdminTextInput id="register-email" v-model="form.email" type="email" autocomplete="email" :invalid="Boolean(fieldErrors.email)" />
         </AdminField>
 
-        <AdminField :label="t('auth.register.workspace')" for="register-organization" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.organization">
+        <AdminField
+          :label="t('auth.register.workspace')"
+          for="register-organization"
+          required
+          :required-label="t('validation.requiredLabel')"
+          :error="fieldErrors.organization"
+        >
           <AdminTextInput id="register-organization" v-model="form.organization" :invalid="Boolean(fieldErrors.organization)" />
         </AdminField>
 
-        <AdminField :label="t('auth.register.password')" for="register-password" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.password" :help="t('auth.register.passwordHelp')">
+        <AdminField
+          :label="t('auth.register.password')"
+          for="register-password"
+          required
+          :required-label="t('validation.requiredLabel')"
+          :error="fieldErrors.password"
+          :help="t('auth.register.passwordHelp')"
+        >
           <AdminTextInput id="register-password" v-model="form.password" type="password" autocomplete="new-password" :invalid="Boolean(fieldErrors.password)" />
         </AdminField>
 

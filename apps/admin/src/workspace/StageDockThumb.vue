@@ -112,8 +112,7 @@ function activate(): void {
   border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border));
   border-radius: inherit;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--primary) 12%, transparent), transparent 52%),
-    color-mix(in srgb, var(--surface-raised) 70%, transparent);
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 12%, transparent), transparent 52%), color-mix(in srgb, var(--surface-raised) 70%, transparent);
   box-shadow: 0 0.75rem 1.8rem color-mix(in srgb, var(--app-background) 34%, transparent);
 }
 
@@ -159,7 +158,7 @@ function activate(): void {
 }
 
 .stage-thumb__surface::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -194,7 +193,9 @@ function activate(): void {
 .stage-thumb--pressed :deep(.stage-window-preview),
 .stage-thumb:hover :deep(.stage-window-preview) {
   border-color: var(--border-strong);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent), var(--glow);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent),
+    var(--glow);
 }
 
 @media (max-width: 760px) {

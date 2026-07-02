@@ -6,15 +6,15 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: "09:00"
+      time: '09:00'
       timezone: Asia/Shanghai
     open-pull-requests-limit: 3
     commit-message:
-      prefix: "chore(deps)"
+      prefix: 'chore(deps)'
     groups:
       github-actions:
         patterns:
-          - "*"
+          - '*'
 
   - package-ecosystem: npm
     directories:
@@ -33,28 +33,28 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: "09:30"
+      time: '09:30'
       timezone: Asia/Shanghai
     open-pull-requests-limit: 5
     commit-message:
-      prefix: "chore(deps)"
+      prefix: 'chore(deps)'
     groups:
       vue-vite:
         patterns:
-          - "@vitejs/*"
-          - "@vue/*"
-          - "vite"
-          - "vitepress"
-          - "vue"
-          - "vue-i18n"
-          - "vue-router"
-          - "vue-tsc"
+          - '@vitejs/*'
+          - '@vue/*'
+          - 'vite'
+          - 'vitepress'
+          - 'vue'
+          - 'vue-i18n'
+          - 'vue-router'
+          - 'vue-tsc'
       testing:
         patterns:
-          - "vitest"
-          - "playwright"
+          - 'vitest'
+          - 'playwright'
       tooling:
         patterns:
-          - "@types/*"
-          - "typescript"
-          - "tsx"
+          - '@types/*'
+          - 'typescript'
+          - 'tsx'

@@ -18,13 +18,13 @@ The root app, admin app, and optional API reference app are not published.
 
 Version numbers describe release stability and compatibility. npm dist-tags describe install channels.
 
-| Version form | npm dist-tag | Purpose |
-| --- | --- | --- |
-| `0.0.0-bootstrap.0` | `bootstrap` | Package-name creation only. Do not document or recommend this as an installable release. |
-| `0.1.0-beta.1` | `beta` | Optional public beta prerelease, only when the project intentionally wants beta testers. |
-| `0.1.0-rc.1` | `rc` | Optional release candidate, only when a final release is expected after candidate validation. |
-| `0.1.0` | `next` | Real release candidate published by GitHub Actions for registry smoke testing. |
-| `0.1.0` | `latest` | Smoke-verified release promoted only after explicit approval. |
+| Version form        | npm dist-tag | Purpose                                                                                       |
+| ------------------- | ------------ | --------------------------------------------------------------------------------------------- |
+| `0.0.0-bootstrap.0` | `bootstrap`  | Package-name creation only. Do not document or recommend this as an installable release.      |
+| `0.1.0-beta.1`      | `beta`       | Optional public beta prerelease, only when the project intentionally wants beta testers.      |
+| `0.1.0-rc.1`        | `rc`         | Optional release candidate, only when a final release is expected after candidate validation. |
+| `0.1.0`             | `next`       | Real release candidate published by GitHub Actions for registry smoke testing.                |
+| `0.1.0`             | `latest`     | Smoke-verified release promoted only after explicit approval.                                 |
 
 Use `latest` only for smoke-verified releases that should be installed by default with `npm install <package>` or `pnpm add <package>`. Do not move `latest` to `bootstrap`, `beta`, `rc`, or `next` versions.
 

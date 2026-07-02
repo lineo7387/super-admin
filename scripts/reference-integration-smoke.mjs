@@ -33,7 +33,8 @@ export function createSmokeConfig({ apiPort, adminPort, headed = false } = {}) {
 }
 
 export function buildAdminEnv({ apiUrl }, env = process.env) {
-  const { VITE_SUPER_ADMIN_REFERENCE_TOKEN: _referenceToken, ...baseEnv } = env
+  const baseEnv = { ...env }
+  delete baseEnv.VITE_SUPER_ADMIN_REFERENCE_TOKEN
 
   return {
     ...baseEnv,
@@ -172,7 +173,8 @@ async function importPlaywright() {
   try {
     return await import('playwright')
   } catch (error) {
-    throw new Error(`Playwright is required for the reference smoke. Install dependencies with pnpm install. ${error.message}`)
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error(`Playwright is required for the reference smoke. Install dependencies with pnpm install. ${message}`, { cause: error })
   }
 }
 
@@ -188,7 +190,8 @@ async function runBrowserFlow(config) {
   try {
     browser = await chromium.launch({ headless: !config.headed })
   } catch (error) {
-    throw new Error(`Unable to launch Chromium. Run "pnpm exec playwright install chromium" and retry. ${error.message}`)
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error(`Unable to launch Chromium. Run "pnpm exec playwright install chromium" and retry. ${message}`, { cause: error })
   }
 
   const requests = []
@@ -224,9 +227,7 @@ async function runBrowserFlow(config) {
     await page.waitForURL('**/auth/login**')
     assertSmoke(page.url().includes('redirect=/examples/users/all'), 'Logged-out users route did not preserve the redirect query.')
 
-    const authResponsePromise = page.waitForResponse(
-      (response) => response.url() === `${config.apiUrl}/auth/login` && response.request().method() === 'POST'
-    )
+    const authResponsePromise = page.waitForResponse((response) => response.url() === `${config.apiUrl}/auth/login` && response.request().method() === 'POST')
     const usersResponsePromise = page
       .waitForResponse((response) => response.url().startsWith(`${config.apiUrl}/users`) && response.request().method() === 'GET')
       .then((response) => ({ response }))

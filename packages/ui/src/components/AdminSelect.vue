@@ -48,11 +48,7 @@ const trigger = useTemplateRef<HTMLElement>('trigger')
 const listbox = useTemplateRef<HTMLElement>('listbox')
 
 const rootClasses = computed(() =>
-  cn(
-    'relative inline-flex h-9 min-w-0 items-center',
-    props.fluid ? 'w-full' : '',
-    attrs.class as string | string[] | Record<string, boolean | undefined>
-  )
+  cn('relative inline-flex h-9 min-w-0 items-center', props.fluid ? 'w-full' : '', attrs.class as string | string[] | Record<string, boolean | undefined>)
 )
 
 const buttonAttrs = computed(() => {
@@ -84,7 +80,7 @@ function openMenu(): void {
     return
   }
 
-  highlightedValue.value = selectedOption.value && !selectedOption.value.disabled ? selectedOption.value.value : enabledOptions.value[0]?.value ?? ''
+  highlightedValue.value = selectedOption.value && !selectedOption.value.disabled ? selectedOption.value.value : (enabledOptions.value[0]?.value ?? '')
   isOpen.value = true
   void nextTick(updateOverlayPosition)
 }
@@ -116,7 +112,10 @@ function moveHighlight(direction: 1 | -1): void {
     return
   }
 
-  const currentIndex = Math.max(0, options.findIndex((option) => option.value === highlightedValue.value))
+  const currentIndex = Math.max(
+    0,
+    options.findIndex((option) => option.value === highlightedValue.value)
+  )
   const nextIndex = (currentIndex + direction + options.length) % options.length
   highlightedValue.value = options[nextIndex]?.value ?? options[0]?.value ?? ''
 }
@@ -213,7 +212,9 @@ onBeforeUnmount(() => {
       <span class="min-w-0 truncate" :class="selectedOption ? '' : 'text-[var(--muted-foreground)]'">
         {{ selectedOption?.label ?? placeholder }}
       </span>
-      <span class="grid size-5 shrink-0 place-items-center rounded-[var(--radius-xs)] border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted-foreground)]">
+      <span
+        class="grid size-5 shrink-0 place-items-center rounded-[var(--radius-xs)] border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted-foreground)]"
+      >
         <ChevronDown class="size-3.5 transition" :class="isOpen ? 'rotate-180' : ''" aria-hidden="true" />
       </span>
     </button>

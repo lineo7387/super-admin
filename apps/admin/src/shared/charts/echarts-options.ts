@@ -78,7 +78,10 @@ export function createTrendLineOption(recipe: ChartRecipe, points: ChartPoint[])
       top: 24
     },
     tooltip: createTooltip(recipe),
-    xAxis: createCategoryAxis(recipe, points.map((point) => point.label)),
+    xAxis: createCategoryAxis(
+      recipe,
+      points.map((point) => point.label)
+    ),
     yAxis: createValueAxis(recipe),
     series: [
       {
@@ -110,7 +113,10 @@ export function createBarChartOption(recipe: ChartRecipe, points: ChartPoint[]):
       top: 24
     },
     tooltip: createTooltip(recipe),
-    xAxis: createCategoryAxis(recipe, points.map((point) => point.label)),
+    xAxis: createCategoryAxis(
+      recipe,
+      points.map((point) => point.label)
+    ),
     yAxis: createValueAxis(recipe),
     series: [
       {

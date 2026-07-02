@@ -1,12 +1,6 @@
 import { dashboardActivity, dashboardMetrics, dashboardSignals } from '@/api/mock/dashboard.mock'
 import type { MockDashboardActivity, MockDashboardMetric, MockDashboardSignal } from '@/api/mock/dashboard.mock'
-import type {
-  DashboardActivity,
-  DashboardMetric,
-  DashboardOverviewParams,
-  DashboardOverviewResult,
-  DashboardSignal
-} from '@/modules/dashboard/dashboard.types'
+import type { DashboardActivity, DashboardMetric, DashboardOverviewParams, DashboardOverviewResult, DashboardSignal } from '@/modules/dashboard/dashboard.types'
 
 function normalizeMetric(metric: MockDashboardMetric): DashboardMetric {
   return {

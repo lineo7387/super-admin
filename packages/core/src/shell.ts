@@ -4,9 +4,7 @@ export type LayoutPresetId = 'tri-column' | 'dual-column' | 'top-header' | (stri
 
 export type ShellRegion = 'summary' | 'tools' | 'primary' | 'context' | 'activity'
 
-export type KeepAlivePolicy =
-  | { enabled: true; cacheKey?: string; maxAgeMs?: number }
-  | { enabled: false; reason?: string }
+export type KeepAlivePolicy = { enabled: true; cacheKey?: string; maxAgeMs?: number } | { enabled: false; reason?: string }
 
 export type PageShellMeta = {
   title: string
@@ -45,9 +43,6 @@ export const builtInLayoutPresets: LayoutPreset[] = [
   }
 ]
 
-export function resolveLayoutPreset(
-  userPreference: LayoutPresetId,
-  pagePreference?: LayoutPresetId
-): LayoutPresetId {
+export function resolveLayoutPreset(userPreference: LayoutPresetId, pagePreference?: LayoutPresetId): LayoutPresetId {
   return pagePreference ?? userPreference
 }

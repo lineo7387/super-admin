@@ -3,13 +3,7 @@ import { builtInDesignProfiles, getBuiltInDesignProfile } from './theme-registry
 
 describe('generated theme registry', () => {
   it('composes all installed built-in theme packages for the maintainer app', () => {
-    expect(builtInDesignProfiles.map((profile) => profile.id)).toEqual([
-      'base',
-      'crypto',
-      'industrial',
-      'cyberpunk',
-      'newsprint'
-    ])
+    expect(builtInDesignProfiles.map((profile) => profile.id)).toEqual(['base', 'crypto', 'industrial', 'cyberpunk', 'newsprint'])
 
     for (const profile of builtInDesignProfiles) {
       expect(profile.modes.light.id).toBe(`${profile.id}.light`)

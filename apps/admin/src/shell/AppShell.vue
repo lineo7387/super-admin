@@ -34,9 +34,7 @@ const activeLayout = computed(() => {
   }
   return TriColumnLayout
 })
-const showStageRail = computed(
-  () => preferences.stageManagerDesktopAvailable && preferences.stageManager.railEnabled && tabs.state.tabs.length > 1
-)
+const showStageRail = computed(() => preferences.stageManagerDesktopAvailable && preferences.stageManager.railEnabled && tabs.state.tabs.length > 1)
 const controlCenterLabel = computed(() => t('shell.preferences.title'))
 
 function openControlCenter(): void {
@@ -62,23 +60,13 @@ watch(
 
 <template>
   <div class="stage-shell-frame" :data-stage-rail-open="showStageRail">
-    <div
-      v-if="preferences.stageManagerDesktopAvailable"
-      class="stage-rail-shell"
-      :aria-hidden="!showStageRail"
-      :inert="!showStageRail"
-    >
+    <div v-if="preferences.stageManagerDesktopAvailable" class="stage-rail-shell" :aria-hidden="!showStageRail" :inert="!showStageRail">
       <StageRail />
     </div>
     <div class="stage-shell-frame__app">
       <component :is="activeLayout">
         <template #header-actions>
-          <GlobalPreferencesTrigger
-            animated-label
-            :label="controlCenterLabel"
-            :title="controlCenterLabel"
-            @activate="openControlCenter"
-          />
+          <GlobalPreferencesTrigger animated-label :label="controlCenterLabel" :title="controlCenterLabel" @activate="openControlCenter" />
         </template>
         <template #workspace>
           <WorkspaceRouterView />
@@ -106,7 +94,7 @@ watch(
   transition: grid-template-columns 300ms var(--easing);
 }
 
-.stage-shell-frame[data-stage-rail-open="true"] {
+.stage-shell-frame[data-stage-rail-open='true'] {
   grid-template-columns: var(--stage-rail-width) minmax(0, 1fr);
 }
 
@@ -132,7 +120,7 @@ watch(
   will-change: opacity, transform;
 }
 
-.stage-shell-frame[data-stage-rail-open="true"] .stage-rail-shell {
+.stage-shell-frame[data-stage-rail-open='true'] .stage-rail-shell {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
@@ -140,7 +128,7 @@ watch(
 
 @media (max-width: 1279px) {
   .stage-shell-frame,
-  .stage-shell-frame[data-stage-rail-open="true"] {
+  .stage-shell-frame[data-stage-rail-open='true'] {
     grid-template-columns: 0rem minmax(0, 1fr);
   }
 }

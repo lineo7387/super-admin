@@ -19,12 +19,7 @@ const style = computed(() => ({
 </script>
 
 <template>
-  <section
-    v-if="errors.length > 0"
-    class="rounded-[var(--radius-md)] border p-3 text-sm"
-    :style="style"
-    role="alert"
-  >
+  <section v-if="errors.length > 0" class="rounded-[var(--radius-md)] border p-3 text-sm" :style="style" role="alert">
     <div class="flex items-start gap-2">
       <AlertTriangle class="mt-0.5 size-4 shrink-0 text-[var(--danger)]" aria-hidden="true" />
       <div>

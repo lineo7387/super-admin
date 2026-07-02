@@ -113,4 +113,3 @@ describe('chart recipes', () => {
     expect(baseRecipe.palette).toEqual(['#2563eb', '#18181b', '#16a34a', '#ca8a04', '#dc2626'])
   })
 })
-

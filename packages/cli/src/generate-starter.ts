@@ -110,13 +110,17 @@ function shouldSkipSourceFile(relativePath: string, context: TransformContext): 
 
 function removeOptionalChartsExample(text: string): string {
   return text
-    .replace(`      {
+    .replace(
+      `      {
         label: 'Charts',
         path: '/examples/charts',
         icon: 'charts'
       },
-`, '')
-    .replace(`    {
+`,
+      ''
+    )
+    .replace(
+      `    {
       path: '/examples/charts',
       name: 'examples-charts',
       component: () => import('../charts/ChartsPage.vue'),
@@ -127,7 +131,9 @@ function removeOptionalChartsExample(text: string): string {
         keepAlive: { enabled: true }
       }
     },
-`, '')
+`,
+      ''
+    )
 }
 
 function transformSourceText(relativePath: string, text: string, context: TransformContext): string {
@@ -236,10 +242,7 @@ async function materializeOutput(tempDirectory: string, targetDirectory: string)
   await rename(tempDirectory, targetDirectory)
 }
 
-export async function generateStarter(
-  input: StarterGenerationInput,
-  options: GenerateStarterOptions = {}
-): Promise<GenerateStarterResult> {
+export async function generateStarter(input: StarterGenerationInput, options: GenerateStarterOptions = {}): Promise<GenerateStarterResult> {
   const sourceAppDir = options.sourceRoot ? resolve(options.sourceRoot, 'apps/admin') : getDefaultSourceAppDir()
   const targetDirectory = input.targetDirectory
   const tempDirectory = resolve(dirname(targetDirectory), `.${input.projectName}.tmp-${Date.now()}-${process.pid}`)

@@ -5,10 +5,7 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 }
 
-export function validateLoginInput(
-  input: LoginInput,
-  t: MessageTranslator = translateAdminMessage
-): AuthFieldErrors<keyof LoginInput> {
+export function validateLoginInput(input: LoginInput, t: MessageTranslator = translateAdminMessage): AuthFieldErrors<keyof LoginInput> {
   const errors: AuthFieldErrors<keyof LoginInput> = {}
 
   if (!isValidEmail(input.email)) {
@@ -22,10 +19,7 @@ export function validateLoginInput(
   return errors
 }
 
-export function validateRegisterInput(
-  input: RegisterInput,
-  t: MessageTranslator = translateAdminMessage
-): AuthFieldErrors<keyof RegisterInput> {
+export function validateRegisterInput(input: RegisterInput, t: MessageTranslator = translateAdminMessage): AuthFieldErrors<keyof RegisterInput> {
   const errors: AuthFieldErrors<keyof RegisterInput> = {}
 
   if (!input.name.trim()) {

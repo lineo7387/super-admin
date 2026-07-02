@@ -108,8 +108,7 @@ function handleMotionComplete(definition: unknown): void {
   border-radius: var(--radius-lg);
   pointer-events: none;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), transparent 42%),
-    var(--texture),
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), transparent 42%), var(--texture),
     color-mix(in srgb, var(--surface-raised) 82%, transparent);
   box-shadow: var(--glow), var(--panel-shadow);
   transform-origin: center center;

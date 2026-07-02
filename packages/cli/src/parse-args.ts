@@ -172,10 +172,7 @@ function normalizeCharts(charts: string | undefined, noCharts: boolean): Starter
   return charts
 }
 
-export function parseCreateSuperAdminArgs(
-  argv: string[],
-  options: ParseCreateSuperAdminArgsOptions = {}
-): StarterGenerationInput {
+export function parseCreateSuperAdminArgs(argv: string[], options: ParseCreateSuperAdminArgsOptions = {}): StarterGenerationInput {
   const cwd = options.cwd ?? process.cwd()
   const flags = parseFlags(argv)
 

@@ -34,29 +34,50 @@ const statusOptions = computed(() => [
 
 <template>
   <UiKitPage :title="t('uiKit.page.forms.title')" :description="t('uiKit.page.forms.description')">
-    <AdminAlert
-      :title="t('uiKit.forms.alertTitle')"
-      :description="t('uiKit.forms.alertDescription')"
-    />
+    <AdminAlert :title="t('uiKit.forms.alertTitle')" :description="t('uiKit.forms.alertDescription')" />
 
     <AdminCard>
       <form class="grid gap-4" @submit.prevent>
         <AdminValidationSummary :title="t('common.primitives.validationTitle')" :errors="validationErrors" />
         <div class="grid gap-4 md:grid-cols-2">
-          <AdminField :label="t('uiKit.forms.fieldOwner')" for="form-owner" required :required-label="t('validation.requiredLabel')" :error="owner.trim() ? undefined : t('uiKit.forms.fieldOwnerError')">
+          <AdminField
+            :label="t('uiKit.forms.fieldOwner')"
+            for="form-owner"
+            required
+            :required-label="t('validation.requiredLabel')"
+            :error="owner.trim() ? undefined : t('uiKit.forms.fieldOwnerError')"
+          >
             <AdminTextInput id="form-owner" v-model="owner" :invalid="!owner.trim()" />
           </AdminField>
           <AdminField :label="t('uiKit.forms.fieldStatus')" for="form-status">
             <AdminSelect id="form-status" v-model="status" :options="statusOptions" />
           </AdminField>
         </div>
-        <AdminField :label="t('uiKit.forms.fieldEmail')" for="form-email" required :required-label="t('validation.requiredLabel')" :error="t('uiKit.forms.fieldEmailError')">
+        <AdminField
+          :label="t('uiKit.forms.fieldEmail')"
+          for="form-email"
+          required
+          :required-label="t('validation.requiredLabel')"
+          :error="t('uiKit.forms.fieldEmailError')"
+        >
           <AdminTextInput id="form-email" v-model="email" type="email" invalid />
         </AdminField>
-        <AdminField :label="t('uiKit.forms.fieldReference')" for="form-reference" optional :optional-label="t('validation.optionalLabel')" :help="t('uiKit.forms.fieldReferenceHelp')">
+        <AdminField
+          :label="t('uiKit.forms.fieldReference')"
+          for="form-reference"
+          optional
+          :optional-label="t('validation.optionalLabel')"
+          :help="t('uiKit.forms.fieldReferenceHelp')"
+        >
           <AdminTextInput id="form-reference" model-value="OPS-2048" readonly />
         </AdminField>
-        <AdminField :label="t('uiKit.forms.fieldSummary')" for="form-summary" required :required-label="t('validation.requiredLabel')" :help="t('uiKit.forms.fieldSummaryHelp')">
+        <AdminField
+          :label="t('uiKit.forms.fieldSummary')"
+          for="form-summary"
+          required
+          :required-label="t('validation.requiredLabel')"
+          :help="t('uiKit.forms.fieldSummaryHelp')"
+        >
           <AdminTextarea id="form-summary" v-model="summary" :invalid="!summary.trim()" />
         </AdminField>
       </form>

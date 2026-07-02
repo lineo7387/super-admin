@@ -84,12 +84,7 @@ export const useWorkspaceTabsStore = defineStore('workspace-tabs', () => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(pinnedTabs))
   }
 
-  function openTab(input: {
-    title: string
-    routePath: string
-    pinned?: boolean
-    keepAlive: KeepAlivePolicy
-  }): void {
+  function openTab(input: { title: string; routePath: string; pinned?: boolean; keepAlive: KeepAlivePolicy }): void {
     const existing = state.tabs.find((tab) => tab.routePath === input.routePath)
     const now = Date.now()
     if (existing) {

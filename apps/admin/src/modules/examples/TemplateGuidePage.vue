@@ -55,21 +55,12 @@ function itemIcon(itemId: string) {
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <StatusPill
-              v-for="signal in signals"
-              :key="signal.id"
-              :label="signal.label"
-              :tone="signal.tone"
-            />
+            <StatusPill v-for="signal in signals" :key="signal.id" :label="signal.label" :tone="signal.tone" />
           </div>
         </div>
       </AdminCard>
 
-      <AdminAlert
-        tone="warning"
-        :title="t('examples.templateGuide.boundaryTitle')"
-        :description="t('examples.templateGuide.boundaryDescription')"
-      />
+      <AdminAlert tone="warning" :title="t('examples.templateGuide.boundaryTitle')" :description="t('examples.templateGuide.boundaryDescription')" />
     </section>
 
     <section class="grid gap-4 xl:grid-cols-2">
@@ -96,7 +87,9 @@ function itemIcon(itemId: string) {
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
                 <h3 class="text-sm font-semibold text-[var(--foreground)]">{{ item.label }}</h3>
-                <code class="break-all rounded-[var(--radius-sm)] bg-[var(--surface-raised)] px-2 py-1 text-xs whitespace-normal text-[var(--muted-foreground)]">
+                <code
+                  class="break-all rounded-[var(--radius-sm)] bg-[var(--surface-raised)] px-2 py-1 text-xs whitespace-normal text-[var(--muted-foreground)]"
+                >
                   {{ item.path }}
                 </code>
               </div>

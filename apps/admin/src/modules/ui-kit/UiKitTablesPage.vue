@@ -79,9 +79,7 @@ const paginationRange = computed(() => getAdminPaginationRange({ page: page.valu
 const paginationRangeLabel = computed(() =>
   t('uiKit.tables.paginationRange', { start: paginationRange.value.start, end: paginationRange.value.end, total: 24 })
 )
-const paginationPageLabel = computed(() =>
-  t('uiKit.tables.paginationPage', { page: paginationRange.value.page, pageCount: paginationRange.value.pageCount })
-)
+const paginationPageLabel = computed(() => t('uiKit.tables.paginationPage', { page: paginationRange.value.page, pageCount: paginationRange.value.pageCount }))
 
 function rowPadding(): string {
   return density.value === 'compact' ? 'py-2' : 'py-3'
@@ -189,12 +187,18 @@ function setAllSelected(selected: boolean): void {
             <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.status') }}</th>
             <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.risk') }}</th>
             <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.updated') }}</th>
-            <th class="w-16 px-3 py-3 font-medium"><span class="sr-only">{{ t('uiKit.tables.columns.actions') }}</span></th>
+            <th class="w-16 px-3 py-3 font-medium">
+              <span class="sr-only">{{ t('uiKit.tables.columns.actions') }}</span>
+            </th>
           </tr>
         </template>
         <tr v-for="row in visibleRows" :key="row.id" class="border-t border-[var(--border)] bg-[var(--surface)]">
           <td class="px-3" :class="rowPadding()">
-            <AdminCheckbox :model-value="isSelected(row.id)" :aria-label="t('uiKit.tables.selectRow', { name: rowName(row) })" @update:model-value="setRowSelected(row.id, $event)" />
+            <AdminCheckbox
+              :model-value="isSelected(row.id)"
+              :aria-label="t('uiKit.tables.selectRow', { name: rowName(row) })"
+              @update:model-value="setRowSelected(row.id, $event)"
+            />
           </td>
           <td class="px-3 font-medium text-[var(--foreground)]" :class="rowPadding()">{{ rowName(row) }}</td>
           <td class="px-3 text-[var(--muted-foreground)]" :class="rowPadding()">{{ row.owner }}</td>
@@ -236,7 +240,13 @@ function setAllSelected(selected: boolean): void {
         </AdminDataTable>
       </AdminTableFrame>
       <AdminTableFrame :title="t('uiKit.tables.emptyTitle')" :description="t('uiKit.tables.emptyDescription')">
-        <AdminDataTable state="empty" density="compact" :column-count="4" :empty-title="t('uiKit.tables.emptyTitle')" :empty-description="t('uiKit.tables.emptyDescription')">
+        <AdminDataTable
+          state="empty"
+          density="compact"
+          :column-count="4"
+          :empty-title="t('uiKit.tables.emptyTitle')"
+          :empty-description="t('uiKit.tables.emptyDescription')"
+        >
           <template #head>
             <tr>
               <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.name') }}</th>
@@ -248,7 +258,13 @@ function setAllSelected(selected: boolean): void {
         </AdminDataTable>
       </AdminTableFrame>
       <AdminTableFrame :title="t('uiKit.tables.errorTitle')" :description="t('uiKit.tables.errorDescription')">
-        <AdminDataTable state="error" density="compact" :column-count="4" :error-title="t('uiKit.tables.errorTitle')" :error-description="t('uiKit.tables.errorDescription')">
+        <AdminDataTable
+          state="error"
+          density="compact"
+          :column-count="4"
+          :error-title="t('uiKit.tables.errorTitle')"
+          :error-description="t('uiKit.tables.errorDescription')"
+        >
           <template #head>
             <tr>
               <th class="px-3 py-3 font-medium">{{ t('uiKit.tables.columns.name') }}</th>

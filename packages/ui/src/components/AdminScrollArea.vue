@@ -29,12 +29,7 @@ const props = withDefaults(
 )
 
 const attrs = useAttrs()
-const classes = computed(() =>
-  cn(
-    'super-scroll min-h-0',
-    attrs.class as ScrollAreaClass
-  )
-)
+const classes = computed(() => cn('super-scroll min-h-0', attrs.class as ScrollAreaClass))
 
 const rootAttrs = computed(() => {
   const { class: _class, ...rest } = attrs
@@ -148,19 +143,8 @@ defineExpose({
 </script>
 
 <template>
-  <component
-    :is="props.as"
-    :class="classes"
-    :data-always="props.always"
-    :data-scrolling="isScrolling"
-    v-bind="rootAttrs"
-  >
-    <div
-      ref="scrollWrap"
-      class="super-scroll__wrap"
-      :data-axis="props.axis"
-      @scroll="handleScroll"
-    >
+  <component :is="props.as" :class="classes" :data-always="props.always" :data-scrolling="isScrolling" v-bind="rootAttrs">
+    <div ref="scrollWrap" class="super-scroll__wrap" :data-axis="props.axis" @scroll="handleScroll">
       <div ref="scrollView" class="super-scroll__view" :class="props.viewClass">
         <slot />
       </div>

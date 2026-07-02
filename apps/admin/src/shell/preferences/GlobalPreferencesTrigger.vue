@@ -31,9 +31,7 @@ const labelUnits = computed(() =>
 )
 const labelMotionInitial = { rotateX: 0, y: 0 }
 const labelMotionAnimate = computed(() =>
-  props.animatedLabel && !prefersReducedMotion.value
-    ? { rotateX: [0, 18, -6, 0], y: [0, -3, 1, 0] }
-    : labelMotionInitial
+  props.animatedLabel && !prefersReducedMotion.value ? { rotateX: [0, 18, -6, 0], y: [0, -3, 1, 0] } : labelMotionInitial
 )
 
 function labelMotionTransition(delay: number) {

@@ -50,7 +50,9 @@ watch(() => props.indeterminate, syncIndeterminate)
     />
     <span
       class="mt-0.5 grid size-4 shrink-0 place-items-center rounded-[var(--radius-xs)] border text-[var(--primary-foreground)] transition peer-focus-visible:shadow-[var(--focus-ring)]"
-      :class="model || indeterminate ? 'border-[var(--primary)] bg-[var(--primary)] shadow-[var(--glow)]' : 'border-[var(--border-strong)] bg-[var(--surface-sunken)]'"
+      :class="
+        model || indeterminate ? 'border-[var(--primary)] bg-[var(--primary)] shadow-[var(--glow)]' : 'border-[var(--border-strong)] bg-[var(--surface-sunken)]'
+      "
       aria-hidden="true"
     >
       <Minus v-if="indeterminate" class="size-3" />

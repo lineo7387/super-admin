@@ -31,9 +31,13 @@ const paletteHint = computed(() => {
 </script>
 
 <template>
-  <header class="relative z-50 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 border-b border-[var(--border)] bg-[var(--header-background)] px-4 backdrop-blur">
+  <header
+    class="relative z-50 grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 border-b border-[var(--border)] bg-[var(--header-background)] px-4 backdrop-blur"
+  >
     <div v-if="brand === 'full'" class="col-start-1 flex min-w-0 items-center gap-3">
-      <div class="grid size-9 place-items-center rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface-raised)] shadow-[var(--glow)]">
+      <div
+        class="grid size-9 place-items-center rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface-raised)] shadow-[var(--glow)]"
+      >
         <LayoutDashboard class="size-4 text-[var(--primary)]" />
       </div>
       <div class="min-w-0">
@@ -56,7 +60,9 @@ const paletteHint = computed(() => {
     >
       <Search class="size-4" />
       <span>{{ t('shell.commandPalette.trigger') }}</span>
-      <kbd class="ml-auto rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--muted-foreground)]">{{ paletteHint }}</kbd>
+      <kbd class="ml-auto rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--muted-foreground)]">{{
+        paletteHint
+      }}</kbd>
     </button>
 
     <div class="col-start-3 flex min-w-0 items-center justify-end gap-2">

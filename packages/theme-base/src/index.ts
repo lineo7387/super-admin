@@ -27,8 +27,7 @@ export const baseProfile: DesignProfile = {
         danger: '#dc2626'
       },
       shell: {
-        appBackground:
-          'linear-gradient(180deg, rgba(250, 250, 250, 0.96), rgba(244, 244, 245, 0.82)), #ffffff',
+        appBackground: 'linear-gradient(180deg, rgba(250, 250, 250, 0.96), rgba(244, 244, 245, 0.82)), #ffffff',
         headerBackground: 'rgba(255, 255, 255, 0.92)',
         navBackground: '#fafafa',
         contextBackground: '#ffffff',
@@ -83,8 +82,7 @@ export const baseProfile: DesignProfile = {
         danger: '#f87171'
       },
       shell: {
-        appBackground:
-          'linear-gradient(180deg, rgba(24, 24, 27, 0.92), rgba(9, 9, 11, 0.98)), #09090b',
+        appBackground: 'linear-gradient(180deg, rgba(24, 24, 27, 0.92), rgba(9, 9, 11, 0.98)), #09090b',
         headerBackground: 'rgba(24, 24, 27, 0.9)',
         navBackground: '#18181b',
         contextBackground: '#18181b',
@@ -102,8 +100,7 @@ export const baseProfile: DesignProfile = {
         panelShadow: '0 24px 60px rgba(0, 0, 0, 0.34)',
         focusRing: '0 0 0 3px rgba(96, 165, 250, 0.28)',
         glow: '0 8px 28px rgba(96, 165, 250, 0.16)',
-        texture:
-          'linear-gradient(180deg, rgba(39, 39, 42, 0.42), rgba(9, 9, 11, 0.5)), linear-gradient(90deg, rgba(63, 63, 70, 0.36) 1px, transparent 1px)'
+        texture: 'linear-gradient(180deg, rgba(39, 39, 42, 0.42), rgba(9, 9, 11, 0.5)), linear-gradient(90deg, rgba(63, 63, 70, 0.36) 1px, transparent 1px)'
       },
       typography: {
         sans: '"Inter", "Geist", ui-sans-serif, system-ui, sans-serif',

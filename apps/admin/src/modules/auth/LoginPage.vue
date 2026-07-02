@@ -62,14 +62,12 @@ async function submitLogin(): Promise<void> {
 </script>
 
 <template>
-  <AuthLayout
-    :eyebrow="t('auth.login.eyebrow')"
-    :title="t('auth.login.title')"
-    :description="t('auth.login.description')"
-  >
+  <AuthLayout :eyebrow="t('auth.login.eyebrow')" :title="t('auth.login.title')" :description="t('auth.login.description')">
     <div class="grid gap-5">
       <div>
-        <div class="inline-flex size-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] text-[var(--primary)] shadow-[var(--glow)]">
+        <div
+          class="inline-flex size-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] text-[var(--primary)] shadow-[var(--glow)]"
+        >
           <KeyRound class="size-5" />
         </div>
         <h2 class="mt-4 [font-family:var(--font-display)] text-3xl leading-tight">{{ t('auth.login.heading') }}</h2>
@@ -78,12 +76,7 @@ async function submitLogin(): Promise<void> {
         </p>
       </div>
 
-      <AdminAlert
-        v-if="submitError"
-        tone="danger"
-        :title="t('auth.login.failedTitle')"
-        :description="submitError"
-      />
+      <AdminAlert v-if="submitError" tone="danger" :title="t('auth.login.failedTitle')" :description="submitError" />
 
       <AdminValidationSummary :title="t('common.primitives.validationTitle')" :errors="validationMessages" />
 
@@ -92,7 +85,13 @@ async function submitLogin(): Promise<void> {
           <AdminTextInput id="auth-email" v-model="form.email" type="email" :invalid="Boolean(fieldErrors.email)" autocomplete="email" />
         </AdminField>
 
-        <AdminField :label="t('auth.login.password')" for="auth-password" required :required-label="t('validation.requiredLabel')" :error="fieldErrors.password">
+        <AdminField
+          :label="t('auth.login.password')"
+          for="auth-password"
+          required
+          :required-label="t('validation.requiredLabel')"
+          :error="fieldErrors.password"
+        >
           <AdminTextInput id="auth-password" v-model="form.password" type="password" :invalid="Boolean(fieldErrors.password)" autocomplete="current-password" />
         </AdminField>
 

@@ -74,9 +74,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const layoutPreset = computed(() => state.layoutPreset)
   const workspaceTabs = computed(() => state.workspaceTabs)
   const stageManager = computed(() => state.stageManager)
-  const summary = computed(
-    () => `${state.profileId} / ${state.colorMode} / ${state.layoutPreset}`
-  )
+  const summary = computed(() => `${state.profileId} / ${state.colorMode} / ${state.layoutPreset}`)
 
   function persist(): void {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))

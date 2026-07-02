@@ -20,7 +20,9 @@ const { t } = useI18n()
     </ShellHeader>
     <div class="grid h-[calc(100vh-3.5rem)] grid-cols-[minmax(240px,300px)_minmax(0,1fr)]">
       <aside class="flex min-h-0 flex-col border-r border-[var(--border)] bg-[var(--nav-background)] p-3">
-        <div class="mb-4 flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface-raised)] p-3 shadow-[var(--panel-shadow)]">
+        <div
+          class="mb-4 flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface-raised)] p-3 shadow-[var(--panel-shadow)]"
+        >
           <div class="grid size-10 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-[var(--primary-foreground)]">
             <LayoutDashboard class="size-5" />
           </div>

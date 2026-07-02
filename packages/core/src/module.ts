@@ -55,20 +55,12 @@ function pathMatches(navPath: string, routePath: string): boolean {
   return normalizedRoutePath === normalizedNavPath || normalizedRoutePath.startsWith(`${normalizedNavPath}/`)
 }
 
-export function flattenModuleNav(
-  item: ModuleNavItem,
-  maxDepth = Number.POSITIVE_INFINITY,
-  level = 1,
-  parents: ModuleNavItem[] = []
-): FlattenedModuleNavItem[] {
+export function flattenModuleNav(item: ModuleNavItem, maxDepth = Number.POSITIVE_INFINITY, level = 1, parents: ModuleNavItem[] = []): FlattenedModuleNavItem[] {
   if (level > maxDepth) {
     return []
   }
 
-  return [
-    { item, level, parents },
-    ...(item.children ?? []).flatMap((child) => flattenModuleNav(child, maxDepth, level + 1, [...parents, item]))
-  ]
+  return [{ item, level, parents }, ...(item.children ?? []).flatMap((child) => flattenModuleNav(child, maxDepth, level + 1, [...parents, item]))]
 }
 
 export function isModuleNavItemActive(item: ModuleNavItem | undefined, routePath: string): boolean {

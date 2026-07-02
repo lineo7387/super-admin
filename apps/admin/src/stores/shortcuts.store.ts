@@ -20,10 +20,7 @@ type StoredShortcuts = {
 }
 
 export type RebindResult =
-  | { ok: true }
-  | { ok: false; reason: 'conflict'; conflictId: ShortcutId }
-  | { ok: false; reason: 'browser-reserved' }
-  | { ok: false; reason: 'modifier-only' }
+  { ok: true } | { ok: false; reason: 'conflict'; conflictId: ShortcutId } | { ok: false; reason: 'browser-reserved' } | { ok: false; reason: 'modifier-only' }
 
 function readStoredOverrides(): ShortcutOverrides {
   if (typeof window === 'undefined') {

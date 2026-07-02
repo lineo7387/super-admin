@@ -41,9 +41,7 @@ const initials = computed(() => {
     .join('')
 })
 const isSidebar = computed(() => props.variant === 'sidebar')
-const triggerTitle = computed(() =>
-  user.value ? t('shell.account.menuFor', { name: user.value.name }) : t('shell.account.menu')
-)
+const triggerTitle = computed(() => (user.value ? t('shell.account.menuFor', { name: user.value.name }) : t('shell.account.menu')))
 const menuClass = computed(() => {
   if (props.variant === 'header') {
     return 'right-0 top-[calc(100%+0.55rem)]'
@@ -200,7 +198,9 @@ onUnmounted(() => {
       :title="triggerTitle"
       @click="open = !open"
     >
-      <span class="grid size-7 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-[0.6875rem] font-black text-[var(--primary-foreground)] shadow-[var(--glow)]">
+      <span
+        class="grid size-7 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-[0.6875rem] font-black text-[var(--primary-foreground)] shadow-[var(--glow)]"
+      >
         {{ initials }}
       </span>
       <span v-if="isSidebar" class="min-w-0 leading-tight">
@@ -217,7 +217,9 @@ onUnmounted(() => {
       :aria-label="t('shell.account.menu')"
     >
       <div class="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--surface-raised)] p-2.5">
-        <span class="grid size-8 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-xs font-black text-[var(--primary-foreground)] shadow-[var(--glow)]">
+        <span
+          class="grid size-8 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--primary)] text-xs font-black text-[var(--primary-foreground)] shadow-[var(--glow)]"
+        >
           {{ initials }}
         </span>
         <div class="min-w-0">
@@ -257,11 +259,7 @@ onUnmounted(() => {
     </div>
 
     <Teleport to="body">
-      <div
-        v-if="shortcutsPanelOpen"
-        class="fixed inset-0 z-[78] grid place-items-center bg-black/35 p-4 backdrop-blur-sm"
-        @click.self="closeShortcutsPanel"
-      >
+      <div v-if="shortcutsPanelOpen" class="fixed inset-0 z-[78] grid place-items-center bg-black/35 p-4 backdrop-blur-sm" @click.self="closeShortcutsPanel">
         <section
           ref="shortcutsPanel"
           class="w-full max-w-md overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)] outline-none"
@@ -293,21 +291,13 @@ onUnmounted(() => {
 
               <template v-if="shortcuts.rebindingId === def.id">
                 <span class="shortcut-row__rebinding">{{ t('shell.shortcuts.rebinding') }}</span>
-                <button
-                  type="button"
-                  class="shortcut-row__btn"
-                  @click="cancelRebind"
-                >
+                <button type="button" class="shortcut-row__btn" @click="cancelRebind">
                   {{ t('shell.shortcuts.cancelRebind') }}
                 </button>
               </template>
               <template v-else>
                 <kbd class="shortcut-row__combo">{{ formatComboLabel(shortcuts.getCombo(def.id)) }}</kbd>
-                <button
-                  type="button"
-                  class="shortcut-row__btn"
-                  @click="startRebind(def.id)"
-                >
+                <button type="button" class="shortcut-row__btn" @click="startRebind(def.id)">
                   {{ t('shell.shortcuts.rebind') }}
                 </button>
                 <button
@@ -328,11 +318,7 @@ onUnmounted(() => {
           </div>
 
           <footer class="border-t border-[var(--border)] p-3">
-            <button
-              type="button"
-              class="shortcut-row__btn shortcut-row__btn--full"
-              @click="resetAllShortcuts"
-            >
+            <button type="button" class="shortcut-row__btn shortcut-row__btn--full" @click="resetAllShortcuts">
               <RotateCcw class="size-3.5" />
               {{ t('shell.shortcuts.resetAll') }}
             </button>
@@ -452,7 +438,12 @@ onUnmounted(() => {
 }
 
 @keyframes shortcut-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
 }
 </style>

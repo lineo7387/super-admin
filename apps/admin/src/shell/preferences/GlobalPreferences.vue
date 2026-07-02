@@ -2,12 +2,7 @@
 import { X } from '@lucide/vue'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-  builtInLayoutPresets,
-  type ColorMode,
-  type DesignProfileId,
-  type LayoutPresetId
-} from '@super-admin-org/core'
+import { builtInLayoutPresets, type ColorMode, type DesignProfileId, type LayoutPresetId } from '@super-admin-org/core'
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin-org/ui'
 import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'
 import type { Locale } from '@/i18n'
@@ -37,16 +32,10 @@ const localeOptions = computed<{ id: Locale; label: string; detail: string }[]>(
   { id: 'en-US', label: t('shell.preferences.locales.enUS.label'), detail: t('shell.preferences.locales.enUS.detail') }
 ])
 
-const activeProfileName = computed(
-  () => builtInDesignProfiles.find((profile) => profile.id === preferences.profileId)?.name ?? preferences.profileId
-)
-const activeModeName = computed(
-  () => modeOptions.value.find((mode) => mode.id === preferences.colorMode)?.label ?? preferences.colorMode
-)
+const activeProfileName = computed(() => builtInDesignProfiles.find((profile) => profile.id === preferences.profileId)?.name ?? preferences.profileId)
+const activeModeName = computed(() => modeOptions.value.find((mode) => mode.id === preferences.colorMode)?.label ?? preferences.colorMode)
 const triggerTitle = computed(() =>
-  props.trigger === 'auth'
-    ? t('shell.preferences.open', { profile: activeProfileName.value, mode: activeModeName.value })
-    : t('shell.preferences.title')
+  props.trigger === 'auth' ? t('shell.preferences.open', { profile: activeProfileName.value, mode: activeModeName.value }) : t('shell.preferences.title')
 )
 const triggerLabel = computed(() => (props.trigger === 'auth' ? `${activeProfileName.value} / ${activeModeName.value}` : t('shell.preferences.title')))
 const showTrigger = computed(() => props.trigger !== 'none')
@@ -66,20 +55,18 @@ function selectLocale(locale: Locale): void {
 function selectLayout(layoutPreset: LayoutPresetId): void {
   preferences.setLayoutPreset(layoutPreset)
 }
-
 </script>
 
 <template>
   <div>
-    <GlobalPreferencesTrigger
-      v-if="showTrigger"
-      :label="triggerLabel"
-      :title="triggerTitle"
-      @activate="preferences.openControlCenter()"
-    />
+    <GlobalPreferencesTrigger v-if="showTrigger" :label="triggerLabel" :title="triggerTitle" @activate="preferences.openControlCenter()" />
 
     <Teleport to="body">
-      <div v-if="preferences.controlCenterOpen" class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-3 backdrop-blur-sm sm:p-4" @keydown.esc="preferences.closeControlCenter()">
+      <div
+        v-if="preferences.controlCenterOpen"
+        class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-3 backdrop-blur-sm sm:p-4"
+        @keydown.esc="preferences.closeControlCenter()"
+      >
         <AdminScrollArea
           as="section"
           class="max-h-[min(92vh,calc(100vh-2rem))] w-full max-w-5xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
@@ -124,7 +111,11 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                     :key="profile.id"
                     type="button"
                     class="rounded-[var(--radius-md)] border p-3 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                    :class="profile.id === preferences.profileId ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)]' : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-strong)]'"
+                    :class="
+                      profile.id === preferences.profileId
+                        ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)]'
+                        : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-strong)]'
+                    "
                     @click="selectProfile(profile.id)"
                   >
                     <div class="flex items-center gap-2">
@@ -150,7 +141,11 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                         :key="localeOption.id"
                         type="button"
                         class="rounded-[var(--radius-sm)] px-3 py-2 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                        :class="localeOption.id === preferences.locale ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[var(--glow)]' : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'"
+                        :class="
+                          localeOption.id === preferences.locale
+                            ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[var(--glow)]'
+                            : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'
+                        "
                         @click="selectLocale(localeOption.id)"
                       >
                         <span class="block text-sm">{{ localeOption.label }}</span>
@@ -165,7 +160,11 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                       :key="mode.id"
                       type="button"
                       class="rounded-[var(--radius-sm)] px-3 py-2 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                      :class="mode.id === preferences.colorMode ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[var(--glow)]' : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'"
+                      :class="
+                        mode.id === preferences.colorMode
+                          ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[var(--glow)]'
+                          : 'text-[var(--muted-foreground)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]'
+                      "
                       @click="selectMode(mode.id)"
                     >
                       <span class="block text-sm">{{ mode.label }}</span>
@@ -186,12 +185,19 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                     :key="layout.id"
                     type="button"
                     class="rounded-[var(--radius-md)] border bg-[var(--surface)] p-3 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                    :class="layout.id === preferences.layoutPreset ? 'border-[var(--border-strong)] shadow-[var(--glow)]' : 'border-[var(--border)] hover:border-[var(--border-strong)]'"
+                    :class="
+                      layout.id === preferences.layoutPreset
+                        ? 'border-[var(--border-strong)] shadow-[var(--glow)]'
+                        : 'border-[var(--border)] hover:border-[var(--border-strong)]'
+                    "
                     @click="selectLayout(layout.id)"
                   >
-                    <div :data-layout-preview="layout.id" class="grid h-24 gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-sunken)] p-2">
+                    <div
+                      :data-layout-preview="layout.id"
+                      class="grid h-24 gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-sunken)] p-2"
+                    >
                       <template v-if="layout.id === 'tri-column'">
-                        <div class="grid h-full gap-1" style="grid-template-columns: 0.35fr 0.8fr 1.8fr 0.9fr;">
+                        <div class="grid h-full gap-1" style="grid-template-columns: 0.35fr 0.8fr 1.8fr 0.9fr">
                           <span class="rounded-[var(--radius-xs)] bg-[var(--primary)]" />
                           <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
                           <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
@@ -199,13 +205,13 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                         </div>
                       </template>
                       <template v-else-if="layout.id === 'dual-column'">
-                        <div class="grid h-full gap-1" style="grid-template-columns: 1fr 2fr;">
+                        <div class="grid h-full gap-1" style="grid-template-columns: 1fr 2fr">
                           <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
                           <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
                         </div>
                       </template>
                       <template v-else>
-                        <div class="grid h-full gap-1" style="grid-template-rows: 0.45fr 0.55fr 2fr;">
+                        <div class="grid h-full gap-1" style="grid-template-rows: 0.45fr 0.55fr 2fr">
                           <span class="rounded-[var(--radius-xs)] bg-[var(--primary)]" />
                           <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
                           <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
@@ -231,7 +237,11 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                   <button
                     type="button"
                     class="rounded-[var(--radius-md)] border p-3 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                    :class="preferences.workspaceTabs.enabled ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]'"
+                    :class="
+                      preferences.workspaceTabs.enabled
+                        ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]'
+                        : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]'
+                    "
                     @click="preferences.setTabsEnabled(!preferences.workspaceTabs.enabled)"
                   >
                     <span class="flex items-center justify-between gap-3">
@@ -246,7 +256,11 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                   <button
                     type="button"
                     class="rounded-[var(--radius-md)] border p-3 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
-                    :class="preferences.stageManager.railEnabled ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]'"
+                    :class="
+                      preferences.stageManager.railEnabled
+                        ? 'border-[var(--border-strong)] bg-[var(--active-tab-background)] text-[var(--foreground)]'
+                        : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]'
+                    "
                     @click="preferences.setStageRailEnabled(!preferences.stageManager.railEnabled)"
                   >
                     <span class="flex items-center justify-between gap-3">

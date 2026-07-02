@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  createCursorListResult,
-  createMutationFailure,
-  createMutationSuccess,
-  createPageListResult,
-  normalizeAdapterError
-} from './api-contracts'
+import { createCursorListResult, createMutationFailure, createMutationSuccess, createPageListResult, normalizeAdapterError } from './api-contracts'
 
 describe('api contract helpers', () => {
   it('creates page list results without coupling callers to a transport', () => {

@@ -32,8 +32,7 @@ Examples:
   create-super-admin my-admin --theme base
   create-super-admin my-admin --themes base,cyberpunk --charts echarts --i18n --pm pnpm`
 
-const THEME_SELECTION_REQUIRED_MESSAGE =
-  'Theme selection is required. Use --theme <id>, --themes <ids>, or run create-super-admin in an interactive terminal.'
+const THEME_SELECTION_REQUIRED_MESSAGE = 'Theme selection is required. Use --theme <id>, --themes <ids>, or run create-super-admin in an interactive terminal.'
 
 export type CreateSuperAdminIo = {
   cwd?: string

@@ -15,12 +15,7 @@ function createTab(routePath: string, activatedAt: number): WorkspaceTab {
   }
 }
 
-function createGroup(input: {
-  id: string
-  activeTab: WorkspaceTab
-  tabs?: WorkspaceTab[]
-  isActive?: boolean
-}): WorkspaceTabGroup & { isActive: boolean } {
+function createGroup(input: { id: string; activeTab: WorkspaceTab; tabs?: WorkspaceTab[]; isActive?: boolean }): WorkspaceTabGroup & { isActive: boolean } {
   const tabs = input.tabs ?? [input.activeTab]
 
   return {

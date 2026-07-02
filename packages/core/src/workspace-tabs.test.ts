@@ -139,12 +139,7 @@ describe('workspace tab state', () => {
 
   it('groups workspace tabs by module section and selects the most recently active tab', () => {
     const state: WorkspaceTabsState = {
-      tabs: [
-        tab('/examples/dashboard', 1),
-        tab('/examples/users/all', 2),
-        tab('/examples/users/pending-review', 3),
-        tab('/examples/users/invites', 4)
-      ],
+      tabs: [tab('/examples/dashboard', 1), tab('/examples/users/all', 2), tab('/examples/users/pending-review', 3), tab('/examples/users/invites', 4)],
       activeTabId: '/examples/users/invites'
     }
     state.tabs[1]!.activatedAt = 20
@@ -154,11 +149,7 @@ describe('workspace tab state', () => {
     const groups = createWorkspaceTabGroups(state.tabs, [examplesManifest])
 
     const usersGroup = groups.find((group) => group.label === 'Users')
-    expect(usersGroup?.tabs.map((item) => item.id)).toEqual([
-      '/examples/users/all',
-      '/examples/users/pending-review',
-      '/examples/users/invites'
-    ])
+    expect(usersGroup?.tabs.map((item) => item.id)).toEqual(['/examples/users/all', '/examples/users/pending-review', '/examples/users/invites'])
     expect(usersGroup?.isStacked).toBe(true)
     expect(usersGroup?.activeTab.id).toBe('/examples/users/pending-review')
     expect(groups.find((group) => group.label === 'Dashboard')?.isStacked).toBe(false)

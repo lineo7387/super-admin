@@ -3,10 +3,7 @@ import { translateAdminMessage, type MessageTranslator } from '@/i18n'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export function validateUserInput(
-  input: UserFormInput,
-  t: MessageTranslator = translateAdminMessage
-): UserFormErrors {
+export function validateUserInput(input: UserFormInput, t: MessageTranslator = translateAdminMessage): UserFormErrors {
   const errors: UserFormErrors = {}
 
   if (!input.name.trim()) {

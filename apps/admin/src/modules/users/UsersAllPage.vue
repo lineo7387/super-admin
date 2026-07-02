@@ -104,7 +104,12 @@ function handleSaved(input: { name: string }): void {
           <template #filters>
             <label class="flex h-9 min-w-64 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-sunken)] px-3">
               <Search class="size-4 text-[var(--muted-foreground)]" />
-              <AdminTextInput v-model="keyword" class="border-0 bg-transparent px-0 shadow-none" :placeholder="t('users.all.search')" @update:model-value="resetPage" />
+              <AdminTextInput
+                v-model="keyword"
+                class="border-0 bg-transparent px-0 shadow-none"
+                :placeholder="t('users.all.search')"
+                @update:model-value="resetPage"
+              />
             </label>
             <AdminSelect v-model="status" class="w-40" :fluid="false" :options="statusOptions" @change="resetPage" />
             <AdminSelect v-model="scenario" class="w-36" :fluid="false" :options="scenarioOptions" @change="resetPage" />

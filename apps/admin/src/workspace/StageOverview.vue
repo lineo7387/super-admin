@@ -57,11 +57,7 @@ async function activateOverviewStage(path: string, title: string, sourceRect: DO
           </div>
         </header>
 
-        <div
-          class="stage-overview-grid"
-          :style="overviewGridStyle"
-          :aria-label="t('workspace.stage.stages')"
-        >
+        <div class="stage-overview-grid" :style="overviewGridStyle" :aria-label="t('workspace.stage.stages')">
           <StageOverviewCard
             v-for="stage in allWindowStages"
             :key="stage.tab.id"

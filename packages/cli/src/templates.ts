@@ -575,10 +575,7 @@ export function createCommandPaletteItems(locales: StarterLocaleId[], source: st
 
   return source
     .replace("type Locale = 'zh-CN' | 'en-US'", `type Locale = ${localeType}`)
-    .replace(
-      /const LOCALE_I18N_KEY: Record<Locale, string> = \{[\s\S]*?\n\}/,
-      `const LOCALE_I18N_KEY: Record<Locale, string> = {\n${localeEntries}\n}`
-    )
+    .replace(/const LOCALE_I18N_KEY: Record<Locale, string> = \{[\s\S]*?\n\}/, `const LOCALE_I18N_KEY: Record<Locale, string> = {\n${localeEntries}\n}`)
     .replace("    const locales: Locale[] = ['zh-CN', 'en-US']", `    const locales: Locale[] = [${localeList}]`)
 }
 
@@ -854,25 +851,21 @@ export const usePreferencesStore = defineStore('preferences', () => {
 }
 
 export function createGlobalPreferences(options: { includeThemeSwitcher: boolean; includeLocaleSwitcher: boolean }): string {
-  const themeImports = options.includeThemeSwitcher
-    ? "  type DesignProfileId,\n"
-    : ''
+  const themeImports = options.includeThemeSwitcher ? '  type DesignProfileId,\n' : ''
   const localeImport = options.includeLocaleSwitcher ? "import type { Locale } from '@/i18n'\n" : ''
   const registryImport = options.includeThemeSwitcher
     ? "import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'\n"
     : "import { getBuiltInDesignProfile } from '@/super-admin/theme-registry.generated'\n"
   const activeProfile = options.includeThemeSwitcher
-    ? "const activeProfileName = computed(\n  () => builtInDesignProfiles.find((profile) => profile.id === preferences.profileId)?.name ?? preferences.profileId\n)"
-    : "const activeProfileName = computed(() => getBuiltInDesignProfile(preferences.profileId).name)"
+    ? 'const activeProfileName = computed(\n  () => builtInDesignProfiles.find((profile) => profile.id === preferences.profileId)?.name ?? preferences.profileId\n)'
+    : 'const activeProfileName = computed(() => getBuiltInDesignProfile(preferences.profileId).name)'
   const localeOptions = options.includeLocaleSwitcher
     ? "\nconst localeOptions = computed<{ id: Locale; label: string; detail: string }[]>(() => [\n  { id: 'zh-CN', label: t('shell.preferences.locales.zhCN.label'), detail: t('shell.preferences.locales.zhCN.detail') },\n  { id: 'en-US', label: t('shell.preferences.locales.enUS.label'), detail: t('shell.preferences.locales.enUS.detail') }\n])\n"
     : ''
   const selectProfile = options.includeThemeSwitcher
-    ? "\nfunction selectProfile(profileId: DesignProfileId): void {\n  preferences.setProfile(profileId)\n}\n"
+    ? '\nfunction selectProfile(profileId: DesignProfileId): void {\n  preferences.setProfile(profileId)\n}\n'
     : ''
-  const selectLocale = options.includeLocaleSwitcher
-    ? "\nfunction selectLocale(locale: Locale): void {\n  preferences.setLocale(locale)\n}\n"
-    : ''
+  const selectLocale = options.includeLocaleSwitcher ? '\nfunction selectLocale(locale: Locale): void {\n  preferences.setLocale(locale)\n}\n' : ''
   const themeSection = options.includeThemeSwitcher
     ? `
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">

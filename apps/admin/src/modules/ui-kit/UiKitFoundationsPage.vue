@@ -27,10 +27,7 @@ const scrollItems = computed(() => [
 
 <template>
   <UiKitPage :title="t('uiKit.page.foundations.title')" :description="t('uiKit.page.foundations.description')">
-    <AdminAlert
-      :title="t('uiKit.foundations.alertTitle')"
-      :description="t('uiKit.foundations.alertDescription')"
-    />
+    <AdminAlert :title="t('uiKit.foundations.alertTitle')" :description="t('uiKit.foundations.alertDescription')" />
 
     <section class="grid gap-3 md:grid-cols-3">
       <MetricTile :label="t('uiKit.foundations.metricCoverage')" value="3" :meta="t('uiKit.foundations.metricCoverageMeta')" tone="success" />

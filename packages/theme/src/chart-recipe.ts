@@ -102,13 +102,7 @@ function createBaseRecipe(variant: DesignProfileMode): ChartRecipe {
       duration: parseDurationMs(variant.motion.durationBase),
       easing: variant.motion.easing
     },
-    palette: [
-      variant.colors.accent,
-      variant.colors.primary,
-      variant.colors.success,
-      variant.colors.warning,
-      variant.colors.danger
-    ],
+    palette: [variant.colors.accent, variant.colors.primary, variant.colors.success, variant.colors.warning, variant.colors.danger],
     surface: {
       backgroundColor: variant.colors.surface,
       borderColor: variant.colors.border,
@@ -233,4 +227,3 @@ export function getChartRecipe(profile: DesignProfile, mode: ResolvedColorMode, 
 
   return mergeChartRecipe(profileRecipe, override)
 }
-

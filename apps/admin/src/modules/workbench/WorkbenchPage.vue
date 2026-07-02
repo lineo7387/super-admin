@@ -45,18 +45,8 @@ function refreshJobs(): void {
       </div>
     </AdminCard>
 
-    <AdminAlert
-      v-if="isError"
-      tone="danger"
-      :title="t('examples.workbench.loadErrorTitle')"
-      :description="t('examples.workbench.loadErrorDescription')"
-    />
-    <AdminAlert
-      v-else-if="isEmpty"
-      tone="warning"
-      :title="t('examples.workbench.emptyTitle')"
-      :description="t('examples.workbench.emptyDescription')"
-    />
+    <AdminAlert v-if="isError" tone="danger" :title="t('examples.workbench.loadErrorTitle')" :description="t('examples.workbench.loadErrorDescription')" />
+    <AdminAlert v-else-if="isEmpty" tone="warning" :title="t('examples.workbench.emptyTitle')" :description="t('examples.workbench.emptyDescription')" />
 
     <section class="grid gap-3 lg:grid-cols-3">
       <template v-if="isLoading">
