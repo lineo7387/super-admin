@@ -10,6 +10,26 @@ async function writeText(root, filePath, content) {
   await writeFile(target, content)
 }
 
+function createValidAiContext() {
+  return `# AI Context
+
+本项目是由 create-super-admin 生成的用户后台项目。
+这是用户项目，不是 Super Admin 源码仓库。
+开始修改前请读取当前代码，当前代码优先于本文件。
+
+## 核心分层
+
+Page -> module query composable -> API adapter -> api/mock data or user API
+
+不要把 provider secret、API key 或 server-only token 放进 frontend VITE_* 环境变量。
+
+## 生成时基础信息
+
+- theme: \`base\`
+- locale: \`zh-CN\`
+`
+}
+
 async function createStarterFixture(overrides = {}) {
   const root = await mkdtemp(join(tmpdir(), 'super-admin-generated-starter-'))
   const packageJson = {
@@ -56,6 +76,9 @@ async function createStarterFixture(overrides = {}) {
   }
 
   await writeText(root, 'package.json', `${JSON.stringify(packageJson, null, 2)}\n`)
+  if (overrides.aiContext !== false) {
+    await writeText(root, 'AI_CONTEXT.md', overrides.aiContext ?? createValidAiContext())
+  }
   await writeText(
     root,
     'tsconfig.json',
@@ -127,6 +150,27 @@ describe('generated starter validator', () => {
     await expect(validateGeneratedStarterStatic(root, { themes: ['base'] })).resolves.toEqual([])
   })
 
+  it('rejects generated starters without lightweight AI context', async () => {
+    const missingContext = await createStarterFixture({ aiContext: false })
+    const weakContext = await createStarterFixture({ aiContext: '# AI Context\n' })
+
+    expect(failureIds(await validateGeneratedStarterStatic(missingContext, { themes: ['base'] }))).toContain('root-has-ai-context')
+    expect(failureIds(await validateGeneratedStarterStatic(weakContext, { themes: ['base'] }))).toContain('ai-context-documents-starter-contract')
+  })
+
+  it('rejects disabled capability sections in generated AI context', async () => {
+    const root = await createStarterFixture({
+      aiContext: `${createValidAiContext()}
+## Charts
+
+- Charts: none
+- ECharts is not installed.
+`
+    })
+
+    expect(failureIds(await validateGeneratedStarterStatic(root, { themes: ['base'] }))).toContain('ai-context-no-disabled-capability-sections')
+  })
+
   it('rejects workspace dependency specifiers and monorepo path leaks', async () => {
     const root = await createStarterFixture({
       dependencies: {
@@ -164,6 +208,11 @@ describe('generated starter validator', () => {
         vitest: '^4.0.0'
       },
       files: {
+        '.agents/skills/local/SKILL.md': '# Local skill\n',
+        '.claude/settings.json': '{}\n',
+        '.codegraph/index.db': '',
+        '.codex/config.json': '{}\n',
+        '.trellis/spec/index.md': '# Spec\n',
         'docs/index.md': '# Docs\n',
         'src/api/reference/users-reference.api.ts': 'export const referenceUsers = []\n',
         'src/modules/users/users.validation.test.ts': 'import { expect, it } from "vitest"\n'
@@ -179,6 +228,7 @@ describe('generated starter validator', () => {
         'source-no-reference-api',
         'source-no-generated-tests',
         'package-no-maintainer-tooling-dependencies',
+        'root-no-maintainer-workflow-artifacts',
         'root-no-docs-site'
       ])
     )

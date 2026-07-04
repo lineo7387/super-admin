@@ -202,9 +202,15 @@ AI boundary:
 Generated template derivation:
 
 - `apps/admin` is the source model, but generated output is not a raw copy.
-- Root output is a single Vite app with `components.json`, `index.html`, `package.json`, `README.md`, `super-admin.config.ts`, `tsconfig.json`, `vite.config.ts`, and `src/`.
+- Root output is a single Vite app with `AI_CONTEXT.md`, `components.json`, `index.html`, `package.json`, `README.md`, `super-admin.config.ts`, `tsconfig.json`, `vite.config.ts`, and `src/`.
 - Generated `index.html` defaults to `lang="zh-CN"`.
-- Generated `vite.config.ts` keeps Vue, Tailwind, and the app-local `@` alias only.
+- Generated `README.md` links to `AI_CONTEXT.md` as the first AI collaboration context file.
+- Generated `AI_CONTEXT.md` is a starter-local AI development guide for the user project, not a maintainer workflow document and not a full feature catalog.
+- Generated `AI_CONTEXT.md` must tell AI tools to read the current project first and treat current code as the source of truth when it differs from the generated baseline.
+- Generated `AI_CONTEXT.md` must document the frontend data flow, key extension paths, and frontend secret boundary, including `Page -> module query composable -> API adapter -> api/mock data or user API` and the rule that provider secrets must not go in frontend `VITE_*` env variables.
+- Generated `AI_CONTEXT.md` must include only capability sections that were actually generated. Do not write disabled capability sections such as `Charts: none`, ECharts guidance, theme-switcher guidance for a single-theme starter, or locale-switcher guidance for a zh-CN-only starter.
+- Generated `AI_CONTEXT.md` may include a small generated baseline such as the default theme and locale, but that baseline must be described as non-authoritative after the user changes the project.
+- Generated `vite.config.ts` keeps Vue, Tailwind, the app-local `@` alias, and Vite 8/Rolldown chunk grouping only. Do not add generated-starter-only backend proxies, maintainer aliases, test tooling, docs tooling, or direct `rollup`/`esbuild` dependencies.
 - Generated `tsconfig.json` is self-contained or package-config-based and keeps only app-local aliases such as `@/*`.
 - Generated `src/styles/main.css` must not scan `../../../../packages/*`; Tailwind package source scanning must use a published-package-safe path or be unnecessary after package CSS/build output exists.
 - Generated `src/env.d.ts` must not declare optional reference backend env vars in the default starter. It may declare only Vue/router types and client-safe public config such as an assistant endpoint.
@@ -250,6 +256,9 @@ Generated template derivation:
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
 | Generated starter includes standalone module manifests that are not imported by `src/modules/module-registry.ts` | Reject; generated output should expose only active registered manifests and user-editable example source. |
 | Generated single-theme output exposes runtime theme or language switching with one installed theme/locale | Reject; single-theme output is fixed to that theme and `zh-CN`. |
+| Generated default `AI_CONTEXT.md` describes disabled capabilities such as `Charts: none`, ECharts paths, theme switcher, or locale switcher | Reject; AI context should describe existing generated capabilities and generic extension paths, not unused feature absence. |
+| Generated ECharts output omits the `Charts` AI context section | Reject; selected capabilities should include app-local source paths and dependencies that help AI continue development. |
+| Generated multi-theme or i18n output omits the matching `Theme` or `i18n` AI context section | Reject; selected capabilities should explain the relevant config and extension points. |
 | Publish-ready package export points at source TypeScript instead of emitted package output | Reject for publish-ready package work; source exports are only acceptable as a temporary monorepo development state. |
 | Theme runtime package bundles all theme profiles | Reject; selected theme packages must remain dependency-granular. |
 | User wants to remove examples | Point to docs; CLI MVP must not auto-delete examples. |
@@ -259,10 +268,13 @@ Generated template derivation:
 ### 5. Good/Base/Bad Cases
 
 - Good: `create-super-admin app --themes base,cyberpunk --i18n` generates a single Vite app, installs `@super-admin-org/theme`, `@super-admin-org/theme-base`, `@super-admin-org/theme-cyberpunk`, enables theme switching, and includes language switching.
+- Good: default generated `AI_CONTEXT.md` documents current-code-first behavior, data flow, API adapter extension points, and secret handling, but does not mention ECharts or disabled switchers.
+- Good: `create-super-admin app --charts echarts` adds a `Charts` section to `AI_CONTEXT.md` with `src/modules/charts/ChartsPage.vue`, `src/shared/charts/echarts-options.ts`, and the selected dependencies.
 - Good: `super-admin theme remove cyberpunk` removes `@super-admin-org/theme-cyberpunk`, updates `super-admin.config.ts`, and regenerates `src/super-admin/theme-registry.generated.ts`.
 - Base: generated README links to VitePress docs for deleting examples, connecting APIs, adding tests/lint, changing themes, and changing locale.
 - Bad: `@super-admin-org/theme` bundles every theme profile, making theme CLI commands only toggle already-downloaded code.
 - Bad: generated project contains the VitePress docs site, optional Hono reference API, FastAPI AI companion backend, test files, or lint/e2e tooling by default.
+- Bad: generated default `AI_CONTEXT.md` lists `Charts: none` or explains how to work with a chart library that was not generated.
 - Bad: CLI generates `super-admin add module orders`; Super Admin must not generate user business modules.
 
 ### 6. Tests Required
@@ -280,6 +292,12 @@ Maintainer validation for generated output must cover:
 - no monorepo package paths appear in generated Tailwind/CSS source scanning
 - no optional reference backend imports or reference env tokens appear in default generated source
 - no backend/docs/test/lint/e2e/reference-smoke tooling appears in default output
+- no maintainer workflow artifacts such as `.trellis/`, `.agents/`, `.codex/`, `.claude/`, `.codegraph/`, `.mcp.json`, or `skills-lock.json` appear in default output
+- generated `AI_CONTEXT.md` exists and documents current-code-first behavior, `Page -> module query composable -> API adapter -> api/mock data or user API`, extension paths, and the rule that provider secrets must not go in frontend `VITE_*` env variables
+- generated default `AI_CONTEXT.md` does not include disabled capability sections such as `Charts`, ECharts source paths, theme-switcher guidance, or locale-switcher guidance
+- generated ECharts output includes a `Charts` AI context section with app-local chart source/helper paths and selected dependencies
+- generated multi-theme/i18n output includes matching `Theme` and `i18n` AI context sections
+- generated `README.md` points AI collaborators to `AI_CONTEXT.md`
 - no unregistered standalone module manifest files appear in generated output
 - default theme dependencies are only `@super-admin-org/theme` and `@super-admin-org/theme-base`
 - default theme registry imports only `@super-admin-org/theme-base`

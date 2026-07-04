@@ -15,6 +15,8 @@ const allowedDefaultScripts = new Set(['dev', 'build', 'typecheck', 'preview'])
 const allThemeProfilePackages = Object.values(themePackageById)
 const chartDependencyNames = new Set(['echarts', 'vue-echarts'])
 const chartSourcePrefixes = ['src/modules/charts/', 'src/shared/charts/']
+const forbiddenMaintainerWorkflowPrefixes = ['.agents/', '.claude/', '.codegraph/', '.codex/', '.trellis/']
+const forbiddenMaintainerWorkflowFiles = new Set(['.mcp.json', 'skills-lock.json'])
 const unregisteredStandaloneManifests = [
   'src/modules/access/access.manifest.ts',
   'src/modules/dashboard/dashboard.manifest.ts',
@@ -22,6 +24,18 @@ const unregisteredStandaloneManifests = [
   'src/modules/workbench/workbench.manifest.ts'
 ]
 const forbiddenMaintainerToolingPackages = new Set(['@playwright/test', 'eslint', 'playwright', 'prettier', 'vitepress', 'vitest'])
+const requiredAiContextSnippets = [
+  '这是用户项目，不是 Super Admin 源码仓库',
+  '当前代码优先于本文件',
+  'Page -> module query composable -> API adapter -> api/mock data or user API',
+  'provider secret',
+  'VITE_*'
+]
+const disabledAiContextCapabilityPatterns = {
+  charts: [/^##\s+Charts\b/m, /\bCharts:\s*none\b/, /\bECharts\b/, /\bvue-echarts\b/, /src\/modules\/charts/, /src\/shared\/charts/],
+  i18n: [/^##\s+i18n\b/m, /\bLocale switcher\b/, /多语言能力/],
+  theme: [/^##\s+Theme\b/m, /\bTheme switcher\b/, /多主题能力/]
+}
 const textFileExtensions = new Set(['.css', '.html', '.json', '.md', '.mjs', '.ts', '.tsx', '.vue', '.js'])
 
 function createFailure(id, message, file) {
@@ -297,6 +311,20 @@ function validateForbiddenOutput(root, files) {
     failures.push(createFailure('root-no-docs-site', 'Generated projects must not include the VitePress docs site.', 'docs/'))
   }
 
+  const maintainerWorkflowFiles = files.filter(
+    (file) => forbiddenMaintainerWorkflowFiles.has(file) || forbiddenMaintainerWorkflowPrefixes.some((prefix) => file.startsWith(prefix))
+  )
+
+  if (maintainerWorkflowFiles.length > 0) {
+    failures.push(
+      createFailure(
+        'root-no-maintainer-workflow-artifacts',
+        `Generated projects must not include maintainer-only workflow artifacts: ${maintainerWorkflowFiles.join(', ')}.`,
+        maintainerWorkflowFiles[0]
+      )
+    )
+  }
+
   if (files.some((file) => file.startsWith('apps/api/'))) {
     failures.push(createFailure('root-no-backend-app', 'Generated projects must not include optional backend apps.', 'apps/api/'))
   }
@@ -314,6 +342,58 @@ function validateForbiddenOutput(root, files) {
   }
 
   return failures
+}
+
+function findDisabledAiContextCapabilities(aiContextText, themes, i18nEnabled, chartProvider) {
+  const findings = []
+
+  if (chartProvider === 'none' && disabledAiContextCapabilityPatterns.charts.some((pattern) => pattern.test(aiContextText))) {
+    findings.push('charts')
+  }
+
+  if (themes.length <= 1 && disabledAiContextCapabilityPatterns.theme.some((pattern) => pattern.test(aiContextText))) {
+    findings.push('theme')
+  }
+
+  if (!i18nEnabled && disabledAiContextCapabilityPatterns.i18n.some((pattern) => pattern.test(aiContextText))) {
+    findings.push('i18n')
+  }
+
+  return findings
+}
+
+function validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider) {
+  if (!files.includes('AI_CONTEXT.md')) {
+    return [createFailure('root-has-ai-context', 'Generated projects must include AI_CONTEXT.md for lightweight AI collaboration context.', 'AI_CONTEXT.md')]
+  }
+
+  const aiContext = textEntries.find(({ file }) => file === 'AI_CONTEXT.md')
+  const aiContextText = aiContext?.text ?? ''
+  const missingSnippets = requiredAiContextSnippets.filter((snippet) => !aiContextText.includes(snippet))
+
+  if (missingSnippets.length > 0) {
+    return [
+      createFailure(
+        'ai-context-documents-starter-contract',
+        `AI_CONTEXT.md must document the generated starter data flow, current-code-first rule, and frontend secret boundary. Missing: ${missingSnippets.join('; ')}.`,
+        'AI_CONTEXT.md'
+      )
+    ]
+  }
+
+  const disabledCapabilities = findDisabledAiContextCapabilities(aiContextText, themes, i18nEnabled, chartProvider)
+
+  if (disabledCapabilities.length > 0) {
+    return [
+      createFailure(
+        'ai-context-no-disabled-capability-sections',
+        `AI_CONTEXT.md must not include disabled capability sections in generated output: ${disabledCapabilities.join(', ')}.`,
+        'AI_CONTEXT.md'
+      )
+    ]
+  }
+
+  return []
 }
 
 function validateNoUnregisteredStandaloneManifests(files) {
@@ -527,6 +607,7 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   failures.push(...(await validatePackedPackageManifests(options.packageManifestPaths)))
   failures.push(...validatePackageJson(packageJson, themes))
   failures.push(...validateForbiddenOutput(root, files))
+  failures.push(...validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider))
   failures.push(...validateNoUnregisteredStandaloneManifests(files))
   failures.push(...validateNoMonorepoPaths(textEntries))
   failures.push(...validateReferenceEnv(textEntries))

@@ -13,6 +13,10 @@ function formatStringList(values: readonly string[]): string {
   return values.map((value) => `'${value}'`).join(', ')
 }
 
+function formatMarkdownCodeList(values: readonly string[]): string {
+  return values.map((value) => `\`${value}\``).join(', ')
+}
+
 function formatTypeUnion(values: readonly string[]): string {
   return values.map((value) => `'${value}'`).join(' | ')
 }
@@ -99,7 +103,86 @@ import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 
+function isDependency(id: string, packageNames: string[]): boolean {
+  const normalizedId = id.split('\\\\').join('/')
+
+  if (!normalizedId.includes('/node_modules/')) {
+    return false
+  }
+
+  return packageNames.some(
+    (packageName) =>
+      normalizedId.includes(\`/node_modules/\${packageName}/\`) || normalizedId.includes(\`/node_modules/.pnpm/\${packageName.replace('/', '+')}@\`)
+  )
+}
+
+function hasDependencyPath(id: string, packageName: string, packagePath: string): boolean {
+  const normalizedId = id.split('\\\\').join('/')
+
+  return normalizedId.includes(\`/node_modules/\${packageName}/\${packagePath}\`)
+}
+
 export default defineConfig({
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'charts-vue',
+              test: (id) => isDependency(id, ['vue-echarts']),
+              priority: 46
+            },
+            {
+              name: 'charts-series',
+              test: (id) => hasDependencyPath(id, 'echarts', 'charts'),
+              priority: 45
+            },
+            {
+              name: 'charts-components',
+              test: (id) => hasDependencyPath(id, 'echarts', 'components'),
+              priority: 44
+            },
+            {
+              name: 'charts-renderer',
+              test: (id) => hasDependencyPath(id, 'echarts', 'renderers') || isDependency(id, ['zrender']),
+              priority: 43
+            },
+            {
+              name: 'charts-core',
+              test: (id) => isDependency(id, ['echarts']),
+              priority: 42
+            },
+            {
+              name: 'motion',
+              test: (id) => isDependency(id, ['motion-v', '@vueuse/core', '@vueuse/shared']),
+              priority: 30
+            },
+            {
+              name: 'super-admin',
+              test: (id) =>
+                isDependency(id, [
+                  '@super-admin-org/core',
+                  '@super-admin-org/theme',
+                  '@super-admin-org/theme-base',
+                  '@super-admin-org/theme-crypto',
+                  '@super-admin-org/theme-cyberpunk',
+                  '@super-admin-org/theme-industrial',
+                  '@super-admin-org/theme-newsprint',
+                  '@super-admin-org/ui'
+                ]),
+              priority: 20
+            },
+            {
+              name: 'vue-vendor',
+              test: (id) => isDependency(id, ['@lucide/vue', '@tanstack/vue-query', 'pinia', 'vue', 'vue-i18n', 'vue-router']),
+              priority: 10
+            }
+          ]
+        }
+      }
+    }
+  },
   plugins: [vue(), tailwindcss()],
   resolve: {
     alias: {
@@ -107,6 +190,127 @@ export default defineConfig({
     }
   }
 })
+`
+}
+
+export function createAiContext(input: StarterGenerationInput): string {
+  const capabilitySections = [createAiContextThemeSection(input), createAiContextI18nSection(input), createAiContextChartsSection(input)]
+    .filter(Boolean)
+    .join('\n')
+
+  return `# AI Context
+
+本项目是由 \`create-super-admin\` 生成的用户后台项目。
+这是用户项目，不是 Super Admin 源码仓库。
+
+这个文件用于帮助 AI 编程助手快速分离模板骨架和用户业务代码，找对后续修改入口。
+
+开始修改前请读取当前代码；如果当前代码和本文描述不一致，当前代码优先于本文件。
+
+## 先看这些文件
+
+- \`package.json\` - 确认当前依赖，用户可能已经自行添加能力。
+- \`super-admin.config.ts\` - 生成时基础配置。
+- \`src/modules/\` - 业务模块、页面、类型、query composable。
+- \`src/api/\` - API adapter，通常是接真实接口的入口。
+- \`src/api/mock/\` - 默认 mock data。
+- 和本次需求直接相关的现有页面、组件、store、query composable。
+
+## 核心分层
+
+\`\`\`text
+Page -> module query composable -> API adapter -> api/mock data or user API
+\`\`\`
+
+- Page 负责页面布局、交互组合、调用 query composable。
+- Query composable 负责 TanStack Query、loading、error、cache、mutation。
+- API adapter 负责连接 mock data 或用户真实 API，并转换成 frontend type。
+- Mock data 只用于默认本地开发，可以被真实 API 替换。
+- 不要把请求逻辑直接写进 Vue page；接真实 API 时通常先改 \`src/api/*.api.ts\`。
+
+## 常见修改入口
+
+- 业务页面：\`src/modules/\`
+- API adapter：\`src/api/\`
+- mock data：\`src/api/mock/\`
+- 路由：\`src/router/\`
+- shell/nav/preferences：\`src/shell/\`
+- Pinia state：\`src/stores/\`
+- 文案：\`src/i18n/\`
+
+普通业务需求优先沿用这些入口，不要把请求逻辑、页面状态、mock 数据和 UI 全塞进同一个 Vue 文件。
+
+## 常见任务路线
+
+- 新增业务页面：先在 \`src/modules/<module>/\` 建 page/component/type/query，再补 API adapter、mock data、路由和导航入口。
+- 接入真实 API：保持 page 调 query composable，query composable 调 API adapter，在 adapter 内替换 mock data 并完成字段转换。
+- 调整业务语义：如果示例页面不符合真实业务，可以同时调整 page、module types、query params、query composable 和 API adapter。
+
+## 生成时基础信息
+
+- theme: \`${input.themes.default}\`
+- locale: \`${input.i18n.default}\`
+
+这些是生成时 baseline，不是永久限制；用户后续修改项目后，以当前代码为准。
+
+## 安全边界
+
+- 不要把 provider secret、API key 或 server-only token 放进 frontend \`VITE_*\` 环境变量。
+- frontend env 只能放客户端安全配置，例如公开 endpoint URL。
+- 涉及新增大型依赖、后端服务、数据库、鉴权服务或 provider 集成时，先确认用户意图。
+${capabilitySections ? `\n${capabilitySections}` : ''}
+`
+}
+
+function createAiContextThemeSection(input: StarterGenerationInput): string {
+  if (input.themes.installed.length <= 1) {
+    return ''
+  }
+
+  return `## Theme
+
+当前项目生成了多主题能力。
+
+- 已安装 themes: ${formatMarkdownCodeList(input.themes.installed)}
+- 默认 theme: \`${input.themes.default}\`
+- theme registry: \`src/super-admin/theme-registry.generated.ts\`
+- theme config: \`super-admin.config.ts\`
+
+新增或移除 theme 时，请同步更新依赖、config 和 theme registry。
+`
+}
+
+function createAiContextI18nSection(input: StarterGenerationInput): string {
+  if (!input.i18n.switcher && input.i18n.installed.length <= 1) {
+    return ''
+  }
+
+  return `## i18n
+
+当前项目生成了多语言能力。
+
+- 已启用 locales: ${formatMarkdownCodeList(input.i18n.installed)}
+- 默认 locale: \`${input.i18n.default}\`
+- locale files: \`src/i18n/\`
+
+新增用户可见文案时，按当前 i18n 结构补充 locale message。
+`
+}
+
+function createAiContextChartsSection(input: StarterGenerationInput): string {
+  if (input.charts.provider !== 'echarts') {
+    return ''
+  }
+
+  return `## Charts
+
+当前项目生成了 ECharts 图表示例能力。
+
+- chart page: \`src/modules/charts/ChartsPage.vue\`
+- chart helper: \`src/shared/charts/echarts-options.ts\`
+- dependencies: \`echarts\`, \`vue-echarts\`
+
+新增图表时优先复用现有 helper 和主题适配方式。
 `
 }
 
@@ -148,6 +352,7 @@ ${packageManager} run build
 
 ## Guide
 
+- AI 协作上下文：先读 \`AI_CONTEXT.md\`。
 - 删除示例、连接 API、添加测试或 lint：查看 Super Admin 文档。
 - 修改主题：编辑 \`super-admin.config.ts\` 和 \`src/super-admin/theme-registry.generated.ts\`。
 - 修改语言：编辑 \`src/i18n/\`。
