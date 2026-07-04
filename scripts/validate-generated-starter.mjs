@@ -24,17 +24,17 @@ const unregisteredStandaloneManifests = [
   'src/modules/workbench/workbench.manifest.ts'
 ]
 const forbiddenMaintainerToolingPackages = new Set(['@playwright/test', 'eslint', 'playwright', 'prettier', 'vitepress', 'vitest'])
-const requiredAiContextSnippets = [
-  '这是用户项目，不是 Super Admin 源码仓库',
-  '当前代码优先于本文件',
-  'Page -> module query composable -> API adapter -> api/mock data or user API',
-  'provider secret',
-  'VITE_*'
-]
-const disabledAiContextCapabilityPatterns = {
-  charts: [/^##\s+Charts\b/m, /\bCharts:\s*none\b/, /\bECharts\b/, /\bvue-echarts\b/, /src\/modules\/charts/, /src\/shared\/charts/],
-  i18n: [/^##\s+i18n\b/m, /\bLocale switcher\b/, /多语言能力/],
-  theme: [/^##\s+Theme\b/m, /\bTheme switcher\b/, /多主题能力/]
+const baseAiContextFiles = ['ai-context/core.md', 'ai-context/data-flow.md', 'ai-context/extension-points.md']
+const capabilityAiContextFiles = {
+  charts: 'ai-context/charts.md',
+  i18n: 'ai-context/i18n.md',
+  theme: 'ai-context/theme.md'
+}
+const requiredAiContextSnippetsByFile = {
+  'AGENTS.md': ['唯一 AI 开发入口', '@ai-context/core.md', '@ai-context/data-flow.md', '@ai-context/extension-points.md'],
+  'ai-context/core.md': ['这是用户项目，不是 Super Admin 源码仓库', '当前代码优先于本文件', 'provider secret', 'VITE_*'],
+  'ai-context/data-flow.md': ['Page -> module query composable -> API adapter -> api/mock data or user API'],
+  'ai-context/extension-points.md': ['src/modules/', 'src/api/']
 }
 const textFileExtensions = new Set(['.css', '.html', '.json', '.md', '.mjs', '.ts', '.tsx', '.vue', '.js'])
 
@@ -344,56 +344,106 @@ function validateForbiddenOutput(root, files) {
   return failures
 }
 
-function findDisabledAiContextCapabilities(aiContextText, themes, i18nEnabled, chartProvider) {
-  const findings = []
+function getTextEntry(textEntries, file) {
+  return textEntries.find((entry) => entry.file === file)
+}
 
-  if (chartProvider === 'none' && disabledAiContextCapabilityPatterns.charts.some((pattern) => pattern.test(aiContextText))) {
-    findings.push('charts')
+function getExpectedAiContextFiles(themes, i18nEnabled, chartProvider) {
+  const files = [...baseAiContextFiles]
+
+  if (themes.length > 1) {
+    files.push(capabilityAiContextFiles.theme)
   }
 
-  if (themes.length <= 1 && disabledAiContextCapabilityPatterns.theme.some((pattern) => pattern.test(aiContextText))) {
-    findings.push('theme')
+  if (i18nEnabled) {
+    files.push(capabilityAiContextFiles.i18n)
   }
 
-  if (!i18nEnabled && disabledAiContextCapabilityPatterns.i18n.some((pattern) => pattern.test(aiContextText))) {
-    findings.push('i18n')
+  if (chartProvider === 'echarts') {
+    files.push(capabilityAiContextFiles.charts)
   }
 
-  return findings
+  return files
+}
+
+function getAgentsImports(agentsText) {
+  return [...agentsText.matchAll(/^@(ai-context\/[a-z0-9-]+\.md)$/gm)].map((match) => match[1])
 }
 
 function validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider) {
-  if (!files.includes('AI_CONTEXT.md')) {
-    return [createFailure('root-has-ai-context', 'Generated projects must include AI_CONTEXT.md for lightweight AI collaboration context.', 'AI_CONTEXT.md')]
+  const failures = []
+  const expectedContextFiles = getExpectedAiContextFiles(themes, i18nEnabled, chartProvider)
+
+  if (files.includes('AI_CONTEXT.md')) {
+    failures.push(
+      createFailure('root-no-legacy-ai-context', 'Generated projects must use AGENTS.md and ai-context/ instead of legacy AI_CONTEXT.md.', 'AI_CONTEXT.md')
+    )
   }
 
-  const aiContext = textEntries.find(({ file }) => file === 'AI_CONTEXT.md')
-  const aiContextText = aiContext?.text ?? ''
-  const missingSnippets = requiredAiContextSnippets.filter((snippet) => !aiContextText.includes(snippet))
+  if (!files.includes('AGENTS.md')) {
+    failures.push(createFailure('root-has-agents-md', 'Generated projects must include AGENTS.md as the single AI development entry file.', 'AGENTS.md'))
+  }
+
+  if (!files.includes('CLAUDE.md')) {
+    failures.push(createFailure('root-has-claude-md', 'Generated projects must include CLAUDE.md as a Claude Code bridge to AGENTS.md.', 'CLAUDE.md'))
+  }
+
+  const missingContextFiles = expectedContextFiles.filter((file) => !files.includes(file))
+  if (missingContextFiles.length > 0) {
+    failures.push(
+      createFailure(
+        'ai-context-files-present',
+        `Generated projects must include required AI context files: ${missingContextFiles.join(', ')}.`,
+        missingContextFiles[0]
+      )
+    )
+  }
+
+  const disabledCapabilityFiles = Object.values(capabilityAiContextFiles).filter((file) => !expectedContextFiles.includes(file) && files.includes(file))
+  if (disabledCapabilityFiles.length > 0) {
+    failures.push(
+      createFailure(
+        'ai-context-no-disabled-capability-files',
+        `Generated projects must not include disabled AI context capability files: ${disabledCapabilityFiles.join(', ')}.`,
+        disabledCapabilityFiles[0]
+      )
+    )
+  }
+
+  const agentsText = getTextEntry(textEntries, 'AGENTS.md')?.text ?? ''
+  const actualImports = getAgentsImports(agentsText).sort()
+  const expectedImports = [...expectedContextFiles].sort()
+  if (!arraysEqual(actualImports, expectedImports)) {
+    failures.push(
+      createFailure(
+        'ai-context-imports-match-generated-capabilities',
+        `AGENTS.md imports must match generated AI context files. Expected ${expectedImports.join(', ')}; found ${actualImports.join(', ') || 'none'}.`,
+        'AGENTS.md'
+      )
+    )
+  }
+
+  const claudeText = getTextEntry(textEntries, 'CLAUDE.md')?.text.trim() ?? ''
+  if (claudeText !== '@AGENTS.md') {
+    failures.push(createFailure('claude-md-imports-agents-only', 'CLAUDE.md must only import AGENTS.md to avoid AI instruction drift.', 'CLAUDE.md'))
+  }
+
+  const missingSnippets = Object.entries(requiredAiContextSnippetsByFile).flatMap(([file, snippets]) => {
+    const text = getTextEntry(textEntries, file)?.text ?? ''
+    return snippets.filter((snippet) => !text.includes(snippet)).map((snippet) => `${file}: ${snippet}`)
+  })
 
   if (missingSnippets.length > 0) {
-    return [
+    failures.push(
       createFailure(
         'ai-context-documents-starter-contract',
-        `AI_CONTEXT.md must document the generated starter data flow, current-code-first rule, and frontend secret boundary. Missing: ${missingSnippets.join('; ')}.`,
-        'AI_CONTEXT.md'
+        `Generated AI context must document the starter entry, current-code-first rule, data flow, extension paths, and frontend secret boundary. Missing: ${missingSnippets.join('; ')}.`,
+        'AGENTS.md'
       )
-    ]
+    )
   }
 
-  const disabledCapabilities = findDisabledAiContextCapabilities(aiContextText, themes, i18nEnabled, chartProvider)
-
-  if (disabledCapabilities.length > 0) {
-    return [
-      createFailure(
-        'ai-context-no-disabled-capability-sections',
-        `AI_CONTEXT.md must not include disabled capability sections in generated output: ${disabledCapabilities.join(', ')}.`,
-        'AI_CONTEXT.md'
-      )
-    ]
-  }
-
-  return []
+  return failures
 }
 
 function validateNoUnregisteredStandaloneManifests(files) {

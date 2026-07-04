@@ -202,14 +202,16 @@ AI boundary:
 Generated template derivation:
 
 - `apps/admin` is the source model, but generated output is not a raw copy.
-- Root output is a single Vite app with `AI_CONTEXT.md`, `components.json`, `index.html`, `package.json`, `README.md`, `super-admin.config.ts`, `tsconfig.json`, `vite.config.ts`, and `src/`.
+- Root output is a single Vite app with `AGENTS.md`, `CLAUDE.md`, `ai-context/`, `components.json`, `index.html`, `package.json`, `README.md`, `super-admin.config.ts`, `tsconfig.json`, `vite.config.ts`, and `src/`.
 - Generated `index.html` defaults to `lang="zh-CN"`.
-- Generated `README.md` links to `AI_CONTEXT.md` as the first AI collaboration context file.
-- Generated `AI_CONTEXT.md` is a starter-local AI development guide for the user project, not a maintainer workflow document and not a full feature catalog.
-- Generated `AI_CONTEXT.md` must tell AI tools to read the current project first and treat current code as the source of truth when it differs from the generated baseline.
-- Generated `AI_CONTEXT.md` must document the frontend data flow, key extension paths, and frontend secret boundary, including `Page -> module query composable -> API adapter -> api/mock data or user API` and the rule that provider secrets must not go in frontend `VITE_*` env variables.
-- Generated `AI_CONTEXT.md` must include only capability sections that were actually generated. Do not write disabled capability sections such as `Charts: none`, ECharts guidance, theme-switcher guidance for a single-theme starter, or locale-switcher guidance for a zh-CN-only starter.
-- Generated `AI_CONTEXT.md` may include a small generated baseline such as the default theme and locale, but that baseline must be described as non-authoritative after the user changes the project.
+- Generated `README.md` links to `AGENTS.md` as the first AI collaboration context file.
+- Generated `AGENTS.md` is the single AI development entry file for the user project. It must not duplicate all detailed guidance; it routes AI tools to generated files under `ai-context/`.
+- Generated `CLAUDE.md` must contain only `@AGENTS.md` so Claude Code uses the same entry file and cannot drift from `AGENTS.md`.
+- Generated `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md` are always present. They must document current-code-first behavior, the frontend data flow, key extension paths, and frontend secret boundary, including `Page -> module query composable -> API adapter -> api/mock data or user API` and the rule that provider secrets must not go in frontend `VITE_*` env variables.
+- Generated `AGENTS.md` must import exactly the generated `ai-context/*.md` files using `@ai-context/<name>.md` lines.
+- Generated capability context files must exist only for capabilities that were actually generated: `ai-context/theme.md` for multi-theme output, `ai-context/i18n.md` for `--i18n`, and `ai-context/charts.md` for `--charts echarts`. Do not generate disabled capability files or import disabled capabilities.
+- Generated AI context may include a small generated baseline such as the default theme and locale, but that baseline must be described as non-authoritative after the user changes the project.
+- Generated output must not include legacy `AI_CONTEXT.md`.
 - Generated `vite.config.ts` keeps Vue, Tailwind, the app-local `@` alias, and Vite 8/Rolldown chunk grouping only. Do not add generated-starter-only backend proxies, maintainer aliases, test tooling, docs tooling, or direct `rollup`/`esbuild` dependencies.
 - Generated `tsconfig.json` is self-contained or package-config-based and keeps only app-local aliases such as `@/*`.
 - Generated `src/styles/main.css` must not scan `../../../../packages/*`; Tailwind package source scanning must use a published-package-safe path or be unnecessary after package CSS/build output exists.
@@ -256,9 +258,12 @@ Generated template derivation:
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
 | Generated starter includes standalone module manifests that are not imported by `src/modules/module-registry.ts` | Reject; generated output should expose only active registered manifests and user-editable example source. |
 | Generated single-theme output exposes runtime theme or language switching with one installed theme/locale | Reject; single-theme output is fixed to that theme and `zh-CN`. |
-| Generated default `AI_CONTEXT.md` describes disabled capabilities such as `Charts: none`, ECharts paths, theme switcher, or locale switcher | Reject; AI context should describe existing generated capabilities and generic extension paths, not unused feature absence. |
-| Generated ECharts output omits the `Charts` AI context section | Reject; selected capabilities should include app-local source paths and dependencies that help AI continue development. |
-| Generated multi-theme or i18n output omits the matching `Theme` or `i18n` AI context section | Reject; selected capabilities should explain the relevant config and extension points. |
+| Generated output includes legacy `AI_CONTEXT.md` | Reject; `AGENTS.md` is the single AI entry file. |
+| Generated output omits `AGENTS.md`, `CLAUDE.md`, or the always-on `ai-context/core.md`, `ai-context/data-flow.md`, `ai-context/extension-points.md` files | Reject; AI tools need the shared entry and core context files. |
+| Generated `CLAUDE.md` contains anything other than `@AGENTS.md` | Reject; Claude Code should bridge to the same entry file instead of duplicating instructions. |
+| Generated default output includes disabled capability files such as `ai-context/charts.md`, `ai-context/theme.md`, or `ai-context/i18n.md` | Reject; AI context should describe existing generated capabilities and generic extension paths, not unused feature absence. |
+| Generated ECharts output omits `ai-context/charts.md` or the matching `AGENTS.md` import | Reject; selected capabilities should include app-local source paths and dependencies that help AI continue development. |
+| Generated multi-theme or i18n output omits `ai-context/theme.md`, `ai-context/i18n.md`, or the matching `AGENTS.md` imports | Reject; selected capabilities should explain the relevant config and extension points. |
 | Publish-ready package export points at source TypeScript instead of emitted package output | Reject for publish-ready package work; source exports are only acceptable as a temporary monorepo development state. |
 | Theme runtime package bundles all theme profiles | Reject; selected theme packages must remain dependency-granular. |
 | User wants to remove examples | Point to docs; CLI MVP must not auto-delete examples. |
@@ -268,13 +273,14 @@ Generated template derivation:
 ### 5. Good/Base/Bad Cases
 
 - Good: `create-super-admin app --themes base,cyberpunk --i18n` generates a single Vite app, installs `@super-admin-org/theme`, `@super-admin-org/theme-base`, `@super-admin-org/theme-cyberpunk`, enables theme switching, and includes language switching.
-- Good: default generated `AI_CONTEXT.md` documents current-code-first behavior, data flow, API adapter extension points, and secret handling, but does not mention ECharts or disabled switchers.
-- Good: `create-super-admin app --charts echarts` adds a `Charts` section to `AI_CONTEXT.md` with `src/modules/charts/ChartsPage.vue`, `src/shared/charts/echarts-options.ts`, and the selected dependencies.
+- Good: default generated `AGENTS.md` imports only `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md`; no ECharts or disabled switcher context files are generated.
+- Good: generated `CLAUDE.md` contains only `@AGENTS.md`.
+- Good: `create-super-admin app --charts echarts` adds `ai-context/charts.md` and an `@ai-context/charts.md` import with `src/modules/charts/ChartsPage.vue`, `src/shared/charts/echarts-options.ts`, and the selected dependencies.
 - Good: `super-admin theme remove cyberpunk` removes `@super-admin-org/theme-cyberpunk`, updates `super-admin.config.ts`, and regenerates `src/super-admin/theme-registry.generated.ts`.
 - Base: generated README links to VitePress docs for deleting examples, connecting APIs, adding tests/lint, changing themes, and changing locale.
 - Bad: `@super-admin-org/theme` bundles every theme profile, making theme CLI commands only toggle already-downloaded code.
 - Bad: generated project contains the VitePress docs site, optional Hono reference API, FastAPI AI companion backend, test files, or lint/e2e tooling by default.
-- Bad: generated default `AI_CONTEXT.md` lists `Charts: none` or explains how to work with a chart library that was not generated.
+- Bad: generated default `AGENTS.md` imports `ai-context/charts.md`, or default output generates a chart context file when no chart template was selected.
 - Bad: CLI generates `super-admin add module orders`; Super Admin must not generate user business modules.
 
 ### 6. Tests Required
@@ -293,11 +299,14 @@ Maintainer validation for generated output must cover:
 - no optional reference backend imports or reference env tokens appear in default generated source
 - no backend/docs/test/lint/e2e/reference-smoke tooling appears in default output
 - no maintainer workflow artifacts such as `.trellis/`, `.agents/`, `.codex/`, `.claude/`, `.codegraph/`, `.mcp.json`, or `skills-lock.json` appear in default output
-- generated `AI_CONTEXT.md` exists and documents current-code-first behavior, `Page -> module query composable -> API adapter -> api/mock data or user API`, extension paths, and the rule that provider secrets must not go in frontend `VITE_*` env variables
-- generated default `AI_CONTEXT.md` does not include disabled capability sections such as `Charts`, ECharts source paths, theme-switcher guidance, or locale-switcher guidance
-- generated ECharts output includes a `Charts` AI context section with app-local chart source/helper paths and selected dependencies
-- generated multi-theme/i18n output includes matching `Theme` and `i18n` AI context sections
-- generated `README.md` points AI collaborators to `AI_CONTEXT.md`
+- generated `AGENTS.md` exists as the single AI entry file and imports exactly the generated `ai-context/*.md` files
+- generated `CLAUDE.md` exists and contains only `@AGENTS.md`
+- generated `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md` document current-code-first behavior, `Page -> module query composable -> API adapter -> api/mock data or user API`, extension paths, and the rule that provider secrets must not go in frontend `VITE_*` env variables
+- generated default output does not include disabled capability files such as `ai-context/charts.md`, `ai-context/theme.md`, or `ai-context/i18n.md`
+- generated ECharts output includes `ai-context/charts.md` with app-local chart source/helper paths and selected dependencies, and `AGENTS.md` imports it
+- generated multi-theme/i18n output includes matching `ai-context/theme.md` and `ai-context/i18n.md` files and imports
+- generated output does not include legacy `AI_CONTEXT.md`
+- generated `README.md` points AI collaborators to `AGENTS.md`
 - no unregistered standalone module manifest files appear in generated output
 - default theme dependencies are only `@super-admin-org/theme` and `@super-admin-org/theme-base`
 - default theme registry imports only `@super-admin-org/theme-base`

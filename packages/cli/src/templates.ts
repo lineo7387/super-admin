@@ -9,6 +9,11 @@ export type CreatePackageJsonOptions = {
   packageVersionRanges?: Partial<Record<SuperAdminPackageName, string>>
 }
 
+export type AiContextFile = {
+  content: string
+  filePath: string
+}
+
 function formatStringList(values: readonly string[]): string {
   return values.map((value) => `'${value}'`).join(', ')
 }
@@ -193,17 +198,85 @@ export default defineConfig({
 `
 }
 
-export function createAiContext(input: StarterGenerationInput): string {
-  const capabilitySections = [createAiContextThemeSection(input), createAiContextI18nSection(input), createAiContextChartsSection(input)]
-    .filter(Boolean)
+function getAiContextImportPaths(input: StarterGenerationInput): string[] {
+  const paths = ['ai-context/core.md', 'ai-context/data-flow.md', 'ai-context/extension-points.md']
+
+  if (input.themes.installed.length > 1) {
+    paths.push('ai-context/theme.md')
+  }
+
+  if (input.i18n.switcher || input.i18n.installed.length > 1) {
+    paths.push('ai-context/i18n.md')
+  }
+
+  if (input.charts.provider === 'echarts') {
+    paths.push('ai-context/charts.md')
+  }
+
+  return paths
+}
+
+export function createAgentsMd(input: StarterGenerationInput): string {
+  const imports = getAiContextImportPaths(input)
+    .map((filePath) => `@${filePath}`)
     .join('\n')
 
-  return `# AI Context
+  return `# AGENTS.md
+
+本文件是本项目唯一 AI 开发入口。
 
 本项目是由 \`create-super-admin\` 生成的用户后台项目。
 这是用户项目，不是 Super Admin 源码仓库。
 
-这个文件用于帮助 AI 编程助手快速分离模板骨架和用户业务代码，找对后续修改入口。
+如果你的工具支持 \`@path\` 导入，请加载下面列出的上下文文件。
+如果你的工具不支持自动导入，请在修改代码前手动阅读这些文件。
+
+${imports}
+
+在 \`ai-context/\` 目录中只阅读上面列出的上下文文件。未列出的能力文件表示脚手架未生成该能力；源码仍按当前需求读取，如果用户后来自行扩展，请以当前代码为准。
+`
+}
+
+export function createClaudeMd(): string {
+  return '@AGENTS.md\n'
+}
+
+export function createAiContextFiles(input: StarterGenerationInput): AiContextFile[] {
+  return [
+    {
+      content: createAiContextCore(input),
+      filePath: 'ai-context/core.md'
+    },
+    {
+      content: createAiContextDataFlow(),
+      filePath: 'ai-context/data-flow.md'
+    },
+    {
+      content: createAiContextExtensionPoints(),
+      filePath: 'ai-context/extension-points.md'
+    },
+    {
+      content: createAiContextTheme(input),
+      filePath: 'ai-context/theme.md'
+    },
+    {
+      content: createAiContextI18n(input),
+      filePath: 'ai-context/i18n.md'
+    },
+    {
+      content: createAiContextCharts(input),
+      filePath: 'ai-context/charts.md'
+    }
+  ].filter((file) => file.content.length > 0)
+}
+
+function createAiContextCore(input: StarterGenerationInput): string {
+  return `# Core Context
+
+本项目是由 \`create-super-admin\` 生成的用户后台项目。
+这是用户项目，不是 Super Admin 源码仓库。
+
+这个文件夹用于帮助 AI 编程助手快速分离模板骨架和用户业务代码，找对后续修改入口。
 
 开始修改前请读取当前代码；如果当前代码和本文描述不一致，当前代码优先于本文件。
 
@@ -216,6 +289,24 @@ export function createAiContext(input: StarterGenerationInput): string {
 - \`src/api/mock/\` - 默认 mock data。
 - 和本次需求直接相关的现有页面、组件、store、query composable。
 
+## 生成时基础信息
+
+- theme: \`${input.themes.default}\`
+- locale: \`${input.i18n.default}\`
+
+这些是生成时 baseline，不是永久限制；用户后续修改项目后，以当前代码为准。
+
+## 安全边界
+
+- 不要把 provider secret、API key 或 server-only token 放进 frontend \`VITE_*\` 环境变量。
+- frontend env 只能放客户端安全配置，例如公开 endpoint URL。
+- 涉及新增大型依赖、后端服务、数据库、鉴权服务或 provider 集成时，先确认用户意图。
+`
+}
+
+function createAiContextDataFlow(): string {
+  return `# Data Flow
+
 ## 核心分层
 
 \`\`\`text
@@ -227,6 +318,11 @@ Page -> module query composable -> API adapter -> api/mock data or user API
 - API adapter 负责连接 mock data 或用户真实 API，并转换成 frontend type。
 - Mock data 只用于默认本地开发，可以被真实 API 替换。
 - 不要把请求逻辑直接写进 Vue page；接真实 API 时通常先改 \`src/api/*.api.ts\`。
+`
+}
+
+function createAiContextExtensionPoints(): string {
+  return `# Extension Points
 
 ## 常见修改入口
 
@@ -245,29 +341,15 @@ Page -> module query composable -> API adapter -> api/mock data or user API
 - 新增业务页面：先在 \`src/modules/<module>/\` 建 page/component/type/query，再补 API adapter、mock data、路由和导航入口。
 - 接入真实 API：保持 page 调 query composable，query composable 调 API adapter，在 adapter 内替换 mock data 并完成字段转换。
 - 调整业务语义：如果示例页面不符合真实业务，可以同时调整 page、module types、query params、query composable 和 API adapter。
-
-## 生成时基础信息
-
-- theme: \`${input.themes.default}\`
-- locale: \`${input.i18n.default}\`
-
-这些是生成时 baseline，不是永久限制；用户后续修改项目后，以当前代码为准。
-
-## 安全边界
-
-- 不要把 provider secret、API key 或 server-only token 放进 frontend \`VITE_*\` 环境变量。
-- frontend env 只能放客户端安全配置，例如公开 endpoint URL。
-- 涉及新增大型依赖、后端服务、数据库、鉴权服务或 provider 集成时，先确认用户意图。
-${capabilitySections ? `\n${capabilitySections}` : ''}
 `
 }
 
-function createAiContextThemeSection(input: StarterGenerationInput): string {
+function createAiContextTheme(input: StarterGenerationInput): string {
   if (input.themes.installed.length <= 1) {
     return ''
   }
 
-  return `## Theme
+  return `# Theme
 
 当前项目生成了多主题能力。
 
@@ -280,12 +362,12 @@ function createAiContextThemeSection(input: StarterGenerationInput): string {
 `
 }
 
-function createAiContextI18nSection(input: StarterGenerationInput): string {
+function createAiContextI18n(input: StarterGenerationInput): string {
   if (!input.i18n.switcher && input.i18n.installed.length <= 1) {
     return ''
   }
 
-  return `## i18n
+  return `# i18n
 
 当前项目生成了多语言能力。
 
@@ -297,12 +379,12 @@ function createAiContextI18nSection(input: StarterGenerationInput): string {
 `
 }
 
-function createAiContextChartsSection(input: StarterGenerationInput): string {
+function createAiContextCharts(input: StarterGenerationInput): string {
   if (input.charts.provider !== 'echarts') {
     return ''
   }
 
-  return `## Charts
+  return `# Charts
 
 当前项目生成了 ECharts 图表示例能力。
 
@@ -352,7 +434,7 @@ ${packageManager} run build
 
 ## Guide
 
-- AI 协作上下文：先读 \`AI_CONTEXT.md\`。
+- AI 协作上下文：先读 \`AGENTS.md\`；Claude Code 会通过 \`CLAUDE.md\` 导入同一入口。
 - 删除示例、连接 API、添加测试或 lint：查看 Super Admin 文档。
 - 修改主题：编辑 \`super-admin.config.ts\` 和 \`src/super-admin/theme-registry.generated.ts\`。
 - 修改语言：编辑 \`src/i18n/\`。
