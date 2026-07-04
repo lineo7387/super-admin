@@ -4,9 +4,12 @@ import { fileURLToPath } from 'node:url'
 import type { Dirent } from 'node:fs'
 import type { StarterGenerationInput } from './parse-args.js'
 import {
+  createAgentsMd,
+  createAiContextFiles,
   createAuthSession,
   createAuthSessionStore,
   createAuthTypes,
+  createClaudeMd,
   createCommandPaletteItems,
   createEnvDts,
   createGlobalPreferences,
@@ -224,6 +227,11 @@ async function copySourceDirectory(sourceDir: string, targetDir: string, context
 
 async function writeGeneratedRootFiles(outputRoot: string, input: StarterGenerationInput, sourceAppDir: string): Promise<void> {
   await cp(resolve(sourceAppDir, 'components.json'), resolve(outputRoot, 'components.json'))
+  await writeText(outputRoot, 'AGENTS.md', createAgentsMd(input))
+  await writeText(outputRoot, 'CLAUDE.md', createClaudeMd())
+  for (const aiContextFile of createAiContextFiles(input)) {
+    await writeText(outputRoot, aiContextFile.filePath, aiContextFile.content)
+  }
   await writeText(outputRoot, 'index.html', createIndexHtml(input.projectName))
   await writeText(outputRoot, 'package.json', createPackageJson(input))
   await writeText(outputRoot, 'README.md', createReadme(input.projectName, input.packageManager))

@@ -15,6 +15,8 @@ const allowedDefaultScripts = new Set(['dev', 'build', 'typecheck', 'preview'])
 const allThemeProfilePackages = Object.values(themePackageById)
 const chartDependencyNames = new Set(['echarts', 'vue-echarts'])
 const chartSourcePrefixes = ['src/modules/charts/', 'src/shared/charts/']
+const forbiddenMaintainerWorkflowPrefixes = ['.agents/', '.claude/', '.codegraph/', '.codex/', '.trellis/']
+const forbiddenMaintainerWorkflowFiles = new Set(['.mcp.json', 'skills-lock.json'])
 const unregisteredStandaloneManifests = [
   'src/modules/access/access.manifest.ts',
   'src/modules/dashboard/dashboard.manifest.ts',
@@ -22,6 +24,18 @@ const unregisteredStandaloneManifests = [
   'src/modules/workbench/workbench.manifest.ts'
 ]
 const forbiddenMaintainerToolingPackages = new Set(['@playwright/test', 'eslint', 'playwright', 'prettier', 'vitepress', 'vitest'])
+const baseAiContextFiles = ['ai-context/core.md', 'ai-context/data-flow.md', 'ai-context/extension-points.md']
+const capabilityAiContextFiles = {
+  charts: 'ai-context/charts.md',
+  i18n: 'ai-context/i18n.md',
+  theme: 'ai-context/theme.md'
+}
+const requiredAiContextSnippetsByFile = {
+  'AGENTS.md': ['唯一 AI 开发入口', '@ai-context/core.md', '@ai-context/data-flow.md', '@ai-context/extension-points.md'],
+  'ai-context/core.md': ['这是用户项目，不是 Super Admin 源码仓库', '当前代码优先于本文件', 'provider secret', 'VITE_*'],
+  'ai-context/data-flow.md': ['Page -> module query composable -> API adapter -> api/mock data or user API'],
+  'ai-context/extension-points.md': ['src/modules/', 'src/api/']
+}
 const textFileExtensions = new Set(['.css', '.html', '.json', '.md', '.mjs', '.ts', '.tsx', '.vue', '.js'])
 
 function createFailure(id, message, file) {
@@ -297,6 +311,20 @@ function validateForbiddenOutput(root, files) {
     failures.push(createFailure('root-no-docs-site', 'Generated projects must not include the VitePress docs site.', 'docs/'))
   }
 
+  const maintainerWorkflowFiles = files.filter(
+    (file) => forbiddenMaintainerWorkflowFiles.has(file) || forbiddenMaintainerWorkflowPrefixes.some((prefix) => file.startsWith(prefix))
+  )
+
+  if (maintainerWorkflowFiles.length > 0) {
+    failures.push(
+      createFailure(
+        'root-no-maintainer-workflow-artifacts',
+        `Generated projects must not include maintainer-only workflow artifacts: ${maintainerWorkflowFiles.join(', ')}.`,
+        maintainerWorkflowFiles[0]
+      )
+    )
+  }
+
   if (files.some((file) => file.startsWith('apps/api/'))) {
     failures.push(createFailure('root-no-backend-app', 'Generated projects must not include optional backend apps.', 'apps/api/'))
   }
@@ -310,6 +338,108 @@ function validateForbiddenOutput(root, files) {
   if (generatedTests.length > 0) {
     failures.push(
       createFailure('source-no-generated-tests', `Generated projects must not include test files by default: ${generatedTests.join(', ')}.`, generatedTests[0])
+    )
+  }
+
+  return failures
+}
+
+function getTextEntry(textEntries, file) {
+  return textEntries.find((entry) => entry.file === file)
+}
+
+function getExpectedAiContextFiles(themes, i18nEnabled, chartProvider) {
+  const files = [...baseAiContextFiles]
+
+  if (themes.length > 1) {
+    files.push(capabilityAiContextFiles.theme)
+  }
+
+  if (i18nEnabled) {
+    files.push(capabilityAiContextFiles.i18n)
+  }
+
+  if (chartProvider === 'echarts') {
+    files.push(capabilityAiContextFiles.charts)
+  }
+
+  return files
+}
+
+function getAgentsImports(agentsText) {
+  return [...agentsText.matchAll(/^@(ai-context\/[a-z0-9-]+\.md)$/gm)].map((match) => match[1])
+}
+
+function validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider) {
+  const failures = []
+  const expectedContextFiles = getExpectedAiContextFiles(themes, i18nEnabled, chartProvider)
+
+  if (files.includes('AI_CONTEXT.md')) {
+    failures.push(
+      createFailure('root-no-legacy-ai-context', 'Generated projects must use AGENTS.md and ai-context/ instead of legacy AI_CONTEXT.md.', 'AI_CONTEXT.md')
+    )
+  }
+
+  if (!files.includes('AGENTS.md')) {
+    failures.push(createFailure('root-has-agents-md', 'Generated projects must include AGENTS.md as the single AI development entry file.', 'AGENTS.md'))
+  }
+
+  if (!files.includes('CLAUDE.md')) {
+    failures.push(createFailure('root-has-claude-md', 'Generated projects must include CLAUDE.md as a Claude Code bridge to AGENTS.md.', 'CLAUDE.md'))
+  }
+
+  const missingContextFiles = expectedContextFiles.filter((file) => !files.includes(file))
+  if (missingContextFiles.length > 0) {
+    failures.push(
+      createFailure(
+        'ai-context-files-present',
+        `Generated projects must include required AI context files: ${missingContextFiles.join(', ')}.`,
+        missingContextFiles[0]
+      )
+    )
+  }
+
+  const disabledCapabilityFiles = Object.values(capabilityAiContextFiles).filter((file) => !expectedContextFiles.includes(file) && files.includes(file))
+  if (disabledCapabilityFiles.length > 0) {
+    failures.push(
+      createFailure(
+        'ai-context-no-disabled-capability-files',
+        `Generated projects must not include disabled AI context capability files: ${disabledCapabilityFiles.join(', ')}.`,
+        disabledCapabilityFiles[0]
+      )
+    )
+  }
+
+  const agentsText = getTextEntry(textEntries, 'AGENTS.md')?.text ?? ''
+  const actualImports = getAgentsImports(agentsText).sort()
+  const expectedImports = [...expectedContextFiles].sort()
+  if (!arraysEqual(actualImports, expectedImports)) {
+    failures.push(
+      createFailure(
+        'ai-context-imports-match-generated-capabilities',
+        `AGENTS.md imports must match generated AI context files. Expected ${expectedImports.join(', ')}; found ${actualImports.join(', ') || 'none'}.`,
+        'AGENTS.md'
+      )
+    )
+  }
+
+  const claudeText = getTextEntry(textEntries, 'CLAUDE.md')?.text.trim() ?? ''
+  if (claudeText !== '@AGENTS.md') {
+    failures.push(createFailure('claude-md-imports-agents-only', 'CLAUDE.md must only import AGENTS.md to avoid AI instruction drift.', 'CLAUDE.md'))
+  }
+
+  const missingSnippets = Object.entries(requiredAiContextSnippetsByFile).flatMap(([file, snippets]) => {
+    const text = getTextEntry(textEntries, file)?.text ?? ''
+    return snippets.filter((snippet) => !text.includes(snippet)).map((snippet) => `${file}: ${snippet}`)
+  })
+
+  if (missingSnippets.length > 0) {
+    failures.push(
+      createFailure(
+        'ai-context-documents-starter-contract',
+        `Generated AI context must document the starter entry, current-code-first rule, data flow, extension paths, and frontend secret boundary. Missing: ${missingSnippets.join('; ')}.`,
+        'AGENTS.md'
+      )
     )
   }
 
@@ -527,6 +657,7 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   failures.push(...(await validatePackedPackageManifests(options.packageManifestPaths)))
   failures.push(...validatePackageJson(packageJson, themes))
   failures.push(...validateForbiddenOutput(root, files))
+  failures.push(...validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider))
   failures.push(...validateNoUnregisteredStandaloneManifests(files))
   failures.push(...validateNoMonorepoPaths(textEntries))
   failures.push(...validateReferenceEnv(textEntries))

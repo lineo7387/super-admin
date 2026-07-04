@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import VChart from 'vue-echarts'
+import { defineAsyncComponent } from 'vue'
 import type { EChartsOption } from 'echarts'
 
 const props = defineProps<{
@@ -7,6 +7,8 @@ const props = defineProps<{
   description: string
   option: EChartsOption
 }>()
+
+const VChart = defineAsyncComponent(() => import('vue-echarts'))
 </script>
 
 <template>

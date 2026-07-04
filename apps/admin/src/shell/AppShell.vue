@@ -1,22 +1,23 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, defineAsyncComponent, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { translateRouteTitle } from '@/i18n/navigation'
-import StageOverview from '@/workspace/StageOverview.vue'
-import StageRail from '@/workspace/StageRail.vue'
-import StageTransitionGhost from '@/workspace/StageTransitionGhost.vue'
 import WorkspaceRouterView from '@/workspace/WorkspaceRouterView.vue'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
-import AiAssistantFloatingPanel from './AiAssistantFloatingPanel.vue'
-import CommandPalette from './CommandPalette.vue'
 import DualColumnLayout from './layouts/DualColumnLayout.vue'
 import TopHeaderLayout from './layouts/TopHeaderLayout.vue'
 import TriColumnLayout from './layouts/TriColumnLayout.vue'
-import GlobalPreferences from './preferences/GlobalPreferences.vue'
 import GlobalPreferencesTrigger from './preferences/GlobalPreferencesTrigger.vue'
 import { useShellShortcuts } from './shell-shortcuts'
+
+const AiAssistantFloatingPanel = defineAsyncComponent(() => import('./AiAssistantFloatingPanel.vue'))
+const CommandPalette = defineAsyncComponent(() => import('./CommandPalette.vue'))
+const GlobalPreferences = defineAsyncComponent(() => import('./preferences/GlobalPreferences.vue'))
+const StageOverview = defineAsyncComponent(() => import('@/workspace/StageOverview.vue'))
+const StageRail = defineAsyncComponent(() => import('@/workspace/StageRail.vue'))
+const StageTransitionGhost = defineAsyncComponent(() => import('@/workspace/StageTransitionGhost.vue'))
 
 const route = useRoute()
 const { t } = useI18n()

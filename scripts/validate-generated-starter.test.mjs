@@ -10,6 +10,44 @@ async function writeText(root, filePath, content) {
   await writeFile(target, content)
 }
 
+function createValidAgentsMd(imports = ['core', 'data-flow', 'extension-points']) {
+  return `# AGENTS.md
+
+本文件是本项目唯一 AI 开发入口。
+
+${imports.map((name) => `@ai-context/${name}.md`).join('\n')}
+`
+}
+
+function createValidCoreContext() {
+  return `# Core Context
+
+这是用户项目，不是 Super Admin 源码仓库。
+当前代码优先于本文件。
+
+不要把 provider secret、API key 或 server-only token 放进 frontend VITE_* 环境变量。
+
+- theme: \`base\`
+- locale: \`zh-CN\`
+`
+}
+
+function createValidDataFlowContext() {
+  return `# Data Flow
+
+核心数据流：
+
+Page -> module query composable -> API adapter -> api/mock data or user API
+`
+}
+
+function createValidExtensionContext() {
+  return `# Extension Points
+
+业务页面从 src/modules/ 扩展，API adapter 从 src/api/ 扩展。
+`
+}
+
 async function createStarterFixture(overrides = {}) {
   const root = await mkdtemp(join(tmpdir(), 'super-admin-generated-starter-'))
   const packageJson = {
@@ -56,6 +94,17 @@ async function createStarterFixture(overrides = {}) {
   }
 
   await writeText(root, 'package.json', `${JSON.stringify(packageJson, null, 2)}\n`)
+  if (overrides.agentContext !== false) {
+    await writeText(root, 'AGENTS.md', overrides.agentsMd ?? createValidAgentsMd(overrides.agentImports))
+    await writeText(root, 'CLAUDE.md', overrides.claudeMd ?? '@AGENTS.md\n')
+    await writeText(root, 'ai-context/core.md', overrides.coreContext ?? createValidCoreContext())
+    await writeText(root, 'ai-context/data-flow.md', overrides.dataFlowContext ?? createValidDataFlowContext())
+    await writeText(root, 'ai-context/extension-points.md', overrides.extensionContext ?? createValidExtensionContext())
+
+    for (const [fileName, content] of Object.entries(overrides.contextFiles ?? {})) {
+      await writeText(root, `ai-context/${fileName}`, content)
+    }
+  }
   await writeText(
     root,
     'tsconfig.json',
@@ -127,6 +176,31 @@ describe('generated starter validator', () => {
     await expect(validateGeneratedStarterStatic(root, { themes: ['base'] })).resolves.toEqual([])
   })
 
+  it('rejects generated starters without agent context entry files', async () => {
+    const missingContext = await createStarterFixture({ agentContext: false })
+    const weakContext = await createStarterFixture({ agentsMd: '# AGENTS.md\n' })
+
+    expect(failureIds(await validateGeneratedStarterStatic(missingContext, { themes: ['base'] }))).toContain('root-has-agents-md')
+    expect(failureIds(await validateGeneratedStarterStatic(weakContext, { themes: ['base'] }))).toContain('ai-context-documents-starter-contract')
+  })
+
+  it('rejects CLAUDE.md content drift from AGENTS.md bridge', async () => {
+    const root = await createStarterFixture({ claudeMd: '# CLAUDE.md\n\nCustom duplicate instructions.\n' })
+
+    expect(failureIds(await validateGeneratedStarterStatic(root, { themes: ['base'] }))).toContain('claude-md-imports-agents-only')
+  })
+
+  it('rejects disabled capability files in generated agent context', async () => {
+    const root = await createStarterFixture({
+      agentImports: ['core', 'data-flow', 'extension-points', 'charts'],
+      contextFiles: {
+        'charts.md': '# Charts\n\nECharts helper.\n'
+      }
+    })
+
+    expect(failureIds(await validateGeneratedStarterStatic(root, { themes: ['base'] }))).toContain('ai-context-no-disabled-capability-files')
+  })
+
   it('rejects workspace dependency specifiers and monorepo path leaks', async () => {
     const root = await createStarterFixture({
       dependencies: {
@@ -164,6 +238,11 @@ describe('generated starter validator', () => {
         vitest: '^4.0.0'
       },
       files: {
+        '.agents/skills/local/SKILL.md': '# Local skill\n',
+        '.claude/settings.json': '{}\n',
+        '.codegraph/index.db': '',
+        '.codex/config.json': '{}\n',
+        '.trellis/spec/index.md': '# Spec\n',
         'docs/index.md': '# Docs\n',
         'src/api/reference/users-reference.api.ts': 'export const referenceUsers = []\n',
         'src/modules/users/users.validation.test.ts': 'import { expect, it } from "vitest"\n'
@@ -179,6 +258,7 @@ describe('generated starter validator', () => {
         'source-no-reference-api',
         'source-no-generated-tests',
         'package-no-maintainer-tooling-dependencies',
+        'root-no-maintainer-workflow-artifacts',
         'root-no-docs-site'
       ])
     )
@@ -219,6 +299,10 @@ describe('generated starter validator', () => {
         "import { baseProfile } from '@super-admin-org/theme-base'\nimport { cyberpunkProfile } from '@super-admin-org/theme-cyberpunk'\nexport const builtInDesignProfiles = [baseProfile, cyberpunkProfile] as const\n"
     })
     const validMultiTheme = await createStarterFixture({
+      agentImports: ['core', 'data-flow', 'extension-points', 'theme'],
+      contextFiles: {
+        'theme.md': '# Theme\n\n已安装 themes: `base`, `cyberpunk`\n'
+      },
       dependencies: {
         '@super-admin-org/theme-cyberpunk': '^0.1.0'
       },
@@ -287,6 +371,10 @@ describe('generated starter validator', () => {
 
   it('accepts ECharts dependencies and source when charts are selected', async () => {
     const root = await createStarterFixture({
+      agentImports: ['core', 'data-flow', 'extension-points', 'charts'],
+      contextFiles: {
+        'charts.md': '# Charts\n\n当前项目生成了 ECharts 图表示例能力。\n'
+      },
       dependencies: {
         echarts: '^6.1.0',
         'vue-echarts': '^8.0.1'
