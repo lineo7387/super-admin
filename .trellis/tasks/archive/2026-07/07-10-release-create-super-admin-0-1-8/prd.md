@@ -40,8 +40,8 @@
 - [x] `pnpm release plan --changed create-super-admin` 只选择 `create-super-admin@0.1.8`。
 - [x] npm version preflight 确认 `create-super-admin@0.1.8` 未发布。
 - [x] `pnpm release check`、`pnpm format:check` 和 `pnpm docs:build` 通过。
-- [ ] Release PR CI 通过且 merge state clean/mergeable。
-- [ ] Release PR 合并到 `main`，且没有触发 `Publish next` workflow。
+- [x] Release PR CI 通过且 merge state clean/mergeable。
+- [x] Release PR 合并到 `main`，且没有触发 `Publish next` workflow。
 
 ## Definition of Done
 

@@ -203,3 +203,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 65: Release create-super-admin 0.1.8
+
+**Date**: 2026-07-10
+**Task**: Release create-super-admin 0.1.8
+**Branch**: `codex/archive-release-create-super-admin-0-1-8`
+
+### Summary
+
+使用 Changesets 将 generated AI context 变更版本化为 create-super-admin 0.1.8；完成 release plan、Registry preflight、完整 packed starter/release 验证、PR #41 CI 与合并，并保持 Publish next 未触发。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4c1fb9b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
