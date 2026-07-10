@@ -1,5 +1,11 @@
 # create-super-admin
 
+## 0.1.8
+
+### Patch Changes
+
+- 14fe985: 为生成项目新增按能力裁剪的 `AGENTS.md`、`CLAUDE.md` 和 `ai-context/` 上下文，并优化 starter 分包。
+
 ## 0.1.7
 
 ### Patch Changes

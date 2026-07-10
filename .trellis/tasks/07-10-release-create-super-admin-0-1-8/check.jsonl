@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Repository verification and no-warning quality expectations."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Verify release artifacts, package selection, Changesets flow, and registry preflight."}
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "Verify packed create-super-admin remains self-contained and starter-safe."}
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Verify public npm state is not overstated and no registry mutation is implied."}
+{"file": ".trellis/spec/shared/git-conventions.md", "reason": "Verify focused release commit and PR flow."}
+{"file": ".trellis/tasks/07-10-release-create-super-admin-0-1-8/research/changesets-status-after-version.md", "reason": "Distinguish expected post-version status from a genuinely missing changeset."}

@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Release versioning, Changesets, package selection, and registry preflight contracts."}
+{"file": ".trellis/spec/shared/cli-starter-contract.md", "reason": "create-super-admin package artifact and generated starter release boundaries."}
+{"file": ".trellis/spec/shared/public-delivery.md", "reason": "Public npm state and maintainer-only release workflow boundaries."}
+{"file": ".trellis/spec/shared/git-conventions.md", "reason": "Release commit and protected-branch PR conventions."}
+{"file": ".trellis/tasks/07-10-release-create-super-admin-0-1-8/research/changesets-status-after-version.md", "reason": "Expected Changesets status behavior after version artifacts consume the pending changeset."}
