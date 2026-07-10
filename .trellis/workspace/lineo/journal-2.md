@@ -170,3 +170,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 64: Starter release hardening
+
+**Date**: 2026-07-10
+**Task**: Starter release hardening
+**Branch**: `codex/starter-release-hardening`
+
+### Summary
+
+为 create-super-admin AI context 变更补充 patch changeset；新增 npm immutable-version fail-closed 预检、CI packed starter gate、workflow 顺序回归测试，并同步中英文发布文档与 Trellis 规范。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9121e01` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
