@@ -44,6 +44,12 @@ jobs:
           PUBLISH_CONFIRM: ${{ inputs.confirm }}
         run: node scripts/release.mjs assert-workflow-confirm "$PUBLISH_CONFIRM" --changed "$PUBLISH_CHANGED_PACKAGES"
 
+      - name: Verify package versions are unpublished
+        timeout-minutes: 2
+        env:
+          PUBLISH_CHANGED_PACKAGES: ${{ inputs.changed_packages }}
+        run: pnpm release assert-unpublished --changed "$PUBLISH_CHANGED_PACKAGES"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

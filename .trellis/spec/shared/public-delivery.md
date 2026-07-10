@@ -146,6 +146,7 @@ The first hosted docs/demo surface is the VitePress docs site deployed to GitHub
 Root scripts should be directly runnable and named honestly.
 
 - `pnpm validate:starter` should validate generated starter behavior without requiring hidden positional arguments.
+- The normal CI workflow should run `pnpm validate:starter` so packed CLI/starter regressions fail before merge, not only during a later publish workflow.
 - `pnpm validate:publish` remains the full package publish readiness gate.
 - `pnpm test:reference` is maintainer-only and validates optional reference API connectivity.
 - Do not place reference smoke tooling in generated starter output.

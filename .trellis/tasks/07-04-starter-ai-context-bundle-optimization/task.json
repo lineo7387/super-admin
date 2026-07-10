@@ -12,7 +12,7 @@
   "assignee": "lineo",
   "createdAt": "2026-07-04",
   "completedAt": null,
-  "branch": null,
+  "branch": "codex/starter-release-hardening",
   "base_branch": "main",
   "worktree_path": null,
   "commit": null,
