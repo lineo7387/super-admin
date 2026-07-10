@@ -120,7 +120,17 @@ Workflow confirmation: publish-super-admin-next-create-super-admin-0.1.3
 
 Enter `create-super-admin` as `changed_packages` and the printed confirmation as `confirm`.
 
-The workflow runs `pnpm release check` before publishing. Package `prepublishOnly` guards block accidental normal local publishes and allow normal publishes only from the configured GitHub Actions workflow with the `next` tag and provenance. The workflow publishes only the dependency-aware selected package set.
+The workflow first runs a registry version collision preflight:
+
+```bash
+pnpm release assert-unpublished --changed create-super-admin
+```
+
+If a selected package version already exists on npm, the workflow fails before install, build, or publish. Add the missing changeset, run `pnpm release version` to produce a new immutable version, and trigger the workflow again; never try to overwrite a published version.
+
+Registry timeouts, non-404 errors, or malformed metadata also fail the preflight. Only an explicit 404 means that the package is unpublished; the workflow never proceeds when it cannot confirm the version state.
+
+After the version preflight passes, the workflow runs `pnpm release check`. Package `prepublishOnly` guards block accidental normal local publishes and allow normal publishes only from the configured GitHub Actions workflow with the `next` tag and provenance. The workflow publishes only the dependency-aware selected package set.
 
 Publish commands for local package directories must use explicit local paths such as `./packages/core`. Do not write bare paths like `packages/core`; npm may parse them as GitHub shorthand package specs instead of local directories.
 
@@ -233,6 +243,7 @@ The workflow approval happens once at the GitHub environment gate, then the job 
 pnpm release check
 pnpm release version
 pnpm release plan [--channel next|latest] --changed <package[,package]>
+pnpm release assert-unpublished --changed <package[,package]>
 pnpm release bootstrap:prepare
 pnpm release commands bootstrap
 pnpm release commands trust

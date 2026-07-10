@@ -77,6 +77,52 @@ export function validateWorkflowConfirm(confirm, selectedPackages, channel = 'ne
   ]
 }
 
+export async function readNpmPackageMetadata(packageName) {
+  const response = await fetch(`https://registry.npmjs.org/${encodeURIComponent(packageName)}`, {
+    headers: {
+      accept: 'application/vnd.npm.install-v1+json'
+    },
+    signal: AbortSignal.timeout(10_000)
+  })
+
+  if (response.status === 404) {
+    return null
+  }
+
+  if (!response.ok) {
+    throw new Error(`Unable to check npm registry metadata for ${packageName}: HTTP ${response.status}.`)
+  }
+
+  return response.json()
+}
+
+export async function validateReleaseVersionsUnpublished(selectedPackages, readPackageMetadata = readNpmPackageMetadata) {
+  const failures = []
+
+  for (const selectedPackage of selectedPackages) {
+    const metadata = await readPackageMetadata(selectedPackage.name)
+
+    if (metadata === null) {
+      continue
+    }
+
+    const versions = metadata && typeof metadata === 'object' && !Array.isArray(metadata) ? metadata.versions : null
+
+    if (!versions || typeof versions !== 'object' || Array.isArray(versions)) {
+      throw new Error(`Invalid npm registry metadata for ${selectedPackage.name}: expected an object-valued versions field.`)
+    }
+
+    if (Object.hasOwn(versions, selectedPackage.version)) {
+      failures.push({
+        id: 'release-version-already-published',
+        message: `${selectedPackage.name}@${selectedPackage.version} already exists on npm. Apply pending changesets before publishing.`
+      })
+    }
+  }
+
+  return failures
+}
+
 export function normalizeRegistryCommandMode(mode) {
   if (mode === undefined) {
     return 'all'
@@ -202,6 +248,15 @@ function assertWorkflowConfirm(confirm, args) {
   }
 }
 
+async function assertReleaseVersionsUnpublished(args) {
+  const options = parseReleaseSelectionArgs(args)
+  const failures = await validateReleaseVersionsUnpublished(readSelectedReleasePlan(options))
+
+  if (failures.length > 0) {
+    throw new Error(failures.map((failure) => `${failure.id}: ${failure.message}`).join('\n'))
+  }
+}
+
 function printReleasePlan(args) {
   const options = parseReleaseSelectionArgs(args)
   const releasePlan = readSelectedReleasePlan(options)
@@ -219,6 +274,7 @@ function printUsage() {
   pnpm release version
   pnpm release bootstrap:prepare
   pnpm release plan [--channel next|latest] --changed <package[,package]>
+  pnpm release assert-unpublished [--changed <package[,package]>|--packages <package[,package]>]
   pnpm release commands [bootstrap|trust|next|publish-next|latest|promote-latest|all] [--changed <package[,package]>|--packages <package[,package]>]
   pnpm release assert-workflow-confirm <confirmation-text> [--channel next|latest] [--changed <package[,package]>|--packages <package[,package]>]`)
 }
@@ -255,6 +311,11 @@ async function main() {
   if (command === 'assert-workflow-confirm') {
     const [confirm, ...selectionArgs] = args
     assertWorkflowConfirm(confirm, selectionArgs)
+    return
+  }
+
+  if (command === 'assert-unpublished') {
+    await assertReleaseVersionsUnpublished(args)
     return
   }
 

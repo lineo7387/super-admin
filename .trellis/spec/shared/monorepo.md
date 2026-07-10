@@ -92,6 +92,7 @@ pnpm release check
 pnpm release version
 pnpm release bootstrap:prepare
 pnpm release plan [--channel next|latest] --changed <package[,package]>
+pnpm release assert-unpublished [--changed <package[,package]>|--packages <package[,package]>]
 pnpm release commands [bootstrap|trust|publish-next|promote-latest|all] [--changed <package[,package]>|--packages <package[,package]>]
 pnpm release assert-workflow-confirm <confirmation-text> [--channel next|latest] [--changed <package[,package]>|--packages <package[,package]>]
 ```
@@ -127,6 +128,8 @@ Publish candidate packages must expose:
 - The generated starter dependency ranges for `@super-admin-org/*` packages must come from a package-specific generated range map, not from the `create-super-admin` package version.
 - `pnpm release commands ...` prints registry-mutating commands only; it must not execute them.
 - GitHub `Publish next` workflow confirmation text must be generated from the selected package versions, for example `publish-super-admin-next-create-super-admin-0.1.3`.
+- Before install, build, or publish, the `Publish next` workflow must reject every selected package version that already exists on npm. npm package versions are immutable; a collision means the release commit is missing a version bump or selected the wrong package set.
+- The npm version preflight must fail closed on registry timeouts, non-404 errors, invalid JSON, or malformed successful metadata. Only an explicit 404 means the package has no published versions.
 - Tests for release command output must derive mutable package versions from manifests or release plans, not hard-code historical versions that change after `pnpm release version`.
 - Normal publish candidate releases must run from the expected GitHub Actions workflow with `--tag next` and provenance.
 - The normal publish workflow must accept a changed package list, run the full release check, then publish only the dependency-aware selected package set.
@@ -149,6 +152,7 @@ Publish candidate packages must expose:
 | Dependency-aware core selection includes unrelated `ui` or `create-super-admin` packages | Fail release-plan tests. |
 | CLI-only selection prints `@super-admin-org/*` publish or promote commands | Fail command-printer tests. |
 | Workflow confirmation does not match selected package versions | Fail before install/build/publish steps. |
+| A selected package version already exists on npm | Fail before install/build/publish and require a new changeset-driven version; never attempt to overwrite the registry version. |
 | Local normal `npm publish` is attempted | Fail in `prepublishOnly`. |
 | Bootstrap publish uses a non-bootstrap tag or version | Fail in `prepublishOnly`. |
 | Bootstrap version is treated as a valid default install channel | Reject; bootstrap is package-name creation only. |
@@ -156,6 +160,7 @@ Publish candidate packages must expose:
 | A beta, rc, or next version is proposed for `latest` | Reject; publish it under the matching prerelease/upcoming tag. |
 | `npm trust github` rejects `--allow-publish` | Use the printed npm update command or a temporary modern npm CLI; do not drop the permission flag from the policy. |
 | GitHub publish workflow reports `pnpm: command not found` after the npm upgrade step | Install the pinned pnpm CLI explicitly before dependency installation, then rerun the workflow only after approval. |
+| npm version preflight times out or receives malformed successful metadata | Fail before dependency installation; investigate registry availability or the response contract instead of assuming the version is unpublished. |
 | Release workflow remains in `Run release check` after `Publish readiness validation passed` | Treat as an open-handle or child-process cleanup bug; cancel before publish steps start, fix cleanup, and rerun only after approval. |
 | Publish workflow runs `git ls-remote ssh://git@github.com/packages/<name>.git` for a local workspace path | Treat the publish spec as missing an explicit local `./` prefix; fix workflow and generated commands before rerunning with approval. |
 | Normal publish omits `--provenance` | Fail in `prepublishOnly`. |
@@ -170,6 +175,8 @@ Publish candidate packages must expose:
 ### 5. Good/Base/Bad Cases
 
 - Good: maintainer runs `pnpm changeset`, `pnpm release plan --changed create-super-admin`, `pnpm release version`, `pnpm release check`, pushes, then manually runs the `Publish next` workflow with `changed_packages=create-super-admin` and the dynamic confirmation text.
+- Good: the publish workflow runs `pnpm release assert-unpublished --changed <packages>` before dependency installation and reports the exact colliding `name@version` when a version is immutable on npm.
+- Good: the npm version preflight treats only a registry 404 as an unpublished package and rejects malformed successful metadata rather than silently continuing.
 - Good: a CLI-only release prints and publishes only `create-super-admin`.
 - Good: a starter dependency migration from a deprecated package publishes both `create-super-admin` and the publishable package that owns the transitive dependency, such as `@super-admin-org/ui`.
 - Good: a core release prints and publishes `core`, the theme runtime, and theme profile packages, but not unrelated `ui` or `create-super-admin`.
@@ -185,6 +192,7 @@ Publish candidate packages must expose:
 ### 6. Tests Required
 
 - Unit tests for workflow confirmation helpers.
+- Unit tests for npm registry version-collision preflight behavior, missing packages, malformed metadata, and registry errors.
 - Unit tests for dependency-aware release plan calculation.
 - Unit tests for registry command mode normalization.
 - Unit tests for selected publish/promote command generation.
@@ -219,6 +227,24 @@ pnpm release commands publish-next
 ```
 
 Then use the GitHub `Publish next` workflow for the actual `next` publish, smoke test from npm, and separately approve `latest` promotion.
+
+#### Wrong
+
+```bash
+pnpm release check
+npm publish ./packages/cli --tag next
+```
+
+This discovers an immutable npm version collision only after the expensive release gate and at the registry mutation step.
+
+#### Correct
+
+```bash
+pnpm release assert-unpublished --changed create-super-admin
+pnpm release check
+```
+
+This fails before install, build, or publish when the selected manifest version already exists on npm.
 
 ## Documentation Site
 
