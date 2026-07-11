@@ -4,10 +4,15 @@ import { computed, reactive, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AdminAlert, AdminButton, AdminField, AdminTextInput, AdminValidationSummary } from '@super-admin-org/ui'
+// @starter-reference:start
 import { loginReferenceSession } from '@/api/reference/auth-reference.api'
+// @starter-reference:end
 import { resolvePostLoginPath } from '@/router/auth-guard'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
-import { createTemplateAuthSession, shouldUseReferenceAuth } from './auth-session'
+import { createTemplateAuthSession } from './auth-session'
+// @starter-reference:start
+import { shouldUseReferenceAuth } from './auth-session'
+// @starter-reference:end
 import AuthLayout from './components/AuthLayout.vue'
 import { validateLoginInput } from './auth.validation'
 import type { AuthFieldErrors, LoginInput } from './auth.types'
@@ -25,8 +30,28 @@ const submitError = shallowRef('')
 const isSubmitting = shallowRef(false)
 
 const validationMessages = computed(() => Object.values(fieldErrors.value).filter((message) => message !== undefined))
+// @starter-reference:start
 const apiBaseUrl = computed(() => import.meta.env.VITE_SUPER_ADMIN_API_BASE_URL?.trim() || 'http://localhost:8787')
 const isReferenceAuth = computed(() => shouldUseReferenceAuth())
+// @starter-reference:end
+
+async function createLoginSession() {
+  // @starter-reference:start
+  if (isReferenceAuth.value) {
+    return loginReferenceSession(
+      {
+        email: form.email,
+        password: form.password
+      },
+      {
+        baseUrl: apiBaseUrl.value
+      }
+    )
+  }
+  // @starter-reference:end
+
+  return createTemplateAuthSession()
+}
 
 async function submitLogin(): Promise<void> {
   fieldErrors.value = validateLoginInput(form, t)
@@ -39,19 +64,8 @@ async function submitLogin(): Promise<void> {
   isSubmitting.value = true
 
   try {
-    const nextSession = isReferenceAuth.value
-      ? await loginReferenceSession(
-          {
-            email: form.email,
-            password: form.password
-          },
-          {
-            baseUrl: apiBaseUrl.value
-          }
-        )
-      : createTemplateAuthSession()
-
-    session.setReferenceSession(nextSession)
+    const nextSession = await createLoginSession()
+    session.setSession(nextSession)
     await router.push(resolvePostLoginPath(route.query.redirect))
   } catch (error) {
     submitError.value = error instanceof Error ? error.message : t('auth.login.unableToSignIn')
