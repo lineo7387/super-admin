@@ -3,7 +3,7 @@ import { Search, X } from '@lucide/vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { AdminScrollArea } from '@super-admin-org/ui'
-import { useCommandPaletteItems, filterCommandItems, type CommandPaletteItem } from './use-command-palette-items'
+import { useCommandPaletteItems, filterCommandItems, moveCommandSelection, type CommandPaletteItem } from './use-command-palette-items'
 
 const props = defineProps<{
   open: boolean
@@ -72,13 +72,13 @@ function perform(item: CommandPaletteItem): void {
 function handleKeydown(event: KeyboardEvent): void {
   if (event.key === 'ArrowDown') {
     event.preventDefault()
-    selectedIndex.value = (selectedIndex.value + 1) % filtered.value.length
+    selectedIndex.value = moveCommandSelection(selectedIndex.value, 1, filtered.value.length)
     return
   }
 
   if (event.key === 'ArrowUp') {
     event.preventDefault()
-    selectedIndex.value = (selectedIndex.value - 1 + filtered.value.length) % filtered.value.length
+    selectedIndex.value = moveCommandSelection(selectedIndex.value, -1, filtered.value.length)
     return
   }
 

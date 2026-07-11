@@ -40,6 +40,7 @@ const enUS = {
         openControlCenter: 'Open Control Center',
         openAiAssistant: 'Open AI Assistant',
         openStageOverview: 'Open Stage Overview',
+        setProfile: 'Set theme: {profile}',
         setColorMode: 'Set color mode: {mode}',
         setLocale: 'Set language: {locale}'
       },

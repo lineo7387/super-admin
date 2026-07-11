@@ -65,21 +65,28 @@
 
 ## Acceptance Criteria
 
-- [ ] Cmd/Ctrl+K 唤醒命令面板（global scope，输入框内也生效）
-- [ ] 命令面板可搜索全部 manifest 路由（~16 条）并跳转
-- [ ] 命令面板可搜索并执行 shell 命令（切主题/色彩模式/语言/开控制中心/AI 助手/Stage Manager）
-- [ ] 命令面板键盘 ↑/↓ 选择 + Enter 执行 + Escape 关闭
-- [ ] 命令面板分组显示 Navigation / Actions
-- [ ] header 搜索框点击可打开命令面板
-- [ ] controlCenter / aiAssistant / commandPalette 快捷键绑定生效
-- [ ] 快捷键面板如实反映当前绑定状态（含用户自定义覆盖）
-- [ ] 用户可重绑快捷键：点击重绑 → 捕获组合 → 冲突检测 → 持久化
-- [ ] 浏览器保留组合（W/T/N/L/R）被拒绝绑定
-- [ ] 单修饰键被拒绝；重绑模式 Escape 取消
-- [ ] 恢复默认按钮工作正常
-- [ ] global vs normal scope 在输入框焦点时行为正确
-- [ ] zh-CN 文案齐全，en-US 同步
-- [ ] 单测覆盖：combo 匹配、冲突检测、浏览器保留拒绝、输入框焦点抑制、命令面板过滤/导航/执行、重绑流程、持久化
+- [x] Cmd/Ctrl+K 唤醒命令面板（global scope，输入框内也生效）
+- [x] 命令面板可搜索全部 manifest 路由（~16 条）并跳转
+- [x] 命令面板可搜索并执行 shell 命令（切主题/色彩模式/语言/开控制中心/AI 助手/Stage Manager）
+- [x] 命令面板键盘 ↑/↓ 选择 + Enter 执行 + Escape 关闭
+- [x] 命令面板分组显示 Navigation / Actions
+- [x] header 搜索框点击可打开命令面板
+- [x] controlCenter / aiAssistant / commandPalette 快捷键绑定生效
+- [x] 快捷键面板如实反映当前绑定状态（含用户自定义覆盖）
+- [x] 用户可重绑快捷键：点击重绑 → 捕获组合 → 冲突检测 → 持久化
+- [x] 浏览器保留组合（W/T/N/L/R）被拒绝绑定
+- [x] 单修饰键被拒绝；重绑模式 Escape 取消
+- [x] 恢复默认按钮工作正常
+- [x] global vs normal scope 在输入框焦点时行为正确
+- [x] zh-CN 文案齐全，en-US 同步
+- [x] 单测覆盖：combo 匹配、冲突检测、浏览器保留拒绝、输入框焦点抑制、命令面板过滤/导航/执行、重绑流程、持久化
+
+## Closure Audit (2026-07-11)
+
+- 自动化：`pnpm release:check`、`pnpm docs:build`、`pnpm format:check` 通过；生成的 default、base+cyberpunk+i18n、ECharts starters 均完成 install、typecheck 与 build。
+- 聚焦回归：快捷键 registry/store/dispatcher、Command Palette、action factory 与 account rebind tests 通过。
+- 浏览器：验证 header 点击、输入框内 Cmd/Ctrl+K、空结果方向键后恢复搜索、Enter 路由跳转、Industrial 主题 action、Control Center / AI / Stage Overview 快捷键、重绑与恢复默认；浏览器日志无 warning/error。
+- 审查：修复主题 action 缺失、空结果 modulo-zero 选中索引、normal scope 不可达和主题 action 测试仅检查源码的问题；复核无 Critical / Important。
 
 ## Definition of Done
 

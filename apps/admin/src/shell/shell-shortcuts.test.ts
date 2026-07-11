@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
-import { isStageManagerShortcut } from './shell-shortcuts'
+import { describe, expect, it, vi } from 'vitest'
+import { handleShellShortcutKeydown, isStageManagerShortcut, shouldHandleShortcut } from './shell-shortcuts'
+import { DEFAULT_SHORTCUTS, type ShortcutCombo } from './shortcuts/registry'
 import shellShortcutsSource from './shell-shortcuts?raw'
 
 describe('shell shortcuts', () => {
@@ -18,5 +19,59 @@ describe('shell shortcuts', () => {
     expect(shellShortcutsSource).toContain('preferences.openStageOverview()')
     expect(shellShortcutsSource).not.toContain('preferences.openStageManager()')
     expect(shellShortcutsSource).not.toContain('preferences.setStageRailEnabled')
+  })
+
+  it('keeps global shortcuts active in inputs and suppresses normal shortcuts', () => {
+    expect(shouldHandleShortcut('global', true)).toBe(true)
+    expect(shouldHandleShortcut('normal', true)).toBe(false)
+    expect(shouldHandleShortcut('normal', false)).toBe(true)
+  })
+
+  it('suppresses normal actions through the real keydown dispatcher when an input is focused', () => {
+    const openAiAssistant = vi.fn()
+    const preventDefault = vi.fn()
+    const event = {
+      altKey: false,
+      ctrlKey: true,
+      key: 'a',
+      metaKey: false,
+      preventDefault,
+      shiftKey: true,
+      target: { isContentEditable: false, tagName: 'INPUT' }
+    } as unknown as KeyboardEvent
+
+    const handled = handleShellShortcutKeydown(event, {
+      actions: { 'ai-assistant': openAiAssistant },
+      getCombo: (id) => DEFAULT_SHORTCUTS.find((definition) => definition.id === id)?.defaultCombo as ShortcutCombo,
+      isRebinding: false
+    })
+
+    expect(handled).toBe(false)
+    expect(openAiAssistant).not.toHaveBeenCalled()
+    expect(preventDefault).not.toHaveBeenCalled()
+  })
+
+  it('runs global actions through the real keydown dispatcher when an input is focused', () => {
+    const openCommandPalette = vi.fn()
+    const preventDefault = vi.fn()
+    const event = {
+      altKey: false,
+      ctrlKey: true,
+      key: 'k',
+      metaKey: false,
+      preventDefault,
+      shiftKey: false,
+      target: { isContentEditable: false, tagName: 'INPUT' }
+    } as unknown as KeyboardEvent
+
+    const handled = handleShellShortcutKeydown(event, {
+      actions: { 'command-palette': openCommandPalette },
+      getCombo: (id) => DEFAULT_SHORTCUTS.find((definition) => definition.id === id)?.defaultCombo as ShortcutCombo,
+      isRebinding: false
+    })
+
+    expect(handled).toBe(true)
+    expect(openCommandPalette).toHaveBeenCalledOnce()
+    expect(preventDefault).toHaveBeenCalledOnce()
   })
 })

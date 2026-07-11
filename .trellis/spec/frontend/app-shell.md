@@ -246,6 +246,18 @@ The shortcuts entry opens a rebindable shortcuts surface. It lists the current k
 
 User custom bindings persist to `localStorage` under `super-admin:shortcuts` and are owned by the shortcuts Pinia store. The command palette opens via `Cmd/Ctrl + K` or by clicking the header search trigger.
 
+Shortcut scope is part of the action contract, not a display detail:
+
+- `stage-manager` and `command-palette` are `global`, so they remain available while an input, textarea, select, or content-editable surface is focused.
+- `control-center` and `ai-assistant` are `normal`, so ordinary typing cannot unexpectedly open shell overlays.
+- Test scope behavior through the real keydown dispatcher with an editable event target; a standalone boolean helper test is not sufficient.
+
+Command Palette shell actions must be derived from the runtime sources they control. In particular, theme actions come from `builtInDesignProfiles` / the generated theme registry rather than a duplicated theme-id list. The profile action factory must produce one unique action per installed profile and execute `setProfile(profile.id)`. Color-mode and locale actions may use their closed typed lists.
+
+Keyboard selection must remain a valid index when filtering returns no results. Arrow Up/Down on an empty list is a no-op that keeps the selection at `0`; it must not evaluate modulo zero and leave `selectedIndex` as `NaN` when results reappear.
+
+**Check**: Focus a feature-page input and verify `Cmd/Ctrl+K` still opens the palette while `Cmd/Ctrl+Shift+C` and `Cmd/Ctrl+Shift+A` do not. Search to an empty result, press both arrow keys, then search for a route and press Enter; the selected route must execute. Verify every installed theme appears once and switches to its exact profile id.
+
 The account menu must close when:
 
 - the user clicks outside the menu

@@ -1,16 +1,17 @@
 import { onMounted, onUnmounted } from 'vue'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { useShortcutsStore } from '@/stores/shortcuts.store'
-import { combosMatch, DEFAULT_SHORTCUTS, normalizeCombo, type ShortcutEvent, type ShortcutId } from './shortcuts/registry'
+import { combosMatch, DEFAULT_SHORTCUTS, normalizeCombo, type ShortcutEvent, type ShortcutId, type ShortcutScope } from './shortcuts/registry'
 
 const TYPING_TAGS = new Set(['input', 'textarea', 'select'])
 
 function isTypingInInput(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) {
+  if (typeof target !== 'object' || target === null || !('tagName' in target)) {
     return false
   }
 
-  return TYPING_TAGS.has(target.tagName.toLowerCase()) || target.isContentEditable
+  const element = target as { isContentEditable?: boolean; tagName?: unknown }
+  return (typeof element.tagName === 'string' && TYPING_TAGS.has(element.tagName.toLowerCase())) || element.isContentEditable === true
 }
 
 export function isStageManagerShortcut(event: ShortcutEvent): boolean {
@@ -18,7 +19,46 @@ export function isStageManagerShortcut(event: ShortcutEvent): boolean {
   return (combo.metaKey || combo.ctrlKey) && combo.shiftKey && combo.key === 'm'
 }
 
+export function shouldHandleShortcut(scope: ShortcutScope, typingInInput: boolean): boolean {
+  return scope === 'global' || !typingInInput
+}
+
 type ShortcutActions = Partial<Record<ShortcutId, () => void>>
+
+export type ShellShortcutRuntime = {
+  actions: ShortcutActions
+  getCombo: (id: ShortcutId) => ReturnType<typeof normalizeCombo>
+  isRebinding: boolean
+}
+
+export function handleShellShortcutKeydown(event: KeyboardEvent, runtime: ShellShortcutRuntime): boolean {
+  if (runtime.isRebinding) {
+    return false
+  }
+
+  const combo = normalizeCombo(event)
+
+  for (const def of DEFAULT_SHORTCUTS) {
+    if (!combosMatch(combo, runtime.getCombo(def.id))) {
+      continue
+    }
+
+    const action = runtime.actions[def.id]
+    if (!action) {
+      continue
+    }
+
+    if (!shouldHandleShortcut(def.scope, isTypingInInput(event.target))) {
+      continue
+    }
+
+    event.preventDefault()
+    action()
+    return true
+  }
+
+  return false
+}
 
 export function useShellShortcuts(): void {
   const preferences = usePreferencesStore()
@@ -32,30 +72,11 @@ export function useShellShortcuts(): void {
   }
 
   function handleKeydown(event: KeyboardEvent): void {
-    if (shortcuts.isRebinding) {
-      return
-    }
-
-    const combo = normalizeCombo(event)
-
-    for (const def of DEFAULT_SHORTCUTS) {
-      if (!combosMatch(combo, shortcuts.getCombo(def.id))) {
-        continue
-      }
-
-      const action = actions[def.id]
-      if (!action) {
-        continue
-      }
-
-      if (def.scope !== 'global' && isTypingInInput(event.target)) {
-        continue
-      }
-
-      event.preventDefault()
-      action()
-      return
-    }
+    handleShellShortcutKeydown(event, {
+      actions,
+      getCombo: (id) => shortcuts.getCombo(id),
+      isRebinding: shortcuts.isRebinding
+    })
   }
 
   onMounted(() => {
