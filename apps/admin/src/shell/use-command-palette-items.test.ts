@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
-import { filterCommandItems, type CommandPaletteItem } from './use-command-palette-items'
+import { describe, expect, it, vi } from 'vitest'
+import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'
+import { createProfileCommandItems, filterCommandItems, moveCommandSelection, type CommandPaletteItem } from './use-command-palette-items'
 import commandPaletteItemsSource from './use-command-palette-items.ts?raw'
 
 function makeItem(id: string, label: string, group: CommandPaletteItem['group'] = 'navigation'): CommandPaletteItem {
@@ -42,6 +43,37 @@ describe('filterCommandItems', () => {
   })
 })
 
+describe('moveCommandSelection', () => {
+  it('keeps a stable selection when the result list is empty', () => {
+    expect(moveCommandSelection(0, 1, 0)).toBe(0)
+    expect(moveCommandSelection(0, -1, 0)).toBe(0)
+  })
+
+  it('wraps selection in both directions', () => {
+    expect(moveCommandSelection(2, 1, 3)).toBe(0)
+    expect(moveCommandSelection(0, -1, 3)).toBe(2)
+  })
+})
+
+describe('createProfileCommandItems', () => {
+  it('creates one unique executable action for every installed profile', () => {
+    const setProfile = vi.fn()
+    const items = createProfileCommandItems(builtInDesignProfiles, (name) => `Theme: ${name}`, setProfile)
+
+    expect(items).toHaveLength(builtInDesignProfiles.length)
+    expect(new Set(items.map((item) => item.id)).size).toBe(builtInDesignProfiles.length)
+
+    items.forEach((item, index) => {
+      const profile = builtInDesignProfiles[index]
+      expect(item.id).toBe(`action:profile:${profile.id}`)
+      expect(item.label).toBe(`Theme: ${profile.name}`)
+      expect(item.group).toBe('actions')
+      item.perform()
+      expect(setProfile).toHaveBeenNthCalledWith(index + 1, profile.id)
+    })
+  })
+})
+
 describe('command palette items source', () => {
   it('builds navigation items from registered module manifests via flattenModuleNav', () => {
     expect(commandPaletteItemsSource).toContain('flattenModuleNav')
@@ -64,5 +96,11 @@ describe('command palette items source', () => {
     expect(commandPaletteItemsSource).toContain("'system'")
     expect(commandPaletteItemsSource).toContain("'zh-CN'")
     expect(commandPaletteItemsSource).toContain("'en-US'")
+  })
+
+  it('includes an action for every installed design profile', () => {
+    expect(commandPaletteItemsSource).toContain('builtInDesignProfiles')
+    expect(commandPaletteItemsSource).toContain('setProfile')
+    expect(commandPaletteItemsSource).toContain('shell.commandPalette.actions.setProfile')
   })
 })

@@ -1,10 +1,11 @@
-import { flattenModuleNav, type ModuleNavItem } from '@super-admin-org/core'
+import { flattenModuleNav, type DesignProfileId, type ModuleNavItem } from '@super-admin-org/core'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { registeredModules } from '@/modules/module-registry'
 import { translateNavItemLabel } from '@/i18n/navigation'
+import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'
 
 export type CommandPaletteGroup = 'navigation' | 'actions'
 
@@ -14,6 +15,11 @@ export type CommandPaletteItem = {
   group: CommandPaletteGroup
   hint?: string
   perform: () => void
+}
+
+type ProfileCommandSource = {
+  id: DesignProfileId
+  name: string
 }
 
 type ColorMode = 'light' | 'dark' | 'system'
@@ -78,6 +84,14 @@ export function useCommandPaletteItems() {
       perform: () => preferences.openStageOverview()
     })
 
+    items.push(
+      ...createProfileCommandItems(
+        builtInDesignProfiles,
+        (profileName) => t('shell.commandPalette.actions.setProfile', { profile: profileName }),
+        (profileId) => preferences.setProfile(profileId)
+      )
+    )
+
     const colorModes: ColorMode[] = ['light', 'dark', 'system']
     for (const mode of colorModes) {
       items.push({
@@ -114,4 +128,25 @@ export function filterCommandItems(items: CommandPaletteItem[], query: string): 
   }
 
   return items.filter((item) => item.label.toLowerCase().includes(keyword))
+}
+
+export function moveCommandSelection(current: number, direction: -1 | 1, itemCount: number): number {
+  if (itemCount === 0) {
+    return 0
+  }
+
+  return (current + direction + itemCount) % itemCount
+}
+
+export function createProfileCommandItems(
+  profiles: readonly ProfileCommandSource[],
+  formatLabel: (profileName: string) => string,
+  setProfile: (profileId: DesignProfileId) => void
+): CommandPaletteItem[] {
+  return profiles.map((profile) => ({
+    id: `action:profile:${profile.id}`,
+    label: formatLabel(profile.name),
+    group: 'actions',
+    perform: () => setProfile(profile.id)
+  }))
 }

@@ -40,6 +40,7 @@ const zhCN = {
         openControlCenter: '打开控制中心',
         openAiAssistant: '打开 AI 助手',
         openStageOverview: '打开台前调度',
+        setProfile: '切换主题：{profile}',
         setColorMode: '切换色彩模式：{mode}',
         setLocale: '切换语言：{locale}'
       },

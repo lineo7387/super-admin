@@ -152,10 +152,11 @@ describe('shortcut registry', () => {
       expect(ids).toContain('command-palette')
     })
 
-    it('all defaults are global scope', () => {
-      for (const def of DEFAULT_SHORTCUTS) {
-        expect(def.scope).toBe('global')
-      }
+    it('keeps palette and Stage Manager global while input-sensitive actions are normal', () => {
+      expect(DEFAULT_SHORTCUTS.find((d) => d.id === 'stage-manager')?.scope).toBe('global')
+      expect(DEFAULT_SHORTCUTS.find((d) => d.id === 'command-palette')?.scope).toBe('global')
+      expect(DEFAULT_SHORTCUTS.find((d) => d.id === 'control-center')?.scope).toBe('normal')
+      expect(DEFAULT_SHORTCUTS.find((d) => d.id === 'ai-assistant')?.scope).toBe('normal')
     })
 
     it('command-palette defaults to Ctrl/Cmd+K', () => {

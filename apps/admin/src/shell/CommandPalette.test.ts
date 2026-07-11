@@ -24,8 +24,8 @@ describe('CommandPalette component', () => {
     expect(commandPaletteSource).toContain('preventDefault')
   })
 
-  it('wraps selection around the filtered list', () => {
-    expect(commandPaletteSource).toContain('% filtered.value.length')
+  it('moves selection through the guarded selection helper', () => {
+    expect(commandPaletteSource).toContain('moveCommandSelection')
   })
 
   it('uses the shared filterCommandItems helper', () => {

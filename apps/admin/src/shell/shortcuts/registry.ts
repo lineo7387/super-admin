@@ -40,13 +40,13 @@ export const DEFAULT_SHORTCUTS: readonly ShortcutDefinition[] = [
     id: 'control-center',
     labelKey: 'shell.shortcuts.controlCenter',
     defaultCombo: { key: 'c', metaKey: false, ctrlKey: true, shiftKey: true, altKey: false },
-    scope: 'global'
+    scope: 'normal'
   },
   {
     id: 'ai-assistant',
     labelKey: 'shell.shortcuts.aiAssistant',
     defaultCombo: { key: 'a', metaKey: false, ctrlKey: true, shiftKey: true, altKey: false },
-    scope: 'global'
+    scope: 'normal'
   },
   {
     id: 'command-palette',
