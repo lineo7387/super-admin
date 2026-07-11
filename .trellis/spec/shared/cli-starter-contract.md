@@ -202,6 +202,11 @@ AI boundary:
 Generated template derivation:
 
 - `apps/admin` is the source model, but generated output is not a raw copy.
+- App-local starter files under `src/` must be derived through the shared typed source policy in `packages/cli/src/starter-source.ts`: each path resolves to `copy`, `transform`, or `exclude`; generator-owned root files resolve to `generate` through an explicit whitelist.
+- Runtime-template packaging and starter generation must call the same source materializer and invariant exclusion policy. `scripts/build-cli-template.mjs` must not maintain a second copy of reference/test/dead-manifest filters.
+- `packages/cli/src/templates.ts` may generate only root/config/README/AI-context files that have no app-source equivalent. Do not add whole-file string factories for `apps/admin/src/**` files.
+- Intentional app/starter differences must use named, narrow source seams such as `@starter-reference`, `@starter-theme`, or `@starter-locale` regions, or small deterministic transforms. Every transformed path must be listed in `APP_SOURCE_TRANSFORM_PATHS`; generated output must not retain derivation markers.
+- The package build may snapshot canonical `apps/admin` source into `dist/starter-template/admin`, but applying the same input to explicit source-root generation and the built runtime template must produce the same file inventory and byte-identical content.
 - Root output is a single Vite app with `AGENTS.md`, `CLAUDE.md`, `ai-context/`, `components.json`, `index.html`, `package.json`, `README.md`, `super-admin.config.ts`, `tsconfig.json`, `vite.config.ts`, and `src/`.
 - Generated `index.html` defaults to `lang="zh-CN"`.
 - Generated `README.md` links to `AGENTS.md` as the first AI collaboration context file.
@@ -255,6 +260,10 @@ Generated template derivation:
 | Generated project CSS points at `../../../../packages/*` or another monorepo path | Reject; generated projects must not depend on repository-local package paths. |
 | Packed `create-super-admin` tarball omits its runtime starter template | Reject during pack validation before publish; registry/dlx consumers do not have repo-root `apps/admin`. |
 | Published CLI default path attempts to read repository-root `apps/admin` | Reject; only explicit maintainer test hooks may read repo source. |
+| Runtime-template build script duplicates source exclusion/filter rules | Reject; route packaging through the shared source materializer. |
+| `templates.ts` adds a whole-file generator for an existing `apps/admin/src/**` file | Reject in the structural source-policy test; add a narrow source seam and register its transform path instead. |
+| Source-root and built runtime-template generation differ for the same normalized input | Reject in parity tests by comparing both file inventory and file content. |
+| Generated output contains an `@starter-*` derivation marker | Reject; transforms must consume their source-only markers. |
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
 | Generated starter includes standalone module manifests that are not imported by `src/modules/module-registry.ts` | Reject; generated output should expose only active registered manifests and user-editable example source. |
 | Generated single-theme output exposes runtime theme or language switching with one installed theme/locale | Reject; single-theme output is fixed to that theme and `zh-CN`. |
@@ -277,11 +286,13 @@ Generated template derivation:
 - Good: generated `CLAUDE.md` contains only `@AGENTS.md`.
 - Good: `create-super-admin app --charts echarts` adds `ai-context/charts.md` and an `@ai-context/charts.md` import with `src/modules/charts/ChartsPage.vue`, `src/shared/charts/echarts-options.ts`, and the selected dependencies.
 - Good: `super-admin theme remove cyberpunk` removes `@super-admin-org/theme-cyberpunk`, updates `super-admin.config.ts`, and regenerates `src/super-admin/theme-registry.generated.ts`.
+- Good: a shell or auth change is made once in `apps/admin`; a named transform removes only the optional reference/theme/locale region for the selected starter variant.
 - Base: generated README links to VitePress docs for deleting examples, connecting APIs, adding tests/lint, changing themes, and changing locale.
 - Bad: `@super-admin-org/theme` bundles every theme profile, making theme CLI commands only toggle already-downloaded code.
 - Bad: generated project contains the VitePress docs site, optional Hono reference API, FastAPI AI companion backend, test files, or lint/e2e tooling by default.
 - Bad: generated default `AGENTS.md` imports `ai-context/charts.md`, or default output generates a chart context file when no chart template was selected.
 - Bad: CLI generates `super-admin add module orders`; Super Admin must not generate user business modules.
+- Bad: copying a changed Vue/TypeScript file into a template literal under `templates.ts` to repair starter drift.
 
 ### 6. Tests Required
 
@@ -294,6 +305,9 @@ Maintainer validation for generated output must cover:
 - no `workspace:` dependency specifiers appear in generated `package.json` or packed package artifacts
 - the packed `create-super-admin` package includes the runtime starter template required by the CLI
 - a packed-package CLI smoke runs the emitted CLI from an unpacked tarball in a directory with no repo-root `apps/admin`
+- a structural test parses `templates.ts` exports and allows only the generator-owned root-file factory whitelist
+- source-policy tests cover invariant exclusions, optional locale/chart exclusions, registered transform paths, and marker removal
+- source-root and built runtime-template outputs are byte-equivalent for default, multi-theme+i18n, and ECharts inputs
 - no monorepo package path aliases appear in generated TypeScript/Vite config
 - no monorepo package paths appear in generated Tailwind/CSS source scanning
 - no optional reference backend imports or reference env tokens appear in default generated source
@@ -328,6 +342,28 @@ The maintainer validator lives outside generated projects. It may be implemented
 When local packed package manifests are part of validation, pass them with `--package-manifest`; those manifests must not expose `workspace:` dependency ranges.
 
 ### 7. Wrong vs Correct
+
+#### Wrong
+
+```ts
+// packages/cli/src/templates.ts
+export function createLoginPage(): string {
+  return `<script setup lang="ts">...</script>`
+}
+```
+
+This shadows an app-source file and makes every login change a two-file maintenance task.
+
+#### Correct
+
+```ts
+// apps/admin/src/modules/auth/LoginPage.vue
+// @starter-reference:start
+// optional reference-only integration
+// @starter-reference:end
+```
+
+The shared source policy removes only the optional region while retaining the canonical app file.
 
 #### Wrong
 

@@ -12,10 +12,13 @@ import {
 } from '@super-admin-org/core'
 import { defineStore } from 'pinia'
 import { computed, reactive, shallowRef } from 'vue'
-import { DEFAULT_LOCALE, setActiveLocale, type Locale } from '@/i18n'
+import superAdminConfig from '../../super-admin.config'
+import { DEFAULT_LOCALE, resolveLocale, setActiveLocale, type Locale } from '@/i18n'
 
 const STORAGE_KEY = 'super-admin:preferences'
 const STAGE_MANAGER_DESKTOP_QUERY = '(min-width: 1280px)'
+const installedProfiles: DesignProfileId[] = [...superAdminConfig.themes.installed]
+const defaultProfile = superAdminConfig.themes.default
 
 export type StageTransitionRect = {
   height: number
@@ -55,8 +58,22 @@ function readStoredPreferences(): AppearanceStateInput {
   }
 }
 
+function resolveProfileId(profileId: DesignProfileId | undefined): DesignProfileId {
+  return profileId && installedProfiles.includes(profileId) ? profileId : defaultProfile
+}
+
+function createInitialAppearanceState(): AppearanceState {
+  const state = mergeAppearanceState(readStoredPreferences())
+
+  return {
+    ...state,
+    locale: resolveLocale(state.locale),
+    profileId: resolveProfileId(state.profileId)
+  }
+}
+
 export const usePreferencesStore = defineStore('preferences', () => {
-  const state = reactive<AppearanceState>(mergeAppearanceState(readStoredPreferences()))
+  const state = reactive<AppearanceState>(createInitialAppearanceState())
   const systemMode = shallowRef<ResolvedColorMode>('dark')
   const providerMode = shallowRef<'mock' | 'custom'>('mock')
   const aiAvailability = shallowRef<AiAvailability>(defaultAiAvailability)
@@ -80,16 +97,16 @@ export const usePreferencesStore = defineStore('preferences', () => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   }
 
-  setActiveLocale(state.locale ?? DEFAULT_LOCALE)
+  setActiveLocale(resolveLocale(state.locale ?? DEFAULT_LOCALE))
 
   function setProfile(profileId: DesignProfileId): void {
-    state.profileId = profileId
+    state.profileId = resolveProfileId(profileId)
     persist()
   }
 
   function setLocale(locale: Locale): void {
-    state.locale = locale
-    setActiveLocale(locale)
+    state.locale = resolveLocale(locale)
+    setActiveLocale(state.locale)
     persist()
   }
 

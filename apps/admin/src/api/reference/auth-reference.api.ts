@@ -1,4 +1,4 @@
-import type { UserRole } from '@/modules/users/users.types'
+import type { AuthSession } from '@/modules/auth/auth.types'
 
 export type ReferenceLoginInput = {
   email: string
@@ -9,17 +9,7 @@ export type ReferenceAuthApiConfig = {
   baseUrl: string
 }
 
-export type ReferenceSessionPayload = {
-  permissions: string[]
-  token: string
-  tokenType: 'Bearer'
-  user: {
-    id: string
-    name: string
-    email: string
-    role: UserRole
-  }
-}
+export type ReferenceSessionPayload = AuthSession
 
 type ReferenceLoginResponse = {
   data: ReferenceSessionPayload

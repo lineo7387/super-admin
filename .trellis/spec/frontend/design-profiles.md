@@ -123,7 +123,7 @@ validateRegisterInput(input: RegisterInput): AuthFieldErrors<keyof RegisterInput
 Auth session store:
 
 ```ts
-setReferenceSession(session: AuthSession): void
+setSession(session: AuthSession): void
 clearSession(): void
 authorizationHeader: string | undefined
 isAuthenticated: boolean

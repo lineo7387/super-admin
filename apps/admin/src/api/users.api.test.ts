@@ -125,7 +125,7 @@ describe('users api adapter', () => {
     vi.stubEnv('VITE_SUPER_ADMIN_REFERENCE_TOKEN', 'reference-env-token')
 
     const session = useAuthSessionStore()
-    session.setReferenceSession({
+    session.setSession({
       permissions: ['users:read'],
       token: 'runtime-login-token',
       tokenType: 'Bearer',

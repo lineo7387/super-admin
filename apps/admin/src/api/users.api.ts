@@ -1,9 +1,11 @@
 import { createPageListResult } from '@super-admin-org/core'
 import { mockUsers } from '@/api/mock/users.mock'
 import type { MockUser } from '@/api/mock/users.mock'
+// @starter-reference:start
 import { listReferenceUsers, type ReferenceUsersApiConfig } from '@/api/reference/users-reference.api'
-import type { UserListParams, UserListResult, UserRecord } from '@/modules/users/users.types'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
+// @starter-reference:end
+import type { UserListParams, UserListResult, UserRecord } from '@/modules/users/users.types'
 
 const LOADING_DELAY_MS = 700
 
@@ -42,6 +44,7 @@ function filterUsers(params: UserListParams): UserRecord[] {
   })
 }
 
+// @starter-reference:start
 function readReferenceUsersApiConfig(env: ImportMetaEnv = import.meta.env): ReferenceUsersApiConfig | null {
   if (env.VITE_SUPER_ADMIN_USERS_API !== 'reference') {
     return null
@@ -60,13 +63,16 @@ function readReferenceUsersApiConfig(env: ImportMetaEnv = import.meta.env): Refe
     token
   }
 }
+// @starter-reference:end
 
 export async function listUsers(params: UserListParams): Promise<UserListResult> {
+  // @starter-reference:start
   const referenceConfig = readReferenceUsersApiConfig()
 
   if (referenceConfig) {
     return listReferenceUsers(params, referenceConfig)
   }
+  // @starter-reference:end
 
   if (params.scenario === 'error') {
     throw new Error('Unable to load users')

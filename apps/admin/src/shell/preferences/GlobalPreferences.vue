@@ -2,10 +2,15 @@
 import { X } from '@lucide/vue'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { builtInLayoutPresets, type ColorMode, type DesignProfileId, type LayoutPresetId } from '@super-admin-org/core'
+import { builtInLayoutPresets, type ColorMode, type LayoutPresetId } from '@super-admin-org/core'
+// @starter-theme:start
+import type { DesignProfileId } from '@super-admin-org/core'
+// @starter-theme:end
 import { AdminButton, AdminScrollArea, StatusPill } from '@super-admin-org/ui'
 import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'
+// @starter-locale:start
 import type { Locale } from '@/i18n'
+// @starter-locale:end
 import { usePreferencesStore } from '@/stores/preferences.store'
 import GlobalPreferencesTrigger from './GlobalPreferencesTrigger.vue'
 
@@ -27,10 +32,12 @@ const modeOptions = computed<{ id: ColorMode; label: string; detail: string }[]>
   { id: 'system', label: t('shell.preferences.modes.system.label'), detail: t('shell.preferences.modes.system.detail') }
 ])
 
+// @starter-locale:start
 const localeOptions = computed<{ id: Locale; label: string; detail: string }[]>(() => [
   { id: 'zh-CN', label: t('shell.preferences.locales.zhCN.label'), detail: t('shell.preferences.locales.zhCN.detail') },
   { id: 'en-US', label: t('shell.preferences.locales.enUS.label'), detail: t('shell.preferences.locales.enUS.detail') }
 ])
+// @starter-locale:end
 
 const activeProfileName = computed(() => builtInDesignProfiles.find((profile) => profile.id === preferences.profileId)?.name ?? preferences.profileId)
 const activeModeName = computed(() => modeOptions.value.find((mode) => mode.id === preferences.colorMode)?.label ?? preferences.colorMode)
@@ -40,17 +47,21 @@ const triggerTitle = computed(() =>
 const triggerLabel = computed(() => (props.trigger === 'auth' ? `${activeProfileName.value} / ${activeModeName.value}` : t('shell.preferences.title')))
 const showTrigger = computed(() => props.trigger !== 'none')
 
+// @starter-theme:start
 function selectProfile(profileId: DesignProfileId): void {
   preferences.setProfile(profileId)
 }
+// @starter-theme:end
 
 function selectMode(colorMode: ColorMode): void {
   preferences.setColorMode(colorMode)
 }
 
+// @starter-locale:start
 function selectLocale(locale: Locale): void {
   preferences.setLocale(locale)
 }
+// @starter-locale:end
 
 function selectLayout(layoutPreset: LayoutPresetId): void {
   preferences.setLayoutPreset(layoutPreset)
@@ -97,6 +108,7 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
 
           <div class="grid items-start gap-5 p-4 sm:p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
             <section class="grid gap-4">
+              <!-- @starter-theme:start -->
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
                 <div class="flex items-center justify-between gap-3">
                   <div>
@@ -126,10 +138,12 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                   </button>
                 </div>
               </div>
+              <!-- @starter-theme:end -->
 
               <div class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-sunken)] p-4">
                 <h3 class="[font-family:var(--font-display)] text-lg">{{ t('shell.preferences.displayMode') }}</h3>
                 <div class="mt-4 grid gap-3">
+                  <!-- @starter-locale:start -->
                   <div>
                     <div class="flex items-center justify-between gap-3 pb-2">
                       <span class="text-sm">{{ t('shell.preferences.locale') }}</span>
@@ -153,6 +167,7 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                       </button>
                     </div>
                   </div>
+                  <!-- @starter-locale:end -->
 
                   <div class="grid gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-2 sm:grid-cols-3">
                     <button

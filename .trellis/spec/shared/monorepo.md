@@ -26,6 +26,8 @@ examples/            # optional validation examples, not default scaffold
 - Prefer explicit exports from package entrypoints.
 - Avoid circular dependencies between `ui`, `theme`, and `core`.
 - CLI generation should use the same frontend module conventions as the runtime app.
+- `apps/admin` is the only app-source tree for generated starters. The CLI package build and runtime generator must share `packages/cli/src/starter-source.ts` for path policy and materialization; do not maintain a second checked-in starter tree or duplicate filters in build scripts.
+- Generator-owned string templates are limited to root/config/README/AI-context files without an `apps/admin/src/**` counterpart. App-source variants use registered narrow transforms and source-owned seams.
 
 ## Scripts
 
@@ -126,6 +128,7 @@ Publish candidate packages must expose:
 - CI and release gates must build before lint/typecheck/test in a fresh checkout. Publishable package manifests export types from generated `dist`, so cross-package type resolution must not depend on stale local build artifacts.
 - Release readiness must validate `create-super-admin` through the packed package artifact, not only `packages/cli/dist/cli.js` in the monorepo. The packed CLI must generate starters without access to repository-root `apps/admin`.
 - The `create-super-admin` pack artifact must include its runtime starter template, for example under `dist/starter-template/admin`, and pack validation must fail if those files are missing.
+- The runtime template snapshot is a build artifact derived from `apps/admin` through the same invariant source policy used by starter generation; it is not an independently maintained template source.
 - The generated starter dependency ranges for `@super-admin-org/*` packages must come from a package-specific generated range map, not from the `create-super-admin` package version.
 - `pnpm release commands ...` prints registry-mutating commands only; it must not execute them.
 - GitHub `Publish next` workflow confirmation text must be generated from the selected package versions, for example `publish-super-admin-next-create-super-admin-0.1.3`.
@@ -169,6 +172,7 @@ Publish candidate packages must expose:
 | Publish manifest exposes `workspace:` dependency ranges | Fail in `prepublishOnly` or pack validation. |
 | Publish artifact targets are missing from `dist` | Fail in `prepublishOnly` or pack validation. |
 | Packed `create-super-admin` cannot generate a starter unless repo-root `apps/admin` exists | Fail in release readiness before publish; build/package the runtime template into the CLI tarball. |
+| Build-time snapshot and source-root generation maintain separate exclusion rules | Fail structural review/tests; both paths must call the shared source materializer. |
 | Generated starter uses the CLI version for every `@super-admin-org/*` dependency | Fail generator tests; use the package-specific version range map. |
 | Generated starter still warns about a deprecated transitive dependency after a CLI template migration | Treat the dependency-owning published package as missing from the release set; add a changeset for that package and re-run starter smoke against packed artifacts. |
 | Registry smoke for `next` fails after a version was published | Do not promote `latest`; fix forward with a new patch version on `next` because npm package versions are immutable. |
@@ -202,6 +206,7 @@ Publish candidate packages must expose:
 - Unit tests for selected publish/promote command generation.
 - CLI generator tests for package-specific generated starter dependency ranges.
 - CLI generator tests for source-app shell files that are copied or transformed into generated starters, including default `zh-CN` and optional `en-US`/i18n variants when runtime state or locale-sensitive actions are involved.
+- CLI parity tests comparing source-root and built runtime-template output inventories and bytes for default, multi-theme+i18n, and ECharts variants.
 - Unit tests for `prepublishOnly` guard behavior:
   - normal local publish blocked
   - bootstrap path allowed

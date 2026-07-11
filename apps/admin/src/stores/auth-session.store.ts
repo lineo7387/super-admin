@@ -15,7 +15,7 @@ export const useAuthSessionStore = defineStore('authSession', () => {
   const authorizationHeader = computed(() => (session.value ? `${session.value.tokenType} ${session.value.token}` : undefined))
   const currentUser = computed(() => session.value?.user ?? null)
 
-  function setReferenceSession(nextSession: AuthSession): void {
+  function setSession(nextSession: AuthSession): void {
     session.value = nextSession
     getStorage()?.removeItem(STORAGE_KEY)
   }
@@ -31,6 +31,6 @@ export const useAuthSessionStore = defineStore('authSession', () => {
     currentUser,
     isAuthenticated,
     session,
-    setReferenceSession
+    setSession
   }
 })

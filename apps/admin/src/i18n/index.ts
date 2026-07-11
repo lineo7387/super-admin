@@ -1,13 +1,19 @@
 import { createI18n } from 'vue-i18n'
+// @starter-locale-en:start
 import enUS from './locales/en-US'
+// @starter-locale-en:end
 import zhCN from './locales/zh-CN'
 
 export const DEFAULT_LOCALE = 'zh-CN'
+// @starter-locale-en:start
 export const OPTIONAL_LOCALE = 'en-US'
+// @starter-locale-en:end
 
 export const messages = {
   [DEFAULT_LOCALE]: zhCN,
+  // @starter-locale-en:start
   [OPTIONAL_LOCALE]: enUS
+  // @starter-locale-en:end
 } as const
 
 export type Locale = keyof typeof messages
@@ -41,6 +47,10 @@ function hasMessageKey(value: unknown, path: string): boolean {
   })
 }
 
+export function resolveLocale(locale: string | undefined): Locale {
+  return Object.hasOwn(messages, locale ?? '') ? (locale as Locale) : DEFAULT_LOCALE
+}
+
 export function findMissingLocaleKeys(source: LocaleCatalog, target: LocaleCatalog): string[] {
   return flattenMessageKeys(source).filter((key) => !hasMessageKey(target, key))
 }
@@ -59,7 +69,7 @@ export const i18n = createAdminI18n()
 
 export function getActiveLocale(adminI18n: ReturnType<typeof createAdminI18n> = i18n): Locale {
   const locale = adminI18n.global.locale
-  return (typeof locale === 'string' ? locale : locale.value) as Locale
+  return resolveLocale(typeof locale === 'string' ? locale : locale.value)
 }
 
 export function setActiveLocale(locale: Locale, adminI18n: ReturnType<typeof createAdminI18n> = i18n): void {

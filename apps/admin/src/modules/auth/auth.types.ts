@@ -1,4 +1,4 @@
-import type { ReferenceSessionPayload } from '@/api/reference/auth-reference.api'
+import type { UserRole } from '@/modules/users/users.types'
 
 export type AuthFieldErrors<Field extends string = string> = Partial<Record<Field, string>>
 
@@ -14,4 +14,16 @@ export type RegisterInput = {
   password: string
 }
 
-export type AuthSession = ReferenceSessionPayload
+export type AuthUser = {
+  email: string
+  id: string
+  name: string
+  role: UserRole
+}
+
+export type AuthSession = {
+  permissions: string[]
+  token: string
+  tokenType: 'Bearer'
+  user: AuthUser
+}

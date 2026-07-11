@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process'
 import { access, mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { validateGeneratedStarterStatic } from '../../../scripts/validate-generated-starter.mjs'
 import { generateStarter, parseCreateSuperAdminArgs, runCreateSuperAdmin } from './index.ts'
@@ -31,6 +31,28 @@ async function generatedPathExists(root, filePath) {
   } catch {
     return false
   }
+}
+
+async function readGeneratedTree(root, current = root) {
+  const files = new Map()
+  const entries = await readdir(current, { withFileTypes: true })
+
+  for (const entry of entries) {
+    const absolutePath = join(current, entry.name)
+    if (entry.isDirectory()) {
+      const nestedFiles = await readGeneratedTree(root, absolutePath)
+      for (const [filePath, content] of nestedFiles) {
+        files.set(filePath, content)
+      }
+      continue
+    }
+
+    if (entry.isFile()) {
+      files.set(absolutePath.slice(root.length + 1), await readFile(absolutePath, 'utf8'))
+    }
+  }
+
+  return files
 }
 
 function expectSuperAdminDependencyRange(packageJson, packageName) {
@@ -343,6 +365,8 @@ describe('create-super-admin starter generation', () => {
     expect(commandPaletteItems).not.toContain("'en-US'")
     expect(loginPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
     expect(loginPage).toContain(':title="t(\'common.primitives.validationTitle\')"')
+    expect(loginPage).toContain('session.setSession(nextSession)')
+    expect(loginPage).not.toContain('setReferenceSession')
     expect(registerPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
 
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { themes: ['base'] })).resolves.toEqual([])
@@ -585,20 +609,71 @@ describe('create-super-admin starter generation', () => {
     await expect(readdir(tempRoot)).resolves.toEqual([])
   })
 
-  it('runs from the packed CLI package without a repo apps/admin source tree', async () => {
+  it('keeps source-root and built runtime-template output byte-equivalent for supported variants', async () => {
+    const tempRoot = await createTempRoot()
+    await runCommand('pnpm', ['--filter', 'create-super-admin', 'build'], repoRoot)
+    const builtEntryUrl = pathToFileURL(resolve(packageDir, '../dist/index.js')).href
+    const builtCli = await import(/* @vite-ignore */ builtEntryUrl)
+    const variants = [
+      ['--theme', 'base'],
+      ['--themes', 'base,cyberpunk', '--i18n'],
+      ['--theme', 'base', '--charts', 'echarts']
+    ]
+
+    for (const [index, flags] of variants.entries()) {
+      const sourceCwd = join(tempRoot, `source-${index}`)
+      const runtimeCwd = join(tempRoot, `runtime-${index}`)
+      await mkdir(sourceCwd)
+      await mkdir(runtimeCwd)
+      const sourceInput = parseCreateSuperAdminArgs(['demo-admin', ...flags], { cwd: sourceCwd })
+      const runtimeInput = { ...sourceInput, targetDirectory: join(runtimeCwd, 'demo-admin') }
+
+      await generateStarter(sourceInput, { sourceRoot: repoRoot })
+      await builtCli.generateStarter(runtimeInput)
+
+      const sourceTree = await readGeneratedTree(sourceInput.targetDirectory)
+      const runtimeTree = await readGeneratedTree(runtimeInput.targetDirectory)
+      expect([...runtimeTree.keys()].sort()).toEqual([...sourceTree.keys()].sort())
+      expect(runtimeTree).toEqual(sourceTree)
+      for (const content of sourceTree.values()) {
+        expect(content).not.toContain('@starter-')
+      }
+    }
+  }, 60000)
+
+  it('keeps packed CLI output source-equivalent without a repo apps/admin source tree', async () => {
     const tempRoot = await createTempRoot()
     const unpackRoot = join(tempRoot, 'unpacked')
-    const workspaceRoot = join(tempRoot, 'workspace')
     await mkdir(unpackRoot)
-    await mkdir(workspaceRoot)
 
     await runCommand('pnpm', ['--filter', 'create-super-admin', 'build'], repoRoot)
     const packOutput = await runCommand('npm', ['pack', '--json', '--pack-destination', tempRoot], resolve(repoRoot, 'packages/cli'))
     const [packed] = JSON.parse(packOutput)
     await runCommand('tar', ['-xzf', resolve(tempRoot, packed.filename), '-C', unpackRoot], repoRoot)
+    const packedCli = join(unpackRoot, 'package/dist/cli.js')
+    const variants = [
+      { flags: ['--theme', 'base'], validation: { themes: ['base'] } },
+      { flags: ['--themes', 'base,cyberpunk', '--i18n'], validation: { i18n: true, themes: ['base', 'cyberpunk'] } },
+      { flags: ['--theme', 'base', '--charts', 'echarts'], validation: { charts: 'echarts', themes: ['base'] } }
+    ]
 
-    await runCommand('node', [join(unpackRoot, 'package/dist/cli.js'), 'demo-admin', '--theme', 'base', '--pm', 'pnpm'], workspaceRoot)
+    for (const [index, variant] of variants.entries()) {
+      const sourceCwd = join(tempRoot, `packed-source-${index}`)
+      const packedCwd = join(tempRoot, `packed-runtime-${index}`)
+      await mkdir(sourceCwd)
+      await mkdir(packedCwd)
+      const args = ['demo-admin', ...variant.flags, '--pm', 'pnpm']
+      const sourceInput = parseCreateSuperAdminArgs(args, { cwd: sourceCwd })
 
-    await expect(validateGeneratedStarterStatic(join(workspaceRoot, 'demo-admin'), { themes: ['base'] })).resolves.toEqual([])
+      await generateStarter(sourceInput, { sourceRoot: repoRoot })
+      await runCommand('node', [packedCli, ...args], packedCwd)
+
+      const packedTarget = join(packedCwd, 'demo-admin')
+      const sourceTree = await readGeneratedTree(sourceInput.targetDirectory)
+      const packedTree = await readGeneratedTree(packedTarget)
+      expect([...packedTree.keys()].sort()).toEqual([...sourceTree.keys()].sort())
+      expect(packedTree).toEqual(sourceTree)
+      await expect(validateGeneratedStarterStatic(packedTarget, variant.validation)).resolves.toEqual([])
+    }
   }, 60000)
 })

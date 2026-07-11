@@ -29,7 +29,7 @@ describe('auth session store', () => {
   it('keeps reference login sessions in runtime state only', () => {
     const session = useAuthSessionStore()
 
-    session.setReferenceSession({
+    session.setSession({
       permissions: ['users:read'],
       token: 'reference-admin-token',
       tokenType: 'Bearer',
@@ -49,7 +49,7 @@ describe('auth session store', () => {
   it('clears runtime sessions', () => {
     const session = useAuthSessionStore()
 
-    session.setReferenceSession({
+    session.setSession({
       permissions: [],
       token: 'reference-auditor-token',
       tokenType: 'Bearer',

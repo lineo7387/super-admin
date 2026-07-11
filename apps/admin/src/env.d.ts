@@ -6,9 +6,12 @@ declare module '*.vue' {
 }
 
 interface ImportMetaEnv {
+  readonly VITE_SUPER_ADMIN_ASSISTANT_ENDPOINT?: string
+  // @starter-reference:start
   readonly VITE_SUPER_ADMIN_API_BASE_URL?: string
   readonly VITE_SUPER_ADMIN_REFERENCE_TOKEN?: string
   readonly VITE_SUPER_ADMIN_USERS_API?: 'mock' | 'reference'
+  // @starter-reference:end
 }
 
 interface ImportMeta {
