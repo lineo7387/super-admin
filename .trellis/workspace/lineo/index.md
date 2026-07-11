@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 66
+- **Total Sessions**: 67
 - **Last Active**: 2026-07-11
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~271 | Active |
+| `journal-2.md` | ~304 | Active |
 | `journal-1.md` | ~1987 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 67 | 2026-07-11 | 生成器单源化重构 | `3f0bd43` | `codex/archive-generator-dual-track` |
 | 66 | 2026-07-11 | 完成命令面板与快捷键收尾审计 | `35bb884` | `codex/close-command-palette-task` |
 | 65 | 2026-07-10 | Release create-super-admin 0.1.8 | `4c1fb9b` | `codex/archive-release-create-super-admin-0-1-8` |
 | 64 | 2026-07-10 | Starter release hardening | `9121e01` | `codex/starter-release-hardening` |

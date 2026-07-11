@@ -269,3 +269,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 67: 生成器单源化重构
+
+**Date**: 2026-07-11
+**Task**: 生成器单源化重构
+**Branch**: `codex/archive-generator-dual-track`
+
+### Summary
+
+将 create-super-admin 重构为 apps/admin 单源派生管线，移除 app-source 整文件 shadow，统一 runtime template materializer，并补齐 source-root、built template、packed CLI 三类等价性验证。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3f0bd43` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
