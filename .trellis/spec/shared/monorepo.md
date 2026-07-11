@@ -112,6 +112,7 @@ Publish candidate packages must expose:
 ### 3. Contracts
 
 - Changesets owns package version/changelog automation.
+- A changeset that describes one package release entry should use prose rather than a top-level Markdown list. Changesets adds the outer changelog bullet automatically; nested source bullets produce awkward output such as `- <commit>: - first change`. Always inspect the generated changelog after `pnpm release version` and regenerate from the changeset source when formatting is wrong.
 - Run `pnpm changeset status` before `pnpm release version` to validate the pending bump set. After versioning consumes the changeset, `changeset status` may report changed packages with no changesets because the release branch now contains the generated manifest/changelog diff; audit that diff and the release plan instead of adding an empty changeset.
 - Publish candidates use independent Changesets versions; do not put the normal publish candidates in one fixed lockstep group.
 - Private workspaces such as `@super-admin/admin` and `@super-admin/api` are not published.
@@ -158,6 +159,7 @@ Publish candidate packages must expose:
 | Workflow confirmation does not match selected package versions | Fail before install/build/publish steps. |
 | A selected package version already exists on npm | Fail before install/build/publish and require a new changeset-driven version; never attempt to overwrite the registry version. |
 | `pnpm changeset status` reports changed packages with no changesets after `pnpm release version` | Treat it as the expected consumed-changeset state when the diff contains only intended release artifacts; verify manifest, changelog, selected release plan, and unpublished target version. Do not add an empty changeset to silence the diagnostic. |
+| Generated changelog contains `- <commit>: - ...` or another nested release-note bullet | Restore the pre-version artifacts, rewrite the changeset body as prose, and rerun `pnpm release version`; do not hand-keep malformed generated notes. |
 | Local normal `npm publish` is attempted | Fail in `prepublishOnly`. |
 | Bootstrap publish uses a non-bootstrap tag or version | Fail in `prepublishOnly`. |
 | Bootstrap version is treated as a valid default install channel | Reject; bootstrap is package-name creation only. |
@@ -182,6 +184,7 @@ Publish candidate packages must expose:
 
 - Good: maintainer runs `pnpm changeset`, `pnpm release plan --changed create-super-admin`, `pnpm release version`, `pnpm release check`, pushes, then manually runs the `Publish next` workflow with `changed_packages=create-super-admin` and the dynamic confirmation text.
 - Good: release preparation runs `pnpm changeset status` before versioning, then validates generated versions/changelogs and `pnpm release plan` after the changeset is consumed.
+- Good: a multi-part patch summary uses one prose paragraph separated by punctuation, producing one readable changelog entry.
 - Good: the publish workflow runs `pnpm release assert-unpublished --changed <packages>` before dependency installation and reports the exact colliding `name@version` when a version is immutable on npm.
 - Good: the npm version preflight treats only a registry 404 as an unpublished package and rejects malformed successful metadata rather than silently continuing.
 - Good: a CLI-only release prints and publishes only `create-super-admin`.
@@ -194,6 +197,7 @@ Publish candidate packages must expose:
 - Bad: a script silently runs `npm publish`, `npm trust`, or `npm dist-tag add` without an explicit human approval phase.
 - Bad: each package repeats the full lint/typecheck/test/build suite in `prepublishOnly`; the package hook should stay a lightweight guard.
 - Bad: release preparation adds an empty changeset after `pnpm release version` merely to make `pnpm changeset status` green.
+- Bad: a changeset body starts with multiple top-level `-` items and is accepted without inspecting the generated changelog.
 - Bad: publishing a placeholder bootstrap version and leaving it as the default install channel after a real release is available.
 - Bad: changing only the generated starter template while published `@super-admin-org/ui` still pulls the deprecated dependency that caused the starter install warning.
 
@@ -216,6 +220,7 @@ Publish candidate packages must expose:
   - missing artifacts rejected
 - Full release gate: `pnpm release check`.
 - Release preparation check: assert the pending package/bump set with `pnpm changeset status` before versioning; after versioning, assert the generated manifest/changelog diff, selected package/version, and unpublished-version preflight.
+- Changelog audit: generated release entries must be readable prose without an unintended nested bullet introduced by the changeset body.
 - Pack-level CLI runtime regression: unpack the `create-super-admin` tarball and run its emitted CLI in a workspace that does not contain repo-root `apps/admin`.
 - Docs build when release docs or VitePress sidebar change.
 

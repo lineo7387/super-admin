@@ -1,5 +1,11 @@
 # create-super-admin
 
+## 0.1.9
+
+### Patch Changes
+
+- 3f0bd43: 修复生成项目命令面板与快捷键契约，补齐主题、显示模式和语言操作，并确保输入场景只响应明确标记的全局快捷键；同时将生成器重构为以 `apps/admin` 为唯一源码的共享派生管线，移除 app 文件整页模板镜像，并增加 source-root、构建模板和打包 CLI 的等价性验证。
+
 ## 0.1.8
 
 ### Patch Changes
