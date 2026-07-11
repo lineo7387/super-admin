@@ -1,0 +1,15 @@
+{"file": ".trellis/spec/big-question/dynamic-tailwind-classes.md", "reason": "Avoid runtime-generated Tailwind classes."}
+{"file": ".trellis/spec/big-question/server-state-in-pinia.md", "reason": "Prevent duplicating query caches in Pinia."}
+{"file": ".trellis/spec/big-question/theme-switching-state-loss.md", "reason": "Prevent state loss during theme/profile switching."}
+{"file": ".trellis/spec/frontend/api-adapters.md", "reason": "Mock API and user API adapter pattern."}
+{"file": ".trellis/spec/frontend/css-design.md", "reason": "Tailwind, CSS variables, and layout stability rules."}
+{"file": ".trellis/spec/frontend/design-profiles.md", "reason": "Crypto/Industrial profile and token rules."}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "App, package, and module directory conventions."}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Pinia and persisted preference boundaries."}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Frontend contract and route meta typing rules."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Layer boundary checks for shell, modules, API adapters, and queries."}
+{"file": ".trellis/spec/guides/pre-implementation-checklist.md", "reason": "Pre-code product and architecture checks."}
+{"file": ".trellis/spec/guides/trellis-lake-workflow.md", "reason": "Project workflow guard and artifact locations."}
+{"file": ".trellis/spec/shared/code-quality.md", "reason": "Shared code quality expectations."}
+{"file": ".trellis/spec/shared/monorepo.md", "reason": "Workspace package boundaries and root script conventions."}
+{"file": ".trellis/spec/shared/typescript.md", "reason": "Strict TypeScript and exported contract rules."}
