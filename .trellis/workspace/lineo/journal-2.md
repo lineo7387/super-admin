@@ -335,3 +335,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 69: 对齐并发布 0.1.9 GitHub Release
+
+**Date**: 2026-07-12
+**Task**: 对齐并发布 0.1.9 GitHub Release
+**Branch**: `codex/archive-align-0-1-9-release-info`
+
+### Summary
+
+审计并对齐 create-super-admin 0.1.9 的根 changelog、双语发布指南与公开展示文案；补齐非交互 registry smoke 的 --theme base；通过完整本地验证、PR #50 与 main CI，创建指向合并提交的 annotated v0.1.9 tag 和 Latest GitHub Release，并复核 npm、GitHub Pages、README 与独立 package 版本状态。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5b04409` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
