@@ -4,11 +4,11 @@
 
 ## 当前公开状态
 
-截至 2026-06-21：
+截至 2026-07-12：
 
 - 仓库公开地址是 `lineo7387/super-admin`。
 - npm `latest` 与 `next` 已指向 smoke-verified release line：
-  - `create-super-admin@0.1.7`
+  - `create-super-admin@0.1.9`
   - `@super-admin-org/core@0.1.3`
   - `@super-admin-org/theme@0.1.4` 与所有 theme profile packages `0.1.3`
   - `@super-admin-org/ui@0.1.5`
@@ -42,7 +42,7 @@ README 首屏应保留：
 - hosted docs/demo、getting started、examples、API adapters、themes/layouts 和 public presentation 链接。
 - 明确说明 backend、database、auth provider、AI provider 和 generated schema 都是可选的。
 
-GitHub Release badge 可以在 `v0.1.7` 发布后使用，但应避免硬编码旧版本。只有 GitHub Pages workflow 存在后才使用 docs/demo badge。
+GitHub Release badge 应使用 GitHub 提供的动态 latest release 状态，避免硬编码具体版本。只有 GitHub Pages workflow 存在后才使用 docs/demo badge。
 
 ## Docs And Demo Links
 
@@ -72,27 +72,28 @@ pnpm dev
 
 ## Release And Tag Copy
 
-当前 GitHub release title：
+`v0.1.9` GitHub Release 推荐 title：
 
 ```text
-Super Admin v0.1.7 - ECharts 图表模板与基础组件本地化契约
+Super Admin v0.1.9 - 命令面板契约与 starter 单源生成
 ```
 
 推荐 summary：
 
 ```text
-Super Admin v0.1.7 is the current default starter line, adding an optional `--charts echarts` template option that generates theme-adapted chart example pages, base component localization contracts via AdminField `requiredLabel`/`optionalLabel`, and dependency-light `chart-recipe` helpers in the theme package.
+Super Admin v0.1.9 is the current default starter line, completing generated command-palette and keyboard-shortcut contracts and deriving packaged starters from `apps/admin` as the single source of truth.
 ```
 
 推荐 highlights：
 
 - `npm create super-admin@latest my-admin`
-- `create-super-admin@0.1.7` on npm `latest`
-- new optional `--charts echarts` template option generating theme-adapted chart example pages
+- `create-super-admin@0.1.9` on npm `latest` and `next`
+- generated command palette restores theme, display-mode, and locale actions
+- keyboard shortcuts only intercept explicitly marked global commands while editing inputs
+- packaged starter output is derived from `apps/admin` through one shared transformation pipeline, with source/build/pack equivalence validation
+- carries forward the `0.1.8` generated AI context and starter chunking improvements for users upgrading from the previous GitHub Release
 - `@super-admin-org/core@0.1.3` and theme profile packages `0.1.3` on npm `latest`
-- `@super-admin-org/theme@0.1.4` adds chart-recipe helpers so generated ECharts output can build theme-adapted options without importing ECharts itself
-- `@super-admin-org/ui@0.1.5` adds `requiredLabel`/`optionalLabel` contracts on `AdminField`, refines `AdminDrawer`, `AdminFormFooter`, `AdminBulkActionBar`, and `admin-table` primitives
-- cleaned up dead standalone manifests in generated projects and hardened publish flow validation
+- `@super-admin-org/theme@0.1.4` and `@super-admin-org/ui@0.1.5` remain independently versioned on npm `latest`
 - mock-backed Vue admin template
 - replaceable API adapter boundary
 - reusable UI primitives and runtime design profiles
