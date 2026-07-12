@@ -4,11 +4,11 @@ Use this checklist when polishing the GitHub repository, npm package pages, docs
 
 ## Current Public State
 
-As of 2026-06-21:
+As of 2026-07-12:
 
 - The repository is public at `lineo7387/super-admin`.
 - npm `latest` and `next` point to the smoke-verified release line:
-  - `create-super-admin@0.1.7`
+  - `create-super-admin@0.1.9`
   - `@super-admin-org/core@0.1.3`
   - `@super-admin-org/theme@0.1.4` and all theme profile packages at `0.1.3`
   - `@super-admin-org/ui@0.1.5`
@@ -42,7 +42,7 @@ The README should keep these above the fold:
 - docs links for the hosted docs/demo, getting started, examples, API adapters, themes/layouts, and public presentation.
 - a clear statement that backend, database, auth provider, AI provider, and generated schema are optional.
 
-A GitHub Release badge can be used after `v0.1.7` is published, but avoid hard-coding stale versions. Use the docs/demo badge only after the GitHub Pages workflow is present.
+Use GitHub's dynamic latest release state for a GitHub Release badge instead of hard-coding a version. Use the docs/demo badge only after the GitHub Pages workflow is present.
 
 ## Docs And Demo Links
 
@@ -72,27 +72,28 @@ Capture at desktop width first, then add one mobile or narrow-width screenshot i
 
 ## Release And Tag Copy
 
-Current GitHub release title:
+Suggested GitHub Release title for `v0.1.9`:
 
 ```text
-Super Admin v0.1.7 - ECharts chart template & base component localization contracts
+Super Admin v0.1.9 - command palette contracts & single-source starter generation
 ```
 
 Suggested summary:
 
 ```text
-Super Admin v0.1.7 is the current default starter line, adding an optional `--charts echarts` template option that generates theme-adapted chart example pages, base component localization contracts via AdminField `requiredLabel`/`optionalLabel`, and dependency-light `chart-recipe` helpers in the theme package.
+Super Admin v0.1.9 is the current default starter line, completing generated command-palette and keyboard-shortcut contracts and deriving packaged starters from `apps/admin` as the single source of truth.
 ```
 
 Suggested highlights:
 
 - `npm create super-admin@latest my-admin`
-- `create-super-admin@0.1.7` on npm `latest`
-- new optional `--charts echarts` template option generating theme-adapted chart example pages
+- `create-super-admin@0.1.9` on npm `latest` and `next`
+- generated command palette restores theme, display-mode, and locale actions
+- keyboard shortcuts only intercept explicitly marked global commands while editing inputs
+- packaged starter output is derived from `apps/admin` through one shared transformation pipeline, with source/build/pack equivalence validation
+- carries forward the `0.1.8` generated AI context and starter chunking improvements for users upgrading from the previous GitHub Release
 - `@super-admin-org/core@0.1.3` and theme profile packages `0.1.3` on npm `latest`
-- `@super-admin-org/theme@0.1.4` adds chart-recipe helpers so generated ECharts output can build theme-adapted options without importing ECharts itself
-- `@super-admin-org/ui@0.1.5` adds `requiredLabel`/`optionalLabel` contracts on `AdminField`, refines `AdminDrawer`, `AdminFormFooter`, `AdminBulkActionBar`, and `admin-table` primitives
-- cleaned up dead standalone manifests in generated projects and hardened publish flow validation
+- `@super-admin-org/theme@0.1.4` and `@super-admin-org/ui@0.1.5` remain independently versioned on npm `latest`
 - mock-backed Vue admin template
 - replaceable API adapter boundary
 - reusable UI primitives and runtime design profiles

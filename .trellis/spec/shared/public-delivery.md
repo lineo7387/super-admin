@@ -150,6 +150,7 @@ Root scripts should be directly runnable and named honestly.
 - `pnpm validate:publish` remains the full package publish readiness gate.
 - `pnpm test:reference` is maintainer-only and validates optional reference API connectivity.
 - Do not place reference smoke tooling in generated starter output.
+- Registry CLI smoke commands that run without an interactive TTY must pass `--theme <id>` or `--themes <ids>` explicitly so validation cannot block on the theme selector.
 
 ## Locale-Aware Smoke Tests
 

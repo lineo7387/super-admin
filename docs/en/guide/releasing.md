@@ -139,7 +139,7 @@ Publish commands for local package directories must use explicit local paths suc
 After the workflow publishes to `next`, run registry smoke for the selected release set. For changes that affect the starter, core contracts, theme runtime, theme profiles, or UI consumed by starters, verify the CLI from the registry:
 
 ```bash
-pnpm dlx create-super-admin@next my-admin --pm pnpm
+pnpm dlx create-super-admin@next my-admin --theme base --pm pnpm
 cd my-admin
 pnpm install
 pnpm typecheck
