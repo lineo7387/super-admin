@@ -11,6 +11,7 @@
     "lint": "vue-tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@lucide/vue": "^1.18.0",
     "@super-admin-org/core": "workspace:*",
     "@super-admin-org/theme": "workspace:*",
     "@super-admin-org/theme-base": "workspace:*",
@@ -20,7 +21,6 @@
     "@super-admin-org/theme-newsprint": "workspace:*",
     "@super-admin-org/ui": "workspace:*",
     "@tanstack/vue-query": "^5.0.0",
-    "@lucide/vue": "^1.18.0",
     "echarts": "^6.1.0",
     "motion-v": "^2.3.0",
     "pinia": "^3.0.0",
@@ -31,7 +31,9 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/test-utils": "^2.4.11",
     "@vue/tsconfig": "^0.8.0",
+    "happy-dom": "^20.10.6",
     "typescript": "^5.0.0",
     "vite": "^8.0.16",
     "vue-tsc": "^3.0.0"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue'
+import { resolveAppLayoutRegistration } from '@/shell/layout-registry'
 import type { StageWindowPreviewModel } from './stage-manager'
 
 const props = withDefaults(
@@ -15,6 +16,7 @@ const props = withDefaults(
 )
 
 const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
+const layoutRegistration = computed(() => resolveAppLayoutRegistration(props.preview?.layoutPreset ?? 'neutral'))
 </script>
 
 <template>
@@ -24,7 +26,7 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
       'stage-window-preview--overview': props.variant === 'overview',
       'stage-window-preview--thumb': props.variant === 'thumb'
     }"
-    :data-stage-preview-layout="props.preview?.layoutPreset ?? 'unavailable'"
+    :data-stage-preview-layout="props.preview ? layoutRegistration.preset.id : 'unavailable'"
   >
     <div
       class="stage-window-scale"
@@ -33,26 +35,30 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
         'stage-window-scale--thumb': props.variant === 'thumb'
       }"
     >
-      <div v-if="props.preview" class="stage-window-preview__shell" :data-stage-preview-layout="props.preview.layoutPreset">
+      <div v-if="props.preview" class="stage-window-preview__shell" :data-stage-preview-layout="layoutRegistration.preset.id">
         <header class="stage-window-preview__chrome">
           <span class="stage-window-preview__brand">SA</span>
           <span class="stage-window-preview__chrome-line stage-window-preview__chrome-line--strong" />
           <span class="stage-window-preview__chrome-line" />
         </header>
 
-        <div class="stage-window-preview__layout" :data-stage-preview-layout="props.preview.layoutPreset">
-          <aside v-if="props.preview.layoutPreset === 'tri-column'" class="stage-window-preview__dock" aria-hidden="true">
+        <div
+          data-layout-preview-surface="stage"
+          class="stage-window-preview__layout"
+          :data-stage-preview-layout="layoutRegistration.preset.id"
+          :style="{
+            gridTemplateColumns: layoutRegistration.preview.stage.gridTemplateColumns,
+            gridTemplateRows: layoutRegistration.preview.stage.gridTemplateRows
+          }"
+        >
+          <aside v-if="layoutRegistration.preview.showDock" class="stage-window-preview__dock" aria-hidden="true">
             <span />
             <span />
             <span />
             <span />
           </aside>
 
-          <aside
-            v-if="props.preview.layoutPreset === 'tri-column' || props.preview.layoutPreset === 'dual-column'"
-            class="stage-window-preview__sidebar"
-            aria-hidden="true"
-          >
+          <aside v-if="layoutRegistration.preview.showSidebar" class="stage-window-preview__sidebar" aria-hidden="true">
             <span class="stage-window-preview__sidebar-heading" />
             <span />
             <span />
@@ -60,7 +66,7 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
             <span />
           </aside>
 
-          <nav v-if="props.preview.layoutPreset === 'top-header'" class="stage-window-preview__top-nav" aria-hidden="true">
+          <nav v-if="layoutRegistration.preview.showTopNavigation" class="stage-window-preview__top-nav" aria-hidden="true">
             <span class="stage-window-preview__top-nav-brand" />
             <span />
             <span />
@@ -192,18 +198,6 @@ const visibleTabs = computed(() => props.preview?.tabs.slice(0, 4) ?? [])
   min-height: 0;
   gap: 0.7rem;
   padding: 0.7rem;
-}
-
-.stage-window-preview__layout[data-stage-preview-layout='tri-column'] {
-  grid-template-columns: 4rem 16rem minmax(0, 1fr);
-}
-
-.stage-window-preview__layout[data-stage-preview-layout='dual-column'] {
-  grid-template-columns: 17rem minmax(0, 1fr);
-}
-
-.stage-window-preview__layout[data-stage-preview-layout='top-header'] {
-  grid-template-rows: 3.1rem minmax(0, 1fr);
 }
 
 .stage-window-preview__dock,

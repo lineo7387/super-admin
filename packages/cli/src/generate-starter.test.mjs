@@ -228,6 +228,7 @@ describe('create-super-admin starter generation', () => {
       charts: {
         provider: 'none'
       },
+      quality: 'standard',
       packageManager: 'pnpm',
       packageName: 'demo-admin',
       projectName: 'demo-admin',
@@ -263,6 +264,11 @@ describe('create-super-admin starter generation', () => {
     expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--charts', 'echarts', '--no-charts'], { cwd: '/tmp' })).toThrow(/mutually exclusive/)
   })
 
+  it('uses the standard quality baseline by default and supports an explicit minimal mode', () => {
+    expect(parseCreateSuperAdminArgs(['demo', '--theme', 'base'], { cwd: '/tmp' }).quality).toBe('standard')
+    expect(parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--minimal'], { cwd: '/tmp' }).quality).toBe('minimal')
+  })
+
   it('generates the default single-theme starter and passes static validation', async () => {
     const tempRoot = await createTempRoot()
     const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base'], { cwd: tempRoot })
@@ -276,6 +282,7 @@ describe('create-super-admin starter generation', () => {
     const dataFlowContext = await readGeneratedText(input.targetDirectory, 'ai-context/data-flow.md')
     const extensionContext = await readGeneratedText(input.targetDirectory, 'ai-context/extension-points.md')
     const config = await readGeneratedText(input.targetDirectory, 'super-admin.config.ts')
+    const eslintConfig = await readGeneratedText(input.targetDirectory, 'eslint.config.js')
     const loginPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/LoginPage.vue')
     const registerPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/RegisterPage.vue')
     const readme = await readGeneratedText(input.targetDirectory, 'README.md')
@@ -293,10 +300,16 @@ describe('create-super-admin starter generation', () => {
 
     expect(packageJson.scripts).toEqual({
       build: 'vue-tsc --noEmit && vite build',
+      check: 'eslint . --max-warnings=0 && vitest run && vue-tsc --noEmit && vite build',
       dev: 'vite',
+      lint: 'eslint . --max-warnings=0',
       preview: 'vite preview',
+      test: 'vitest run',
       typecheck: 'vue-tsc --noEmit'
     })
+    expect(packageJson.devDependencies.eslint).toBe('^10.6.0')
+    expect(packageJson.devDependencies['eslint-config-prettier']).toBe('^10.1.8')
+    expect(packageJson.devDependencies.vitest).toBe('^4.1.9')
     expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-base')
     expect(packageJson.dependencies['motion-v']).toBe('^2.3.0')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
@@ -317,9 +330,18 @@ describe('create-super-admin starter generation', () => {
     expect(coreContext).toContain('当前代码优先于本文件')
     expect(coreContext).toContain('- theme: `base`')
     expect(coreContext).toContain('- locale: `zh-CN`')
+    expect(coreContext).toContain('- quality: `standard`')
+    expect(coreContext).toContain('npm run check')
     expect(coreContext).toContain('provider secret')
     expect(dataFlowContext).toContain('Page -> module query composable -> API adapter -> api/mock data or user API')
     expect(extensionContext).toContain('src/modules/')
+    expect(extensionContext).toContain('src/modules/module-registry.ts')
+    expect(extensionContext).toContain('composeModuleManifest')
+    expect(extensionContext).toContain('src/shell/layout-registry.ts')
+    expect(extensionContext).toContain('src/modules/auth/components/auth-recipe-registry.generated.ts')
+    expect(extensionContext).toContain('neutral fallback')
+    expect(eslintConfig).toContain("import eslintConfigPrettier from 'eslint-config-prettier/flat'")
+    expect(eslintConfig).toContain('eslintConfigPrettier')
     await expect(generatedPathExists(input.targetDirectory, 'AI_CONTEXT.md')).resolves.toBe(false)
     await expect(generatedPathExists(input.targetDirectory, 'ai-context/theme.md')).resolves.toBe(false)
     await expect(generatedPathExists(input.targetDirectory, 'ai-context/i18n.md')).resolves.toBe(false)
@@ -330,10 +352,17 @@ describe('create-super-admin starter generation', () => {
     expect(examplesManifest).not.toContain('../charts/ChartsPage.vue')
     await expect(generatedPathExists(input.targetDirectory, 'src/modules/examples/examples.manifest.ts')).resolves.toBe(true)
     await expect(generatedPathExists(input.targetDirectory, 'src/modules/ui-kit/ui-kit.manifest.ts')).resolves.toBe(true)
-    await expect(generatedPathExists(input.targetDirectory, 'src/modules/access/access.manifest.ts')).resolves.toBe(false)
-    await expect(generatedPathExists(input.targetDirectory, 'src/modules/dashboard/dashboard.manifest.ts')).resolves.toBe(false)
-    await expect(generatedPathExists(input.targetDirectory, 'src/modules/users/users.manifest.ts')).resolves.toBe(false)
-    await expect(generatedPathExists(input.targetDirectory, 'src/modules/workbench/workbench.manifest.ts')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/access/access.manifest.ts')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/dashboard/dashboard.manifest.ts')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/users/users.manifest.ts')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/workbench/workbench.manifest.ts')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/auth/components/recipes/BaseAuthRecipe.vue')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/auth/components/recipes/NeutralAuthRecipe.vue')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/auth/components/recipes/CryptoAuthRecipe.vue')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/auth/components/recipes/CyberpunkAuthRecipe.vue')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'eslint.config.js')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'vitest.config.ts')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/super-admin/starter-quality.test.ts')).resolves.toBe(true)
     expect(config).toContain("installed: ['base']")
     expect(config).toContain("switcher: 'off'")
     expect(preferences).not.toContain('selectProfile')
@@ -372,6 +401,53 @@ describe('create-super-admin starter generation', () => {
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { themes: ['base'] })).resolves.toEqual([])
   })
 
+  it('generates an explicit minimal starter without quality-only tooling', async () => {
+    const tempRoot = await createTempRoot()
+    const input = parseCreateSuperAdminArgs(['demo-minimal', '--theme', 'base', '--minimal'], { cwd: tempRoot })
+
+    await generateStarter(input, { sourceRoot: repoRoot })
+
+    const packageJson = await readGeneratedJson(input.targetDirectory, 'package.json')
+    const coreContext = await readGeneratedText(input.targetDirectory, 'ai-context/core.md')
+    const config = await readGeneratedText(input.targetDirectory, 'super-admin.config.ts')
+
+    expect(packageJson.scripts).toEqual({
+      build: 'vue-tsc --noEmit && vite build',
+      dev: 'vite',
+      preview: 'vite preview',
+      typecheck: 'vue-tsc --noEmit'
+    })
+    expect(packageJson.devDependencies.eslint).toBeUndefined()
+    expect(packageJson.devDependencies.vitest).toBeUndefined()
+    expect(coreContext).toContain('- quality: `minimal`')
+    expect(coreContext).not.toContain('npm run check')
+    expect(config).toContain("mode: 'minimal'")
+    await expect(generatedPathExists(input.targetDirectory, 'eslint.config.js')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'vitest.config.ts')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/super-admin/starter-quality.test.ts')).resolves.toBe(false)
+    await expect(validateGeneratedStarterStatic(input.targetDirectory, { quality: 'minimal', themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('normalizes legacy programmatic generation input to the standard quality mode', async () => {
+    const tempRoot = await createTempRoot()
+    const input = parseCreateSuperAdminArgs(['legacy-admin', '--theme', 'base'], { cwd: tempRoot })
+    delete input.quality
+
+    await generateStarter(input, { sourceRoot: repoRoot })
+
+    const packageJson = await readGeneratedJson(input.targetDirectory, 'package.json')
+    const coreContext = await readGeneratedText(input.targetDirectory, 'ai-context/core.md')
+    const config = await readGeneratedText(input.targetDirectory, 'super-admin.config.ts')
+
+    expect(packageJson.scripts.check).toContain('vitest run')
+    expect(packageJson.devDependencies.eslint).toBeDefined()
+    expect(coreContext).toContain('- quality: `standard`')
+    expect(config).toContain("mode: 'standard'")
+    await expect(generatedPathExists(input.targetDirectory, 'eslint.config.js')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/super-admin/starter-quality.test.ts')).resolves.toBe(true)
+    await expect(validateGeneratedStarterStatic(input.targetDirectory, { quality: 'standard', themes: ['base'] })).resolves.toEqual([])
+  })
+
   it('generates the optional ECharts template when selected', async () => {
     const tempRoot = await createTempRoot()
     const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base', '--charts', 'echarts'], { cwd: tempRoot })
@@ -381,6 +457,7 @@ describe('create-super-admin starter generation', () => {
     const packageJson = await readGeneratedJson(input.targetDirectory, 'package.json')
     const agentsMd = await readGeneratedText(input.targetDirectory, 'AGENTS.md')
     const chartsContext = await readGeneratedText(input.targetDirectory, 'ai-context/charts.md')
+    const chartsManifest = await readGeneratedText(input.targetDirectory, 'src/modules/charts/charts.manifest.ts')
     const moduleRegistry = await readGeneratedText(input.targetDirectory, 'src/modules/module-registry.ts')
     const examplesManifest = await readGeneratedText(input.targetDirectory, 'src/modules/examples/examples.manifest.ts')
 
@@ -392,8 +469,11 @@ describe('create-super-admin starter generation', () => {
     expect(chartsContext).toContain('src/modules/charts/ChartsPage.vue')
     expect(chartsContext).toContain('src/shared/charts/echarts-options.ts')
     expect(moduleRegistry).not.toContain('chartsManifest')
-    expect(examplesManifest).toContain("path: '/examples/charts'")
-    expect(examplesManifest).toContain("component: () => import('../charts/ChartsPage.vue')")
+    expect(examplesManifest).toContain("import { chartsManifest } from '../charts/charts.manifest'")
+    expect(examplesManifest).toContain('mountAsExample(chartsManifest)')
+    expect(chartsManifest).toContain("path: '/charts'")
+    expect(chartsManifest).toContain("component: () => import('./ChartsPage.vue')")
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/charts/charts.manifest.ts')).resolves.toBe(true)
     await expect(generatedPathExists(input.targetDirectory, 'src/modules/charts/ChartsPage.vue')).resolves.toBe(true)
     await expect(generatedPathExists(input.targetDirectory, 'src/shared/charts/echarts-options.ts')).resolves.toBe(true)
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { charts: 'echarts', themes: ['base'] })).resolves.toEqual([])
@@ -425,6 +505,9 @@ describe('create-super-admin starter generation', () => {
     expect(i18nContext).toContain('已启用 locales: `zh-CN`, `en-US`')
     expect(registry).toContain("from '@super-admin-org/theme-base'")
     expect(registry).toContain("from '@super-admin-org/theme-cyberpunk'")
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/auth/components/recipes/BaseAuthRecipe.vue')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/auth/components/recipes/CyberpunkAuthRecipe.vue')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/auth/components/recipes/CryptoAuthRecipe.vue')).resolves.toBe(false)
     expect(preferences).toContain('selectProfile')
     expect(preferences).toContain('selectLocale')
     expect(preferences).toContain('shell.preferences.displayMode')
@@ -576,6 +659,8 @@ describe('create-super-admin starter generation', () => {
     expect(exitCode).toBe(0)
     expect(output.join('\n')).toContain('Usage: create-super-admin <project>')
     expect(output.join('\n')).toContain('--themes base,cyberpunk')
+    expect(output.join('\n')).toContain('--minimal')
+    expect(output.join('\n')).toContain('ESLint and Vitest')
     await expect(readdir(tempRoot)).resolves.toEqual([])
   })
 
@@ -616,6 +701,7 @@ describe('create-super-admin starter generation', () => {
     const builtCli = await import(/* @vite-ignore */ builtEntryUrl)
     const variants = [
       ['--theme', 'base'],
+      ['--theme', 'base', '--minimal'],
       ['--themes', 'base,cyberpunk', '--i18n'],
       ['--theme', 'base', '--charts', 'echarts']
     ]
@@ -653,6 +739,7 @@ describe('create-super-admin starter generation', () => {
     const packedCli = join(unpackRoot, 'package/dist/cli.js')
     const variants = [
       { flags: ['--theme', 'base'], validation: { themes: ['base'] } },
+      { flags: ['--theme', 'base', '--minimal'], validation: { quality: 'minimal', themes: ['base'] } },
       { flags: ['--themes', 'base,cyberpunk', '--i18n'], validation: { i18n: true, themes: ['base', 'cyberpunk'] } },
       { flags: ['--theme', 'base', '--charts', 'echarts'], validation: { charts: 'echarts', themes: ['base'] } }
     ]

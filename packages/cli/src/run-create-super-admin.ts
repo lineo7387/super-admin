@@ -15,6 +15,7 @@ Options:
   --charts echarts         Install ECharts and generate a theme-adapted chart example under Examples
   --no-charts              Keep the starter lightweight without chart example dependencies
   --i18n                   Include zh-CN and en-US locale catalogs and a language switcher
+  --minimal                Omit ESLint, Vitest, and generated quality tests
   --pm <name>              Package manager for printed next steps: pnpm, npm, yarn, or bun
   --package-manager <name> Alias for --pm
   -h, --help               Show this help message
@@ -24,13 +25,14 @@ Interactive theme selection:
   flag is provided. Use Space to toggle themes, Up/Down to move, and Enter to confirm.
 
 Generated starter:
-  The generated app is a single Vite app with zh-CN, mock data, and no backend,
-  docs site, tests, lint, or e2e tooling.
+  The generated app is a single Vite app with zh-CN, mock data, ESLint and Vitest,
+  and no required backend or docs site. Use --minimal for the smaller core-only baseline.
 
 Examples:
   create-super-admin my-admin
   create-super-admin my-admin --theme base
-  create-super-admin my-admin --themes base,cyberpunk --charts echarts --i18n --pm pnpm`
+  create-super-admin my-admin --themes base,cyberpunk --charts echarts --i18n --pm pnpm
+  create-super-admin my-admin --theme base --minimal`
 
 const THEME_SELECTION_REQUIRED_MESSAGE = 'Theme selection is required. Use --theme <id>, --themes <ids>, or run create-super-admin in an interactive terminal.'
 

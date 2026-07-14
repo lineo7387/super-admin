@@ -56,12 +56,14 @@ export const publishCandidates = [
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const dependencyGroupNames = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']
+const cliRuntimeQualityTestPath = 'dist/starter-template/admin/src/super-admin/starter-quality.test.ts'
 const cliRuntimeTemplateRequiredFiles = [
   'dist/starter-template/admin/components.json',
   'dist/starter-template/admin/src/App.vue',
   'dist/starter-template/admin/src/i18n/locales/en-US.ts',
   'dist/starter-template/admin/src/i18n/locales/zh-CN.ts',
   'dist/starter-template/admin/src/main.ts',
+  cliRuntimeQualityTestPath,
   'dist/starter-template/admin/src/super-admin/theme-registry.generated.ts'
 ]
 
@@ -131,6 +133,15 @@ export function createPackedManifestFailures({ files, manifest, packageName }) {
     )
   }
 
+  if (packageName === '@super-admin-org/ui' && (manifest.dependencies?.vue || typeof manifest.peerDependencies?.vue !== 'string')) {
+    failures.push(
+      createFailure(
+        'packed-ui-vue-peer-runtime',
+        `${packageName} must expose Vue through peerDependencies and keep it out of runtime dependencies to avoid a nested Vue instance.`
+      )
+    )
+  }
+
   const missingTargets = getManifestTargets(manifest)
     .map((target) => target.replace(/^\.\//, ''))
     .filter((target) => !packedFiles.has(target))
@@ -141,7 +152,17 @@ export function createPackedManifestFailures({ files, manifest, packageName }) {
     )
   }
 
-  const buildArtifacts = [...packedFiles].filter((file) => file.endsWith('.tsbuildinfo') || /\.(test|spec)\./.test(file))
+  const buildArtifacts = [...packedFiles].filter((file) => {
+    if (file.endsWith('.tsbuildinfo')) {
+      return true
+    }
+
+    if (!/\.(test|spec)\./.test(file)) {
+      return false
+    }
+
+    return packageName !== 'create-super-admin' || file !== cliRuntimeQualityTestPath
+  })
 
   if (buildArtifacts.length > 0) {
     failures.push(createFailure('packed-package-no-build-artifacts', `${packageName} tarball includes build/test artifacts: ${buildArtifacts.join(', ')}.`))
@@ -315,59 +336,86 @@ async function rewriteStarterDependencies(projectDir, tarballs) {
   await writeJson(packageJsonPath, rewriteStarterPackageJson(packageJson, tarballDependencyMap))
 }
 
-async function validateStarterVariant({ args, charts = 'none', cliBinPath, i18n, label, outputDir, tarballs, themes }) {
+export function createStarterValidationOptions({ charts, i18n, quality, tarballs, themes }) {
+  return {
+    charts,
+    i18n,
+    packageManager: 'pnpm',
+    packageManifestPaths: tarballs.map((tarball) => tarball.manifestPath),
+    quality,
+    themes
+  }
+}
+
+async function validateStarterVariant({ args, charts = 'none', cliBinPath, i18n, label, outputDir, quality = 'standard', tarballs, themes }) {
   const projectDir = resolve(outputDir, label ?? `starter-${themes.join('-')}${charts === 'echarts' ? '-echarts' : ''}${i18n ? '-i18n' : ''}`)
 
   await rm(projectDir, { force: true, recursive: true })
   await generateStarter(cliBinPath, projectDir, args)
   await rewriteStarterDependencies(projectDir, tarballs)
 
-  const failures = await validateGeneratedStarter(projectDir, {
-    charts,
-    i18n,
-    packageManager: 'pnpm',
-    packageManifestPaths: tarballs.map((tarball) => tarball.manifestPath),
-    themes
-  })
+  const failures = await validateGeneratedStarter(
+    projectDir,
+    createStarterValidationOptions({
+      charts,
+      i18n,
+      quality,
+      tarballs,
+      themes
+    })
+  )
 
   if (failures.length > 0) {
     throw new Error(failures.map((failure) => `${failure.id}: ${failure.message}`).join('\n'))
   }
 }
 
+export const localStarterValidationVariants = [
+  {
+    args: ['--theme', 'base'],
+    charts: 'none',
+    i18n: false,
+    label: 'starter-default',
+    quality: 'standard',
+    themes: ['base']
+  },
+  {
+    args: ['--themes', 'base,cyberpunk', '--i18n'],
+    charts: 'none',
+    i18n: true,
+    quality: 'standard',
+    themes: ['base', 'cyberpunk']
+  },
+  {
+    args: ['--theme', 'base', '--charts', 'echarts'],
+    charts: 'echarts',
+    i18n: false,
+    label: 'starter-echarts',
+    quality: 'standard',
+    themes: ['base']
+  },
+  {
+    args: ['--theme', 'base', '--minimal'],
+    charts: 'none',
+    i18n: false,
+    label: 'starter-minimal',
+    quality: 'minimal',
+    themes: ['base']
+  }
+]
+
 async function validateLocalStarters(outputDir, tarballs) {
   const starterRoot = await mkdtemp(resolve(tmpdir(), 'super-admin-starter-smoke-'))
   const cliBinPath = await extractPackedCli(outputDir, tarballs)
 
-  await validateStarterVariant({
-    args: ['--theme', 'base'],
-    charts: 'none',
-    cliBinPath,
-    i18n: false,
-    label: 'starter-default',
-    outputDir: starterRoot,
-    tarballs,
-    themes: ['base']
-  })
-  await validateStarterVariant({
-    args: ['--themes', 'base,cyberpunk', '--i18n'],
-    charts: 'none',
-    cliBinPath,
-    i18n: true,
-    outputDir: starterRoot,
-    tarballs,
-    themes: ['base', 'cyberpunk']
-  })
-  await validateStarterVariant({
-    args: ['--theme', 'base', '--charts', 'echarts'],
-    charts: 'echarts',
-    cliBinPath,
-    i18n: false,
-    label: 'starter-echarts',
-    outputDir: starterRoot,
-    tarballs,
-    themes: ['base']
-  })
+  for (const variant of localStarterValidationVariants) {
+    await validateStarterVariant({
+      ...variant,
+      cliBinPath,
+      outputDir: starterRoot,
+      tarballs
+    })
+  }
 
   await writeFile(resolve(outputDir, 'starter-smoke-root.txt'), `${starterRoot}\n`)
 }

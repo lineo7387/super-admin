@@ -9,6 +9,8 @@ Frontend-first Vue admin template with reusable UI primitives, runtime design pr
 
 Super Admin is designed for teams who want a flexible admin-console foundation without being forced into a backend, database, auth provider, AI provider, or generated API schema on day one.
 
+[中文文档](https://lineo7387.github.io/super-admin/) · [English docs](https://lineo7387.github.io/super-admin/en/)
+
 ## Status
 
 This project is under active `0.x` development after its initial npm release. The current public package line is `0.1.x`.
@@ -49,6 +51,24 @@ pnpm dlx create-super-admin@latest my-admin --theme base --charts echarts --pm p
 ```
 
 This generated project is where you build your own admin app. It stays frontend-first and does not include this repository's release automation, docs site, optional reference backend validation, or maintainer AI workflow files.
+
+The default starter uses the `standard` quality baseline:
+
+```bash
+pnpm lint
+pnpm test
+pnpm typecheck
+pnpm build
+pnpm check
+```
+
+Use `--minimal` only when you intentionally want the smaller typecheck/build baseline without generated ESLint, Vitest, or quality tests:
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --minimal --pm pnpm
+```
+
+Every generated project includes `AGENTS.md` and capability-aware files under `ai-context/`. They describe the selected quality mode, the frontend data flow, and the actual manifest/layout/auth registry extension points without requiring an AI provider or maintainer workflow.
 
 ## Develop This Repository
 
@@ -120,14 +140,21 @@ apps/admin/          Vue admin template app
 apps/api/            Optional Hono reference API for maintainer validation
 packages/core/       Shared frontend contracts and helpers
 packages/ui/         Reusable admin UI primitives
-packages/theme/      Design profiles and token helpers
+packages/theme/      Theme runtime, token application, and chart recipes
 packages/theme-*/    Independently installable design profile packages
-packages/cli/        Optional create-super-admin scaffolder
+packages/cli/        Published create-super-admin scaffolder
 docs/                VitePress documentation
 scripts/             Maintainer validation scripts
 ```
 
 A project generated with `create-super-admin` is intentionally smaller: it is your runnable admin app, not this full source repository.
+
+## Extension Model
+
+- Feature `*.manifest.ts` files are the single source for navigation, routes, route metadata, and permissions. The Examples tree mounts and composes those manifests instead of copying them.
+- Layouts and auth profile recipes use typed app-local registries. Adding an extension means adding a registration, not editing ID branches across shell consumers.
+- Unknown layout or auth recipe IDs use explicit neutral fallbacks rather than silently rendering a branded built-in experience.
+- Data-backed pages keep the readable `Page -> module query composable -> API adapter -> mock data / user API` path.
 
 ## Core Boundary
 

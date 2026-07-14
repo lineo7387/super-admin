@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { Bot, PanelRight, Sparkles, X } from '@lucide/vue'
-import { computed } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AdminButton, StatusPill } from '@super-admin-org/ui'
 import { translateRouteDescription, translateRouteTitle } from '@/i18n/navigation'
+import { useOpenSurfaceFocus } from '@/shared/use-open-surface-focus'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
 const route = useRoute()
 const { t } = useI18n()
 const preferences = usePreferencesStore()
+const aiAssistantSurface = useTemplateRef<HTMLElement>('aiAssistantSurface')
+useOpenSurfaceFocus(() => preferences.aiAssistantOpen, aiAssistantSurface)
 const pageTitle = computed(() => translateRouteTitle(t, route.path, typeof route.meta.title === 'string' ? route.meta.title : t('workspace.fallbackTitle')))
 const pageDescription = computed(() => translateRouteDescription(t, route.path, typeof route.meta.description === 'string' ? route.meta.description : ''))
 
@@ -43,10 +46,12 @@ const aiStatusMessage = computed(() => {
 
     <section
       v-else
-      class="w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
+      ref="aiAssistantSurface"
+      class="w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)] outline-none"
       role="dialog"
       aria-modal="false"
       aria-labelledby="ai-assistant-title"
+      tabindex="-1"
       @keydown.esc="preferences.closeAiAssistant()"
     >
       <header class="flex items-start justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-raised)] p-3">

@@ -68,7 +68,7 @@ Push 前运行完整本地 release gate：
 pnpm release check
 ```
 
-它会运行 lint、typecheck、tests、package builds、local `npm pack` validation、generated starter install/typecheck/build 和 startup smoke。它不会发布任何内容。
+它会运行 lint、typecheck、tests、package builds、local `npm pack` validation，以及 generated standard starter 的 install/lint/test/typecheck/build、minimal boundary/typecheck/build 和 startup smoke。它不会发布任何内容。
 
 Release gate 会通过打包后的 `create-super-admin` tarball 验证 generated starter，而不只是 monorepo 里的 local CLI。这可以在 publish 前发现 registry 和 `pnpm dlx` runtime 问题，例如 package-local starter template 缺失。
 

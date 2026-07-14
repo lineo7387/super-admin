@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/stores/preferences.store'
+import { useOpenSurfaceFocus } from '@/shared/use-open-surface-focus'
 import { resolveOverviewLayout } from './stage-manager'
 import StageOverviewCard from './StageOverviewCard.vue'
 import { useStageWindows } from './useStageWindows'
@@ -9,6 +10,8 @@ import { useStageWindows } from './useStageWindows'
 const preferences = usePreferencesStore()
 const { t } = useI18n()
 const { allWindowStages, closeStage, refreshStage, toggleStagePin, activateStage } = useStageWindows()
+const stageOverviewSurface = useTemplateRef<HTMLElement>('stageOverviewSurface')
+useOpenSurfaceFocus(() => preferences.stageManagerDesktopAvailable && preferences.stageOverviewOpen, stageOverviewSurface)
 
 const overviewGridStyle = computed<Record<string, string>>(() => {
   const layout = resolveOverviewLayout(allWindowStages.value.length)
@@ -36,16 +39,15 @@ async function activateOverviewStage(path: string, title: string, sourceRect: DO
   <Teleport to="body">
     <div
       v-if="preferences.stageManagerDesktopAvailable && preferences.stageOverviewOpen"
-      class="stage-overview-layer fixed inset-0 z-[75] pointer-events-auto"
+      ref="stageOverviewSurface"
+      class="stage-overview-layer pointer-events-auto fixed inset-0 z-[75] outline-none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="stage-overview-title"
+      tabindex="-1"
       @keydown.esc="preferences.closeStageOverview()"
     >
-      <section
-        class="relative h-full w-full overflow-hidden"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="stage-overview-title"
-        @click="closeOverviewOnBackdrop"
-      >
+      <section class="relative h-full w-full overflow-hidden" @click="closeOverviewOnBackdrop">
         <div class="stage-all-windows-mask" aria-hidden="true" />
 
         <header class="pointer-events-none absolute left-7 top-6 z-20 max-w-sm opacity-50">

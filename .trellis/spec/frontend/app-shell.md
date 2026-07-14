@@ -20,6 +20,107 @@ Pages own content regions and feature UI.
 - `dual-column`: sidebar + workspace.
 - `top-header`: header navigation + workspace.
 
+## Layout Registry Contract
+
+### 1. Scope / Trigger
+
+`apps/admin/src/shell/layout-registry.ts` is the app-local composition root for shell layouts. Core owns dependency-light `LayoutPreset` metadata; the app registry couples that metadata to a Vue component and preview presentation without importing Vue into `@super-admin-org/core`.
+
+Use this contract whenever a layout component, Control Center layout card, or Stage Manager window preview is added or changed.
+
+### 2. Signatures
+
+```ts
+type LayoutGridPresentation = {
+  gridTemplateColumns: string
+  gridTemplateRows: string
+}
+
+type AppLayoutSlots = {
+  'header-actions'(): unknown
+  workspace(): unknown
+}
+
+type AppLayoutComponent = Component &
+  (new () => {
+    $props: Readonly<Record<never, never>>
+    $slots: Readonly<AppLayoutSlots>
+  })
+
+type AppLayoutRegistration = {
+  component: AppLayoutComponent
+  preset: LayoutPreset
+  preview: {
+    compact: LayoutGridPresentation
+    stage: LayoutGridPresentation
+    showDock: boolean
+    showSidebar: boolean
+    showTopNavigation: boolean
+  }
+}
+
+createAppLayoutRegistry(registrations): AppLayoutRegistration[]
+resolveAppLayoutRegistration(layoutId, registry?): AppLayoutRegistration
+```
+
+`createAppLayoutRegistry` must retain each concrete component type while validating its input tuple. In addition to the shared slot shape, it rejects any required prop or required slot that `AppShell` does not provide. Optional component inputs may extend the recipe without weakening the shell contract.
+
+### 3. Contracts
+
+Contracts:
+
+- Register a layout once with its component, public preset metadata, and preview presentation. `AppShell`, Control Center layout cards, and Stage Manager previews consume the registration instead of repeating layout-ID branches.
+- `preview.compact` is for responsive Control Center cards and must use container-relative tracks such as `fr`, `%`, or `minmax()`. Do not use physical sidebar widths such as `16rem`; a card may be only about 160px wide.
+- `preview.stage` is for the intentionally large 82rem/86rem Stage Manager canvas before it is scaled down. Fixed `rem` chrome widths are allowed there.
+- `LayoutPresetPreview.vue` consumes `preview.compact`; `StageWindowPreview.vue` consumes `preview.stage`. The shared booleans decide which semantic chrome regions appear in either rendering.
+- Every layout component declares the shared `header-actions` and `workspace` slots with `defineSlots`; the registry component type rejects components that do not expose that contract.
+- Registry creation rejects components with extra required props or slots because the shell cannot satisfy those inputs. Do not erase a component to a broad `Component` before registration.
+- `createAppLayoutRegistry` rejects duplicate preset IDs.
+- Unknown or user-defined `LayoutPresetId` values resolve to the explicit `neutralLayoutRegistration`. They must not silently masquerade as `tri-column`, `dual-column`, or another branded built-in layout.
+- `NeutralLayout.vue` is a safe workspace shell, not a fourth branded choice shown alongside registered presets. It preserves module navigation, the account/logout menu, shared header actions, and the workspace slot so an unresolved extension remains honest and usable. Horizontal dropdown navigation renders in a body-level floating layer, clamps its width and horizontal position to a viewport safe area, recomputes on resize, and closes on scroll so shell or scroll-container overflow cannot clip it. Opening from click, Enter, Space, or Arrow Down moves focus to the first menu item; Escape handled inside the menu closes it and restores focus to its trigger. Moving focus to another surface closes the menu without stealing focus back, so a higher overlay such as Command Palette owns its own Escape lifecycle. Trigger and menu IDs must stay uniquely associated when multiple navigation instances are mounted.
+- To add a layout, create the component and add one registry entry. Do not add matching `if`/`switch` branches to `AppShell.vue`, `GlobalPreferences.vue`, or `StageWindowPreview.vue`.
+
+### 4. Validation & Error Matrix
+
+| Condition | Correct behavior |
+| --- | --- |
+| Duplicate preset ID | `createAppLayoutRegistry` throws before consumers render. |
+| Unknown preset ID | Resolve `neutralLayoutRegistration`; never select a branded layout. |
+| Registered component omits a required shared slot or adds an unsupported required input | Reject it at type-check time. |
+| Horizontal dropdown navigation is nested under an overflow-clipping ancestor or can leave the viewport safe area | Reject the layout; nested module links must remain visibly interactive at both desktop and narrow viewport widths. |
+| Teleported navigation menu cannot be reached immediately by keyboard or Escape does not restore its trigger | Reject the navigation; the floating layer must preserve focus order and trigger/menu semantics. |
+| Navigation captures Escape globally or restores background focus while a higher overlay is active | Reject the navigation; focus transfer must dismiss it silently and leave the topmost surface in control. |
+| Compact grid contains a fixed `rem` track | Reject in registry contract tests because narrow cards can overflow. |
+| Stage grid uses fixed shell widths | Allowed because Stage Manager scales a known large canvas. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: tri-column uses proportional compact tracks such as `0.5fr 1.4fr 3fr` and keeps `4rem 16rem minmax(0, 1fr)` only in its stage grid.
+- Base: neutral uses `minmax(0, 1fr)` for both contexts and hides all optional chrome.
+- Bad: one `gridTemplateColumns` value with physical `rem` tracks is passed to both the 82rem Stage canvas and a three-column Control Center card.
+
+### 6. Tests Required
+
+- Unit-test duplicate IDs, known resolution, custom registrations, and unknown fallback.
+- Type-test accepted built-ins and rejected components that omit a required slot or add a required prop/slot that the orchestrator never provides.
+- Mount the neutral fallback with the real scroll primitive and verify the full three-level module navigation, shared slots, account/logout behavior, route redirection, body-level floating menu boundary, menu roles, Arrow Down focus entry, focus-transfer dismissal, and local Escape focus restoration. Unit-test viewport collision math and confirm edge geometry, Tab order, and the navigation-to-Command-Palette overlay stack in a real browser.
+- Assert every compact grid is present and contains no fixed `rem` track.
+- Mount `LayoutPresetPreview` and `StageWindowPreview`; assert they apply `preview.compact` and `preview.stage` geometry to their rendered surfaces.
+- Browser-check the three Control Center cards at the `xl:grid-cols-3` breakpoint and the Stage Rail/Overview previews.
+
+### 7. Wrong vs Correct
+
+```ts
+// Wrong: the 16rem sidebar overflows a compact choice card.
+preview: { gridTemplateColumns: '4rem 16rem minmax(0, 1fr)' }
+
+// Correct: each rendering context receives a suitable scale contract.
+preview: {
+  compact: { gridTemplateColumns: '0.5fr 1.4fr 3fr', gridTemplateRows: 'minmax(0, 1fr)' },
+  stage: { gridTemplateColumns: '4rem 16rem minmax(0, 1fr)', gridTemplateRows: 'minmax(0, 1fr)' }
+}
+```
+
 ## Page Regions
 
 Pages should expose or organize content around semantic regions:
@@ -39,6 +140,8 @@ Theme, light/dark/system mode, layout, workspace tools, and AI status belong in 
 The first-phase shell uses a large live configuration modal, not a small popover. Primary choices should be direct controls: segmented choices, highlighted option cards, icon toggles, switches, and visual layout thumbnails. Avoid default select dropdowns for the main appearance/layout/workspace decisions.
 
 Changes apply immediately. The Control Center is not a save/cancel form for shell appearance; selecting a profile, color mode, layout, Workspace Tabs toggle, or Stage Manager toggle updates the active UI at once.
+
+Every global dialog-like surface must take focus when it opens. Control Center, Stage Overview, and AI Assistant share `useOpenSurfaceFocus`; their focusable `role="dialog"` root owns local Escape handling. Its watcher runs immediately as well as on later state changes because these surfaces are async components and may mount after the store is already open. This guarantees that opening a surface from a teleported navigation menu first dismisses that menu without background focus restoration, then leaves the new topmost surface in control of Escape. Command Palette keeps its more specific input autofocus behavior.
 
 **Contract**:
 
@@ -64,20 +167,22 @@ The Control Center modal must be content-height adaptive with a viewport cap. Sh
 Use the shared `AdminScrollArea` as the viewport-bounded dialog surface, with the header inside the scroll surface and `position: sticky`:
 
 ```vue
-<AdminScrollArea
-  as="section"
-  class="max-h-[min(92vh,calc(100vh-2rem))] w-full max-w-5xl overflow-hidden"
+<div
+  ref="controlCenterSurface"
   role="dialog"
   aria-modal="true"
+  tabindex="-1"
 >
-  <header class="sticky top-0">...</header>
-  <div class="grid items-start ...">...</div>
-</AdminScrollArea>
+  <AdminScrollArea as="section" class="max-h-[min(92vh,calc(100vh-2rem))] w-full max-w-5xl overflow-hidden">
+    <header class="sticky top-0">...</header>
+    <div class="grid items-start ...">...</div>
+  </AdminScrollArea>
+</div>
 ```
 
 Avoid nested fixed-height estimates such as `max-h-[calc(88vh-92px)]` for the inner scroll region. Header copy, locale availability, and theme count vary across app and generated starter variants, so subtracting a guessed header height creates unreachable overflow or large empty space.
 
-**Check**: Browser-test one long-content app state and one short generated state. The long state must scroll to the bottom settings; the short state should have `scrollHeight <= clientHeight` and a dialog height below the viewport cap.
+**Check**: Browser-test one long-content app state and one short generated state. The long state must scroll to the bottom settings; the short state should have `scrollHeight <= clientHeight` and a dialog height below the viewport cap. From an open navigation menu, invoke Control Center, Stage Overview, AI Assistant, and Command Palette by keyboard. In every case navigation must close, focus must be inside the new surface, and one Escape must close that topmost surface.
 
 ## Auth Guard And Session Controls
 
@@ -353,6 +458,47 @@ The old Context rail is reserved for the future AI assistant experience and must
 
 ## Module Navigation Tree
 
+### Convention: Feature Manifest Is The Single Source Of Truth
+
+**What**: Each data-backed feature owns one `*.manifest.ts` definition containing its nav item, routes, route meta, and permissions. Aggregate information architecture mounts and composes those manifests; it does not restate their route or nav metadata.
+
+```ts
+const mountedUsers = mountModuleManifest(usersManifest, {
+  pathPrefix: '/examples',
+  routeNamePrefix: 'examples'
+})
+
+export const examplesManifest = composeModuleManifest({
+  id: 'examples',
+  name: 'Examples',
+  nav: {
+    label: 'Examples',
+    path: '/examples/template-guide',
+    icon: 'examples',
+    order: 10
+  },
+  modules: [mountedDashboard, mountedWorkbench, mountedUsers, mountedAccess]
+})
+
+export const registeredModules = createModuleRegistry([examplesManifest, uiKitManifest])
+```
+
+`mountModuleManifest` prefixes nav and route paths, optionally prefixes route names, and returns cloned data without mutating the source manifest. `composeModuleManifest` sorts children, combines routes and permissions, and preserves the mounted feature metadata. `createModuleRegistry` sorts top-level modules and rejects duplicate module IDs, top-level nav paths, route paths, and route names.
+
+**Why**: A feature must be promotable from the template's `/examples/*` showcase to a real project's top level without copying its definitions or changing shell renderers. The same composed result feeds Vue Router, navigation, command/search, and workspace metadata.
+
+**Wrong shape**:
+
+```ts
+// examples.manifest.ts
+{ label: 'Users', path: '/examples/users/all' }
+{ path: '/examples/users/all', name: 'examples-users-all', meta: { ... } }
+```
+
+This duplicates `usersManifest` and creates two sources that can drift.
+
+**Check**: Change a feature title or route meta in its source manifest and verify the composed Examples registry reflects it. Source manifests must remain unchanged after mounting, and duplicates must fail before router creation.
+
 ### Convention: Template Showcase IA Uses The Same Manifest Tree
 
 **What**: The template-default information architecture should be showcase-oriented:
@@ -624,6 +770,8 @@ This keeps appearance changes separate from explicit user refresh.
 ## Anti-Patterns
 
 - Building separate page implementations for each layout preset.
+- Branching on layout IDs in shell consumers instead of resolving one typed layout registration.
+- Repeating feature route/nav/meta definitions in an aggregate showcase manifest.
 - Placing global theme/layout controls inside a module-only Settings page.
 - Making feature pages import shell presets directly.
 - Reintroducing a `workspacePresentation` union that forces Stage Manager and tabs to replace each other.

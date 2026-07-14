@@ -11,19 +11,45 @@ export const themePackageById = {
   newsprint: '@super-admin-org/theme-newsprint'
 }
 
-const allowedDefaultScripts = new Set(['dev', 'build', 'typecheck', 'preview'])
+const qualityScriptsByMode = {
+  minimal: new Set(['dev', 'build', 'typecheck', 'preview']),
+  standard: new Set(['dev', 'build', 'typecheck', 'lint', 'test', 'check', 'preview'])
+}
 const allThemeProfilePackages = Object.values(themePackageById)
 const chartDependencyNames = new Set(['echarts', 'vue-echarts'])
 const chartSourcePrefixes = ['src/modules/charts/', 'src/shared/charts/']
+const requiredExampleFeatureManifests = [
+  {
+    file: 'src/modules/access/access.manifest.ts',
+    identifier: 'accessManifest',
+    source: '../access/access.manifest'
+  },
+  {
+    file: 'src/modules/dashboard/dashboard.manifest.ts',
+    identifier: 'dashboardManifest',
+    source: '../dashboard/dashboard.manifest'
+  },
+  {
+    file: 'src/modules/users/users.manifest.ts',
+    identifier: 'usersManifest',
+    source: '../users/users.manifest'
+  },
+  {
+    file: 'src/modules/workbench/workbench.manifest.ts',
+    identifier: 'workbenchManifest',
+    source: '../workbench/workbench.manifest'
+  },
+  {
+    file: 'src/modules/examples/template-guide.manifest.ts',
+    identifier: 'templateGuideManifest',
+    source: './template-guide.manifest'
+  }
+]
 const forbiddenMaintainerWorkflowPrefixes = ['.agents/', '.claude/', '.codegraph/', '.codex/', '.trellis/']
 const forbiddenMaintainerWorkflowFiles = new Set(['.mcp.json', 'skills-lock.json'])
-const unregisteredStandaloneManifests = [
-  'src/modules/access/access.manifest.ts',
-  'src/modules/dashboard/dashboard.manifest.ts',
-  'src/modules/users/users.manifest.ts',
-  'src/modules/workbench/workbench.manifest.ts'
-]
-const forbiddenMaintainerToolingPackages = new Set(['@playwright/test', 'eslint', 'playwright', 'prettier', 'vitepress', 'vitest'])
+const forbiddenMaintainerToolingPackages = new Set(['@playwright/test', 'playwright', 'prettier', 'vitepress'])
+const standardQualityDependencies = new Set(['@eslint/js', 'eslint', 'eslint-config-prettier', 'eslint-plugin-vue', 'globals', 'typescript-eslint', 'vitest'])
+const standardQualityRootFiles = ['eslint.config.js', 'vitest.config.ts']
 const baseAiContextFiles = ['ai-context/core.md', 'ai-context/data-flow.md', 'ai-context/extension-points.md']
 const capabilityAiContextFiles = {
   charts: 'ai-context/charts.md',
@@ -34,7 +60,15 @@ const requiredAiContextSnippetsByFile = {
   'AGENTS.md': ['唯一 AI 开发入口', '@ai-context/core.md', '@ai-context/data-flow.md', '@ai-context/extension-points.md'],
   'ai-context/core.md': ['这是用户项目，不是 Super Admin 源码仓库', '当前代码优先于本文件', 'provider secret', 'VITE_*'],
   'ai-context/data-flow.md': ['Page -> module query composable -> API adapter -> api/mock data or user API'],
-  'ai-context/extension-points.md': ['src/modules/', 'src/api/']
+  'ai-context/extension-points.md': [
+    'src/modules/',
+    'src/api/',
+    'src/modules/module-registry.ts',
+    'composeModuleManifest',
+    'src/shell/layout-registry.ts',
+    'src/modules/auth/components/auth-recipe-registry.generated.ts',
+    'neutral fallback'
+  ]
 }
 const textFileExtensions = new Set(['.css', '.html', '.json', '.md', '.mjs', '.ts', '.tsx', '.vue', '.js'])
 
@@ -126,6 +160,14 @@ function normalizeThemes(themes = ['base']) {
   return normalizedThemes
 }
 
+function normalizeQualityMode(quality = 'standard') {
+  if (quality !== 'standard' && quality !== 'minimal') {
+    throw new Error(`Unknown starter quality mode "${quality}". Supported modes: standard, minimal`)
+  }
+
+  return quality
+}
+
 function arraysEqual(left, right) {
   return left.length === right.length && left.every((item, index) => item === right[index])
 }
@@ -134,22 +176,41 @@ function sortedUnique(values) {
   return [...new Set(values)].sort()
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function hasNamedImport(text, identifier, source) {
+  return new RegExp(`^\\s*import\\s*\\{[^}\\n]*\\b${escapeRegExp(identifier)}\\b[^}\\n]*\\}\\s*from\\s*['"]${escapeRegExp(source)}['"]\\s*;?\\s*$`, 'm').test(
+    text
+  )
+}
+
+function getExampleFeatureManifestList(text) {
+  return text.match(/export\s+const\s+exampleFeatureManifests(?:\s*:[^=]+)?\s*=\s*\[([\s\S]*?)\]\s*(?:as const)?/)?.[1] ?? ''
+}
+
+function hasMountedManifest(featureManifestList, identifier) {
+  return new RegExp(`^\\s*mountAsExample\\s*\\(\\s*${escapeRegExp(identifier)}\\s*\\)\\s*,?\\s*$`, 'm').test(featureManifestList)
+}
+
 function getExpectedThemePackages(themes) {
   return sortedUnique(themes.map((theme) => themePackageById[theme]))
 }
 
-function validatePackageJson(packageJson, themes) {
+function validatePackageJson(packageJson, themes, quality) {
   const failures = []
   const scripts = packageJson.scripts ?? {}
   const scriptNames = Object.keys(scripts)
-  const disallowedScripts = scriptNames.filter((scriptName) => !allowedDefaultScripts.has(scriptName))
-  const missingScripts = [...allowedDefaultScripts].filter((scriptName) => !(scriptName in scripts))
+  const expectedScripts = qualityScriptsByMode[quality]
+  const disallowedScripts = scriptNames.filter((scriptName) => !expectedScripts.has(scriptName))
+  const missingScripts = [...expectedScripts].filter((scriptName) => !(scriptName in scripts))
 
   if (disallowedScripts.length > 0 || missingScripts.length > 0) {
     failures.push(
       createFailure(
-        'package-default-scripts-only',
-        `Generated package scripts must be only dev, build, typecheck, and preview. Disallowed: ${disallowedScripts.join(', ') || 'none'}; missing: ${missingScripts.join(', ') || 'none'}.`,
+        'package-quality-scripts-match-mode',
+        `Generated ${quality} package scripts must match ${[...expectedScripts].join(', ')}. Disallowed: ${disallowedScripts.join(', ') || 'none'}; missing: ${missingScripts.join(', ') || 'none'}.`,
         'package.json'
       )
     )
@@ -197,6 +258,35 @@ function validatePackageJson(packageJson, themes) {
         'package.json'
       )
     )
+  }
+
+  const devDependencies = packageJson.devDependencies ?? {}
+  if (quality === 'standard') {
+    const missingQualityDependencies = [...standardQualityDependencies].filter((name) => !(name in devDependencies))
+
+    if (missingQualityDependencies.length > 0) {
+      failures.push(
+        createFailure(
+          'package-standard-quality-dependencies',
+          `Standard starters must include ESLint and Vitest quality dependencies: ${missingQualityDependencies.join(', ')}.`,
+          'package.json'
+        )
+      )
+    }
+  } else {
+    const qualityDependencyEntries = getAllDependencyEntries(packageJson)
+      .map(([name]) => name)
+      .filter((name) => standardQualityDependencies.has(name))
+
+    if (qualityDependencyEntries.length > 0) {
+      failures.push(
+        createFailure(
+          'package-minimal-no-quality-dependencies',
+          `Minimal starters must not include quality-only dependencies: ${qualityDependencyEntries.join(', ')}.`,
+          'package.json'
+        )
+      )
+    }
   }
 
   return failures
@@ -304,7 +394,7 @@ function validateTsconfig(tsconfigText) {
   ]
 }
 
-function validateForbiddenOutput(root, files) {
+function validateForbiddenOutput(root, files, quality) {
   const failures = []
 
   if (files.some((file) => file.startsWith('docs/'))) {
@@ -334,10 +424,26 @@ function validateForbiddenOutput(root, files) {
   }
 
   const generatedTests = files.filter((file) => file.startsWith('src/') && /\.(test|spec)\.(ts|tsx|js|mjs)$/.test(file))
+  const qualityRootFiles = standardQualityRootFiles.filter((file) => files.includes(file))
 
-  if (generatedTests.length > 0) {
+  if (quality === 'standard') {
+    const missingQualityRootFiles = standardQualityRootFiles.filter((file) => !files.includes(file))
+    if (missingQualityRootFiles.length > 0 || generatedTests.length === 0) {
+      failures.push(
+        createFailure(
+          'source-standard-quality-files',
+          `Standard starters must include ESLint/Vitest configs and at least one source test. Missing configs: ${missingQualityRootFiles.join(', ') || 'none'}; tests: ${generatedTests.length}.`,
+          missingQualityRootFiles[0] ?? 'src/'
+        )
+      )
+    }
+  } else if (qualityRootFiles.length > 0 || generatedTests.length > 0) {
     failures.push(
-      createFailure('source-no-generated-tests', `Generated projects must not include test files by default: ${generatedTests.join(', ')}.`, generatedTests[0])
+      createFailure(
+        'source-minimal-no-quality-files',
+        `Minimal starters must not include quality-only configs or tests: ${[...qualityRootFiles, ...generatedTests].join(', ')}.`,
+        qualityRootFiles[0] ?? generatedTests[0]
+      )
     )
   }
 
@@ -370,7 +476,7 @@ function getAgentsImports(agentsText) {
   return [...agentsText.matchAll(/^@(ai-context\/[a-z0-9-]+\.md)$/gm)].map((match) => match[1])
 }
 
-function validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider) {
+function validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider, quality) {
   const failures = []
   const expectedContextFiles = getExpectedAiContextFiles(themes, i18nEnabled, chartProvider)
 
@@ -443,23 +549,21 @@ function validateAiContext(files, textEntries, themes, i18nEnabled, chartProvide
     )
   }
 
-  return failures
-}
-
-function validateNoUnregisteredStandaloneManifests(files) {
-  const leakedManifests = unregisteredStandaloneManifests.filter((file) => files.includes(file))
-
-  if (leakedManifests.length === 0) {
-    return []
+  const coreText = getTextEntry(textEntries, 'ai-context/core.md')?.text ?? ''
+  const expectedQualitySnippet = `- quality: \`${quality}\``
+  const requiredQualityCommands = quality === 'standard' ? ['npm run lint', 'npm run test', 'npm run check'] : []
+  const hasWrongMinimalCommands = quality === 'minimal' && coreText.includes('npm run check')
+  if (!coreText.includes(expectedQualitySnippet) || requiredQualityCommands.some((command) => !coreText.includes(command)) || hasWrongMinimalCommands) {
+    failures.push(
+      createFailure(
+        'ai-context-quality-mode-match',
+        `Generated AI context must describe the ${quality} quality mode and its available commands.`,
+        'ai-context/core.md'
+      )
+    )
   }
 
-  return [
-    createFailure(
-      'source-no-unregistered-standalone-manifests',
-      `Generated projects must not include unregistered standalone module manifests: ${leakedManifests.join(', ')}.`,
-      leakedManifests[0]
-    )
-  ]
+  return failures
 }
 
 function validateReferenceEnv(textEntries) {
@@ -543,18 +647,82 @@ function validateDataBoundary(files, textEntries) {
   return failures
 }
 
+function validateExampleManifestComposition(files, textEntries) {
+  const manifestPath = 'src/modules/examples/examples.manifest.ts'
+  const manifestEntry = textEntries.find(({ file }) => file === manifestPath)
+
+  if (!manifestEntry) {
+    return [createFailure('module-manifests-composed-under-examples', 'Generated starters must include the Examples manifest composition root.', manifestPath)]
+  }
+
+  const featureManifestList = getExampleFeatureManifestList(manifestEntry.text)
+  const missingFiles = requiredExampleFeatureManifests.filter(({ file }) => !files.includes(file)).map(({ file }) => file)
+  const missingImports = requiredExampleFeatureManifests
+    .filter(({ identifier, source }) => !hasNamedImport(manifestEntry.text, identifier, source))
+    .map(({ identifier }) => identifier)
+  const missingMounts = requiredExampleFeatureManifests
+    .filter(({ identifier }) => !hasMountedManifest(featureManifestList, identifier))
+    .map(({ identifier }) => identifier)
+  const importsCompositionHelpers =
+    hasNamedImport(manifestEntry.text, 'composeModuleManifest', '@super-admin-org/core') &&
+    hasNamedImport(manifestEntry.text, 'mountModuleManifest', '@super-admin-org/core')
+  const mountsThroughCore = /\breturn\s+mountModuleManifest\s*\(\s*manifest\s*,/.test(manifestEntry.text)
+  const composesFeatureList =
+    /export\s+const\s+examplesManifest(?:\s*:[^=]+)?\s*=\s*composeModuleManifest\s*\(\s*\{[\s\S]*?\bmodules\s*:\s*exampleFeatureManifests\b/.test(
+      manifestEntry.text
+    )
+
+  if (
+    missingFiles.length === 0 &&
+    missingImports.length === 0 &&
+    missingMounts.length === 0 &&
+    importsCompositionHelpers &&
+    mountsThroughCore &&
+    composesFeatureList
+  ) {
+    return []
+  }
+
+  return [
+    createFailure(
+      'module-manifests-composed-under-examples',
+      `Generated feature manifests must be imported, mounted with mountModuleManifest, and composed with composeModuleManifest under Examples. Missing files: ${missingFiles.join(', ') || 'none'}; missing imports: ${missingImports.join(', ') || 'none'}; missing mounts: ${missingMounts.join(', ') || 'none'}; composition helpers valid: ${importsCompositionHelpers && mountsThroughCore && composesFeatureList}.`,
+      manifestPath
+    )
+  ]
+}
+
 function validateChartTemplate(packageJson, files, textEntries, chartProvider = 'none') {
   const failures = []
   const dependencies = packageJson.dependencies ?? {}
   const chartDependencies = Object.keys(dependencies).filter((name) => chartDependencyNames.has(name))
   const chartSourceFiles = files.filter((file) => chartSourcePrefixes.some((prefix) => file.startsWith(prefix)))
+  const examplesManifest = textEntries.find(({ file }) => file === 'src/modules/examples/examples.manifest.ts')?.text ?? ''
+  const exampleFeatureManifestList = getExampleFeatureManifestList(examplesManifest)
+  const importsChartManifest = hasNamedImport(examplesManifest, 'chartsManifest', '../charts/charts.manifest')
+  const mountsChartManifest = hasMountedManifest(exampleFeatureManifestList, 'chartsManifest')
   const chartRouteFiles = textEntries
     .filter(({ file }) => file === 'src/modules/examples/examples.manifest.ts' || file === 'src/modules/module-registry.ts')
-    .filter(({ text }) => text.includes('/examples/charts') || text.includes('../charts/ChartsPage.vue'))
+    .filter(
+      ({ text }) =>
+        text.includes('/examples/charts') ||
+        text.includes('../charts/ChartsPage.vue') ||
+        (text.includes("from '../charts/charts.manifest'") && text.includes('mountAsExample(chartsManifest)'))
+    )
     .map(({ file }) => file)
   const echartsImportFiles = textEntries.filter(({ text }) => /from\s+['"](?:echarts|echarts\/[^'"]+|vue-echarts)['"]/.test(text)).map(({ file }) => file)
 
   if (chartProvider === 'none') {
+    if (importsChartManifest || mountsChartManifest) {
+      failures.push(
+        createFailure(
+          'charts-disabled-no-manifest-composition',
+          `Generated no-chart starters must remove both the chartsManifest import and its Examples registration. Import present: ${importsChartManifest}; mount present: ${mountsChartManifest}.`,
+          'src/modules/examples/examples.manifest.ts'
+        )
+      )
+    }
+
     if (chartDependencies.length > 0) {
       failures.push(
         createFailure(
@@ -614,11 +782,21 @@ function validateChartTemplate(packageJson, files, textEntries, chartProvider = 
     )
   }
 
-  const requiredFiles = ['src/modules/charts/ChartsPage.vue', 'src/shared/charts/echarts-options.ts']
+  const requiredFiles = ['src/modules/charts/charts.manifest.ts', 'src/modules/charts/ChartsPage.vue', 'src/shared/charts/echarts-options.ts']
   const missingFiles = requiredFiles.filter((file) => !files.includes(file))
   if (missingFiles.length > 0) {
     failures.push(
       createFailure('charts-echarts-source-present', `ECharts starters must include chart template source: ${missingFiles.join(', ')}.`, missingFiles[0])
+    )
+  }
+
+  if (!importsChartManifest || !mountsChartManifest) {
+    failures.push(
+      createFailure(
+        'charts-echarts-manifest-composed',
+        `ECharts starters must both import chartsManifest and mount it in the Examples composition root. Import present: ${importsChartManifest}; mount present: ${mountsChartManifest}.`,
+        'src/modules/examples/examples.manifest.ts'
+      )
     )
   }
 
@@ -639,6 +817,7 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   const root = resolve(projectDir)
   const themes = normalizeThemes(options.themes)
   const i18nEnabled = options.i18n === true
+  const quality = normalizeQualityMode(options.quality)
   const packageJsonPath = resolve(root, 'package.json')
   const tsconfigPath = resolve(root, 'tsconfig.json')
   const registryPath = resolve(root, 'src/super-admin/theme-registry.generated.ts')
@@ -655,14 +834,14 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   const chartProvider = options.charts ?? 'none'
 
   failures.push(...(await validatePackedPackageManifests(options.packageManifestPaths)))
-  failures.push(...validatePackageJson(packageJson, themes))
-  failures.push(...validateForbiddenOutput(root, files))
-  failures.push(...validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider))
-  failures.push(...validateNoUnregisteredStandaloneManifests(files))
+  failures.push(...validatePackageJson(packageJson, themes, quality))
+  failures.push(...validateForbiddenOutput(root, files, quality))
+  failures.push(...validateAiContext(files, textEntries, themes, i18nEnabled, chartProvider, quality))
   failures.push(...validateNoMonorepoPaths(textEntries))
   failures.push(...validateReferenceEnv(textEntries))
   failures.push(...validateDefaultSwitcherOutput(root, files, textEntries, themes, i18nEnabled))
   failures.push(...validateDataBoundary(files, textEntries))
+  failures.push(...validateExampleManifestComposition(files, textEntries))
   failures.push(...validateChartTemplate(packageJson, files, textEntries, chartProvider))
 
   if (await pathExists(tsconfigPath)) {
@@ -867,7 +1046,10 @@ export async function validateGeneratedStarter(projectDir, options = {}) {
   const packageJson = await readJson(resolve(root, 'package.json'))
   const packageManager = detectPackageManager(packageJson, options.packageManager)
 
-  for (const script of ['install', 'typecheck', 'build']) {
+  const quality = normalizeQualityMode(options.quality)
+  const scripts = quality === 'standard' ? ['install', 'lint', 'test', 'typecheck', 'build'] : ['install', 'typecheck', 'build']
+
+  for (const script of scripts) {
     const { args, command } = getPackageManagerCommand(packageManager, script)
     await runCommand({
       args,
@@ -899,6 +1081,16 @@ function parseArgs(argv) {
 
     if (arg === '--i18n') {
       options.i18n = true
+      continue
+    }
+
+    if (arg === '--minimal') {
+      options.quality = 'minimal'
+      continue
+    }
+
+    if (arg === '--standard') {
+      options.quality = 'standard'
       continue
     }
 
@@ -954,7 +1146,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   if (!projectDir) {
     console.error(
-      'Usage: node scripts/validate-generated-starter.mjs <project-dir> [--static-only] [--theme base] [--themes base,cyberpunk] [--charts echarts] [--no-charts] [--i18n] [--pm pnpm] [--package-manifest path]'
+      'Usage: node scripts/validate-generated-starter.mjs <project-dir> [--static-only] [--theme base] [--themes base,cyberpunk] [--charts echarts] [--no-charts] [--i18n] [--minimal|--standard] [--pm pnpm] [--package-manifest path]'
     )
     process.exitCode = 1
   } else {

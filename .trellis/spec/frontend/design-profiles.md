@@ -84,6 +84,8 @@ Add a package manifest and `tsconfig.json` under `packages/theme-<id>/`. The pac
 
 The theme runtime package, `@super-admin-org/theme`, owns token application helpers only. It must not import or re-export built-in profile constants or registries.
 
+An installed profile that has a branded auth composition also maps to an app-local recipe component in `src/modules/auth/components/auth-recipe-registry.generated.ts`. The CLI-generated registry imports exactly the selected theme recipes plus `NeutralAuthRecipe.vue`; unselected branded recipe components are excluded from the starter. Theme token installation and auth recipe composition remain separate contracts: theme packages do not import app Vue components.
+
 **Why**: Dependency-granular CLI theme selection only works when selected themes map to selected npm packages. The generated app registry composes installed profiles for the app, while persisted preferences use `DesignProfileId`. Updating both keeps runtime switching, local storage, tests, and UI selection in sync without forcing every built-in theme into the required runtime package.
 
 **Tests Required**:
@@ -129,13 +131,38 @@ authorizationHeader: string | undefined
 isAuthenticated: boolean
 ```
 
+Auth recipe registry:
+
+```ts
+type AuthRecipeSlots = {
+  default(): unknown
+}
+
+type AuthRecipeComponent = Component &
+  (new () => {
+    $props: Readonly<AuthRecipeProps>
+    $slots: Readonly<AuthRecipeSlots>
+  })
+
+type AuthRecipeRegistration = {
+  component: AuthRecipeComponent
+  profileId: DesignProfileId
+}
+
+createAuthRecipeRegistry(registrations): AuthRecipeRegistration[]
+resolveAuthRecipeRegistration(profileId, registry, fallback): AuthRecipeRegistration
+resolveAuthRecipe(profileId): AuthRecipeRegistration
+```
+
+`createAuthRecipeRegistry` validates each concrete component before erasing it to `AuthRecipeRegistration`. A recipe may add optional inputs, but any extra required prop or required slot is invalid because `AuthLayout` provides only `AuthRecipeProps` and the default form slot.
+
 Logged-out preferences entry:
 
 ```vue
 <GlobalPreferences trigger="auth" />
 ```
 
-`AuthLayout` must mount this trigger exactly once outside `v-if` / `v-else-if` profile branches, inside a stable max-width auth alignment slot.
+`AuthLayout` must mount this trigger exactly once beside the dynamic recipe component, inside a stable max-width auth alignment slot. It must not own profile-ID branches.
 
 ### 3. Contracts
 
@@ -145,6 +172,11 @@ Logged-out preferences entry:
 - `GlobalPreferences` must stay mounted while the active profile recipe changes. Keep the auth trigger in a stable root position so switching `base` / `crypto` / `industrial` / `cyberpunk` / `newsprint` does not close the Control Center.
 - The auth preferences trigger should align to the auth layout container, not the viewport edge, so it reads as part of the login/register composition.
 - Profile differences must include layout recipe differences, not only color or text changes.
+- `auth-recipe-registry.ts` owns the dependency-light registry constructor/resolver; `auth-recipe-registry.generated.ts` owns installed app composition. `AuthLayout.vue` resolves one registration and mounts its component with shared props and the form slot. Every recipe declares `AuthRecipeProps` and its default slot; registry creation rejects incompatible recipes and unsupported extra required inputs during type-checking.
+- `createAuthRecipeRegistry` rejects duplicate profile IDs.
+- An unknown `DesignProfileId` resolves to the explicit `neutralAuthRecipeRegistration`. It must never silently render Base, Crypto, or another branded built-in composition.
+- `NeutralAuthRecipe.vue` is always available so custom profiles remain usable before a custom recipe is registered.
+- To add a custom auth recipe, create one recipe component and register it. Do not add a profile-specific `v-if`, computed branch, or class map to `AuthLayout.vue`, `LoginPage.vue`, or `RegisterPage.vue`.
 - Registration can be a template-only flow when no backend registration API exists, but the page must clearly report that registration is not configured.
 
 Profile recipes:
@@ -166,15 +198,19 @@ Profile recipes:
 | Invalid register input | Show field errors. |
 | Valid register input without register backend | Show a "registration not configured" template notice, not fake success. |
 | Theme profile changes on auth page | Auth layout recomposes to the active profile recipe. |
+| Unknown or newly added profile has no auth recipe yet | Render the explicit neutral auth recipe while preserving the form and shared Control Center trigger. |
+| Duplicate recipe profile ID is registered | Fail during registry construction with a clear duplicate-ID error. |
 
 ### 5. Good/Base/Bad Cases
 
-- Good: `AuthLayout` owns profile-specific composition while `LoginPage` and `RegisterPage` own form state.
+- Good: registered recipe components own profile-specific composition, `AuthLayout` owns stable orchestration, and `LoginPage` / `RegisterPage` own form state.
 - Good: appearance switching reuses `preferences.store` so logged-out and logged-in surfaces share the same design system.
 - Good: `AuthLayout` uses one root-level `<GlobalPreferences trigger="auth" />` to show the current profile/mode and open the same Control Center used inside the app.
 - Base: registration is a high-fidelity template example until a real provider/database flow exists.
 - Bad: three separate login implementations that duplicate validation, submit behavior, and session handling.
 - Bad: one generic login card where profile changes only alter colors and copy.
+- Bad: an unknown profile falls back to Crypto or Base because the resolver uses a branded component as its default.
+- Bad: adding a profile requires editing a profile-ID branch in `AuthLayout.vue`.
 - Bad: a standalone auth-only appearance menu with its own profile/mode buttons that duplicates the global preferences popover.
 
 ### 6. Tests Required
@@ -183,6 +219,10 @@ Profile recipes:
 - Unit-test auth session persistence and clearing.
 - Unit-test auth route metadata without importing a browser-history router in Node tests.
 - Unit-test the auth layout preference boundary so `AuthLayout` keeps using one shared root-level `GlobalPreferences` trigger and does not reintroduce an auth-only appearance menu.
+- Unit-test recipe registration, duplicate rejection, installed-profile resolution, and explicit neutral fallback.
+- Type-test accepted recipes and rejected components with incompatible props, a missing default slot, or extra required props/slots that `AuthLayout` never provides.
+- Mount `AuthLayout` itself with an unknown profile and verify the neutral recipe renders the shared props and form slot while the shared Control Center trigger remains usable.
+- Test generated single-theme and multi-theme starters so they import only selected branded recipes while retaining the neutral recipe.
 - Run `vue-tsc`, app tests, and production build.
 - Visually inspect each built-in profile in light/dark modes before claiming UI polish.
 
@@ -203,9 +243,12 @@ This gives every design profile the same structure and turns profiles into super
 #### Correct
 
 ```vue
-<AuthLayout title="Enter the control surface">
-  <LoginForm />
-</AuthLayout>
+<main>
+  <GlobalPreferences trigger="auth" />
+  <component :is="activeRecipe.component" v-bind="props">
+    <slot />
+  </component>
+</main>
 ```
 
-`AuthLayout` can render vault, checkpoint, or terminal compositions from the active profile while the form flow stays shared and testable.
+`AuthLayout` stays stable while the typed registry selects vault, checkpoint, terminal, or neutral composition. The form flow remains shared and testable.

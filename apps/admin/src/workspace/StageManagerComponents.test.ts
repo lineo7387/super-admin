@@ -17,7 +17,7 @@ describe('stage manager child components', () => {
     expect(stageWindowPreviewSource).toContain('stage-window-preview__workspace')
     expect(stageWindowPreviewSource).toContain('stage-window-preview__route')
     expect(stageWindowPreviewSource).toContain('<component :is="props.component" v-if="props.component" />')
-    expect(stageWindowPreviewSource).toContain(':data-stage-preview-layout="props.preview?.layoutPreset ?? \'unavailable\'"')
+    expect(stageWindowPreviewSource).toContain(':data-stage-preview-layout="props.preview ? layoutRegistration.preset.id : \'unavailable\'"')
     expect(stageWindowPreviewSource).toContain('previewUnavailableLabel')
     expect(stageWindowPreviewSource).toContain('height: var(--stage-preview-thumb-height, 5.05rem);')
     expect(stageWindowPreviewSource).toContain('transform: scale(var(--stage-preview-thumb-scale, 0.125));')

@@ -35,6 +35,12 @@ Generated starter users must not need:
 - generated schema
 - CodeGraph, Trellis, Codex, Claude, or other maintainer-only workflow tooling
 
+The generated app does own a user-facing quality baseline:
+
+- default `standard` output includes ESLint, Vitest, a representative starter contract test, and `lint` / `test` / `typecheck` / `build` / `check` scripts
+- `--minimal` is the explicit lightweight opt-out and keeps typecheck/build while removing quality-only configs, dependencies, tests, scripts, and AI claims
+- neither mode includes this repository's maintainer tests, Playwright/e2e suite, release validation, docs tooling, or Trellis workflow
+
 ## Maintainer Tool Boundary
 
 Maintainer workflow files may exist in the source repository, but they must not be required for ordinary users or generated starters.
@@ -59,6 +65,7 @@ Rules:
 Public docs must match the real repository and npm state.
 
 - Do not describe a command, CLI option, package, workflow, or release channel as available unless it exists in code and `package.json`.
+- Whenever starter quality behavior changes, update CLI help, root/package READMEs, generated README/AI context, validation scripts, and both docs locales together. State that standard is the default and `--minimal` is an opt-out; do not describe quality as an optional hidden preset.
 - Do not describe released npm packages as future work after they have been published.
 - When package publish state changes, review `README.md`, `SECURITY.md`, `CHANGELOG.md`, `docs/guide/open-source-workflow.md`, and `docs/guide/releasing.md`.
 - When GitHub public pages lag local commits, call out that `main` is ahead of `origin/main` before assuming the remote state is wrong.
@@ -118,6 +125,7 @@ GitHub Pages docs are user-first. The default reader is evaluating or using `cre
 - README quick-start content should separate "use the starter" from "develop this repository".
 - Do not hide maintainer docs, but do not place them in the same undifferentiated guide group as starter usage.
 - Generated starter docs should describe the generated app, not this monorepo's release, GitHub Pages, Trellis, Codex, Claude, or maintainer validation workflows.
+- Generated AI context is user-project documentation, not maintainer workflow. Keep `AGENTS.md` as a small router to capability-aware `ai-context/*.md` files that describe the selected quality mode, data flow, and real manifest/layout/auth registry extension points.
 
 ## Docs Internationalization
 
@@ -147,6 +155,7 @@ Root scripts should be directly runnable and named honestly.
 
 - `pnpm validate:starter` should validate generated starter behavior without requiring hidden positional arguments.
 - The normal CI workflow should run `pnpm validate:starter` so packed CLI/starter regressions fail before merge, not only during a later publish workflow.
+- Packed starter validation must cover default standard, multi-theme+i18n standard, ECharts standard, and minimal output. Standard variants run install/lint/test/typecheck/build; minimal runs install/typecheck/build and separately proves ESLint/Vitest files, dependencies, scripts, tests, and AI claims are absent.
 - `pnpm validate:publish` remains the full package publish readiness gate.
 - `pnpm test:reference` is maintainer-only and validates optional reference API connectivity.
 - Do not place reference smoke tooling in generated starter output.
@@ -169,6 +178,19 @@ Publishable npm packages should include only runtime/build artifacts and package
 - Package tarballs must not expose `workspace:` dependency ranges.
 - `create-super-admin` tarballs must include the runtime starter template needed by `npm exec`, `npx`, and `pnpm dlx`.
 - Generated starters must consume published package artifacts, not monorepo source paths.
+- The `create-super-admin` runtime template may carry only explicitly allowlisted starter-owned quality tests needed for standard generation. Publish readiness must continue rejecting unrelated source-repository tests and maintainer artifacts; minimal materialization removes the allowlisted quality files.
+
+## Public Extension Contract
+
+The repository, generated starter, package docs, and AI context must describe the same extension model:
+
+- feature `*.manifest.ts` files are the only source for their nav, routes, route meta, and permissions; aggregate manifests mount/compose them instead of copying definitions
+- `@super-admin-org/core` owns dependency-light manifest composition and layout metadata; app-local registries own Vue components
+- `src/shell/layout-registry.ts` and `src/modules/auth/components/auth-recipe-registry.generated.ts` are typed static composition roots
+- unknown layout/auth recipe IDs use explicit neutral fallbacks, never a branded built-in fallback
+- adding a feature, layout, or auth recipe means adding one definition/registration, not editing ID branches in unrelated consumers
+
+Do not market this as a dynamic plugin marketplace or runtime remote-plugin system. The current promise is a clear, typed, source-readable extension contract.
 
 ## Wrong vs Correct
 
@@ -202,7 +224,7 @@ This makes maintainer workflow mandatory for users.
 ### Correct
 
 ```text
-Generated starter is a single Vite app with mock data, selected themes, and package dependencies.
+Generated starter is a single Vite app with mock data, selected themes, package dependencies, a standard quality baseline by default, and an explicit `--minimal` opt-out.
 ```
 
 This preserves the frontend-first template boundary.
