@@ -8,6 +8,7 @@ export type StarterChartProvider = (typeof starterChartProviders)[number]
 export type StarterLocaleId = 'zh-CN' | 'en-US'
 
 export type ThemeDefinition = {
+  authRecipeComponent: string
   id: StarterThemeId
   packageName: string
   profileExport: string
@@ -15,26 +16,31 @@ export type ThemeDefinition = {
 
 export const themeDefinitions: Record<StarterThemeId, ThemeDefinition> = {
   base: {
+    authRecipeComponent: 'BaseAuthRecipe',
     id: 'base',
     packageName: '@super-admin-org/theme-base',
     profileExport: 'baseProfile'
   },
   crypto: {
+    authRecipeComponent: 'CryptoAuthRecipe',
     id: 'crypto',
     packageName: '@super-admin-org/theme-crypto',
     profileExport: 'cryptoProfile'
   },
   cyberpunk: {
+    authRecipeComponent: 'CyberpunkAuthRecipe',
     id: 'cyberpunk',
     packageName: '@super-admin-org/theme-cyberpunk',
     profileExport: 'cyberpunkProfile'
   },
   industrial: {
+    authRecipeComponent: 'IndustrialAuthRecipe',
     id: 'industrial',
     packageName: '@super-admin-org/theme-industrial',
     profileExport: 'industrialProfile'
   },
   newsprint: {
+    authRecipeComponent: 'NewsprintAuthRecipe',
     id: 'newsprint',
     packageName: '@super-admin-org/theme-newsprint',
     profileExport: 'newsprintProfile'

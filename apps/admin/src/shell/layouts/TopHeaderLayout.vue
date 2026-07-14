@@ -12,6 +12,11 @@ import PrimaryNav from '../PrimaryNav.vue'
 import ShellAccountMenu from '../ShellAccountMenu.vue'
 import ShellHeader from '../ShellHeader.vue'
 
+defineSlots<{
+  'header-actions'(): unknown
+  workspace(): unknown
+}>()
+
 const route = useRoute()
 const { t } = useI18n()
 const activeModule = computed(() => findActiveModule(registeredModules, route.path))

@@ -32,14 +32,35 @@ Interactive setup asks whether to use ECharts. Selecting yes installs `echarts` 
 
 The generated project is your application. It is intentionally smaller than this source repository and does not include release automation, maintainer AI workflow files, the docs site, or optional reference smoke tooling.
 
+Generation uses the `standard` quality mode by default. It includes ESLint, Vitest, one representative starter contract test, and the complete quality commands:
+
+```bash
+pnpm lint
+pnpm test
+pnpm typecheck
+pnpm build
+pnpm check
+```
+
+`pnpm check` runs lint, test, typecheck, and the production build. If you intentionally want only the smaller typecheck/build baseline, use `--minimal`:
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --minimal --pm pnpm
+```
+
+Minimal output leaves no ESLint/Vitest config, dependency, script, or test file behind. The selected mode is recorded in `super-admin.config.ts` and the generated AI context.
+
 ## Customize The Starter
 
 Start with these areas:
 
-- `src/modules/` for example routes and pages you can reshape into business modules.
+- `src/modules/` for feature `*.manifest.ts` files, example routes, and pages. A manifest is the single source for nav, routes, route metadata, and permissions.
 - `src/api/` for API adapters that normalize mock data or your own API responses.
 - `src/api/mock/` for replaceable mock data sources.
-- theme/layout configuration for design profiles, color mode, and shell layout.
+- `src/modules/examples/examples.manifest.ts` and `src/modules/module-registry.ts` for mounting and composing feature manifests.
+- `src/shell/layout-registry.ts` for typed layout component/preview registrations with a neutral fallback for unknown IDs.
+- `src/modules/auth/components/auth-recipe-registry.generated.ts` for installed-theme auth recipes with a neutral fallback for unknown profiles.
+- `AGENTS.md` and `ai-context/` for the current quality mode, data flow, and real extension paths without requiring an AI provider.
 
 The default starter does not require:
 

@@ -14,18 +14,19 @@ import {
   resolveStarterSourceAction,
   transformStarterSourceText
 } from './starter-source.js'
-import type { StarterGenerationInput } from './parse-args.js'
+import type { NormalizedStarterGenerationInput } from './parse-args.js'
 
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const repositoryRoot = resolve(packageDirectory, '../..')
 
-function createInput(): StarterGenerationInput {
+function createInput(): NormalizedStarterGenerationInput {
   return {
     charts: { provider: 'none' },
     i18n: { default: 'zh-CN', installed: ['zh-CN'], switcher: false },
     packageManager: 'pnpm',
     packageName: 'starter-policy-test',
     projectName: 'starter-policy-test',
+    quality: 'standard',
     targetDirectory: '/tmp/starter-policy-test',
     themes: { default: 'base', installed: ['base'] }
   }
@@ -119,6 +120,31 @@ describe('starter source derivation policy', () => {
     expect(globalPreferences).toContain('v-for="localeOption in localeOptions"')
   })
 
+  it('derives the auth recipe registry and recipe files from installed themes', async () => {
+    const input = createInput()
+    const sourceRoot = resolve(repositoryRoot, 'apps/admin/src')
+    const registrySource = await readFile(resolve(sourceRoot, 'modules/auth/components/auth-recipe-registry.generated.ts'), 'utf8')
+    const baseRegistry = transformStarterSourceText('modules/auth/components/auth-recipe-registry.generated.ts', registrySource, input)
+
+    expect(baseRegistry).toContain("import BaseAuthRecipe from './recipes/BaseAuthRecipe.vue'")
+    expect(baseRegistry).toContain("profileId: 'base'")
+    expect(baseRegistry).toContain('NeutralAuthRecipe')
+    expect(baseRegistry).not.toContain('CryptoAuthRecipe')
+    expect(baseRegistry).not.toContain('CyberpunkAuthRecipe')
+    expect(baseRegistry).not.toContain('@starter-auth-recipe')
+    expect(resolveStarterSourceAction('modules/auth/components/recipes/BaseAuthRecipe.vue', input).kind).toBe('copy')
+    expect(resolveStarterSourceAction('modules/auth/components/recipes/NeutralAuthRecipe.vue', input).kind).toBe('copy')
+    expect(resolveStarterSourceAction('modules/auth/components/recipes/CryptoAuthRecipe.vue', input).kind).toBe('exclude')
+
+    input.themes = { default: 'base', installed: ['base', 'cyberpunk'] }
+    const multiRegistry = transformStarterSourceText('modules/auth/components/auth-recipe-registry.generated.ts', registrySource, input)
+
+    expect(multiRegistry).toContain('BaseAuthRecipe')
+    expect(multiRegistry).toContain('CyberpunkAuthRecipe')
+    expect(multiRegistry).not.toContain('CryptoAuthRecipe')
+    expect(resolveStarterSourceAction('modules/auth/components/recipes/CyberpunkAuthRecipe.vue', input).kind).toBe('copy')
+  })
+
   it('materializes the runtime snapshot through the shared invariant policy', async () => {
     const targetDirectory = await mkdtemp(resolve(tmpdir(), 'super-admin-runtime-template-'))
 
@@ -141,6 +167,7 @@ describe('starter source derivation policy', () => {
         'api/users.api.ts',
         'modules/auth/LoginPage.vue',
         'modules/auth/auth-session.ts',
+        'modules/auth/components/auth-recipe-registry.generated.ts',
         'i18n/index.ts',
         'shell/preferences/GlobalPreferences.vue',
         'super-admin/theme-registry.generated.ts'
@@ -156,12 +183,7 @@ describe('starter source derivation policy', () => {
 
   it('uses the same invariant exclusions for runtime snapshots and starter generation', () => {
     const input = createInput()
-    const invariantExcludedPaths = [
-      'api/reference/auth-reference.api.ts',
-      'modules/users/users.validation.test.ts',
-      'modules/access/access.manifest.ts',
-      'cache.tsbuildinfo'
-    ]
+    const invariantExcludedPaths = ['api/reference/auth-reference.api.ts', 'modules/users/users.validation.test.ts', 'cache.tsbuildinfo']
 
     for (const path of invariantExcludedPaths) {
       expect(resolveRuntimeTemplateAction(path).kind).toBe('exclude')
@@ -170,6 +192,8 @@ describe('starter source derivation policy', () => {
 
     expect(resolveRuntimeTemplateAction('modules/users/UsersAllPage.vue').kind).toBe('copy')
     expect(resolveStarterSourceAction('modules/users/UsersAllPage.vue', input).kind).toBe('copy')
+    expect(resolveRuntimeTemplateAction('modules/access/access.manifest.ts').kind).toBe('copy')
+    expect(resolveStarterSourceAction('modules/access/access.manifest.ts', input).kind).toBe('copy')
   })
 
   it('keeps variant-only exclusions out of the runtime snapshot policy', () => {

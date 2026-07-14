@@ -9,6 +9,8 @@ import {
 } from './theme-options.js'
 import type { StarterChartProvider, StarterLocaleId, StarterPackageManager, StarterThemeId } from './theme-options.js'
 
+export type StarterQualityMode = 'standard' | 'minimal'
+
 export type StarterGenerationInput = {
   projectName: string
   packageName: string
@@ -26,6 +28,12 @@ export type StarterGenerationInput = {
   charts: {
     provider: StarterChartProvider
   }
+  /** Defaults to `standard` for programmatic callers created before quality modes existed. */
+  quality?: StarterQualityMode
+}
+
+export type NormalizedStarterGenerationInput = Omit<StarterGenerationInput, 'quality'> & {
+  quality: StarterQualityMode
 }
 
 export type ParseCreateSuperAdminArgsOptions = {
@@ -38,6 +46,7 @@ type ParsedFlags = {
   themes?: string
   charts?: string
   noCharts: boolean
+  minimal: boolean
   i18n: boolean
   packageManager?: string
 }
@@ -55,6 +64,7 @@ function readFlagValue(args: string[], index: number, flag: string): string {
 function parseFlags(argv: string[]): ParsedFlags {
   const parsed: ParsedFlags = {
     i18n: false,
+    minimal: false,
     noCharts: false
   }
 
@@ -63,6 +73,11 @@ function parseFlags(argv: string[]): ParsedFlags {
 
     if (arg === '--i18n') {
       parsed.i18n = true
+      continue
+    }
+
+    if (arg === '--minimal') {
+      parsed.minimal = true
       continue
     }
 
@@ -172,12 +187,12 @@ function normalizeCharts(charts: string | undefined, noCharts: boolean): Starter
   return charts
 }
 
-export function parseCreateSuperAdminArgs(argv: string[], options: ParseCreateSuperAdminArgsOptions = {}): StarterGenerationInput {
+export function parseCreateSuperAdminArgs(argv: string[], options: ParseCreateSuperAdminArgsOptions = {}): NormalizedStarterGenerationInput {
   const cwd = options.cwd ?? process.cwd()
   const flags = parseFlags(argv)
 
   if (!flags.project) {
-    throw new Error('Usage: create-super-admin <project> [--theme base] [--themes base,cyberpunk] [--i18n] [--pm pnpm]')
+    throw new Error('Usage: create-super-admin <project> [--theme base] [--themes base,cyberpunk] [--i18n] [--minimal] [--pm pnpm]')
   }
 
   const packageManager = normalizePackageManager(flags.packageManager)
@@ -201,6 +216,7 @@ export function parseCreateSuperAdminArgs(argv: string[], options: ParseCreateSu
     },
     charts: {
       provider: charts
-    }
+    },
+    quality: flags.minimal ? 'minimal' : 'standard'
   }
 }

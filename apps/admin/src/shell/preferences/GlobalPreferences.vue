@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { X } from '@lucide/vue'
-import { computed } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { builtInLayoutPresets, type ColorMode, type LayoutPresetId } from '@super-admin-org/core'
+import type { ColorMode, LayoutPresetId } from '@super-admin-org/core'
 // @starter-theme:start
 import type { DesignProfileId } from '@super-admin-org/core'
 // @starter-theme:end
@@ -12,7 +12,10 @@ import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'
 import type { Locale } from '@/i18n'
 // @starter-locale:end
 import { usePreferencesStore } from '@/stores/preferences.store'
+import { useOpenSurfaceFocus } from '@/shared/use-open-surface-focus'
+import { appLayoutRegistry } from '../layout-registry'
 import GlobalPreferencesTrigger from './GlobalPreferencesTrigger.vue'
+import LayoutPresetPreview from './LayoutPresetPreview.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -25,6 +28,8 @@ const props = withDefaults(
 
 const preferences = usePreferencesStore()
 const { t } = useI18n()
+const controlCenterSurface = useTemplateRef<HTMLElement>('controlCenterSurface')
+useOpenSurfaceFocus(() => preferences.controlCenterOpen, controlCenterSurface)
 
 const modeOptions = computed<{ id: ColorMode; label: string; detail: string }[]>(() => [
   { id: 'light', label: t('shell.preferences.modes.light.label'), detail: t('shell.preferences.modes.light.detail') },
@@ -75,16 +80,18 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
     <Teleport to="body">
       <div
         v-if="preferences.controlCenterOpen"
-        class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-3 backdrop-blur-sm sm:p-4"
+        ref="controlCenterSurface"
+        class="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-3 outline-none backdrop-blur-sm sm:p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="control-center-title"
+        tabindex="-1"
         @keydown.esc="preferences.closeControlCenter()"
       >
         <AdminScrollArea
           as="section"
           class="max-h-[min(92vh,calc(100vh-2rem))] w-full max-w-5xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--panel-shadow)]"
           view-class="min-h-0"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="control-center-title"
         >
           <header class="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--header-background)] p-4 sm:p-5">
             <div class="flex items-start justify-between gap-4">
@@ -196,45 +203,20 @@ function selectLayout(layoutPreset: LayoutPresetId): void {
                 <p class="text-xs text-[var(--muted-foreground)]">{{ t('shell.preferences.layoutDescription') }}</p>
                 <div class="mt-4 grid gap-3 xl:grid-cols-3">
                   <button
-                    v-for="layout in builtInLayoutPresets"
-                    :key="layout.id"
+                    v-for="layout in appLayoutRegistry"
+                    :key="layout.preset.id"
                     type="button"
                     class="rounded-[var(--radius-md)] border bg-[var(--surface)] p-3 text-left transition focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none"
                     :class="
-                      layout.id === preferences.layoutPreset
+                      layout.preset.id === preferences.layoutPreset
                         ? 'border-[var(--border-strong)] shadow-[var(--glow)]'
                         : 'border-[var(--border)] hover:border-[var(--border-strong)]'
                     "
-                    @click="selectLayout(layout.id)"
+                    @click="selectLayout(layout.preset.id)"
                   >
-                    <div
-                      :data-layout-preview="layout.id"
-                      class="grid h-24 gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-sunken)] p-2"
-                    >
-                      <template v-if="layout.id === 'tri-column'">
-                        <div class="grid h-full gap-1" style="grid-template-columns: 0.35fr 0.8fr 1.8fr 0.9fr">
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--primary)]" />
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
-                        </div>
-                      </template>
-                      <template v-else-if="layout.id === 'dual-column'">
-                        <div class="grid h-full gap-1" style="grid-template-columns: 1fr 2fr">
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
-                        </div>
-                      </template>
-                      <template v-else>
-                        <div class="grid h-full gap-1" style="grid-template-rows: 0.45fr 0.55fr 2fr">
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--primary)]" />
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--surface-raised)]" />
-                          <span class="rounded-[var(--radius-xs)] bg-[var(--accent)] opacity-60" />
-                        </div>
-                      </template>
-                    </div>
-                    <div class="mt-3 [font-family:var(--font-display)] text-base">{{ layout.name }}</div>
-                    <p class="mt-1 line-clamp-2 text-xs text-[var(--muted-foreground)]">{{ layout.description }}</p>
+                    <LayoutPresetPreview :data-layout-preview="layout.preset.id" :presentation="layout.preview" />
+                    <div class="mt-3 [font-family:var(--font-display)] text-base">{{ layout.preset.name }}</div>
+                    <p class="mt-1 line-clamp-2 text-xs text-[var(--muted-foreground)]">{{ layout.preset.description }}</p>
                   </button>
                 </div>
               </div>

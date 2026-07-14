@@ -1,18 +1,11 @@
 import { cp, mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { dirname, relative, resolve, sep } from 'node:path'
-import type { StarterGenerationInput } from './parse-args.js'
+import type { NormalizedStarterGenerationInput } from './parse-args.js'
 import { themeDefinitions } from './theme-options.js'
 
 export type StarterSourceAction = {
   kind: 'copy' | 'exclude' | 'generate' | 'transform'
 }
-
-const UNREGISTERED_STANDALONE_MANIFESTS = new Set([
-  'modules/access/access.manifest.ts',
-  'modules/dashboard/dashboard.manifest.ts',
-  'modules/users/users.manifest.ts',
-  'modules/workbench/workbench.manifest.ts'
-])
 
 export const APP_SOURCE_TRANSFORM_PATHS = [
   'api/users.api.ts',
@@ -20,6 +13,7 @@ export const APP_SOURCE_TRANSFORM_PATHS = [
   'i18n/index.ts',
   'modules/auth/LoginPage.vue',
   'modules/auth/auth-session.ts',
+  'modules/auth/components/auth-recipe-registry.generated.ts',
   'modules/examples/examples.manifest.ts',
   'shell/preferences/GlobalPreferences.vue',
   'shell/use-command-palette-items.ts',
@@ -31,17 +25,20 @@ export const GENERATOR_OWNED_TEMPLATE_EXPORTS = [
   'createAgentsMd',
   'createAiContextFiles',
   'createClaudeMd',
+  'createEslintConfig',
   'createIndexHtml',
   'createPackageJson',
   'createReadme',
   'createSuperAdminConfig',
   'createTsconfig',
+  'createVitestConfig',
   'createViteConfig'
 ] as const
 
 export const GENERATOR_OWNED_OUTPUT_PATHS = [
   'AGENTS.md',
   'CLAUDE.md',
+  'eslint.config.js',
   'README.md',
   'ai-context/charts.md',
   'ai-context/core.md',
@@ -53,12 +50,18 @@ export const GENERATOR_OWNED_OUTPUT_PATHS = [
   'package.json',
   'super-admin.config.ts',
   'tsconfig.json',
-  'vite.config.ts'
+  'vite.config.ts',
+  'vitest.config.ts'
 ] as const
 
+export const STARTER_QUALITY_SOURCE_PATHS = ['super-admin/starter-quality.test.ts'] as const
+
 function isInvariantExcludedPath(relativePath: string): boolean {
+  if ((STARTER_QUALITY_SOURCE_PATHS as readonly string[]).includes(relativePath)) {
+    return false
+  }
+
   return (
-    UNREGISTERED_STANDALONE_MANIFESTS.has(relativePath) ||
     relativePath === 'api/reference' ||
     relativePath.startsWith('api/reference/') ||
     /\.(test|spec)\.(ts|tsx|js|mjs)$/.test(relativePath) ||
@@ -99,35 +102,7 @@ function replaceSourceSection(text: string, name: string, replacement: string | 
   return output.join('\n')
 }
 
-function removeOptionalChartsExample(text: string): string {
-  return text
-    .replace(
-      `      {
-        label: 'Charts',
-        path: '/examples/charts',
-        icon: 'charts'
-      },
-`,
-      ''
-    )
-    .replace(
-      `    {
-      path: '/examples/charts',
-      name: 'examples-charts',
-      component: () => import('../charts/ChartsPage.vue'),
-      meta: {
-        title: 'Charts',
-        description: 'Theme-adapted ECharts examples that users can keep, override, or remove.',
-        regions: ['summary', 'primary', 'context'],
-        keepAlive: { enabled: true }
-      }
-    },
-`,
-      ''
-    )
-}
-
-function transformThemeRegistry(text: string, input: StarterGenerationInput): string {
+function transformThemeRegistry(text: string, input: NormalizedStarterGenerationInput): string {
   const imports = input.themes.installed
     .map((themeId) => {
       const definition = themeDefinitions[themeId]
@@ -144,7 +119,28 @@ function transformThemeRegistry(text: string, input: StarterGenerationInput): st
   )
 }
 
-function transformCommandPalette(text: string, input: StarterGenerationInput): string {
+function transformAuthRecipeRegistry(text: string, input: NormalizedStarterGenerationInput): string {
+  const imports = input.themes.installed
+    .map((themeId) => {
+      const component = themeDefinitions[themeId].authRecipeComponent
+      return `import ${component} from './recipes/${component}.vue'`
+    })
+    .join('\n')
+  const registrations = input.themes.installed
+    .map((themeId) => {
+      const component = themeDefinitions[themeId].authRecipeComponent
+      return `  { component: ${component}, profileId: '${themeId}' }`
+    })
+    .join(',\n')
+
+  return replaceSourceSection(
+    replaceSourceSection(text, 'auth-recipe-imports', imports),
+    'auth-recipe-registrations',
+    `export const authRecipeRegistry = createAuthRecipeRegistry([\n${registrations}\n])`
+  )
+}
+
+function transformCommandPalette(text: string, input: NormalizedStarterGenerationInput): string {
   const localeType = input.i18n.installed.map((locale) => `'${locale}'`).join(' | ')
   const localeEntries = input.i18n.installed.map((locale) => `  '${locale}': '${locale === 'zh-CN' ? 'zhCN' : 'enUS'}'`).join(',\n')
   const localeList = input.i18n.installed.map((locale) => `'${locale}'`).join(', ')
@@ -155,7 +151,7 @@ function transformCommandPalette(text: string, input: StarterGenerationInput): s
     .replace("    const locales: Locale[] = ['zh-CN', 'en-US']", `    const locales: Locale[] = [${localeList}]`)
 }
 
-export function transformStarterSourceText(relativePath: string, text: string, input: StarterGenerationInput): string {
+export function transformStarterSourceText(relativePath: string, text: string, input: NormalizedStarterGenerationInput): string {
   let transformed = replaceSourceSection(text, 'reference', '')
 
   if (relativePath === 'i18n/index.ts') {
@@ -171,12 +167,16 @@ export function transformStarterSourceText(relativePath: string, text: string, i
     return transformThemeRegistry(transformed, input)
   }
 
+  if (relativePath === 'modules/auth/components/auth-recipe-registry.generated.ts') {
+    return transformAuthRecipeRegistry(transformed, input)
+  }
+
   if (relativePath === 'shell/use-command-palette-items.ts') {
     return transformCommandPalette(transformed, input)
   }
 
-  if (relativePath === 'modules/examples/examples.manifest.ts' && input.charts.provider === 'none') {
-    return removeOptionalChartsExample(transformed)
+  if (relativePath === 'modules/examples/examples.manifest.ts') {
+    return replaceSourceSection(transformed, 'charts', input.charts.provider === 'none' ? '' : null)
   }
 
   if (relativePath === 'styles/main.css') {
@@ -186,7 +186,7 @@ export function transformStarterSourceText(relativePath: string, text: string, i
   return transformed
 }
 
-type SourceMaterializationOptions = { mode: 'runtime-template' } | { input: StarterGenerationInput; mode: 'starter' }
+type SourceMaterializationOptions = { mode: 'runtime-template' } | { input: NormalizedStarterGenerationInput; mode: 'starter' }
 
 async function materializeSourceDirectory(
   sourceDirectory: string,
@@ -222,7 +222,7 @@ async function materializeSourceDirectory(
   }
 }
 
-export async function materializeStarterSource(sourceDirectory: string, targetDirectory: string, input: StarterGenerationInput): Promise<void> {
+export async function materializeStarterSource(sourceDirectory: string, targetDirectory: string, input: NormalizedStarterGenerationInput): Promise<void> {
   await materializeSourceDirectory(sourceDirectory, targetDirectory, { input, mode: 'starter' })
 }
 
@@ -240,12 +240,27 @@ export function resolveStarterRootAction(relativePath: string): StarterSourceAct
   return { kind: (GENERATOR_OWNED_OUTPUT_PATHS as readonly string[]).includes(relativePath) ? 'generate' : 'exclude' }
 }
 
-export function resolveStarterSourceAction(relativePath: string, input: StarterGenerationInput): StarterSourceAction {
+export function resolveStarterSourceAction(relativePath: string, input: NormalizedStarterGenerationInput): StarterSourceAction {
   if (isInvariantExcludedPath(relativePath)) {
     return { kind: 'exclude' }
   }
 
+  if (input.quality === 'minimal' && (STARTER_QUALITY_SOURCE_PATHS as readonly string[]).includes(relativePath)) {
+    return { kind: 'exclude' }
+  }
+
   if (!input.i18n.switcher && relativePath === 'i18n/locales/en-US.ts') {
+    return { kind: 'exclude' }
+  }
+
+  const recipeTheme = input.themes.installed.find(
+    (themeId) => relativePath === `modules/auth/components/recipes/${themeDefinitions[themeId].authRecipeComponent}.vue`
+  )
+  const isThemeRecipe = Object.values(themeDefinitions).some(
+    (definition) => relativePath === `modules/auth/components/recipes/${definition.authRecipeComponent}.vue`
+  )
+
+  if (isThemeRecipe && !recipeTheme) {
     return { kind: 'exclude' }
   }
 

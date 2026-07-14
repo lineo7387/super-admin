@@ -1,7 +1,44 @@
+import { flattenModuleNav } from '@super-admin-org/core'
 import { describe, expect, it, vi } from 'vitest'
+import { registeredModules } from '@/modules/module-registry'
 import { builtInDesignProfiles } from '@/super-admin/theme-registry.generated'
-import { createProfileCommandItems, filterCommandItems, moveCommandSelection, type CommandPaletteItem } from './use-command-palette-items'
+import {
+  createProfileCommandItems,
+  filterCommandItems,
+  moveCommandSelection,
+  useCommandPaletteItems,
+  type CommandPaletteItem
+} from './use-command-palette-items'
 import commandPaletteItemsSource from './use-command-palette-items.ts?raw'
+
+const commandPaletteTestDoubles = vi.hoisted(() => ({
+  preferences: {
+    openAiAssistant: vi.fn(),
+    openControlCenter: vi.fn(),
+    openStageOverview: vi.fn(),
+    setColorMode: vi.fn(),
+    setLocale: vi.fn(),
+    setProfile: vi.fn()
+  },
+  routerPush: vi.fn()
+}))
+
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: commandPaletteTestDoubles.routerPush })
+}))
+
+vi.mock('vue-i18n', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>()
+
+  return {
+    ...actual,
+    useI18n: () => ({ t: (key: string) => key })
+  }
+})
+
+vi.mock('@/stores/preferences.store', () => ({
+  usePreferencesStore: () => commandPaletteTestDoubles.preferences
+}))
 
 function makeItem(id: string, label: string, group: CommandPaletteItem['group'] = 'navigation'): CommandPaletteItem {
   return { id, label, group, perform: () => {} }
@@ -52,6 +89,24 @@ describe('moveCommandSelection', () => {
   it('wraps selection in both directions', () => {
     expect(moveCommandSelection(2, 1, 3)).toBe(0)
     expect(moveCommandSelection(0, -1, 3)).toBe(2)
+  })
+})
+
+describe('useCommandPaletteItems navigation', () => {
+  const registeredNavEntries = registeredModules.flatMap((manifest) => flattenModuleNav(manifest.nav))
+  const registeredLeafEntries = registeredNavEntries.filter((entry) => !entry.item.children?.length)
+
+  it('creates unique IDs from the registered module manifests', () => {
+    const navigationItems = useCommandPaletteItems().items.value.filter((item) => item.group === 'navigation')
+
+    expect(new Set(navigationItems.map((item) => item.id)).size).toBe(navigationItems.length)
+  })
+
+  it('treats nodes with children as groups and creates commands only for leaves', () => {
+    const navigationItems = useCommandPaletteItems().items.value.filter((item) => item.group === 'navigation')
+
+    expect(navigationItems).toHaveLength(registeredLeafEntries.length)
+    expect(navigationItems.map((item) => item.hint)).toEqual(registeredLeafEntries.map((entry) => entry.item.path))
   })
 })
 

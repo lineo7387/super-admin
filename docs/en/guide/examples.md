@@ -2,6 +2,12 @@
 
 Examples show how the template pieces fit together.
 
+## Manifest Composition
+
+Each feature's `*.manifest.ts` is the single source for nav, routes, route metadata, and permissions. `src/modules/examples/examples.manifest.ts` uses `mountModuleManifest` to mount those definitions under `/examples/*` without mutation, then uses `composeModuleManifest` to build the Examples tree. `src/modules/module-registry.ts` registers only the resulting top-level manifests.
+
+When promoting Users from Examples into a real project's first-level business module, reuse `usersManifest` instead of copying route/nav objects. `createModuleRegistry` rejects duplicate module IDs, top-level nav paths, route paths, and route names.
+
 ## Template Guide
 
 Open the admin app and visit:

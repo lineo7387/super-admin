@@ -29,6 +29,20 @@ Tell AI tools:
 - Do not duplicate server cache in Pinia.
 - Do not persist bearer tokens or secrets in local storage.
 
+## Generated Project Context
+
+`create-super-admin` generates a small `AGENTS.md` router and keeps detailed guidance under `ai-context/`. AI tools should read the current source before changing it; current code wins when context and code differ.
+
+The always-on context explains:
+
+- the current `standard|minimal` quality mode and commands that actually exist
+- the `Page -> module query composable -> API adapter -> api/mock data or user API` data flow
+- the composition path through feature `*.manifest.ts`, `src/modules/examples/examples.manifest.ts`, and `src/modules/module-registry.ts`
+- typed registrations and neutral fallbacks in `src/shell/layout-registry.ts` and `src/modules/auth/components/auth-recipe-registry.generated.ts`
+- why frontend `VITE_*` variables must not hold provider secrets
+
+Multi-theme, i18n, and ECharts context files appear only when those capabilities were generated. Minimal context must not claim that ESLint, Vitest, or the `check` command exists.
+
 ## User-Facing Text
 
 Super Admin is moving toward `zh-CN` as the default locale with optional `en-US` support. When AI agents add or change user-facing UI text, they should provide the default Chinese message and avoid adding new English-only copy.
@@ -55,6 +69,8 @@ When using an AI tool on a generated or cloned Super Admin project, include this
 
 ```text
 This is a frontend-first Vue admin template. Keep data access on Page -> query composable -> API adapter -> mock/user API. Do not call transport directly from Vue pages. Pinia is for client state; TanStack Query is for server/cache state. The backend, auth provider, database, AI provider, and CodeGraph are optional unless I explicitly ask to add them.
+Treat feature manifests as the single source for nav/routes/meta. Extend layouts and auth recipes through their typed registries, and keep unknown IDs on the explicit neutral fallback instead of adding ID branches to consumers.
+Read package.json and super-admin.config.ts before choosing quality commands; standard includes lint/test/typecheck/build/check, while minimal keeps typecheck/build only.
 Use zh-CN as the default for new user-facing UI copy unless I explicitly ask for another locale.
 ```
 

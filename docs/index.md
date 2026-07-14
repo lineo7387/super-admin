@@ -18,11 +18,13 @@ hero:
 
 features:
   - title: Starter 优先
-    details: 使用 npm create 生成自己的 admin app，然后定制模块、主题和 API 适配器。
+    details: 使用 npm create 生成自己的 admin app；默认自带 ESLint、Vitest 和聚合质量命令，也可用 --minimal 显式选择轻量基线。
   - title: 前端优先
     details: 默认应用无需后端、数据库、auth provider 或 AI provider 即可运行。
   - title: 可替换 API 适配器
     details: 页面调用模块 query composable，query 调用 API adapter，adapter 负责归一化 mock 数据或你的 API。
+  - title: 可读的扩展契约
+    details: Feature manifests、layout registry 和 auth recipe registry 提供单一事实源、typed composition 与 neutral fallback。
 ---
 
 ## 这是什么

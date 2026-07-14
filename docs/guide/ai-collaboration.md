@@ -29,6 +29,20 @@ Page -> module query composable -> API adapter -> api/mock data or user API
 - 不要在 Pinia 中重复 server cache。
 - 不要把 bearer tokens 或 secrets 持久化到 local storage。
 
+## 生成项目上下文
+
+`create-super-admin` 会生成一个精简的 `AGENTS.md`，并把详细上下文拆到 `ai-context/`。AI 在开始修改前应先读取当前源码；上下文和代码不一致时，以代码为准。
+
+始终存在的 context 会说明：
+
+- 当前 `standard|minimal` quality mode，以及实际可用的质量命令。
+- `Page -> module query composable -> API adapter -> api/mock data or user API` 数据流。
+- feature `*.manifest.ts`、`src/modules/examples/examples.manifest.ts` 和 `src/modules/module-registry.ts` 的 composition 路径。
+- `src/shell/layout-registry.ts` 与 `src/modules/auth/components/auth-recipe-registry.generated.ts` 的 typed registrations 和 neutral fallbacks。
+- frontend `VITE_*` 不能保存 provider secrets。
+
+多 theme、i18n 或 ECharts context 只在对应能力实际生成时出现。Minimal context 不应声称项目具有 ESLint、Vitest 或 `check` command。
+
 ## 用户可见文案
 
 Super Admin 以 `zh-CN` 作为默认 locale，并提供 `en-US` 文档。AI agents 新增或修改用户可见 UI 文案时，应提供默认中文消息，避免新增 English-only copy。
@@ -55,6 +69,8 @@ Super Admin 以 `zh-CN` 作为默认 locale，并提供 `en-US` 文档。AI agen
 
 ```text
 This is a frontend-first Vue admin template. Keep data access on Page -> query composable -> API adapter -> mock/user API. Do not call transport directly from Vue pages. Pinia is for client state; TanStack Query is for server/cache state. The backend, auth provider, database, AI provider, and CodeGraph are optional unless I explicitly ask to add them.
+Treat feature manifests as the single source for nav/routes/meta. Extend layouts and auth recipes through their typed registries, and keep unknown IDs on the explicit neutral fallback instead of adding ID branches to consumers.
+Read package.json and super-admin.config.ts before choosing quality commands; standard includes lint/test/typecheck/build/check, while minimal keeps typecheck/build only.
 Use zh-CN as the default for new user-facing UI copy unless I explicitly ask for another locale.
 ```
 

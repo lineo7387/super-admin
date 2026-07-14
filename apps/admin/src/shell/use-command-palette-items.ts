@@ -41,6 +41,10 @@ export function useCommandPaletteItems() {
     for (const manifest of registeredModules) {
       const flat = flattenModuleNav(manifest.nav as ModuleNavItem)
       for (const entry of flat) {
+        if (entry.item.children?.length) {
+          continue
+        }
+
         const path = entry.item.path
         const parentLabels = entry.parents.map((p) => translateNavItemLabel(t, p))
         const label = [...parentLabels, translateNavItemLabel(t, entry.item)].join(' / ')

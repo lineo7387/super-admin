@@ -2,6 +2,12 @@
 
 示例展示模板里的各个部分如何组合。
 
+## Manifest Composition
+
+每个 feature 的 `*.manifest.ts` 是 nav、routes、route meta 和 permissions 的唯一事实源。`src/modules/examples/examples.manifest.ts` 使用 `mountModuleManifest` 把这些定义无损挂载到 `/examples/*`，再用 `composeModuleManifest` 生成 Examples tree；`src/modules/module-registry.ts` 只注册 top-level manifests。
+
+因此，把 Users 从 Examples 提升为真实项目的一层业务模块时，应复用 `usersManifest`，而不是复制 route/nav object。`createModuleRegistry` 会拒绝重复 module ID、top-level nav path、route path 或 route name。
+
 ## Template Guide
 
 打开 admin app 并访问：

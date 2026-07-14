@@ -23,6 +23,7 @@ create-super-admin <project> --themes base,cyberpunk
 create-super-admin <project> --charts echarts
 create-super-admin <project> --no-charts
 create-super-admin <project> --i18n
+create-super-admin <project> --minimal
 create-super-admin <project> --pm pnpm
 create-super-admin --help
 create-super-admin -h
@@ -58,6 +59,7 @@ node scripts/validate-generated-starter.mjs <generated-project-dir> --themes bas
 node scripts/validate-generated-starter.mjs <generated-project-dir> --charts echarts
 node scripts/validate-generated-starter.mjs <generated-project-dir> --no-charts
 node scripts/validate-generated-starter.mjs <generated-project-dir> --i18n
+node scripts/validate-generated-starter.mjs <generated-project-dir> --minimal
 node scripts/validate-generated-starter.mjs <generated-project-dir> --pm pnpm
 node scripts/validate-generated-starter.mjs <generated-project-dir> --package-manifest <packed-package-json>
 ```
@@ -77,6 +79,9 @@ export default {
   },
   charts: {
     provider: 'none'
+  },
+  quality: {
+    mode: 'standard'
   }
 }
 ```
@@ -94,7 +99,7 @@ Default `create-super-admin <project>` command behavior:
 - in an interactive terminal, prompts for one or more themes before generation
 - in a non-interactive terminal, fails with guidance to pass `--theme` or `--themes`
 
-Base-theme generated output:
+Default standard generated output:
 
 - single-app Vite project
 - `zh-CN` only
@@ -106,12 +111,35 @@ Base-theme generated output:
 - no VitePress docs site
 - no backend scaffold
 - no optional Hono reference API
-- no test files
-- no lint, format, unit test, e2e, docs build, or reference smoke tooling
-- scripts only: `dev`, `build`, `typecheck`, `preview`
+- generated ESLint and Vitest configs
+- quality-only dev dependencies: `@eslint/js`, `eslint`, `eslint-plugin-vue`, `globals`, `typescript-eslint`, and `vitest`
+- one representative starter contract test under `src/`
+- executable `lint`, `test`, `typecheck`, `build`, and aggregate `check` quality commands
+- no format, e2e, docs build, or reference smoke tooling
 - all current removable examples by default: Dashboard, Workbench, Users, Access, Template Guide, UI Kit, auth login/register pages, and shell/workspace experiences; optional Charts examples appear only when ECharts is selected
 
-Default scripts:
+Standard scripts:
+
+```json
+{
+  "dev": "vite",
+  "build": "vue-tsc --noEmit && vite build",
+  "typecheck": "vue-tsc --noEmit",
+  "lint": "eslint . --max-warnings=0",
+  "test": "vitest run",
+  "check": "eslint . --max-warnings=0 && vitest run && vue-tsc --noEmit && vite build",
+  "preview": "vite preview"
+}
+```
+
+Minimal output is an explicit opt-out selected with `--minimal`:
+
+- keeps the same frontend-first app, examples, selected themes, i18n, charts, mock data, and package boundaries
+- keeps `dev`, `build`, `typecheck`, and `preview`
+- omits `eslint.config.js`, `vitest.config.ts`, generated test files, ESLint/Vitest dependencies, and `lint`/`test`/`check` scripts
+- records `quality.mode: 'minimal'` in `super-admin.config.ts` and must not claim unavailable quality commands in generated docs or AI context
+
+Minimal scripts:
 
 ```json
 {
@@ -203,16 +231,18 @@ Generated template derivation:
 
 - `apps/admin` is the source model, but generated output is not a raw copy.
 - App-local starter files under `src/` must be derived through the shared typed source policy in `packages/cli/src/starter-source.ts`: each path resolves to `copy`, `transform`, or `exclude`; generator-owned root files resolve to `generate` through an explicit whitelist.
-- Runtime-template packaging and starter generation must call the same source materializer and invariant exclusion policy. `scripts/build-cli-template.mjs` must not maintain a second copy of reference/test/dead-manifest filters.
+- Runtime-template packaging and starter generation must call the same source materializer and invariant exclusion policy. `scripts/build-cli-template.mjs` must not maintain a second copy of reference, capability, or quality-file filters.
 - `packages/cli/src/templates.ts` may generate only root/config/README/AI-context files that have no app-source equivalent. Do not add whole-file string factories for `apps/admin/src/**` files.
 - Intentional app/starter differences must use named, narrow source seams such as `@starter-reference`, `@starter-theme`, or `@starter-locale` regions, or small deterministic transforms. Every transformed path must be listed in `APP_SOURCE_TRANSFORM_PATHS`; generated output must not retain derivation markers.
 - The package build may snapshot canonical `apps/admin` source into `dist/starter-template/admin`, but applying the same input to explicit source-root generation and the built runtime template must produce the same file inventory and byte-identical content.
-- Root output is a single Vite app with `AGENTS.md`, `CLAUDE.md`, `ai-context/`, `components.json`, `index.html`, `package.json`, `README.md`, `super-admin.config.ts`, `tsconfig.json`, `vite.config.ts`, and `src/`.
+- Root output is a single Vite app with `AGENTS.md`, `CLAUDE.md`, `ai-context/`, `components.json`, `index.html`, `package.json`, `README.md`, `super-admin.config.ts`, `tsconfig.json`, `vite.config.ts`, and `src/`. Standard output also includes `eslint.config.js` and `vitest.config.ts`; minimal output does not.
 - Generated `index.html` defaults to `lang="zh-CN"`.
 - Generated `README.md` links to `AGENTS.md` as the first AI collaboration context file.
 - Generated `AGENTS.md` is the single AI development entry file for the user project. It must not duplicate all detailed guidance; it routes AI tools to generated files under `ai-context/`.
 - Generated `CLAUDE.md` must contain only `@AGENTS.md` so Claude Code uses the same entry file and cannot drift from `AGENTS.md`.
 - Generated `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md` are always present. They must document current-code-first behavior, the frontend data flow, key extension paths, and frontend secret boundary, including `Page -> module query composable -> API adapter -> api/mock data or user API` and the rule that provider secrets must not go in frontend `VITE_*` env variables.
+- Generated `ai-context/core.md` must record the selected `standard|minimal` quality mode. Standard context lists `lint`, `test`, `typecheck`, `build`, and `check`; minimal context lists only commands that exist and must not imply ESLint/Vitest were generated.
+- Generated `ai-context/extension-points.md` must identify the actual composition seams: feature `*.manifest.ts` files as route/nav/meta sources, `src/modules/examples/examples.manifest.ts` and `src/modules/module-registry.ts` as composition roots, `src/shell/layout-registry.ts` for layout registrations, and `src/modules/auth/components/auth-recipe-registry.generated.ts` for installed auth recipes. AI guidance must tell agents to register an extension rather than add ID-specific branches to shell/auth consumers.
 - Generated `AGENTS.md` must import exactly the generated `ai-context/*.md` files using `@ai-context/<name>.md` lines.
 - Generated capability context files must exist only for capabilities that were actually generated: `ai-context/theme.md` for multi-theme output, `ai-context/i18n.md` for `--i18n`, and `ai-context/charts.md` for `--charts echarts`. Do not generate disabled capability files or import disabled capabilities.
 - Generated AI context may include a small generated baseline such as the default theme and locale, but that baseline must be described as non-authoritative after the user changes the project.
@@ -232,8 +262,9 @@ Generated template derivation:
 - Generated Control Center modal height and scrolling must stay in parity with the monorepo admin app: content-height adaptive, viewport-capped, and free of fixed inner estimates such as `max-h-[calc(88vh-92px)]`. Two-theme/no-i18n output must not be forced to fill the viewport.
 - Generated Control Center workspace settings must stay aligned with the monorepo Stage Manager contract: Workspace Tabs and `stageManager.railEnabled` are independent toggles, fullscreen Overview is a desktop-only runtime command, and no generated starter should expose the retired `side-dock | all-windows` presentation-mode selector.
 - Generated Control Center must not expose a global density selector by default. Keep persisted `density` compatibility only until global density tokens/CSS make the setting visibly meaningful.
-- Generated output excludes `src/**/*.test.ts`, `src/api/reference/`, `dist/`, `node_modules/`, `*.tsbuildinfo`, docs, optional backend code, and reference smoke tooling.
-- Generated output must not include standalone module manifest files that are not registered by `src/modules/module-registry.ts`. If example pages are folded under `src/modules/examples/examples.manifest.ts`, keep the pages/data files but exclude the old per-module manifest files from generated starters.
+- Generated output excludes `src/api/reference/`, `dist/`, `node_modules/`, `*.tsbuildinfo`, docs, optional backend code, and reference smoke tooling. Standard output may include only explicitly allowlisted starter-owned tests; minimal output excludes all generated test files.
+- Every data-backed feature owns one `*.manifest.ts` definition for nav, routes, route meta, and permissions. `src/modules/examples/examples.manifest.ts` mounts those source manifests under `/examples` and composes the Examples tree; `src/modules/module-registry.ts` registers the resulting top-level manifests. Do not duplicate feature route/nav metadata in an aggregate manifest or exclude active source manifests from generated starters.
+- Manifest mounting/composition must be immutable. Duplicate module IDs, top-level nav paths, route paths, or route names fail explicitly instead of relying on import order.
 
 ### 4. Validation & Error Matrix
 
@@ -247,6 +278,8 @@ Generated template derivation:
 | `--charts echarts` passed | Install `echarts` and `vue-echarts`, then generate the theme-adapted chart example page under Examples and app-local ECharts helpers. |
 | `--no-charts` passed | Do not install ECharts dependencies and do not generate chart template source. |
 | Both `--charts` and `--no-charts` passed | Fail before writing files with a mutually exclusive flag message. |
+| No quality flag passed | Generate the `standard` quality baseline with ESLint, Vitest, the representative starter test, and `lint`/`test`/`check` scripts. |
+| `--minimal` passed | Generate the minimal baseline with typecheck/build only; omit all ESLint/Vitest files, dependencies, scripts, tests, and AI claims. |
 | Unknown theme id | Fail with a clear supported-theme message; do not generate a partial project. |
 | Project name missing | Fail before writing files with usage guidance. |
 | `--help` or `-h` passed | Print usage guidance and exit successfully without generating files. |
@@ -265,7 +298,8 @@ Generated template derivation:
 | Source-root and built runtime-template generation differ for the same normalized input | Reject in parity tests by comparing both file inventory and file content. |
 | Generated output contains an `@starter-*` derivation marker | Reject; transforms must consume their source-only markers. |
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
-| Generated starter includes standalone module manifests that are not imported by `src/modules/module-registry.ts` | Reject; generated output should expose only active registered manifests and user-editable example source. |
+| Generated feature route/nav metadata is repeated in an aggregate manifest | Reject; mount and compose each feature's source manifest instead. |
+| Manifest composition creates duplicate module IDs, nav paths, route paths, or route names | Fail explicitly before the registry is consumed. |
 | Generated single-theme output exposes runtime theme or language switching with one installed theme/locale | Reject; single-theme output is fixed to that theme and `zh-CN`. |
 | Generated output includes legacy `AI_CONTEXT.md` | Reject; `AGENTS.md` is the single AI entry file. |
 | Generated output omits `AGENTS.md`, `CLAUDE.md`, or the always-on `ai-context/core.md`, `ai-context/data-flow.md`, `ai-context/extension-points.md` files | Reject; AI tools need the shared entry and core context files. |
@@ -282,14 +316,16 @@ Generated template derivation:
 ### 5. Good/Base/Bad Cases
 
 - Good: `create-super-admin app --themes base,cyberpunk --i18n` generates a single Vite app, installs `@super-admin-org/theme`, `@super-admin-org/theme-base`, `@super-admin-org/theme-cyberpunk`, enables theme switching, and includes language switching.
+- Good: default generation includes ESLint, Vitest, a representative source test, and a working `check` command; `create-super-admin app --theme base --minimal` removes that quality-only surface while keeping typecheck/build.
 - Good: default generated `AGENTS.md` imports only `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md`; no ECharts or disabled switcher context files are generated.
 - Good: generated `CLAUDE.md` contains only `@AGENTS.md`.
 - Good: `create-super-admin app --charts echarts` adds `ai-context/charts.md` and an `@ai-context/charts.md` import with `src/modules/charts/ChartsPage.vue`, `src/shared/charts/echarts-options.ts`, and the selected dependencies.
 - Good: `super-admin theme remove cyberpunk` removes `@super-admin-org/theme-cyberpunk`, updates `super-admin.config.ts`, and regenerates `src/super-admin/theme-registry.generated.ts`.
 - Good: a shell or auth change is made once in `apps/admin`; a named transform removes only the optional reference/theme/locale region for the selected starter variant.
-- Base: generated README links to VitePress docs for deleting examples, connecting APIs, adding tests/lint, changing themes, and changing locale.
+- Base: generated README links to VitePress docs for deleting examples, connecting APIs, extending the quality baseline, changing themes, and changing locale.
 - Bad: `@super-admin-org/theme` bundles every theme profile, making theme CLI commands only toggle already-downloaded code.
-- Bad: generated project contains the VitePress docs site, optional Hono reference API, FastAPI AI companion backend, test files, or lint/e2e tooling by default.
+- Bad: generated project contains the VitePress docs site, optional Hono reference API, FastAPI AI companion backend, e2e tooling, or maintainer tests by default.
+- Bad: `--minimal` leaves a Vitest import, ESLint dependency, quality config, test file, or `npm run check` instruction behind.
 - Bad: generated default `AGENTS.md` imports `ai-context/charts.md`, or default output generates a chart context file when no chart template was selected.
 - Bad: CLI generates `super-admin add module orders`; Super Admin must not generate user business modules.
 - Bad: copying a changed Vue/TypeScript file into a template literal under `templates.ts` to repair starter drift.
@@ -299,6 +335,8 @@ Generated template derivation:
 Maintainer validation for generated output must cover:
 
 - install succeeds
+- default standard `lint` succeeds
+- default standard `test` succeeds
 - `typecheck` succeeds
 - `build` succeeds
 - startup smoke succeeds
@@ -307,21 +345,23 @@ Maintainer validation for generated output must cover:
 - a packed-package CLI smoke runs the emitted CLI from an unpacked tarball in a directory with no repo-root `apps/admin`
 - a structural test parses `templates.ts` exports and allows only the generator-owned root-file factory whitelist
 - source-policy tests cover invariant exclusions, optional locale/chart exclusions, registered transform paths, and marker removal
-- source-root and built runtime-template outputs are byte-equivalent for default, multi-theme+i18n, and ECharts inputs
+- source-root and built runtime-template outputs are byte-equivalent for default standard, multi-theme+i18n, ECharts, and minimal inputs
 - no monorepo package path aliases appear in generated TypeScript/Vite config
 - no monorepo package paths appear in generated Tailwind/CSS source scanning
 - no optional reference backend imports or reference env tokens appear in default generated source
-- no backend/docs/test/lint/e2e/reference-smoke tooling appears in default output
+- no backend/docs/e2e/reference-smoke tooling appears in default output
+- standard output contains exactly the required quality configs, dependencies, scripts, and allowlisted representative starter tests
+- minimal output contains no ESLint/Vitest config, dependency, import, test, script, or AI-context claim while typecheck/build still succeed
 - no maintainer workflow artifacts such as `.trellis/`, `.agents/`, `.codex/`, `.claude/`, `.codegraph/`, `.mcp.json`, or `skills-lock.json` appear in default output
 - generated `AGENTS.md` exists as the single AI entry file and imports exactly the generated `ai-context/*.md` files
 - generated `CLAUDE.md` exists and contains only `@AGENTS.md`
-- generated `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md` document current-code-first behavior, `Page -> module query composable -> API adapter -> api/mock data or user API`, extension paths, and the rule that provider secrets must not go in frontend `VITE_*` env variables
+- generated `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md` document current-code-first behavior, the selected quality mode and valid commands, `Page -> module query composable -> API adapter -> api/mock data or user API`, manifest/layout/auth registry extension paths, and the rule that provider secrets must not go in frontend `VITE_*` env variables
 - generated default output does not include disabled capability files such as `ai-context/charts.md`, `ai-context/theme.md`, or `ai-context/i18n.md`
 - generated ECharts output includes `ai-context/charts.md` with app-local chart source/helper paths and selected dependencies, and `AGENTS.md` imports it
 - generated multi-theme/i18n output includes matching `ai-context/theme.md` and `ai-context/i18n.md` files and imports
 - generated output does not include legacy `AI_CONTEXT.md`
 - generated `README.md` points AI collaborators to `AGENTS.md`
-- no unregistered standalone module manifest files appear in generated output
+- generated feature manifests remain active inputs to the composed Examples manifest, and no route/nav/meta definition is duplicated in the aggregate manifest
 - default theme dependencies are only `@super-admin-org/theme` and `@super-admin-org/theme-base`
 - default theme registry imports only `@super-admin-org/theme-base`
 - multi-theme generation installs exactly the selected theme packages
@@ -330,13 +370,13 @@ Maintainer validation for generated output must cover:
 - generated auth login/register required fields pass localized required labels and do not fall back to shared UI English copy
 - generated app resolves `@super-admin-org/*` from package dependencies instead of package source paths
 - generated app still follows `Page -> query composable -> API adapter -> mock/user API`
-- CLI parser/generator tests cover single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, non-empty targets, interactive theme selection, and non-interactive missing-theme failure.
+- CLI parser/generator tests cover standard default, `--minimal`, single-theme, multi-theme, `--i18n`, invalid flags, unknown themes, unsupported package managers, non-empty targets, interactive theme selection, and non-interactive missing-theme failure.
 - CLI entrypoint tests cover `--help` and `-h`; help output must not materialize a starter.
 - A built-bin smoke check runs the emitted `create-super-admin` output, not only source-level generator functions, so Node ESM import-extension regressions are caught.
-- CLI-generated default and multi-theme/i18n outputs are passed through `pnpm validate:starter`.
+- CLI-generated default, multi-theme/i18n, ECharts, and minimal outputs are passed through `pnpm validate:starter`; standard variants run lint/test/typecheck/build, while minimal runs typecheck/build and verifies quality-tool absence.
 - Existing generated project fixtures may be passed to `node scripts/validate-generated-starter.mjs` with matching flags. Use `--static-only` while `@super-admin-org/*` packages are not yet published or locally packed for install/build validation.
 
-Generated user projects do not include test files by default.
+Generated standard user projects include only the representative starter-owned tests required to keep the extension contract executable. They do not inherit the source repository's maintainer tests. Minimal projects contain no tests.
 
 The maintainer validator lives outside generated projects. It may be implemented under `scripts/` and exercised by repository tests, but generated starters must not copy validator scripts or tests.
 When local packed package manifests are part of validation, pass them with `--package-manifest`; those manifests must not expose `workspace:` dependency ranges.
@@ -372,7 +412,7 @@ create-super-admin app
   -> creates apps/admin + apps/api
   -> includes docs/
   -> includes all theme packages
-  -> includes tests/e2e/lint tooling
+  -> includes e2e and maintainer release tooling
   -> expects user to configure auth or AI provider
 ```
 
@@ -386,6 +426,8 @@ create-super-admin app
   -> includes removable examples
   -> installs @super-admin-org/theme and @super-admin-org/theme-base only
   -> runs with mock data
+  -> includes ESLint, Vitest, and npm run check by default
+  -> supports --minimal as an explicit quality-tool opt-out
   -> includes auth pages but no real auth provider
   -> includes optional AI Assistant surface but no required AI provider/backend
 ```

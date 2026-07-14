@@ -8,6 +8,11 @@ import PrimaryNav from '../PrimaryNav.vue'
 import ShellAccountMenu from '../ShellAccountMenu.vue'
 import ShellHeader from '../ShellHeader.vue'
 
+defineSlots<{
+  'header-actions'(): unknown
+  workspace(): unknown
+}>()
+
 const { t } = useI18n()
 </script>
 

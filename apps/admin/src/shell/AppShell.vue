@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, watch } from 'vue'
+import type { Component } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { translateRouteTitle } from '@/i18n/navigation'
 import WorkspaceRouterView from '@/workspace/WorkspaceRouterView.vue'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
-import DualColumnLayout from './layouts/DualColumnLayout.vue'
-import TopHeaderLayout from './layouts/TopHeaderLayout.vue'
-import TriColumnLayout from './layouts/TriColumnLayout.vue'
+import { resolveAppLayoutRegistration } from './layout-registry'
 import GlobalPreferencesTrigger from './preferences/GlobalPreferencesTrigger.vue'
 import { useShellShortcuts } from './shell-shortcuts'
 
@@ -26,15 +25,7 @@ const tabs = useWorkspaceTabsStore()
 
 useShellShortcuts()
 
-const activeLayout = computed(() => {
-  if (preferences.layoutPreset === 'dual-column') {
-    return DualColumnLayout
-  }
-  if (preferences.layoutPreset === 'top-header') {
-    return TopHeaderLayout
-  }
-  return TriColumnLayout
-})
+const activeLayout = computed<Component>(() => resolveAppLayoutRegistration(preferences.layoutPreset).component)
 const showStageRail = computed(() => preferences.stageManagerDesktopAvailable && preferences.stageManager.railEnabled && tabs.state.tabs.length > 1)
 const controlCenterLabel = computed(() => t('shell.preferences.title'))
 

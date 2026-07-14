@@ -68,7 +68,7 @@ Run the full local release gate before pushing:
 pnpm release check
 ```
 
-This runs lint, typecheck, tests, package builds, local `npm pack` validation, generated starter install/typecheck/build, and startup smoke. It does not publish anything.
+This runs lint, typecheck, tests, package builds, local `npm pack` validation, generated standard starter install/lint/test/typecheck/build, minimal boundary/typecheck/build validation, and startup smoke. It does not publish anything.
 
 The release gate validates the generated starter by running the packed `create-super-admin` tarball, not only the local monorepo CLI. This catches registry and `pnpm dlx` runtime issues such as missing package-local starter templates before publish.
 

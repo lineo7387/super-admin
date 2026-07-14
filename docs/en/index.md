@@ -18,11 +18,13 @@ hero:
 
 features:
   - title: Starter-first setup
-    details: Use npm create to generate your own admin app, then customize modules, themes, and API adapters.
+    details: Use npm create to generate your own admin app with ESLint, Vitest, and an aggregate quality command by default, or opt into the smaller baseline with --minimal.
   - title: Frontend-first app
     details: The default app runs without a backend, database, auth provider, or AI provider.
   - title: Replaceable API adapters
     details: Pages call module queries, queries call API adapters, and adapters normalize mock data or user APIs.
+  - title: Readable extension contracts
+    details: Feature manifests, the layout registry, and the auth recipe registry provide a single source of truth, typed composition, and neutral fallbacks.
 ---
 
 ## What This Is

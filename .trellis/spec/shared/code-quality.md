@@ -45,7 +45,7 @@ Run the repository's lint/typecheck/test commands once they exist. Do not claim 
 ### 1. Scope / Trigger
 
 - Trigger: adding or changing repository lint/format tooling, CI quality gates, or public docs that tell contributors which checks to run.
-- Applies to this monorepo's maintainer workflow only. Generated starters must stay free of lint/format/test tooling unless a future task explicitly changes the starter contract.
+- Root commands apply to this monorepo's maintainer workflow. Generated `standard` starters own a smaller ESLint/Vitest baseline defined by `cli-starter-contract.md`; `--minimal` starters remain free of quality-only tooling.
 
 ### 2. Signatures
 
@@ -69,6 +69,8 @@ pnpm format:check
 - Prettier owns formatting.
 - `eslint-config-prettier/flat` must stay last in `eslint.config.js` so conflicting stylistic ESLint rules are disabled.
 - Do not add `eslint-plugin-prettier`; formatting should not be reported as ESLint rule failures.
+- Generated standard ESLint config also keeps `eslint-config-prettier/flat` last. The starter source follows repository formatting, so omitting that compatibility config turns Vue's recommended stylistic warnings into a broken `--max-warnings=0` gate.
+- Do not copy the root maintainer config wholesale into generated projects. Standard starter config includes only app-source rules and dependencies; minimal output includes none of them.
 
 ### 4. Validation & Error Matrix
 
@@ -77,23 +79,26 @@ pnpm format:check
 | ESLint and Prettier disagree on a rule | Prefer Prettier for formatting and disable the conflicting ESLint stylistic rule through `eslint-config-prettier`. |
 | `eslint-config-prettier` reports conflicts | Fix the ESLint config before claiming `pnpm lint` is clean. |
 | CI or docs mention a quality command | The command must exist in root `package.json`. |
-| Generated starter validation changes | Confirm generated starters do not receive maintainer-only lint/format/test tooling. |
+| Standard starter validation changes | Confirm generated lint/test/check commands execute against packed output and receive no maintainer-only tooling. |
+| Minimal starter validation changes | Confirm no ESLint/Vitest dependency, config, script, test, import, or AI claim remains. |
 
 ### 5. Good/Base/Bad Cases
 
 - Good: `pnpm lint` runs typecheck, `eslint . --max-warnings=0`, and `eslint-config-prettier` conflict validation.
 - Good: CI runs `pnpm lint`, `pnpm format:check`, `pnpm test`, `pnpm build`, and `pnpm docs:build` as explicit steps.
+- Good: generated standard starters use recommended Vue rules followed by `eslint-config-prettier/flat`, and packed smoke proves zero warnings under `--max-warnings=0`.
 - Base: contributors run `pnpm format` locally before `pnpm format:check`.
 - Bad: adding stylistic ESLint rules that fight Prettier.
 - Bad: adding `eslint-plugin-prettier` and turning formatting into lint rule output.
-- Bad: copying repository lint/format config into generated starters by default.
+- Bad: copying repository release/docs/reference lint scopes into generated starters.
+- Bad: generating Vue recommended rules without the compatibility config, producing hundreds of stylistic warnings before users change any code.
 
 ### 6. Tests Required
 
 - Root quality gate: `pnpm lint`.
 - Formatting gate: `pnpm format:check`.
 - Relevant regression tests after ESLint-driven code fixes.
-- Starter boundary check: `pnpm validate:starter` when root tooling or public docs could affect generated starter expectations.
+- Packed starter boundary check: `pnpm validate:starter` for default standard, multi-theme+i18n, ECharts, and minimal variants when quality tooling or public docs change.
 
 ### 7. Wrong vs Correct
 

@@ -32,14 +32,35 @@ pnpm dlx create-super-admin@latest my-admin --theme base --charts echarts --pm p
 
 生成出来的项目就是你的应用。它会比这个源码仓库更小，不包含发布自动化、维护者 AI workflow 文件、docs 站点或可选 reference smoke 工具。
 
+默认生成的是 `standard` 质量模式，包含 ESLint、Vitest、一个代表性的 starter 契约测试，以及完整质量命令：
+
+```bash
+pnpm lint
+pnpm test
+pnpm typecheck
+pnpm build
+pnpm check
+```
+
+`pnpm check` 会依次执行 lint、test、typecheck 和 production build。如果你明确只要更轻的 typecheck/build 基线，可以使用 `--minimal`：
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --minimal --pm pnpm
+```
+
+Minimal 输出不会残留 ESLint/Vitest config、dependency、script 或 test file。所选模式会记录在 `super-admin.config.ts` 和生成的 AI context 中。
+
 ## 定制 Starter
 
 先看这些位置：
 
-- `src/modules/`：示例 routes 和 pages，可以改造成你的业务模块。
+- `src/modules/`：feature `*.manifest.ts`、示例 routes 和 pages；manifest 是 nav、route、route meta 与 permissions 的唯一事实源。
 - `src/api/`：API adapters，用来归一化 mock 数据或你的 API 响应。
 - `src/api/mock/`：可替换的 mock 数据源。
-- 主题和布局配置：设计 profiles、color mode 和 shell layout。
+- `src/modules/examples/examples.manifest.ts` 与 `src/modules/module-registry.ts`：挂载和组合 feature manifests。
+- `src/shell/layout-registry.ts`：typed layout component/preview registrations；未知 ID 使用 neutral fallback。
+- `src/modules/auth/components/auth-recipe-registry.generated.ts`：已安装 theme 的 auth recipes；未知 profile 使用 neutral recipe。
+- `AGENTS.md` 与 `ai-context/`：当前 quality mode、数据流和真实扩展入口；不要求 AI provider。
 
 默认 starter 不要求：
 
