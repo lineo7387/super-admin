@@ -434,3 +434,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 72: 对齐 0.2.0 公开发布信息
+
+**Date**: 2026-07-18
+**Task**: 对齐 0.2.0 公开发布信息
+**Branch**: `codex/align-0-2-0-release-info`
+
+### Summary
+
+对齐 README、根 CHANGELOG 与双语 public-presentation 的 0.2.0 npm 状态和 Release 文案，审计 GitHub About/Pages，并将 repository tag/Release 独立版本约定沉淀到 public-delivery spec；完整质量门禁与独立 review 通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `046916e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
