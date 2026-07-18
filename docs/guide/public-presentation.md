@@ -4,14 +4,19 @@
 
 ## 当前公开状态
 
-截至 2026-07-12：
+截至 2026-07-18：
 
 - 仓库公开地址是 `lineo7387/super-admin`。
 - npm `latest` 与 `next` 已指向 smoke-verified release line：
-  - `create-super-admin@0.1.9`
-  - `@super-admin-org/core@0.1.3`
-  - `@super-admin-org/theme@0.1.4` 与所有 theme profile packages `0.1.3`
-  - `@super-admin-org/ui@0.1.5`
+  - `create-super-admin@0.2.0`
+  - `@super-admin-org/core@0.2.0`
+  - `@super-admin-org/theme@0.1.5`
+  - `@super-admin-org/theme-base@0.1.4`
+  - `@super-admin-org/theme-crypto@0.1.4`
+  - `@super-admin-org/theme-cyberpunk@0.1.4`
+  - `@super-admin-org/theme-industrial@0.1.4`
+  - `@super-admin-org/theme-newsprint@0.1.4`
+  - `@super-admin-org/ui@0.1.6`
 - GitHub Pages docs/demo URL 是 `https://lineo7387.github.io/super-admin/`。
 - 公开安装路径可用：
 
@@ -72,32 +77,41 @@ pnpm dev
 
 ## Release And Tag Copy
 
-`v0.1.9` GitHub Release 推荐 title：
+`v0.2.0` GitHub Release 推荐 title：
 
 ```text
-Super Admin v0.1.9 - 命令面板契约与 starter 单源生成
+Super Admin v0.2.0 - readable extension contracts & built-in quality
 ```
 
 推荐 summary：
 
 ```text
-Super Admin v0.1.9 is the current default starter line, completing generated command-palette and keyboard-shortcut contracts and deriving packaged starters from `apps/admin` as the single source of truth.
+Super Admin v0.2.0 makes extensibility source-readable and type-safe through immutable module manifests and typed layout/auth registries, while generated starters now ship a runnable quality baseline by default.
 ```
 
 推荐 highlights：
 
 - `npm create super-admin@latest my-admin`
-- `create-super-admin@0.1.9` on npm `latest` and `next`
-- generated command palette restores theme, display-mode, and locale actions
-- keyboard shortcuts only intercept explicitly marked global commands while editing inputs
-- packaged starter output is derived from `apps/admin` through one shared transformation pipeline, with source/build/pack equivalence validation
-- carries forward the `0.1.8` generated AI context and starter chunking improvements for users upgrading from the previous GitHub Release
-- `@super-admin-org/core@0.1.3` and theme profile packages `0.1.3` on npm `latest`
-- `@super-admin-org/theme@0.1.4` and `@super-admin-org/ui@0.1.5` remain independently versioned on npm `latest`
-- mock-backed Vue admin template
-- replaceable API adapter boundary
-- reusable UI primitives and runtime design profiles
-- optional reference backend validation remains maintainer-only
+- `create-super-admin@0.2.0` on npm `latest` and `next`
+- immutable feature manifest composition keeps navigation, routes, route meta, and permissions in one source-readable contract
+- typed layout and auth recipe registries provide exact component contracts, duplicate detection, and neutral fallbacks
+- generated `standard` starters include ESLint, Vitest, typecheck/build/check scripts, while `--minimal` is the explicit lightweight opt-out
+- capability-aware `AGENTS.md` and `ai-context/` document the real manifest/layout/auth extension seams without requiring an AI provider
+- `@super-admin-org/ui` exposes Vue as a peer runtime instead of bundling a second copy into shared UI output
+- packed starter validation covers default, multi-theme+i18n, ECharts, and minimal output, with registry smoke for default and all theme profiles
+- the default starter remains frontend-first and mock-backed; backend, database, auth provider, AI provider, and maintainer release tooling remain optional
+
+推荐 package matrix（均位于 npm `latest` 与 `next`）：
+
+- `create-super-admin@0.2.0`
+- `@super-admin-org/core@0.2.0`
+- `@super-admin-org/theme@0.1.5`
+- `@super-admin-org/theme-base@0.1.4`
+- `@super-admin-org/theme-crypto@0.1.4`
+- `@super-admin-org/theme-cyberpunk@0.1.4`
+- `@super-admin-org/theme-industrial@0.1.4`
+- `@super-admin-org/theme-newsprint@0.1.4`
+- `@super-admin-org/ui@0.1.6`
 
 只有确认 release commit、npm dist-tags 和 generated starter smoke result 后，才创建 tags/releases。
 

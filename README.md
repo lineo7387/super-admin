@@ -13,7 +13,7 @@ Super Admin is designed for teams who want a flexible admin-console foundation w
 
 ## Status
 
-This project is under active `0.x` development after its initial npm release. The current public package line is `0.1.x`.
+This project is under active `0.x` development. The current default starter line is `create-super-admin@0.2.0`; packages are independently versioned, with the current matrix documented in the [public presentation guide](docs/guide/public-presentation.md).
 
 Current focus:
 
