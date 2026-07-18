@@ -1,5 +1,11 @@
 # create-super-admin
 
+## 0.2.0
+
+### Minor Changes
+
+- ed12954: Add immutable module-manifest mounting, composition, and duplicate-safe registry helpers. Generate an executable ESLint/Vitest quality baseline by default with an explicit `--minimal` opt-out, typed layout/auth registries, neutral fallbacks, and capability-aware AI context. Expose Vue as a peer runtime of the shared UI package.
+
 ## 0.1.9
 
 ### Patch Changes
