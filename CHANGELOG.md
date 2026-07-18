@@ -6,12 +6,11 @@ This project is in active `0.x` development after its initial npm release. Packa
 
 ## Unreleased
 
-- Aligned public repository docs with the current post-initial-release state.
-- Added public repository delivery guardrails for future AI-assisted work.
-- Improved maintainer starter/reference validation entry points.
-- Added open-source project governance docs.
-- Added project-level CodeGraph MCP configuration for maintainers.
-- Continued reference backend and admin adapter validation work.
+## 0.2.0 - 2026-07-18
+
+- Added source-readable extension contracts through immutable module-manifest composition, typed layout/auth registries, duplicate detection, and neutral fallbacks.
+- Made the generated `standard` starter quality baseline executable by default with ESLint, Vitest, typecheck/build/check scripts, capability-aware AI context, and an explicit `--minimal` opt-out.
+- Published the dependency-aware npm release set and promoted it after registry smoke: `create-super-admin@0.2.0`, `@super-admin-org/core@0.2.0`, `@super-admin-org/ui@0.1.6`, `@super-admin-org/theme@0.1.5`, and all theme profile packages at `0.1.4`.
 
 ## 0.1.9 - 2026-07-12
 

@@ -180,6 +180,17 @@ Publishable npm packages should include only runtime/build artifacts and package
 - Generated starters must consume published package artifacts, not monorepo source paths.
 - The `create-super-admin` runtime template may carry only explicitly allowlisted starter-owned quality tests needed for standard generation. Publish readiness must continue rejecting unrelated source-repository tests and maintainer artifacts; minimal materialization removes the allowlisted quality files.
 
+## GitHub Release And Tag Alignment
+
+Repository-level GitHub Releases follow the public starter CLI line while npm packages remain independently versioned.
+
+- When `create-super-admin` is part of a published release set, use `v<create-super-admin version>` for the repository tag and GitHub Release, for example `v0.2.0` for `create-super-admin@0.2.0`.
+- Do not imply that the repository tag is a lockstep monorepo version. Release notes must list the actual `create-super-admin`, core, UI, theme runtime, and theme profile versions on npm `latest`/`next`.
+- A package-only npm release that does not change `create-super-admin` does not create another generic repository tag under this convention. Introduce per-package tags only through a separate documented migration.
+- Before creating a tag or Release, verify that the public-information PR is merged, local `main` matches `origin/main`, npm dist-tags match smoke-verified versions, and the target tag/Release does not already exist.
+- Point the tag at the merged public-information commit so README, root changelog, bilingual public-presentation copy, npm state, and GitHub Release become one auditable snapshot.
+- Create the GitHub Release from the reviewed public-presentation copy. Use a normal non-prerelease Release only after npm `latest` promotion; prerelease channels must remain clearly labeled and must not be described as the default install path.
+
 ## Public Extension Contract
 
 The repository, generated starter, package docs, and AI context must describe the same extension model:
