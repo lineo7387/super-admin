@@ -67,8 +67,8 @@
 
 ## Decision (ADR-lite)
 
-**Context**: 本轮同时包含 core/CLI minor 与 UI/theme patch，且 npm versions 不可变。  
-**Decision**: 复用现有 Changesets 生成 release-prep PR；本任务在 PR 与 CI 明确后停止，registry publish 和 latest promotion 留给后续显式授权。  
+**Context**: 本轮同时包含 core/CLI minor 与 UI/theme patch，且 npm versions 不可变。
+**Decision**: 复用现有 Changesets 生成 release-prep PR；本任务在 PR 与 CI 明确后停止，registry publish 和 latest promotion 留给后续显式授权。
 **Consequences**: 本任务没有 registry mutation 风险；npm 用户暂时不会获得新版本，直到后续任务触发 `Publish next`。
 
 ## Technical Approach

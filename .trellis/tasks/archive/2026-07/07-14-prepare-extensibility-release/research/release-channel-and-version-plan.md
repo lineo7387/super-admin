@@ -55,21 +55,21 @@ The release planner must be invoked with the directly changed roots `@super-admi
 4. Smoke-test the registry-installed CLI/starter.
 5. Promote only the smoke-verified versions to `latest`.
 
-Pros: follows existing Trusted Publishing and immutable-version policy; preserves a rollback point before registry mutation.  
+Pros: follows existing Trusted Publishing and immutable-version policy; preserves a rollback point before registry mutation.
 Cons: requires two explicit external actions after the release-prep PR.
 
 ### B. Stop after release-prep PR
 
 Apply/version/verify and merge metadata, but leave `next` publish and promotion for a later session.
 
-Pros: no registry mutation; lowest operational risk.  
+Pros: no registry mutation; lowest operational risk.
 Cons: npm users receive no new version until a maintainer resumes the flow.
 
 ### C. Direct `latest` publication
 
 Publish or retag versions directly to the default install channel.
 
-Pros: shortest path.  
+Pros: shortest path.
 Cons: conflicts with the repository policy and skips registry smoke; reject for this project.
 
 ## Edge cases and controls
