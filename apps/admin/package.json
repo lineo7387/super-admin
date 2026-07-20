@@ -20,7 +20,7 @@
     "@super-admin-org/theme-industrial": "workspace:*",
     "@super-admin-org/theme-newsprint": "workspace:*",
     "@super-admin-org/ui": "workspace:*",
-    "@tanstack/vue-query": "^5.0.0",
+    "@tanstack/vue-query": "^5.101.2",
     "echarts": "^6.1.0",
     "motion-v": "^2.3.0",
     "pinia": "^3.0.0",
