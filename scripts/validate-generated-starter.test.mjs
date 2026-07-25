@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { describe, expect, it } from 'vitest'
+import { removeGeneratedExamples } from './prune-generated-starter-examples.mjs'
 import { validateGeneratedStarterStatic } from './validate-generated-starter.mjs'
 
 async function writeText(root, filePath, content) {
@@ -14,6 +15,8 @@ function createValidAgentsMd(imports = ['core', 'data-flow', 'extension-points']
   return `# AGENTS.md
 
 本文件是本项目唯一 AI 开发入口。
+
+本项目是由 \`create-super-admin\` 生成的用户后台项目。
 
 ${imports.map((name) => `@ai-context/${name}.md`).join('\n')}
 `
@@ -55,7 +58,9 @@ function createValidExtensionContext() {
   return `# Extension Points
 
 业务页面从 src/modules/ 扩展，API adapter 从 src/api/ 扩展。
-Module manifest 在 src/modules/module-registry.ts 通过 composeModuleManifest 组合。
+通用 app module registry 在 src/modules/app-module-registry.ts，app composition 在 src/modules/module-registry.ts。
+Examples registration 位于 src/modules/examples/examples.registration.ts；删除 Examples 时同时删除其 registration。
+Module manifest 通过 composeModuleManifest 组合。
 Layout registration 在 src/shell/layout-registry.ts，未知 id 使用 neutral fallback。
 Auth recipe 在 src/modules/auth/components/auth-recipe-registry.generated.ts，未知 profile 使用 neutral fallback。
 `
@@ -99,6 +104,9 @@ async function createStarterFixture(overrides = {}) {
     version: '0.0.0',
     private: true,
     type: 'module',
+    engines: overrides.engines ?? {
+      node: '^20.19.0 || >=22.12.0'
+    },
     scripts:
       quality === 'standard'
         ? {
@@ -234,6 +242,27 @@ async function createStarterFixture(overrides = {}) {
   await writeText(root, 'src/modules/workbench/workbench.manifest.ts', 'export const workbenchManifest = {}\n')
   await writeText(root, 'src/modules/examples/template-guide.manifest.ts', 'export const templateGuideManifest = {}\n')
   await writeText(root, 'src/modules/examples/examples.manifest.ts', createExamplesCompositionSource())
+  await writeText(root, 'src/modules/examples/examples.registration.ts', 'export const examplesRegistration = {}\n')
+  await writeText(
+    root,
+    'src/modules/module-registry.ts',
+    `import { createAppModuleRegistry } from './app-module-registry'
+import { examplesRegistration } from './examples/examples.registration'
+import { uiKitManifest } from './ui-kit/ui-kit.manifest'
+
+export const appModuleRegistry = createAppModuleRegistry(
+  [
+    examplesRegistration,
+    {
+      manifest: uiKitManifest
+    }
+  ],
+  {
+    emptyPath: '/workspace'
+  }
+)
+`
+  )
 
   for (const [filePath, content] of Object.entries(overrides.files ?? {})) {
     await writeText(root, filePath, content)
@@ -257,6 +286,35 @@ describe('generated starter validator', () => {
     const root = await createStarterFixture({ quality: 'minimal' })
 
     await expect(validateGeneratedStarterStatic(root, { quality: 'minimal', themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('rejects generated starters without the supported Node runtime contract', async () => {
+    const root = await createStarterFixture({
+      engines: {
+        node: '>=18'
+      }
+    })
+
+    const failures = await validateGeneratedStarterStatic(root, { themes: ['base'] })
+
+    expect(failureIds(failures)).toContain('package-node-engine-match')
+  })
+
+  it('accepts a starter after the complete Examples slice is removed', async () => {
+    const root = await createStarterFixture()
+    await removeGeneratedExamples(root)
+
+    await expect(validateGeneratedStarterStatic(root, { examples: 'removed', themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('rejects example-pruned starters with a hard-coded infrastructure fallback', async () => {
+    const root = await createStarterFixture()
+    await removeGeneratedExamples(root)
+    await writeText(root, 'src/router/index.ts', "export const fallback = '/examples/dashboard'\n")
+
+    const failures = await validateGeneratedStarterStatic(root, { examples: 'removed', themes: ['base'] })
+
+    expect(failureIds(failures)).toContain('examples-removed-no-example-infrastructure')
   })
 
   it('rejects standard starters without the executable quality baseline', async () => {

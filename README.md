@@ -26,6 +26,8 @@ Current focus:
 
 ## Use The Starter
 
+Requires Node.js `^20.19.0 || >=22.12.0`.
+
 Create a starter from npm:
 
 ```bash
@@ -69,6 +71,8 @@ pnpm dlx create-super-admin@latest my-admin --theme base --minimal --pm pnpm
 ```
 
 Every generated project includes `AGENTS.md` and capability-aware files under `ai-context/`. They describe the selected quality mode, the frontend data flow, and the actual manifest/layout/auth registry extension points without requiring an AI provider or maintainer workflow.
+
+Examples is a removable feature slice. The [Examples guide](docs/en/guide/examples.md#remove-examples-completely) lists the exact module, adapter, mock, registration, chart, and AI-context cleanup; router, auth, and workspace fallbacks derive from the remaining app module registrations.
 
 ## Develop This Repository
 
@@ -152,6 +156,7 @@ A project generated with `create-super-admin` is intentionally smaller: it is yo
 ## Extension Model
 
 - Feature `*.manifest.ts` files are the single source for navigation, routes, route metadata, and permissions. The Examples tree mounts and composes those manifests instead of copying them.
+- Optional modules own their default entry and compatibility redirects in module-local registrations. The app module registry validates composition and derives router, auth, and workspace fallbacks.
 - Layouts and auth profile recipes use typed app-local registries. Adding an extension means adding a registration, not editing ID branches across shell consumers.
 - Unknown layout or auth recipe IDs use explicit neutral fallbacks rather than silently rendering a branded built-in experience.
 - Data-backed pages keep the readable `Page -> module query composable -> API adapter -> mock data / user API` path.

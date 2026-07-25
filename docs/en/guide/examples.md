@@ -4,9 +4,21 @@ Examples show how the template pieces fit together.
 
 ## Manifest Composition
 
-Each feature's `*.manifest.ts` is the single source for nav, routes, route metadata, and permissions. `src/modules/examples/examples.manifest.ts` uses `mountModuleManifest` to mount those definitions under `/examples/*` without mutation, then uses `composeModuleManifest` to build the Examples tree. `src/modules/module-registry.ts` registers only the resulting top-level manifests.
+Each feature's `*.manifest.ts` is the single source for nav, routes, route metadata, and permissions. `src/modules/examples/examples.manifest.ts` uses `mountModuleManifest` to mount those definitions under `/examples/*` without mutation, then uses `composeModuleManifest` to build the Examples tree.
 
-When promoting Users from Examples into a real project's first-level business module, reuse `usersManifest` instead of copying route/nav objects. `createModuleRegistry` rejects duplicate module IDs, top-level nav paths, route paths, and route names.
+`src/modules/examples/examples.registration.ts` owns the Examples default entry and legacy compatibility redirects. `src/modules/module-registry.ts` is app-local composition, while `src/modules/app-module-registry.ts` contains generic validation. When promoting Users into a real top-level business module, reuse `usersManifest` instead of copying route/nav objects. The registry rejects duplicate module IDs, top-level nav paths, route paths, route names, and conflicting redirects.
+
+## Remove Examples Completely
+
+Remove the following as one feature slice:
+
+1. Delete `src/modules/examples/`, `src/modules/access/`, `src/modules/dashboard/`, `src/modules/users/`, and `src/modules/workbench/`.
+2. Delete the corresponding `src/api/access.api.ts`, `dashboard.api.ts`, `users.api.ts`, and `workbench.api.ts` files, plus their matching mock files under `src/api/mock/`.
+3. Remove the `examplesRegistration` import and registration entry from `src/modules/module-registry.ts`. Do not add replacement fallbacks to the router, auth guard, or workspace components.
+4. If ECharts was generated, also remove `src/modules/charts/`, `src/shared/charts/`, the `echarts` and `vue-echarts` dependencies, and `ai-context/charts.md`; remove that context import from `AGENTS.md` and set the chart provider in `super-admin.config.ts` back to `none`.
+5. Run `pnpm check` in a standard project. In a minimal project, run `pnpm typecheck && pnpm build`.
+
+The default entry is derived from the remaining registrations. Keeping UI Kit routes the app to `/ui-kit/foundations`; registering no modules uses `/workspace`. Removing the Examples registration also intentionally removes legacy paths such as `/dashboard` and `/users*`.
 
 ## Template Guide
 

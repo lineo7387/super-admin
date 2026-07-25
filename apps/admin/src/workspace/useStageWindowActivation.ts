@@ -1,5 +1,6 @@
 import { nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { defaultAuthenticatedPath } from '@/modules/module-registry'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 
@@ -77,7 +78,7 @@ export function useStageWindowActivation(): {
       return
     }
 
-    await router.push('/examples/dashboard')
+    await router.push(defaultAuthenticatedPath)
   }
 
   function toggleStagePin(tabId: string): void {

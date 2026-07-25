@@ -1,6 +1,5 @@
 import type { RouteLocationNormalizedLoaded, RouteLocationRaw } from 'vue-router'
 
-export const DEFAULT_AUTHENTICATED_PATH = '/examples/dashboard'
 export const LOGIN_PATH = '/auth/login'
 
 type GuardTarget = Pick<RouteLocationNormalizedLoaded, 'fullPath' | 'meta'> & {
@@ -19,21 +18,21 @@ function readRedirectQuery(value: unknown): string | undefined {
   return undefined
 }
 
-export function resolvePostLoginPath(redirect: unknown): string {
+export function resolvePostLoginPath(redirect: unknown, defaultAuthenticatedPath: string): string {
   const path = readRedirectQuery(redirect)
 
   if (!path?.startsWith('/') || path.startsWith('//') || path.startsWith('/auth/')) {
-    return DEFAULT_AUTHENTICATED_PATH
+    return defaultAuthenticatedPath
   }
 
   return path
 }
 
-export function resolveAuthRedirect(to: GuardTarget, isAuthenticated: boolean): RouteLocationRaw | null {
+export function resolveAuthRedirect(to: GuardTarget, isAuthenticated: boolean, defaultAuthenticatedPath: string): RouteLocationRaw | null {
   const isAuthRoute = to.meta.authLayout === true
 
   if (isAuthRoute) {
-    return isAuthenticated ? resolvePostLoginPath(to.query?.redirect) : null
+    return isAuthenticated ? resolvePostLoginPath(to.query?.redirect, defaultAuthenticatedPath) : null
   }
 
   if (isAuthenticated) {

@@ -197,8 +197,8 @@ Avoid nested fixed-height estimates such as `max-h-[calc(88vh-92px)]` for the in
 #### 2. Signatures
 
 ```ts
-resolveAuthRedirect(to, isAuthenticated): RouteLocationRaw | null
-resolvePostLoginPath(redirect): string
+resolveAuthRedirect(to, isAuthenticated, defaultAuthenticatedPath): RouteLocationRaw | null
+resolvePostLoginPath(redirect, defaultAuthenticatedPath): string
 createTemplateAuthSession(): AuthSession
 shouldUseReferenceAuth(env?): boolean
 ```
@@ -206,8 +206,8 @@ shouldUseReferenceAuth(env?): boolean
 #### 3. Contracts
 
 - Logged-out access to a workspace route redirects to `/auth/login?redirect=<original fullPath>`.
-- Successful login redirects to the sanitized `redirect` query value, otherwise `/examples/dashboard`.
-- Authenticated access to `/auth/login` or `/auth/register` redirects to the sanitized `redirect` query value, otherwise `/examples/dashboard`.
+- Successful login redirects to the sanitized `redirect` query value, otherwise the app module registry's `defaultAuthenticatedPath`.
+- Authenticated access to `/auth/login` or `/auth/register` redirects to the sanitized `redirect` query value, otherwise the same registry-derived `defaultAuthenticatedPath`.
 - In mock/default mode, login creates a local template session and must not require `apps/api`.
 - In `VITE_SUPER_ADMIN_USERS_API=reference` mode, login calls the optional reference `/auth/login` helper.
 - `ShellAccountMenu` shows the current user and provides logout in every layout preset; `ShellHeader` stays base chrome and receives only layout-provided actions.
@@ -218,7 +218,7 @@ shouldUseReferenceAuth(env?): boolean
 | Condition | Correct behavior |
 | --- | --- |
 | Redirect query is an internal non-auth path | Use it after login or auth-route redirect. |
-| Redirect query is external, protocol-relative, missing, or auth-local | Use `/examples/dashboard`. |
+| Redirect query is external, protocol-relative, missing, or auth-local | Use the injected `defaultAuthenticatedPath`. |
 | Default mock mode login | Set a template runtime session without network access. |
 | Reference mode login returns an error | Show the normal login error message. |
 | Logout from workspace | Clear session and preserve the workspace path as login redirect. |
@@ -251,7 +251,7 @@ This drops the user's original guarded destination.
 #### Correct
 
 ```ts
-await router.push(resolvePostLoginPath(route.query.redirect))
+await router.push(resolvePostLoginPath(route.query.redirect, defaultAuthenticatedPath))
 ```
 
 The route guard and login page share the same redirect sanitization.
@@ -458,6 +458,94 @@ The old Context rail is reserved for the future AI assistant experience and must
 
 ## Module Navigation Tree
 
+### Scenario: App Module Registration And Removable Information Architecture
+
+#### 1. Scope / Trigger
+
+- Trigger: adding, removing, promoting, or composing a top-level app module; changing authenticated fallback navigation; adding compatibility redirects; or changing the default Examples slice.
+- Scope: `src/modules/app-module-registry.ts`, module-local `*.registration.ts` files, `src/modules/module-registry.ts`, router/auth/workspace fallback consumers, and the neutral `/workspace` route.
+- Boundary: core `ModuleManifest` remains business-neutral. App-local registration owns app entry and compatibility policy.
+
+#### 2. Signatures
+
+```ts
+type AppModuleRedirect = {
+  path: string
+  redirect: string
+}
+
+type AppModuleRegistration = {
+  defaultPath?: string
+  manifest: ModuleManifest
+  redirects?: readonly AppModuleRedirect[]
+}
+
+type AppModuleRegistry = {
+  defaultAuthenticatedPath: string
+  manifests: ModuleManifest[]
+  redirects: AppModuleRedirect[]
+}
+
+createAppModuleRegistry(
+  registrations: readonly AppModuleRegistration[],
+  options: { emptyPath: string }
+): AppModuleRegistry
+```
+
+#### 3. Contracts
+
+- `src/modules/app-module-registry.ts` owns generic validation and derivation. `src/modules/module-registry.ts` is a small app-local composition root.
+- A removable or optional top-level module owns its `defaultPath` and compatibility redirects in a module-local registration. Examples uses `src/modules/examples/examples.registration.ts`.
+- `defaultPath` defaults to `manifest.nav.path` and must resolve to a route in the same manifest.
+- Default/redirect validation uses the same path normalization as core routing: ignore query/hash and normalize a non-root trailing slash.
+- Every redirect target must resolve to a route in the registration's own manifest. Redirect paths must not duplicate another redirect or collide with a registered route after normalization.
+- The registry sorts through the core module registry. `defaultAuthenticatedPath` is the first sorted registration's explicit/default path; an empty registry uses `options.emptyPath`, currently `/workspace`.
+- Router root redirect, authenticated auth-route redirect, successful login, closing the last workspace tab, and closing the last Stage Manager window all consume the same exported `defaultAuthenticatedPath`. Those consumers must not contain `/examples/*` literals.
+- Compatibility route records are materialized from the registry. Removing a registration removes its compatibility aliases; do not leave global legacy redirect blocks in the router.
+- `/workspace` is a neutral, auth-protected system route that remains usable when no top-level module is registered.
+- Auth session types are owned by auth. `auth.types.ts` must not import user-role types from a removable example module.
+
+#### 4. Validation & Error Matrix
+
+| Condition | Correct behavior |
+| --- | --- |
+| Registration `defaultPath` is not owned by its manifest | Throw before router creation. |
+| Redirect target is not owned by its manifest | Throw before router creation. |
+| Redirect path duplicates another redirect | Throw before router creation. |
+| Redirect path collides with any registered module route | Throw before router creation. |
+| Examples registration exists | Preserve `/examples/dashboard` as the default and preserve `/dashboard`, `/workbench`, `/access`, and `/users*` compatibility paths. |
+| Examples registration is removed while UI Kit remains | Use `/ui-kit/foundations`; remove the Examples compatibility paths. |
+| No module registrations remain | Use `/workspace`; shell/auth/workspace infrastructure still compiles and routes. |
+
+#### 5. Good/Base/Bad Cases
+
+- Good: delete the Examples modules, adapters, mock data, and `examplesRegistration` entry; router/auth/workspace code is unchanged and UI Kit becomes the authenticated entry.
+- Base: default starter registers Examples first and UI Kit second, preserving the existing `/examples/dashboard` behavior.
+- Bad: `router/index.ts`, `LoginPage.vue`, or `WorkspaceTabs.vue` independently hard-codes `/examples/dashboard`.
+
+#### 6. Tests Required
+
+- Unit-test ordered default derivation, the empty-registry fallback, invalid default/target paths, normalized trailing-slash behavior, duplicate redirects, and redirect/route collisions.
+- Assert the default registry preserves the existing Examples entry and legacy compatibility redirects.
+- Assert router records materialize compatibility redirects from the registry and expose the neutral `/workspace` route.
+- Raw-source or structural tests must prove router/auth/workspace fallback consumers use `defaultAuthenticatedPath` and do not contain `/examples/*` literals.
+- Generate the default starter, remove the complete Examples slice, and rerun static validation plus install/lint/test/typecheck/build/startup validation.
+
+#### 7. Wrong vs Correct
+
+```ts
+// Wrong: removable feature policy leaks into app infrastructure.
+const defaultAuthenticatedPath = '/examples/dashboard'
+const routes = [{ path: '/dashboard', redirect: '/examples/dashboard' }]
+
+// Correct: the optional module owns its entry and aliases.
+export const examplesRegistration: AppModuleRegistration = {
+  defaultPath: '/examples/dashboard',
+  manifest: examplesManifest,
+  redirects: [{ path: '/dashboard', redirect: '/examples/dashboard' }]
+}
+```
+
 ### Convention: Feature Manifest Is The Single Source Of Truth
 
 **What**: Each data-backed feature owns one `*.manifest.ts` definition containing its nav item, routes, route meta, and permissions. Aggregate information architecture mounts and composes those manifests; it does not restate their route or nav metadata.
@@ -480,10 +568,18 @@ export const examplesManifest = composeModuleManifest({
   modules: [mountedDashboard, mountedWorkbench, mountedUsers, mountedAccess]
 })
 
-export const registeredModules = createModuleRegistry([examplesManifest, uiKitManifest])
+export const examplesRegistration: AppModuleRegistration = {
+  defaultPath: '/examples/dashboard',
+  manifest: examplesManifest
+}
+
+export const appModuleRegistry = createAppModuleRegistry([
+  examplesRegistration,
+  { manifest: uiKitManifest }
+], { emptyPath: '/workspace' })
 ```
 
-`mountModuleManifest` prefixes nav and route paths, optionally prefixes route names, and returns cloned data without mutating the source manifest. `composeModuleManifest` sorts children, combines routes and permissions, and preserves the mounted feature metadata. `createModuleRegistry` sorts top-level modules and rejects duplicate module IDs, top-level nav paths, route paths, and route names.
+`mountModuleManifest` prefixes nav and route paths, optionally prefixes route names, and returns cloned data without mutating the source manifest. `composeModuleManifest` sorts children, combines routes and permissions, and preserves the mounted feature metadata. `createAppModuleRegistry` delegates manifest uniqueness/order checks to core, then validates app-local entry and redirect policy.
 
 **Why**: A feature must be promotable from the template's `/examples/*` showcase to a real project's top level without copying its definitions or changing shell renderers. The same composed result feeds Vue Router, navigation, command/search, and workspace metadata.
 
@@ -547,7 +643,7 @@ Settings
 
 **Why**: The default app is a template showcase, not an opinionated production business domain. The `Examples` parent communicates that these pages are copyable patterns while preserving concise, familiar labels.
 
-**Check**: The default module registry should expose `Examples` and `UI Kit` as first-level entries. Dashboard, Workbench, Charts, Users, and Access should not appear as first-level modules unless a real-project registry promotes them.
+**Check**: The default module registry should expose `Examples` and `UI Kit` as first-level entries. Dashboard, Workbench, Charts, Users, and Access should not appear as first-level modules unless a real-project registry promotes them. Removing the Examples registration must leave UI Kit, auth, shell, and workspace functional without editing fallback consumers.
 
 ### Convention: Reusable UI Flows Through UI Kit First
 

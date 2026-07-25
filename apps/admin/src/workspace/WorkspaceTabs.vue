@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { AdminScrollArea } from '@super-admin-org/ui'
 import { translateRouteTitle } from '@/i18n/navigation'
+import { defaultAuthenticatedPath } from '@/modules/module-registry'
 import { usePreferencesStore } from '@/stores/preferences.store'
 import { useWorkspaceTabsStore } from '@/stores/workspace-tabs.store'
 
@@ -51,7 +52,7 @@ function close(tabId: string): void {
   }
 
   if (route.fullPath === tabId) {
-    void router.push('/examples/dashboard')
+    void router.push(defaultAuthenticatedPath)
   }
 }
 

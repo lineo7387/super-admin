@@ -37,7 +37,8 @@ The always-on context explains:
 
 - the current `standard|minimal` quality mode and commands that actually exist
 - the `Page -> module query composable -> API adapter -> api/mock data or user API` data flow
-- the composition path through feature `*.manifest.ts`, `src/modules/examples/examples.manifest.ts`, and `src/modules/module-registry.ts`
+- the composition path through feature `*.manifest.ts`, `src/modules/examples/examples.manifest.ts`, the module-owned `examples.registration.ts`, generic `app-module-registry.ts`, and app-local `module-registry.ts`
+- why module registrations own default entries and compatibility redirects, so removing Examples needs no hardcoded router, auth, or workspace fallback
 - typed registrations and neutral fallbacks in `src/shell/layout-registry.ts` and `src/modules/auth/components/auth-recipe-registry.generated.ts`
 - why frontend `VITE_*` variables must not hold provider secrets
 
@@ -69,7 +70,7 @@ When using an AI tool on a generated or cloned Super Admin project, include this
 
 ```text
 This is a frontend-first Vue admin template. Keep data access on Page -> query composable -> API adapter -> mock/user API. Do not call transport directly from Vue pages. Pinia is for client state; TanStack Query is for server/cache state. The backend, auth provider, database, AI provider, and CodeGraph are optional unless I explicitly ask to add them.
-Treat feature manifests as the single source for nav/routes/meta. Extend layouts and auth recipes through their typed registries, and keep unknown IDs on the explicit neutral fallback instead of adding ID branches to consumers.
+Treat feature manifests as the single source for nav/routes/meta. Keep each optional module's default entry and compatibility redirects in its own registration; derive router/auth/workspace fallbacks from the app module registry. Extend layouts and auth recipes through their typed registries, and keep unknown IDs on the explicit neutral fallback instead of adding ID branches to consumers.
 Read package.json and super-admin.config.ts before choosing quality commands; standard includes lint/test/typecheck/build/check, while minimal keeps typecheck/build only.
 Use zh-CN as the default for new user-facing UI copy unless I explicitly ask for another locale.
 ```
