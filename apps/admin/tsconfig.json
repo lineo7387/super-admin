@@ -2,9 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "types": ["vite/client"],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["./src/*"],
       "@super-admin-org/core": ["../../packages/core/src/index.ts"],
       "@super-admin-org/theme": ["../../packages/theme/src/index.ts"],
       "@super-admin-org/theme-base": ["../../packages/theme-base/src/index.ts"],

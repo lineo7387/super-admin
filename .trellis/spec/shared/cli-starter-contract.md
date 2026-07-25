@@ -128,7 +128,7 @@ Default standard generated output:
 - no format, e2e, docs build, or reference smoke tooling
 - one explicit removable Examples slice by default: Dashboard, Workbench, Users, Access, and Template Guide; optional Charts appears in the same slice only when ECharts is selected
 - retained app infrastructure outside that slice: auth login/register, shell/workspace, themes, i18n, UI Kit, and the neutral `/workspace` route
-- `package.json#engines.node` set to `^20.19.0 || >=22.12.0`
+- `package.json#engines.node` set to `^20.19.0 || >=22.13.0`
 
 Standard scripts:
 
@@ -175,7 +175,7 @@ create-super-admin    CLI project creator
 CLI implementation package:
 
 - The source package lives under `packages/cli` and is named `create-super-admin`.
-- The root workspace, `create-super-admin` package, generated project manifest, and maintainer validator must agree on Node `^20.19.0 || >=22.12.0`. A drift test compares all declared values.
+- The root workspace, `create-super-admin` package, generated project manifest, and maintainer validator must agree on Node `^20.19.0 || >=22.13.0`. A drift test compares all declared values.
 - The CLI bin is `create-super-admin` and should point at emitted Node ESM output such as `dist/cli.js` after package build.
 - TypeScript source files that compile to runnable Node ESM must use relative `.js` import specifiers between local modules, for example `import { runCreateSuperAdmin } from './run-create-super-admin.js'`. Without the emitted extension, Node cannot execute the built CLI.
 - The CLI should normalize and validate input before materializing output, then write through a temporary directory and rename into place so invalid flags and generation errors do not leave a partial project.
@@ -296,7 +296,7 @@ Generated template derivation:
 | Both `--charts` and `--no-charts` passed | Fail before writing files with a mutually exclusive flag message. |
 | No quality flag passed | Generate the `standard` quality baseline with ESLint, Vitest, the representative starter test, and `lint`/`test`/`check` scripts. |
 | `--minimal` passed | Generate the minimal baseline with typecheck/build only; omit all ESLint/Vitest files, dependencies, scripts, tests, and AI claims. |
-| Workspace, CLI, generated package, or validator Node range differs from `^20.19.0 || >=22.12.0` | Reject in contract tests or generated starter static validation. |
+| Workspace, CLI, generated package, or validator Node range differs from `^20.19.0 || >=22.13.0` | Reject in contract tests or generated starter static validation. |
 | Unknown theme id | Fail with a clear supported-theme message; do not generate a partial project. |
 | Project name missing | Fail before writing files with usage guidance. |
 | `--help` or `-h` passed | Print usage guidance and exit successfully without generating files. |

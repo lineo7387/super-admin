@@ -4,7 +4,7 @@
 
 ## 运行环境
 
-Super Admin 当前要求 Node.js `^20.19.0 || >=22.12.0`。这个范围同时写入源码仓库、`create-super-admin` 包和每个生成项目的 `package.json`。
+Super Admin 当前要求 Node.js `^20.19.0 || >=22.13.0`。这个范围同时写入源码仓库、`create-super-admin` 包和每个生成项目的 `package.json`。
 
 ## 创建你的 Admin App
 
@@ -94,7 +94,7 @@ Examples 是一个可整体删除的功能切片，不是 shell、auth 或 works
 
 ### 前置条件
 
-- Node.js `^20.19.0 || >=22.12.0`。
+- Node.js `^20.19.0 || >=22.13.0`。
 - 与 root `packageManager` 字段匹配的 pnpm。
 
 安装依赖：

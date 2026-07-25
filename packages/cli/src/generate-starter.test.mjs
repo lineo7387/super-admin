@@ -278,6 +278,7 @@ describe('create-super-admin starter generation', () => {
     await generateStarter(input, { sourceRoot: repoRoot })
 
     const packageJson = await readGeneratedJson(input.targetDirectory, 'package.json')
+    const tsconfig = await readGeneratedJson(input.targetDirectory, 'tsconfig.json')
     const agentsMd = await readGeneratedText(input.targetDirectory, 'AGENTS.md')
     const claudeMd = await readGeneratedText(input.targetDirectory, 'CLAUDE.md')
     const coreContext = await readGeneratedText(input.targetDirectory, 'ai-context/core.md')
@@ -312,6 +313,17 @@ describe('create-super-admin starter generation', () => {
     expect(packageJson.devDependencies.eslint).toBe('^10.6.0')
     expect(packageJson.devDependencies['eslint-config-prettier']).toBe('^10.1.8')
     expect(packageJson.devDependencies.vitest).toBe('^4.1.9')
+    expect(packageJson.dependencies.pinia).toBe('^3.0.4')
+    expect(packageJson.dependencies.vue).toBe('^3.5.34')
+    expect(packageJson.dependencies['vue-i18n']).toBe('11.4.2')
+    expect(packageJson.dependencies['vue-router']).toBe('^4.6.4')
+    expect(packageJson.devDependencies['@types/node']).toBe('^20.19.0')
+    expect(packageJson.devDependencies['@vue/tsconfig']).toBe('^0.9.1')
+    expect(packageJson.devDependencies.typescript).toBe('~6.0.3')
+    expect(tsconfig.compilerOptions.baseUrl).toBeUndefined()
+    expect(tsconfig.compilerOptions.paths).toEqual({
+      '@/*': ['./src/*']
+    })
     expectSuperAdminDependencyRange(packageJson, '@super-admin-org/theme-base')
     expect(packageJson.dependencies['motion-v']).toBe('^2.3.0')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
@@ -593,7 +605,7 @@ describe('create-super-admin starter generation', () => {
     const rootPackageJson = JSON.parse(await readFile(resolve(repoRoot, 'package.json'), 'utf8'))
     const cliPackageJson = JSON.parse(await readFile(resolve(repoRoot, 'packages/cli/package.json'), 'utf8'))
 
-    expect(rootPackageJson.engines?.node).toBe('^20.19.0 || >=22.12.0')
+    expect(rootPackageJson.engines?.node).toBe('^20.19.0 || >=22.13.0')
     expect(SUPPORTED_NODE_RANGE).toBe(rootPackageJson.engines.node)
     expect(VALIDATOR_SUPPORTED_NODE_RANGE).toBe(rootPackageJson.engines.node)
     expect(cliPackageJson.engines?.node).toBe(rootPackageJson.engines.node)

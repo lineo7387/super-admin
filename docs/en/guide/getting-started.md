@@ -4,7 +4,7 @@ This guide is for users who want to create their own admin project from Super Ad
 
 ## Runtime
 
-Super Admin currently requires Node.js `^20.19.0 || >=22.12.0`. The source workspace, the `create-super-admin` package, and every generated project declare the same range.
+Super Admin currently requires Node.js `^20.19.0 || >=22.13.0`. The source workspace, the `create-super-admin` package, and every generated project declare the same range.
 
 ## Create Your Admin App
 
@@ -94,7 +94,7 @@ Use this path only when you are contributing to `lineo7387/super-admin` itself, 
 
 ### Prerequisites
 
-- Node.js `^20.19.0 || >=22.12.0`.
+- Node.js `^20.19.0 || >=22.13.0`.
 - pnpm, matching the root `packageManager` field.
 
 Install dependencies:

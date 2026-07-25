@@ -26,7 +26,7 @@ Current focus:
 
 ## Use The Starter
 
-Requires Node.js `^20.19.0 || >=22.12.0`.
+Requires Node.js `^20.19.0 || >=22.13.0`.
 
 Create a starter from npm:
 
