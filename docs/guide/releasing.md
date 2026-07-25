@@ -38,6 +38,14 @@ Version numbers 表示 release stability 和 compatibility。npm dist-tags 表�
 pnpm changeset
 ```
 
+PR 中的 release-impacting 文件必须由同一 PR 改动的 Changesets 覆盖。CI 会自动比较 PR base；本地可显式运行：
+
+```bash
+pnpm release:impact --base origin/main
+```
+
+检查范围包括 publishable package 的运行时/构建输入、共享 package builder、`apps/admin` 中会进入生成模板的 canonical starter source，以及 CLI template build scripts。普通 tests/test config、coverage、dist、generated changelog 和 optional reference API 不触发 package release；starter 自带的 quality contract test 是明确例外。检查只读取当前 diff 中新增、修改或删除的 Changesets，不能用 `main` 上已有的 pending changeset 替另一个 PR 兜底；`pnpm release version` 删除的 changeset 会从 base revision 读取，因此正常 version PR 仍可通过。
+
 Publish candidates 不再使用固定 Changesets group。选择变更 package names，然后让 release planner 展开 internal dependents：
 
 ```bash
@@ -192,8 +200,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22.14.0
           registry-url: https://registry.npmjs.org
@@ -241,6 +249,7 @@ Workflow approval 在 GitHub environment gate 发生一次，然后 job 无需�
 
 ```bash
 pnpm release check
+pnpm release:impact --base <git-ref>
 pnpm release version
 pnpm release plan [--channel next|latest] --changed <package[,package]>
 pnpm release assert-unpublished --changed <package[,package]>
