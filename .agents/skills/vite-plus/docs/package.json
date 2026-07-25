@@ -24,6 +24,8 @@
   },
   "pnpm": {
     "overrides": {
+      "dompurify": "3.4.12",
+      "postcss": "8.5.23",
       "vite>esbuild": "0.28.1"
     }
   }

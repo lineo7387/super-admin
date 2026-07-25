@@ -38,6 +38,14 @@ Create a changeset when a publishable package changes:
 pnpm changeset
 ```
 
+Release-impacting files in a PR must be covered by Changesets changed in that same PR. CI compares the PR base automatically; run the guard locally with:
+
+```bash
+pnpm release:impact --base origin/main
+```
+
+The impact map covers runtime/build inputs of publishable packages, the shared package builder, canonical starter source under `apps/admin` that is copied into generated projects, and CLI template build scripts. Ordinary tests/test config, coverage, dist output, generated changelogs, and the optional reference API do not trigger a package release; the starter-owned quality contract test is an explicit exception. The guard reads only Changesets added, modified, or deleted by the current diff, so an unrelated pending Changeset already on `main` cannot cover a later PR. Changesets deleted by `pnpm release version` are read from the base revision, allowing normal version PRs to pass.
+
 Publish candidates are no longer configured as a fixed Changesets group. Select the changed package names, then let the release planner expand internal dependents:
 
 ```bash
@@ -192,8 +200,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22.14.0
           registry-url: https://registry.npmjs.org
@@ -241,6 +249,7 @@ The workflow approval happens once at the GitHub environment gate, then the job 
 
 ```bash
 pnpm release check
+pnpm release:impact --base <git-ref>
 pnpm release version
 pnpm release plan [--channel next|latest] --changed <package[,package]>
 pnpm release assert-unpublished --changed <package[,package]>

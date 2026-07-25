@@ -161,6 +161,78 @@ Root scripts should be directly runnable and named honestly.
 - `pnpm test:reference` is maintainer-only and validates optional reference API connectivity.
 - Do not place reference smoke tooling in generated starter output.
 - Registry CLI smoke commands that run without an interactive TTY must pass `--theme <id>` or `--themes <ids>` explicitly so validation cannot block on the theme selector.
+- CI keeps the full build/lint/format/typecheck/test/packed-starter/docs gate on Node 24 once. A separate lightweight matrix must run the `create-super-admin` build and tests on the exact supported minimums `20.19.0` and `22.12.0`; do not duplicate packed-starter validation in that matrix.
+
+## Scenario: Release Impact Changeset Guard
+
+### 1. Scope / Trigger
+
+- Trigger: any PR that changes a publishable package input, canonical starter source, or CLI template build input.
+- Purpose: prevent source, generated starter, and npm release notes from drifting apart while avoiding package bumps for tests and maintainer-only validation.
+
+### 2. Signatures
+
+```bash
+pnpm release:impact --base <git-ref>
+GITHUB_BASE_SHA=<git-ref> pnpm release:impact
+```
+
+The CI call is:
+
+```bash
+pnpm release:impact --base "${{ github.event.pull_request.base.sha }}"
+```
+
+### 3. Contracts
+
+- `--base <git-ref>` is required unless `GITHUB_BASE_SHA` is set.
+- The diff is `<base>...HEAD` with rename detection.
+- Impact includes publish candidate directories except test-only files/directories/config, `dist`, `coverage`, `.tsbuildinfo`, and generated `CHANGELOG.md`.
+- `apps/admin/components.json` and starter-owned `apps/admin/src/**` impact `create-super-admin`; optional `src/api/reference/**` and ordinary tests/specs are excluded, while `src/super-admin/starter-quality.test.ts` remains included.
+- `scripts/build-cli-template.mjs` and `scripts/write-cli-package-version-ranges.mjs` impact `create-super-admin`.
+- `scripts/build-publish-package.mjs` impacts every core, UI, theme runtime, and theme profile package that consumes the shared builder.
+- Only `.changeset/*.md` files changed by the current diff may cover impact. Deleted Changesets are read from the base revision so Changesets version PRs remain valid.
+- A covered run exits `0`; an uncovered run exits non-zero and prints the missing package names.
+
+### 4. Validation & Error Matrix
+
+| Condition | Result |
+| --- | --- |
+| No base flag and no `GITHUB_BASE_SHA` | Throw `A comparison base is required` |
+| No release-impacting paths | Exit `0` with `no publishable package impact` |
+| Every impacted package appears in changed Changeset frontmatter | Exit `0` and list covered packages |
+| One or more impacted packages are absent | Exit non-zero with `release-impact-missing-changeset` |
+| A version PR deletes a covering Changeset | Read `<base>:<path>` and treat it as coverage |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `apps/admin/src/modules/users/UsersPage.vue` plus a changed patch Changeset for `create-super-admin`.
+- Base: `apps/admin/src/modules/users/UsersPage.test.ts` only; no package release impact.
+- Bad: `packages/core/src/index.ts` with no changed Changeset, even if `main` already contains an unrelated pending core Changeset.
+
+### 6. Tests Required
+
+- Unit-test package/starter path mapping, shared build inputs, test-only exclusions and starter-quality exceptions, Changeset frontmatter parsing, missing-package reporting, and both sides of renames.
+- Contract-test `.github/workflows/ci.yml` for full-history checkout and the PR-base command before the build gate.
+- Keep script tests under `scripts/*.test.mjs` so root `pnpm test` executes them.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+packages/cli/src/templates.ts changed
+main already has an old create-super-admin changeset
+PR adds no changeset
+```
+
+#### Correct
+
+```text
+packages/cli/src/templates.ts changed
+the same PR adds .changeset/<name>.md with "create-super-admin": patch
+pnpm release:impact --base origin/main passes
+```
 
 ## Locale-Aware Smoke Tests
 

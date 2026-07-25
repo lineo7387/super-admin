@@ -7,8 +7,13 @@ on:
       - main
 
 jobs:
-  checks:
+  runtime-contract:
+    name: Node ${{ matrix.node-version }} CLI contract
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20.19.0, 22.12.0]
 
     steps:
       - name: Checkout
@@ -18,13 +23,44 @@ jobs:
         uses: pnpm/action-setup@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm --filter create-super-admin build
+
+      - name: Test CLI
+        run: pnpm --filter create-super-admin test
+
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Validate release impact
+        if: github.event_name == 'pull_request'
+        run: pnpm release:impact --base "${{ github.event.pull_request.base.sha }}"
 
       - name: Build
         run: pnpm build

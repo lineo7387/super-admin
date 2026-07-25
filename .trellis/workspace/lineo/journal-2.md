@@ -500,3 +500,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 74: 依赖安全与发布门禁加固
+
+**Date**: 2026-07-25
+**Task**: 依赖安全与发布门禁加固
+**Branch**: `codex/delivery-hardening`
+
+### Summary
+
+集中修复可安全升级的依赖与仓库告警，新增 release-impact Changeset 守卫和最低 Node CI 契约，对齐 GitHub Actions 与双语发布文档，并记录 VitePress stable 上游阻塞项。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9bb8a67` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

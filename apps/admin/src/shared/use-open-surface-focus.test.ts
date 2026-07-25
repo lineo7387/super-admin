@@ -33,6 +33,7 @@ describe('useOpenSurfaceFocus', () => {
     await nextTick()
 
     expect(document.activeElement).toBe(document.body.querySelector('[role="dialog"]'))
+    expect(wrapper.html()).toContain('Background trigger')
 
     wrapper.unmount()
   })
