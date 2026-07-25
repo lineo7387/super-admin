@@ -1,6 +1,6 @@
-import type { UserRole } from '@/modules/users/users.types'
-
 export type AuthFieldErrors<Field extends string = string> = Partial<Record<Field, string>>
+
+export type AuthUserRole = 'Owner' | 'Operator' | 'Auditor' | 'Analyst'
 
 export type LoginInput = {
   email: string
@@ -18,7 +18,7 @@ export type AuthUser = {
   email: string
   id: string
   name: string
-  role: UserRole
+  role: AuthUserRole
 }
 
 export type AuthSession = {

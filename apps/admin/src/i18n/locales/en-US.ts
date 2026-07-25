@@ -261,6 +261,10 @@ const enUS = {
     }
   },
   workspace: {
+    empty: {
+      description: 'Register at least one business module in src/modules/module-registry.ts. The first ordered module will then become the workspace entry.',
+      title: 'No business modules registered'
+    },
     breadcrumbRoot: 'Workspace',
     current: 'Current',
     fallbackTitle: 'Workspace',

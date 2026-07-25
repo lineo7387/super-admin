@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { removeGeneratedExamples } from './prune-generated-starter-examples.mjs'
 import { validateGeneratedStarter } from './validate-generated-starter.mjs'
 
 export const publishCandidates = [
@@ -336,9 +337,10 @@ async function rewriteStarterDependencies(projectDir, tarballs) {
   await writeJson(packageJsonPath, rewriteStarterPackageJson(packageJson, tarballDependencyMap))
 }
 
-export function createStarterValidationOptions({ charts, i18n, quality, tarballs, themes }) {
+export function createStarterValidationOptions({ charts, examples = 'present', i18n, quality, tarballs, themes }) {
   return {
     charts,
+    examples,
     i18n,
     packageManager: 'pnpm',
     packageManifestPaths: tarballs.map((tarball) => tarball.manifestPath),
@@ -347,7 +349,18 @@ export function createStarterValidationOptions({ charts, i18n, quality, tarballs
   }
 }
 
-async function validateStarterVariant({ args, charts = 'none', cliBinPath, i18n, label, outputDir, quality = 'standard', tarballs, themes }) {
+async function validateStarterVariant({
+  args,
+  charts = 'none',
+  cliBinPath,
+  i18n,
+  label,
+  outputDir,
+  quality = 'standard',
+  tarballs,
+  themes,
+  validateWithoutExamples = false
+}) {
   const projectDir = resolve(outputDir, label ?? `starter-${themes.join('-')}${charts === 'echarts' ? '-echarts' : ''}${i18n ? '-i18n' : ''}`)
 
   await rm(projectDir, { force: true, recursive: true })
@@ -368,6 +381,26 @@ async function validateStarterVariant({ args, charts = 'none', cliBinPath, i18n,
   if (failures.length > 0) {
     throw new Error(failures.map((failure) => `${failure.id}: ${failure.message}`).join('\n'))
   }
+
+  if (validateWithoutExamples) {
+    await removeGeneratedExamples(projectDir)
+
+    const prunedFailures = await validateGeneratedStarter(
+      projectDir,
+      createStarterValidationOptions({
+        charts: 'none',
+        examples: 'removed',
+        i18n,
+        quality,
+        tarballs,
+        themes
+      })
+    )
+
+    if (prunedFailures.length > 0) {
+      throw new Error(prunedFailures.map((failure) => `${failure.id}: ${failure.message}`).join('\n'))
+    }
+  }
 }
 
 export const localStarterValidationVariants = [
@@ -377,7 +410,8 @@ export const localStarterValidationVariants = [
     i18n: false,
     label: 'starter-default',
     quality: 'standard',
-    themes: ['base']
+    themes: ['base'],
+    validateWithoutExamples: true
   },
   {
     args: ['--themes', 'base,cyberpunk', '--i18n'],

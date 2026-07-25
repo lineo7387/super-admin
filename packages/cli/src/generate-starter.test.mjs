@@ -4,9 +4,11 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { validateGeneratedStarterStatic } from '../../../scripts/validate-generated-starter.mjs'
+import { SUPPORTED_NODE_RANGE as VALIDATOR_SUPPORTED_NODE_RANGE, validateGeneratedStarterStatic } from '../../../scripts/validate-generated-starter.mjs'
+import { removeGeneratedExamples } from '../../../scripts/prune-generated-starter-examples.mjs'
 import { generateStarter, parseCreateSuperAdminArgs, runCreateSuperAdmin } from './index.ts'
 import { superAdminPackageVersionRanges } from './package-version-ranges.generated.ts'
+import { SUPPORTED_NODE_RANGE } from './runtime-contract.ts'
 import { createPackageJson } from './templates.ts'
 
 const packageDir = dirname(fileURLToPath(import.meta.url))
@@ -315,7 +317,10 @@ describe('create-super-admin starter generation', () => {
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBeUndefined()
     expect(packageJson.dependencies.echarts).toBeUndefined()
     expect(packageJson.dependencies['vue-echarts']).toBeUndefined()
+    expect(packageJson.engines.node).toBe(SUPPORTED_NODE_RANGE)
     expect(readme).toContain('AGENTS.md')
+    expect(readme).toContain(SUPPORTED_NODE_RANGE)
+    expect(readme).toContain('src/modules/examples/examples.registration.ts')
     expect(readme).not.toContain('AI_CONTEXT.md')
     expect(claudeMd.trim()).toBe('@AGENTS.md')
     expect(agentsMd).toContain('# AGENTS.md')
@@ -397,6 +402,9 @@ describe('create-super-admin starter generation', () => {
     expect(loginPage).toContain('session.setSession(nextSession)')
     expect(loginPage).not.toContain('setReferenceSession')
     expect(registerPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
+    expect(extensionContext).toContain('src/modules/app-module-registry.ts')
+    expect(extensionContext).toContain('src/modules/examples/examples.registration.ts')
+    expect(extensionContext).toContain('删除 Examples')
 
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { themes: ['base'] })).resolves.toEqual([])
   })
@@ -426,6 +434,33 @@ describe('create-super-admin starter generation', () => {
     await expect(generatedPathExists(input.targetDirectory, 'vitest.config.ts')).resolves.toBe(false)
     await expect(generatedPathExists(input.targetDirectory, 'src/super-admin/starter-quality.test.ts')).resolves.toBe(false)
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { quality: 'minimal', themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('keeps the generated app valid after the complete Examples slice is removed', async () => {
+    const tempRoot = await createTempRoot()
+    const input = parseCreateSuperAdminArgs(['demo-pruned', '--theme', 'base', '--charts', 'echarts'], { cwd: tempRoot })
+
+    await generateStarter(input, { sourceRoot: repoRoot })
+    await removeGeneratedExamples(input.targetDirectory)
+
+    const packageJson = await readGeneratedJson(input.targetDirectory, 'package.json')
+    const moduleRegistry = await readGeneratedText(input.targetDirectory, 'src/modules/module-registry.ts')
+    const agentsMd = await readGeneratedText(input.targetDirectory, 'AGENTS.md')
+    const config = await readGeneratedText(input.targetDirectory, 'super-admin.config.ts')
+
+    expect(moduleRegistry).not.toContain('examplesRegistration')
+    expect(moduleRegistry).toContain('uiKitManifest')
+    expect(packageJson.dependencies.echarts).toBeUndefined()
+    expect(packageJson.dependencies['vue-echarts']).toBeUndefined()
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/examples')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/dashboard')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/charts')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/shared/charts')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'ai-context/charts.md')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/ui-kit/ui-kit.manifest.ts')).resolves.toBe(true)
+    expect(agentsMd).not.toContain('@ai-context/charts.md')
+    expect(config).toContain("provider: 'none'")
+    await expect(validateGeneratedStarterStatic(input.targetDirectory, { examples: 'removed', themes: ['base'] })).resolves.toEqual([])
   })
 
   it('normalizes legacy programmatic generation input to the standard quality mode', async () => {
@@ -550,6 +585,19 @@ describe('create-super-admin starter generation', () => {
     expect(packageJson.dependencies['@super-admin-org/theme-base']).toBe('^3.0.0')
     expect(packageJson.dependencies['@super-admin-org/theme-cyberpunk']).toBe('^4.0.0')
     expect(packageJson.dependencies['@super-admin-org/ui']).toBe('^5.0.0')
+  })
+
+  it('uses one supported Node range across the workspace, CLI package, and generated projects', async () => {
+    const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base'], { cwd: '/tmp/super-admin-cli' })
+    const generatedPackageJson = JSON.parse(createPackageJson(input))
+    const rootPackageJson = JSON.parse(await readFile(resolve(repoRoot, 'package.json'), 'utf8'))
+    const cliPackageJson = JSON.parse(await readFile(resolve(repoRoot, 'packages/cli/package.json'), 'utf8'))
+
+    expect(rootPackageJson.engines?.node).toBe('^20.19.0 || >=22.12.0')
+    expect(SUPPORTED_NODE_RANGE).toBe(rootPackageJson.engines.node)
+    expect(VALIDATOR_SUPPORTED_NODE_RANGE).toBe(rootPackageJson.engines.node)
+    expect(cliPackageJson.engines?.node).toBe(rootPackageJson.engines.node)
+    expect(generatedPackageJson.engines?.node).toBe(rootPackageJson.engines.node)
   })
 
   it('does not write into non-empty target directories', async () => {

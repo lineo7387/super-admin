@@ -7,6 +7,7 @@ import { AdminAlert, AdminButton, AdminField, AdminTextInput, AdminValidationSum
 // @starter-reference:start
 import { loginReferenceSession } from '@/api/reference/auth-reference.api'
 // @starter-reference:end
+import { defaultAuthenticatedPath } from '@/modules/module-registry'
 import { resolvePostLoginPath } from '@/router/auth-guard'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
 import { createTemplateAuthSession } from './auth-session'
@@ -66,7 +67,7 @@ async function submitLogin(): Promise<void> {
   try {
     const nextSession = await createLoginSession()
     session.setSession(nextSession)
-    await router.push(resolvePostLoginPath(route.query.redirect))
+    await router.push(resolvePostLoginPath(route.query.redirect, defaultAuthenticatedPath))
   } catch (error) {
     submitError.value = error instanceof Error ? error.message : t('auth.login.unableToSignIn')
   } finally {

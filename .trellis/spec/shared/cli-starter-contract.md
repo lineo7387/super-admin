@@ -64,6 +64,16 @@ node scripts/validate-generated-starter.mjs <generated-project-dir> --pm pnpm
 node scripts/validate-generated-starter.mjs <generated-project-dir> --package-manifest <packed-package-json>
 ```
 
+The maintainer validator also exposes an internal programmatic mode used by publish readiness:
+
+```ts
+validateGeneratedStarterStatic(projectDir, {
+  examples: 'present' | 'removed'
+}): Promise<ValidationFailure[]>
+```
+
+`examples: 'removed'` is not a public generator preset. It proves that the documented manual removal recipe remains valid.
+
 Theme configuration should be declarative and user-readable:
 
 ```ts
@@ -116,7 +126,9 @@ Default standard generated output:
 - one representative starter contract test under `src/`
 - executable `lint`, `test`, `typecheck`, `build`, and aggregate `check` quality commands
 - no format, e2e, docs build, or reference smoke tooling
-- all current removable examples by default: Dashboard, Workbench, Users, Access, Template Guide, UI Kit, auth login/register pages, and shell/workspace experiences; optional Charts examples appear only when ECharts is selected
+- one explicit removable Examples slice by default: Dashboard, Workbench, Users, Access, and Template Guide; optional Charts appears in the same slice only when ECharts is selected
+- retained app infrastructure outside that slice: auth login/register, shell/workspace, themes, i18n, UI Kit, and the neutral `/workspace` route
+- `package.json#engines.node` set to `^20.19.0 || >=22.12.0`
 
 Standard scripts:
 
@@ -163,6 +175,7 @@ create-super-admin    CLI project creator
 CLI implementation package:
 
 - The source package lives under `packages/cli` and is named `create-super-admin`.
+- The root workspace, `create-super-admin` package, generated project manifest, and maintainer validator must agree on Node `^20.19.0 || >=22.12.0`. A drift test compares all declared values.
 - The CLI bin is `create-super-admin` and should point at emitted Node ESM output such as `dist/cli.js` after package build.
 - TypeScript source files that compile to runnable Node ESM must use relative `.js` import specifiers between local modules, for example `import { runCreateSuperAdmin } from './run-create-super-admin.js'`. Without the emitted extension, Node cannot execute the built CLI.
 - The CLI should normalize and validate input before materializing output, then write through a temporary directory and rename into place so invalid flags and generation errors do not leave a partial project.
@@ -242,7 +255,7 @@ Generated template derivation:
 - Generated `CLAUDE.md` must contain only `@AGENTS.md` so Claude Code uses the same entry file and cannot drift from `AGENTS.md`.
 - Generated `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md` are always present. They must document current-code-first behavior, the frontend data flow, key extension paths, and frontend secret boundary, including `Page -> module query composable -> API adapter -> api/mock data or user API` and the rule that provider secrets must not go in frontend `VITE_*` env variables.
 - Generated `ai-context/core.md` must record the selected `standard|minimal` quality mode. Standard context lists `lint`, `test`, `typecheck`, `build`, and `check`; minimal context lists only commands that exist and must not imply ESLint/Vitest were generated.
-- Generated `ai-context/extension-points.md` must identify the actual composition seams: feature `*.manifest.ts` files as route/nav/meta sources, `src/modules/examples/examples.manifest.ts` and `src/modules/module-registry.ts` as composition roots, `src/shell/layout-registry.ts` for layout registrations, and `src/modules/auth/components/auth-recipe-registry.generated.ts` for installed auth recipes. AI guidance must tell agents to register an extension rather than add ID-specific branches to shell/auth consumers.
+- Generated `ai-context/extension-points.md` must identify the actual composition seams: feature `*.manifest.ts` files as route/nav/meta sources, `src/modules/examples/examples.manifest.ts` for feature composition, module-owned `src/modules/examples/examples.registration.ts` for the Examples entry/aliases, generic `src/modules/app-module-registry.ts`, app-local `src/modules/module-registry.ts`, `src/shell/layout-registry.ts` for layout registrations, and `src/modules/auth/components/auth-recipe-registry.generated.ts` for installed auth recipes. AI guidance must explain complete Examples removal and tell agents to register an extension rather than add ID-specific branches to router/shell/auth/workspace consumers.
 - Generated `AGENTS.md` must import exactly the generated `ai-context/*.md` files using `@ai-context/<name>.md` lines.
 - Generated capability context files must exist only for capabilities that were actually generated: `ai-context/theme.md` for multi-theme output, `ai-context/i18n.md` for `--i18n`, and `ai-context/charts.md` for `--charts echarts`. Do not generate disabled capability files or import disabled capabilities.
 - Generated AI context may include a small generated baseline such as the default theme and locale, but that baseline must be described as non-authoritative after the user changes the project.
@@ -263,8 +276,11 @@ Generated template derivation:
 - Generated Control Center workspace settings must stay aligned with the monorepo Stage Manager contract: Workspace Tabs and `stageManager.railEnabled` are independent toggles, fullscreen Overview is a desktop-only runtime command, and no generated starter should expose the retired `side-dock | all-windows` presentation-mode selector.
 - Generated Control Center must not expose a global density selector by default. Keep persisted `density` compatibility only until global density tokens/CSS make the setting visibly meaningful.
 - Generated output excludes `src/api/reference/`, `dist/`, `node_modules/`, `*.tsbuildinfo`, docs, optional backend code, and reference smoke tooling. Standard output may include only explicitly allowlisted starter-owned tests; minimal output excludes all generated test files.
-- Every data-backed feature owns one `*.manifest.ts` definition for nav, routes, route meta, and permissions. `src/modules/examples/examples.manifest.ts` mounts those source manifests under `/examples` and composes the Examples tree; `src/modules/module-registry.ts` registers the resulting top-level manifests. Do not duplicate feature route/nav metadata in an aggregate manifest or exclude active source manifests from generated starters.
-- Manifest mounting/composition must be immutable. Duplicate module IDs, top-level nav paths, route paths, or route names fail explicitly instead of relying on import order.
+- Every data-backed feature owns one `*.manifest.ts` definition for nav, routes, route meta, and permissions. `src/modules/examples/examples.manifest.ts` mounts those source manifests under `/examples` and composes the Examples tree; `src/modules/examples/examples.registration.ts` owns its default entry and compatibility redirects; `src/modules/module-registry.ts` composes enabled app registrations. Do not duplicate feature route/nav metadata in an aggregate manifest or exclude active source manifests from generated starters.
+- Manifest mounting/composition must be immutable. Duplicate module IDs, top-level nav paths, route paths, route names, redirect paths, or redirect/route collisions fail explicitly instead of relying on import order.
+- Router root, login/auth redirects, Workspace Tabs, and Stage Manager last-window fallbacks must derive from the app module registry. Removing Examples must not require editing these consumers.
+- The complete Examples removal recipe deletes the Examples/access/dashboard/users/workbench modules, their API adapters/mock data, the Examples registration entry, and optional chart source/dependencies/context. UI Kit, auth, shell/workspace, themes, i18n, and the neutral `/workspace` route remain.
+- The maintainer pruning helper is destructive and must fail closed before deletion unless `AGENTS.md` contains the generated-project marker emitted by `create-super-admin`. It must never run against canonical `apps/admin` source.
 
 ### 4. Validation & Error Matrix
 
@@ -280,6 +296,7 @@ Generated template derivation:
 | Both `--charts` and `--no-charts` passed | Fail before writing files with a mutually exclusive flag message. |
 | No quality flag passed | Generate the `standard` quality baseline with ESLint, Vitest, the representative starter test, and `lint`/`test`/`check` scripts. |
 | `--minimal` passed | Generate the minimal baseline with typecheck/build only; omit all ESLint/Vitest files, dependencies, scripts, tests, and AI claims. |
+| Workspace, CLI, generated package, or validator Node range differs from `^20.19.0 || >=22.12.0` | Reject in contract tests or generated starter static validation. |
 | Unknown theme id | Fail with a clear supported-theme message; do not generate a partial project. |
 | Project name missing | Fail before writing files with usage guidance. |
 | `--help` or `-h` passed | Print usage guidance and exit successfully without generating files. |
@@ -300,6 +317,7 @@ Generated template derivation:
 | Generated default source imports `src/api/reference/*` or declares reference backend env tokens | Reject; optional reference integration is maintainer/reference material, not default starter output. |
 | Generated feature route/nav metadata is repeated in an aggregate manifest | Reject; mount and compose each feature's source manifest instead. |
 | Manifest composition creates duplicate module IDs, nav paths, route paths, or route names | Fail explicitly before the registry is consumed. |
+| App registration declares an unowned default/redirect target, duplicate redirect, or redirect/route collision | Fail explicitly before router creation. |
 | Generated single-theme output exposes runtime theme or language switching with one installed theme/locale | Reject; single-theme output is fixed to that theme and `zh-CN`. |
 | Generated output includes legacy `AI_CONTEXT.md` | Reject; `AGENTS.md` is the single AI entry file. |
 | Generated output omits `AGENTS.md`, `CLAUDE.md`, or the always-on `ai-context/core.md`, `ai-context/data-flow.md`, `ai-context/extension-points.md` files | Reject; AI tools need the shared entry and core context files. |
@@ -309,7 +327,9 @@ Generated template derivation:
 | Generated multi-theme or i18n output omits `ai-context/theme.md`, `ai-context/i18n.md`, or the matching `AGENTS.md` imports | Reject; selected capabilities should explain the relevant config and extension points. |
 | Publish-ready package export points at source TypeScript instead of emitted package output | Reject for publish-ready package work; source exports are only acceptable as a temporary monorepo development state. |
 | Theme runtime package bundles all theme profiles | Reject; selected theme packages must remain dependency-granular. |
-| User wants to remove examples | Point to docs; CLI MVP must not auto-delete examples. |
+| User wants to remove examples | Point to the complete documented slice-removal recipe; CLI MVP must not add a public `--no-examples` preset. |
+| Maintainer publish validation checks the default starter | Validate it once with Examples present, remove the complete slice, then rerun install/lint/test/typecheck/build/startup with `examples: 'removed'`. |
+| Pruning helper target is not identified as a generated project | Reject before deleting any file. |
 | AI Assistant has no configuration | App runs; assistant is visible/unconfigured but unusable. |
 | AI provider secret is proposed for frontend `VITE_*` env | Reject; frontend env may only hold client-safe config such as endpoint URL. |
 
@@ -320,9 +340,10 @@ Generated template derivation:
 - Good: default generated `AGENTS.md` imports only `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md`; no ECharts or disabled switcher context files are generated.
 - Good: generated `CLAUDE.md` contains only `@AGENTS.md`.
 - Good: `create-super-admin app --charts echarts` adds `ai-context/charts.md` and an `@ai-context/charts.md` import with `src/modules/charts/ChartsPage.vue`, `src/shared/charts/echarts-options.ts`, and the selected dependencies.
+- Good: remove the documented Examples slice and `examplesRegistration`; UI Kit becomes the default entry without router/auth/workspace edits, then the complete generated quality gate passes again.
 - Good: `super-admin theme remove cyberpunk` removes `@super-admin-org/theme-cyberpunk`, updates `super-admin.config.ts`, and regenerates `src/super-admin/theme-registry.generated.ts`.
 - Good: a shell or auth change is made once in `apps/admin`; a named transform removes only the optional reference/theme/locale region for the selected starter variant.
-- Base: generated README links to VitePress docs for deleting examples, connecting APIs, extending the quality baseline, changing themes, and changing locale.
+- Base: generated README records the Node range and contains the concrete Examples removal recipe, then links to VitePress docs for deeper customization.
 - Bad: `@super-admin-org/theme` bundles every theme profile, making theme CLI commands only toggle already-downloaded code.
 - Bad: generated project contains the VitePress docs site, optional Hono reference API, FastAPI AI companion backend, e2e tooling, or maintainer tests by default.
 - Bad: `--minimal` leaves a Vitest import, ESLint dependency, quality config, test file, or `npm run check` instruction behind.
@@ -341,6 +362,7 @@ Maintainer validation for generated output must cover:
 - `build` succeeds
 - startup smoke succeeds
 - no `workspace:` dependency specifiers appear in generated `package.json` or packed package artifacts
+- root workspace, CLI package, generated package, and validator expose the same supported Node range
 - the packed `create-super-admin` package includes the runtime starter template required by the CLI
 - a packed-package CLI smoke runs the emitted CLI from an unpacked tarball in a directory with no repo-root `apps/admin`
 - a structural test parses `templates.ts` exports and allows only the generator-owned root-file factory whitelist
@@ -355,13 +377,17 @@ Maintainer validation for generated output must cover:
 - no maintainer workflow artifacts such as `.trellis/`, `.agents/`, `.codex/`, `.claude/`, `.codegraph/`, `.mcp.json`, or `skills-lock.json` appear in default output
 - generated `AGENTS.md` exists as the single AI entry file and imports exactly the generated `ai-context/*.md` files
 - generated `CLAUDE.md` exists and contains only `@AGENTS.md`
-- generated `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md` document current-code-first behavior, the selected quality mode and valid commands, `Page -> module query composable -> API adapter -> api/mock data or user API`, manifest/layout/auth registry extension paths, and the rule that provider secrets must not go in frontend `VITE_*` env variables
+- generated `ai-context/core.md`, `ai-context/data-flow.md`, and `ai-context/extension-points.md` document current-code-first behavior, the selected quality mode and valid commands, `Page -> module query composable -> API adapter -> api/mock data or user API`, manifest/app-registration/layout/auth extension paths, complete Examples removal, and the rule that provider secrets must not go in frontend `VITE_*` env variables
 - generated default output does not include disabled capability files such as `ai-context/charts.md`, `ai-context/theme.md`, or `ai-context/i18n.md`
 - generated ECharts output includes `ai-context/charts.md` with app-local chart source/helper paths and selected dependencies, and `AGENTS.md` imports it
 - generated multi-theme/i18n output includes matching `ai-context/theme.md` and `ai-context/i18n.md` files and imports
 - generated output does not include legacy `AI_CONTEXT.md`
 - generated `README.md` points AI collaborators to `AGENTS.md`
 - generated feature manifests remain active inputs to the composed Examples manifest, and no route/nav/meta definition is duplicated in the aggregate manifest
+- generated default routing/auth/workspace fallbacks consume the app registry default rather than hard-coded `/examples/*` paths
+- examples-removed static validation rejects `/examples/*` literals in router/auth/workspace fallback infrastructure
+- generated default starter passes install/lint/test/typecheck/build/startup with Examples present, then passes the same gate after the complete Examples slice is removed
+- pruning-helper tests prove non-generated targets are rejected before any recursive deletion
 - default theme dependencies are only `@super-admin-org/theme` and `@super-admin-org/theme-base`
 - default theme registry imports only `@super-admin-org/theme-base`
 - multi-theme generation installs exactly the selected theme packages
@@ -382,6 +408,26 @@ The maintainer validator lives outside generated projects. It may be implemented
 When local packed package manifests are part of validation, pass them with `--package-manifest`; those manifests must not expose `workspace:` dependency ranges.
 
 ### 7. Wrong vs Correct
+
+#### Wrong
+
+```ts
+// Router/auth/workspace infrastructure depends on a removable feature.
+const fallback = '/examples/dashboard'
+```
+
+#### Correct
+
+```ts
+// Optional feature policy is local; infrastructure consumes the registry result.
+export const examplesRegistration = {
+  defaultPath: '/examples/dashboard',
+  manifest: examplesManifest,
+  redirects: [{ path: '/dashboard', redirect: '/examples/dashboard' }]
+}
+
+export const defaultAuthenticatedPath = appModuleRegistry.defaultAuthenticatedPath
+```
 
 #### Wrong
 

@@ -2,6 +2,10 @@
 
 这篇指南面向想用 Super Admin 创建自己 admin 项目的用户。如果你要贡献 `lineo7387/super-admin` 源码仓库，请看后面的源码仓库开发部分。
 
+## 运行环境
+
+Super Admin 当前要求 Node.js `^20.19.0 || >=22.12.0`。这个范围同时写入源码仓库、`create-super-admin` 包和每个生成项目的 `package.json`。
+
 ## 创建你的 Admin App
 
 使用公开 npm starter：
@@ -57,7 +61,10 @@ Minimal 输出不会残留 ESLint/Vitest config、dependency、script 或 test f
 - `src/modules/`：feature `*.manifest.ts`、示例 routes 和 pages；manifest 是 nav、route、route meta 与 permissions 的唯一事实源。
 - `src/api/`：API adapters，用来归一化 mock 数据或你的 API 响应。
 - `src/api/mock/`：可替换的 mock 数据源。
-- `src/modules/examples/examples.manifest.ts` 与 `src/modules/module-registry.ts`：挂载和组合 feature manifests。
+- `src/modules/app-module-registry.ts`：通用 module registration 校验、排序和默认入口派生。
+- `src/modules/examples/examples.manifest.ts`：挂载和组合示例 feature manifests。
+- `src/modules/examples/examples.registration.ts`：Examples 的默认入口和旧路径兼容 redirects。
+- `src/modules/module-registry.ts`：只组合当前 app 实际启用的 top-level registrations。
 - `src/shell/layout-registry.ts`：typed layout component/preview registrations；未知 ID 使用 neutral fallback。
 - `src/modules/auth/components/auth-recipe-registry.generated.ts`：已安装 theme 的 auth recipes；未知 profile 使用 neutral recipe。
 - `AGENTS.md` 与 `ai-context/`：当前 quality mode、数据流和真实扩展入口；不要求 AI provider。
@@ -71,13 +78,23 @@ Minimal 输出不会残留 ESLint/Vitest config、dependency、script 或 test f
 - 固定 API response shape
 - release、GitHub、Trellis、Codex 或 Claude workflow tooling
 
+## 删除 Examples
+
+Examples 是一个可整体删除的功能切片，不是 shell、auth 或 workspace 的隐式依赖。完整删除方法见[示例指南](./examples.md#完整删除-examples)。
+
+删除 Examples registration 后：
+
+- `/dashboard`、`/workbench`、`/access`、`/users*` 等示例兼容路径会一起消失，不会留下悬空 redirect。
+- 根路由、登录成功跳转和最后一个 workspace tab 的 fallback 会自动使用第一个剩余 module；默认情况下是 `/ui-kit/foundations`。
+- 如果继续删除所有 top-level modules，应用会进入中性的 `/workspace` 页面。
+
 ## 开发源码仓库
 
 只有当你要贡献 `lineo7387/super-admin` 本身，修改 packages、docs、release scripts 或模板源码时，才需要走这条路径。
 
 ### 前置条件
 
-- 与仓库 toolchain 兼容的 Node.js。
+- Node.js `^20.19.0 || >=22.12.0`。
 - 与 root `packageManager` 字段匹配的 pnpm。
 
 安装依赖：

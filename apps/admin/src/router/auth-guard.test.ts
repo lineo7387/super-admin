@@ -9,7 +9,8 @@ describe('auth route guard', () => {
           fullPath: '/examples/users/all?page=2',
           meta: {}
         },
-        false
+        false,
+        '/examples/dashboard'
       )
     ).toEqual({
       path: '/auth/login',
@@ -28,7 +29,8 @@ describe('auth route guard', () => {
             authLayout: true
           }
         },
-        false
+        false,
+        '/examples/dashboard'
       )
     ).toBeNull()
   })
@@ -45,19 +47,37 @@ describe('auth route guard', () => {
             redirect: '/examples/users/all'
           }
         },
-        true
+        true,
+        '/ui-kit/foundations'
       )
     ).toBe('/examples/users/all')
+  })
+
+  it('uses the registry fallback when an authenticated auth route has no safe redirect', () => {
+    expect(
+      resolveAuthRedirect(
+        {
+          fullPath: '/auth/login',
+          meta: {
+            authLayout: true
+          }
+        },
+        true,
+        '/ui-kit/foundations'
+      )
+    ).toBe('/ui-kit/foundations')
   })
 })
 
 describe('post-login redirect', () => {
   it('returns the original internal path after login', () => {
-    expect(resolvePostLoginPath('/examples/users/all?page=2')).toBe('/examples/users/all?page=2')
+    expect(resolvePostLoginPath('/examples/users/all?page=2', '/ui-kit/foundations')).toBe('/examples/users/all?page=2')
   })
 
-  it('falls back to the dashboard for unsafe redirect values', () => {
-    expect(resolvePostLoginPath('https://example.com/admin')).toBe('/examples/dashboard')
-    expect(resolvePostLoginPath('//example.com/admin')).toBe('/examples/dashboard')
+  it('uses the registry fallback for unsafe redirect values', () => {
+    expect(resolvePostLoginPath('https://example.com/admin', '/ui-kit/foundations')).toBe('/ui-kit/foundations')
+    expect(resolvePostLoginPath('//example.com/admin', '/ui-kit/foundations')).toBe('/ui-kit/foundations')
+    expect(resolvePostLoginPath('/auth/register', '/ui-kit/foundations')).toBe('/ui-kit/foundations')
+    expect(resolvePostLoginPath(undefined, '/ui-kit/foundations')).toBe('/ui-kit/foundations')
   })
 })

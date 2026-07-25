@@ -2,6 +2,10 @@
 
 This guide is for users who want to create their own admin project from Super Admin. If you are contributing to the Super Admin source repository itself, use the source repository section near the end.
 
+## Runtime
+
+Super Admin currently requires Node.js `^20.19.0 || >=22.12.0`. The source workspace, the `create-super-admin` package, and every generated project declare the same range.
+
 ## Create Your Admin App
 
 Use the public npm starter:
@@ -57,7 +61,10 @@ Start with these areas:
 - `src/modules/` for feature `*.manifest.ts` files, example routes, and pages. A manifest is the single source for nav, routes, route metadata, and permissions.
 - `src/api/` for API adapters that normalize mock data or your own API responses.
 - `src/api/mock/` for replaceable mock data sources.
-- `src/modules/examples/examples.manifest.ts` and `src/modules/module-registry.ts` for mounting and composing feature manifests.
+- `src/modules/app-module-registry.ts` for generic registration validation, ordering, and default-entry derivation.
+- `src/modules/examples/examples.manifest.ts` for mounting and composing example feature manifests.
+- `src/modules/examples/examples.registration.ts` for the Examples default entry and legacy compatibility redirects.
+- `src/modules/module-registry.ts` for composing only the top-level registrations enabled in the current app.
 - `src/shell/layout-registry.ts` for typed layout component/preview registrations with a neutral fallback for unknown IDs.
 - `src/modules/auth/components/auth-recipe-registry.generated.ts` for installed-theme auth recipes with a neutral fallback for unknown profiles.
 - `AGENTS.md` and `ai-context/` for the current quality mode, data flow, and real extension paths without requiring an AI provider.
@@ -71,13 +78,23 @@ The default starter does not require:
 - fixed API response shape
 - release, GitHub, Trellis, Codex, or Claude workflow tooling
 
+## Remove Examples
+
+Examples is a removable feature slice, not an implicit shell, auth, or workspace dependency. See the [Examples guide](./examples.md#remove-examples-completely) for the complete removal recipe.
+
+After removing the Examples registration:
+
+- Example compatibility paths such as `/dashboard`, `/workbench`, `/access`, and `/users*` disappear with it, so no dangling redirects remain.
+- Root routing, post-login navigation, and the last workspace-tab fallback automatically use the first remaining module. In the default project this is `/ui-kit/foundations`.
+- If every top-level module is removed, the app uses the neutral `/workspace` surface.
+
 ## Develop The Source Repository
 
 Use this path only when you are contributing to `lineo7387/super-admin` itself, changing packages, docs, release scripts, or the template source.
 
 ### Prerequisites
 
-- Node.js compatible with the repository toolchain.
+- Node.js `^20.19.0 || >=22.12.0`.
 - pnpm, matching the root `packageManager` field.
 
 Install dependencies:

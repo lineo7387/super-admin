@@ -8,6 +8,8 @@ npm create super-admin@latest my-admin
 
 The generated project consumes published `@super-admin-org/*` package artifacts. It runs without a backend, database, auth provider, AI provider, or maintainer-only workflow tooling.
 
+Requires Node.js `^20.19.0 || >=22.12.0`.
+
 ## Usage
 
 ```bash
@@ -77,10 +79,14 @@ Minimal output keeps `dev`, `typecheck`, `build`, and `preview`, but contains no
 The starter is a single Vite app with `zh-CN`, mock data, removable examples, selected theme packages, and optional ECharts/i18n source.
 
 - Feature `*.manifest.ts` files define navigation, routes, route metadata, and permissions once; aggregate manifests mount and compose them.
+- `src/modules/app-module-registry.ts` validates app registrations, while each optional module owns its default entry and compatibility redirects in a module-local registration.
+- Root routing, post-login navigation, and workspace fallbacks derive from the remaining app registrations; registering no modules uses `/workspace`.
 - `src/shell/layout-registry.ts` maps typed layout metadata to Vue components and preview presentation.
 - `src/modules/auth/components/auth-recipe-registry.generated.ts` composes auth recipes for installed themes.
 - Unknown layout/auth recipe IDs resolve to explicit neutral fallbacks.
 - Data access follows `Page -> module query composable -> API adapter -> api/mock data or user API`.
+
+The Examples tree is removable. Delete the example modules, their adapters and mock data, then remove `examplesRegistration` from `src/modules/module-registry.ts`. If ECharts was selected, also remove its source, dependencies, config/context references, and rerun the generated quality gate.
 
 ## AI Context
 

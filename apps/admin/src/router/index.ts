@@ -1,49 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { defaultAuthenticatedPath } from '@/modules/module-registry'
 import { useAuthSessionStore } from '@/stores/auth-session.store'
 import { resolveAuthRedirect } from './auth-guard'
 import { authRoutes } from './auth-routes'
 import { moduleRoutes } from './routes'
+import { systemRoutes } from './system-routes'
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      redirect: '/examples/dashboard'
+      redirect: defaultAuthenticatedPath
     },
     ...authRoutes,
-    {
-      path: '/dashboard',
-      redirect: '/examples/dashboard'
-    },
-    {
-      path: '/workbench',
-      redirect: '/examples/workbench'
-    },
-    {
-      path: '/access',
-      redirect: '/examples/access'
-    },
-    {
-      path: '/users',
-      redirect: '/examples/users/all'
-    },
-    {
-      path: '/users/all',
-      redirect: '/examples/users/all'
-    },
-    {
-      path: '/users/pending-review',
-      redirect: '/examples/users/pending-review'
-    },
-    {
-      path: '/users/invites',
-      redirect: '/examples/users/invites'
-    },
-    {
-      path: '/users/activity',
-      redirect: '/examples/users/activity'
-    },
+    ...systemRoutes,
     ...moduleRoutes
   ]
 })
@@ -51,5 +22,5 @@ export const router = createRouter({
 router.beforeEach((to) => {
   const session = useAuthSessionStore()
 
-  return resolveAuthRedirect(to, session.isAuthenticated) ?? undefined
+  return resolveAuthRedirect(to, session.isAuthenticated, defaultAuthenticatedPath) ?? undefined
 })

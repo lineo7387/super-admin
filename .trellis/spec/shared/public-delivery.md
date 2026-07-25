@@ -66,6 +66,7 @@ Public docs must match the real repository and npm state.
 
 - Do not describe a command, CLI option, package, workflow, or release channel as available unless it exists in code and `package.json`.
 - Whenever starter quality behavior changes, update CLI help, root/package READMEs, generated README/AI context, validation scripts, and both docs locales together. State that standard is the default and `--minimal` is an opt-out; do not describe quality as an optional hidden preset.
+- Whenever the supported Node range or removable-slice contract changes, update root/CLI/generated package metadata, root/package READMEs, generated README/AI context, validation scripts, and both docs locales together. The current Node contract is `^20.19.0 || >=22.12.0`.
 - Do not describe released npm packages as future work after they have been published.
 - When package publish state changes, review `README.md`, `SECURITY.md`, `CHANGELOG.md`, `docs/guide/open-source-workflow.md`, and `docs/guide/releasing.md`.
 - When GitHub public pages lag local commits, call out that `main` is ahead of `origin/main` before assuming the remote state is wrong.
@@ -155,7 +156,7 @@ Root scripts should be directly runnable and named honestly.
 
 - `pnpm validate:starter` should validate generated starter behavior without requiring hidden positional arguments.
 - The normal CI workflow should run `pnpm validate:starter` so packed CLI/starter regressions fail before merge, not only during a later publish workflow.
-- Packed starter validation must cover default standard, multi-theme+i18n standard, ECharts standard, and minimal output. Standard variants run install/lint/test/typecheck/build; minimal runs install/typecheck/build and separately proves ESLint/Vitest files, dependencies, scripts, tests, and AI claims are absent.
+- Packed starter validation must cover default standard, multi-theme+i18n standard, ECharts standard, and minimal output. Standard variants run install/lint/test/typecheck/build; minimal runs install/typecheck/build and separately proves ESLint/Vitest files, dependencies, scripts, tests, and AI claims are absent. The default standard variant must then remove the complete Examples slice and rerun install/lint/test/typecheck/build/startup.
 - `pnpm validate:publish` remains the full package publish readiness gate.
 - `pnpm test:reference` is maintainer-only and validates optional reference API connectivity.
 - Do not place reference smoke tooling in generated starter output.
@@ -177,6 +178,7 @@ Publishable npm packages should include only runtime/build artifacts and package
 - Package tarballs should include `dist`, `README.md`, and `package.json` unless a package has a documented additional runtime asset.
 - Package tarballs must not expose `workspace:` dependency ranges.
 - `create-super-admin` tarballs must include the runtime starter template needed by `npm exec`, `npx`, and `pnpm dlx`.
+- Root workspace, `create-super-admin`, and generated project manifests must declare the same supported Node range; contract tests must reject drift.
 - Generated starters must consume published package artifacts, not monorepo source paths.
 - The `create-super-admin` runtime template may carry only explicitly allowlisted starter-owned quality tests needed for standard generation. Publish readiness must continue rejecting unrelated source-repository tests and maintainer artifacts; minimal materialization removes the allowlisted quality files.
 
@@ -196,6 +198,8 @@ Repository-level GitHub Releases follow the public starter CLI line while npm pa
 The repository, generated starter, package docs, and AI context must describe the same extension model:
 
 - feature `*.manifest.ts` files are the only source for their nav, routes, route meta, and permissions; aggregate manifests mount/compose them instead of copying definitions
+- optional modules own default entry and compatibility redirect policy in module-local registrations; generic app registration validation and app-local composition stay separate
+- router, auth, and workspace fallback navigation derives from the app module registry, so removing Examples does not require consumer edits
 - `@super-admin-org/core` owns dependency-light manifest composition and layout metadata; app-local registries own Vue components
 - `src/shell/layout-registry.ts` and `src/modules/auth/components/auth-recipe-registry.generated.ts` are typed static composition roots
 - unknown layout/auth recipe IDs use explicit neutral fallbacks, never a branded built-in fallback

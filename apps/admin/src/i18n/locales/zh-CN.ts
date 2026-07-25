@@ -258,6 +258,10 @@ const zhCN = {
     }
   },
   workspace: {
+    empty: {
+      description: '请在 src/modules/module-registry.ts 注册至少一个业务模块；完成后，这里会自动进入排序后的首个模块。',
+      title: '尚未注册业务模块'
+    },
     breadcrumbRoot: '工作区',
     current: '当前',
     fallbackTitle: '工作区',

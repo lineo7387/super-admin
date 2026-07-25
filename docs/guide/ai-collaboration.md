@@ -37,7 +37,8 @@ Page -> module query composable -> API adapter -> api/mock data or user API
 
 - 当前 `standard|minimal` quality mode，以及实际可用的质量命令。
 - `Page -> module query composable -> API adapter -> api/mock data or user API` 数据流。
-- feature `*.manifest.ts`、`src/modules/examples/examples.manifest.ts` 和 `src/modules/module-registry.ts` 的 composition 路径。
+- feature `*.manifest.ts`、`src/modules/examples/examples.manifest.ts`、module-owned `examples.registration.ts`、通用 `app-module-registry.ts` 和 app-local `module-registry.ts` 的 composition 路径。
+- 默认入口与兼容 redirects 由 module registration 拥有；删除 Examples 不需要在 router、auth 或 workspace 中补硬编码 fallback。
 - `src/shell/layout-registry.ts` 与 `src/modules/auth/components/auth-recipe-registry.generated.ts` 的 typed registrations 和 neutral fallbacks。
 - frontend `VITE_*` 不能保存 provider secrets。
 
@@ -69,7 +70,7 @@ Super Admin 以 `zh-CN` 作为默认 locale，并提供 `en-US` 文档。AI agen
 
 ```text
 This is a frontend-first Vue admin template. Keep data access on Page -> query composable -> API adapter -> mock/user API. Do not call transport directly from Vue pages. Pinia is for client state; TanStack Query is for server/cache state. The backend, auth provider, database, AI provider, and CodeGraph are optional unless I explicitly ask to add them.
-Treat feature manifests as the single source for nav/routes/meta. Extend layouts and auth recipes through their typed registries, and keep unknown IDs on the explicit neutral fallback instead of adding ID branches to consumers.
+Treat feature manifests as the single source for nav/routes/meta. Keep each optional module's default entry and compatibility redirects in its own registration; derive router/auth/workspace fallbacks from the app module registry. Extend layouts and auth recipes through their typed registries, and keep unknown IDs on the explicit neutral fallback instead of adding ID branches to consumers.
 Read package.json and super-admin.config.ts before choosing quality commands; standard includes lint/test/typecheck/build/check, while minimal keeps typecheck/build only.
 Use zh-CN as the default for new user-facing UI copy unless I explicitly ask for another locale.
 ```

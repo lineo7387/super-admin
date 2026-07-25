@@ -36,6 +36,7 @@ const navItemKeys: Record<string, string> = {
 const routeTitleKeys: Record<string, string> = {
   '/auth/login': 'auth.routes.signIn',
   '/auth/register': 'auth.routes.createAccount',
+  '/workspace': 'workspace.empty.title',
   '/examples/access': 'navigation.modules.access',
   '/examples/charts': 'navigation.modules.charts',
   '/examples/dashboard': 'navigation.modules.dashboard',

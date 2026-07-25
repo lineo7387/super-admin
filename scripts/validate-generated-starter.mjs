@@ -2,6 +2,9 @@ import { access, readFile, readdir } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import { resolve } from 'node:path'
 import { spawn } from 'node:child_process'
+import { GENERATED_EXAMPLE_PATHS } from './prune-generated-starter-examples.mjs'
+
+export const SUPPORTED_NODE_RANGE = '^20.19.0 || >=22.12.0'
 
 export const themePackageById = {
   base: '@super-admin-org/theme-base',
@@ -18,6 +21,13 @@ const qualityScriptsByMode = {
 const allThemeProfilePackages = Object.values(themePackageById)
 const chartDependencyNames = new Set(['echarts', 'vue-echarts'])
 const chartSourcePrefixes = ['src/modules/charts/', 'src/shared/charts/']
+const exampleInfrastructurePaths = [
+  'src/modules/auth/LoginPage.vue',
+  'src/router/auth-guard.ts',
+  'src/router/index.ts',
+  'src/workspace/WorkspaceTabs.vue',
+  'src/workspace/useStageWindowActivation.ts'
+]
 const requiredExampleFeatureManifests = [
   {
     file: 'src/modules/access/access.manifest.ts',
@@ -63,8 +73,11 @@ const requiredAiContextSnippetsByFile = {
   'ai-context/extension-points.md': [
     'src/modules/',
     'src/api/',
+    'src/modules/app-module-registry.ts',
     'src/modules/module-registry.ts',
+    'src/modules/examples/examples.registration.ts',
     'composeModuleManifest',
+    '删除 Examples',
     'src/shell/layout-registry.ts',
     'src/modules/auth/components/auth-recipe-registry.generated.ts',
     'neutral fallback'
@@ -168,6 +181,14 @@ function normalizeQualityMode(quality = 'standard') {
   return quality
 }
 
+function normalizeExamplesMode(examples = 'present') {
+  if (examples !== 'present' && examples !== 'removed') {
+    throw new Error(`Unknown starter examples mode "${examples}". Supported modes: present, removed`)
+  }
+
+  return examples
+}
+
 function arraysEqual(left, right) {
   return left.length === right.length && left.every((item, index) => item === right[index])
 }
@@ -214,6 +235,10 @@ function validatePackageJson(packageJson, themes, quality) {
         'package.json'
       )
     )
+  }
+
+  if (packageJson.engines?.node !== SUPPORTED_NODE_RANGE) {
+    failures.push(createFailure('package-node-engine-match', `Generated package.json engines.node must be "${SUPPORTED_NODE_RANGE}".`, 'package.json'))
   }
 
   const workspaceEntries = getWorkspaceRangeEntries(packageJson)
@@ -616,14 +641,14 @@ function validateDefaultSwitcherOutput(root, files, textEntries, themes, i18nEna
   return failures
 }
 
-function validateDataBoundary(files, textEntries) {
+function validateDataBoundary(files, textEntries, examplesMode) {
   const failures = []
 
-  if (!files.some((file) => file.startsWith('src/api/mock/'))) {
+  if (examplesMode === 'present' && !files.some((file) => file.startsWith('src/api/mock/'))) {
     failures.push(createFailure('data-boundary-has-mock-api', 'Generated projects must keep mock API data under src/api/mock/.', 'src/api/mock/'))
   }
 
-  if (!files.some((file) => file.startsWith('src/modules/') && file.endsWith('.queries.ts'))) {
+  if (examplesMode === 'present' && !files.some((file) => file.startsWith('src/modules/') && file.endsWith('.queries.ts'))) {
     failures.push(
       createFailure('data-boundary-has-module-queries', 'Generated projects must keep module query composables under src/modules/.', 'src/modules/')
     )
@@ -645,6 +670,43 @@ function validateDataBoundary(files, textEntries) {
   }
 
   return failures
+}
+
+function validateExamplesRemoved(files, textEntries) {
+  const remainingExampleFiles = files.filter((file) => GENERATED_EXAMPLE_PATHS.some((path) => file === path || file.startsWith(`${path}/`)))
+  const moduleRegistry = getTextEntry(textEntries, 'src/modules/module-registry.ts')
+  const registryHasExampleRegistration = moduleRegistry?.text.includes('examplesRegistration') ?? true
+
+  if (remainingExampleFiles.length === 0 && !registryHasExampleRegistration) {
+    return []
+  }
+
+  return [
+    createFailure(
+      'examples-removed-no-example-slice',
+      `Example-pruned starters must remove the complete Examples slice and its app registration. Remaining files: ${remainingExampleFiles.join(', ') || 'none'}; registry reference present: ${registryHasExampleRegistration}.`,
+      remainingExampleFiles[0] ?? 'src/modules/module-registry.ts'
+    )
+  ]
+}
+
+function validateExamplesRemovedInfrastructure(textEntries) {
+  const leakingFiles = textEntries
+    .filter(({ file }) => exampleInfrastructurePaths.includes(file))
+    .filter(({ text }) => text.includes('/examples/'))
+    .map(({ file }) => file)
+
+  if (leakingFiles.length === 0) {
+    return []
+  }
+
+  return [
+    createFailure(
+      'examples-removed-no-example-infrastructure',
+      `Example-pruned starters must not retain /examples/* fallbacks in router, auth, or workspace infrastructure: ${leakingFiles.join(', ')}.`,
+      leakingFiles[0]
+    )
+  ]
 }
 
 function validateExampleManifestComposition(files, textEntries) {
@@ -818,6 +880,7 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   const themes = normalizeThemes(options.themes)
   const i18nEnabled = options.i18n === true
   const quality = normalizeQualityMode(options.quality)
+  const examplesMode = normalizeExamplesMode(options.examples)
   const packageJsonPath = resolve(root, 'package.json')
   const tsconfigPath = resolve(root, 'tsconfig.json')
   const registryPath = resolve(root, 'src/super-admin/theme-registry.generated.ts')
@@ -840,8 +903,11 @@ export async function validateGeneratedStarterStatic(projectDir, options = {}) {
   failures.push(...validateNoMonorepoPaths(textEntries))
   failures.push(...validateReferenceEnv(textEntries))
   failures.push(...validateDefaultSwitcherOutput(root, files, textEntries, themes, i18nEnabled))
-  failures.push(...validateDataBoundary(files, textEntries))
-  failures.push(...validateExampleManifestComposition(files, textEntries))
+  failures.push(...validateDataBoundary(files, textEntries, examplesMode))
+  failures.push(...(examplesMode === 'present' ? validateExampleManifestComposition(files, textEntries) : validateExamplesRemoved(files, textEntries)))
+  if (examplesMode === 'removed') {
+    failures.push(...validateExamplesRemovedInfrastructure(textEntries))
+  }
   failures.push(...validateChartTemplate(packageJson, files, textEntries, chartProvider))
 
   if (await pathExists(tsconfigPath)) {

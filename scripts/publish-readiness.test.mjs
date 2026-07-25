@@ -189,7 +189,8 @@ describe('publish readiness helpers', () => {
       expect.objectContaining({
         args: ['--theme', 'base'],
         label: 'starter-default',
-        quality: 'standard'
+        quality: 'standard',
+        validateWithoutExamples: true
       }),
       expect.objectContaining({
         args: ['--themes', 'base,cyberpunk', '--i18n'],
@@ -212,6 +213,7 @@ describe('publish readiness helpers', () => {
     expect(
       publishReadiness.createStarterValidationOptions({
         charts: 'none',
+        examples: 'removed',
         i18n: false,
         quality: 'minimal',
         tarballs: [{ manifestPath: '/tmp/core/package.json' }, { manifestPath: '/tmp/cli/package.json' }],
@@ -219,6 +221,7 @@ describe('publish readiness helpers', () => {
       })
     ).toEqual({
       charts: 'none',
+      examples: 'removed',
       i18n: false,
       packageManager: 'pnpm',
       packageManifestPaths: ['/tmp/core/package.json', '/tmp/cli/package.json'],

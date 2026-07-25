@@ -467,3 +467,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 73: 提升 starter 可裁剪性与运行时契约
+
+**Date**: 2026-07-25
+**Task**: 提升 starter 可裁剪性与运行时契约
+**Branch**: `codex/improve-starter-prunability-contracts`
+
+### Summary
+
+建立 app-local 模块注册与默认入口契约，保留默认 Examples 与历史别名；实现安全的 Examples 裁剪和空 registry 兜底，统一 Node.js engines，并补齐生成、裁剪、打包发布验证及中英文/AI 文档。全仓 364 项测试、构建、文档、starter 与 publish readiness 验证全部通过。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2c24821` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
