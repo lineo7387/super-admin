@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 74
+- **Total Sessions**: 75
 - **Last Active**: 2026-07-25
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~535 | Active |
+| `journal-2.md` | ~568 | Active |
 | `journal-1.md` | ~1987 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 75 | 2026-07-25 | 依赖兼容性收口 | `986b969` | `codex/dependency-compatibility` |
 | 74 | 2026-07-25 | 依赖安全与发布门禁加固 | `9bb8a67` | `codex/delivery-hardening` |
 | 73 | 2026-07-25 | 提升 starter 可裁剪性与运行时契约 | `2c24821` | `codex/improve-starter-prunability-contracts` |
 | 72 | 2026-07-18 | 对齐 0.2.0 公开发布信息 | `046916e` | `codex/align-0-2-0-release-info` |

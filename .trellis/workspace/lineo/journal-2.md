@@ -533,3 +533,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 75: 依赖兼容性收口
+
+**Date**: 2026-07-25
+**Task**: 依赖兼容性收口
+**Branch**: `codex/dependency-compatibility`
+
+### Summary
+
+收口 TypeScript 6、Node 20 types、Vue Router 与 vue-i18n 运行时兼容边界；同步 starter、CI、Dependabot、Changeset、文档和 Trellis 规格，并通过 Node 20.19/22.13 严格 starter 验证。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `986b969` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

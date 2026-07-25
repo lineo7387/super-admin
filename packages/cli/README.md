@@ -8,7 +8,7 @@ npm create super-admin@latest my-admin
 
 The generated project consumes published `@super-admin-org/*` package artifacts. It runs without a backend, database, auth provider, AI provider, or maintainer-only workflow tooling.
 
-Requires Node.js `^20.19.0 || >=22.12.0`.
+Requires Node.js `^20.19.0 || >=22.13.0`.
 
 ## Usage
 

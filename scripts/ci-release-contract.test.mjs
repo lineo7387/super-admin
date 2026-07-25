@@ -26,11 +26,13 @@ describe('CI release contracts', () => {
     const runtimeContract = workflow.slice(runtimeContractIndex, checksIndex)
 
     expect(runtimeContractIndex).toBeGreaterThan(-1)
-    expect(runtimeContract).toContain('node-version: [20.19.0, 22.12.0]')
+    expect(runtimeContract).toContain('node-version: [20.19.0, 22.13.0]')
     expect(runtimeContract).toContain('node-version: ${{ matrix.node-version }}')
     expect(runtimeContract).toContain('pnpm --filter create-super-admin build')
     expect(runtimeContract).toContain('pnpm --filter create-super-admin test')
-    expect(runtimeContract).not.toContain('pnpm validate:starter')
+    expect(runtimeContract).toContain('node packages/cli/dist/cli.js "${{ runner.temp }}/super-admin-runtime-starter" --theme base --pm pnpm')
+    expect(runtimeContract).toContain('pnpm --dir "${{ runner.temp }}/super-admin-runtime-starter" install --engine-strict')
+    expect(runtimeContract).toContain('pnpm --dir "${{ runner.temp }}/super-admin-runtime-starter" build')
   })
 
   test('validates packed generated starters before changes merge', () => {

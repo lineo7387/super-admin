@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { spawn } from 'node:child_process'
 import { GENERATED_EXAMPLE_PATHS } from './prune-generated-starter-examples.mjs'
 
-export const SUPPORTED_NODE_RANGE = '^20.19.0 || >=22.12.0'
+export const SUPPORTED_NODE_RANGE = '^20.19.0 || >=22.13.0'
 
 export const themePackageById = {
   base: '@super-admin-org/theme-base',

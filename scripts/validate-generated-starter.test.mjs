@@ -105,7 +105,7 @@ async function createStarterFixture(overrides = {}) {
     private: true,
     type: 'module',
     engines: overrides.engines ?? {
-      node: '^20.19.0 || >=22.12.0'
+      node: '^20.19.0 || >=22.13.0'
     },
     scripts:
       quality === 'standard'
@@ -131,18 +131,19 @@ async function createStarterFixture(overrides = {}) {
       '@super-admin-org/ui': '^0.1.0',
       '@tanstack/vue-query': '^5.0.0',
       '@lucide/vue': '^1.18.0',
-      pinia: '^3.0.0',
-      vue: '^3.5.0',
-      'vue-i18n': '^11.4.4',
-      'vue-router': '^4.5.0',
+      pinia: '^3.0.4',
+      vue: '^3.5.34',
+      'vue-i18n': '11.4.2',
+      'vue-router': '^4.6.4',
       ...overrides.dependencies
     },
     devDependencies: {
       '@tailwindcss/vite': '^4.0.0',
+      '@types/node': '^20.19.0',
       '@vitejs/plugin-vue': '^6.0.0',
-      '@vue/tsconfig': '^0.8.0',
+      '@vue/tsconfig': '^0.9.1',
       tailwindcss: '^4.0.0',
-      typescript: '^5.0.0',
+      typescript: '~6.0.3',
       vite: '^8.0.0',
       'vue-tsc': '^3.0.0',
       ...(quality === 'standard'
@@ -186,9 +187,8 @@ async function createStarterFixture(overrides = {}) {
       JSON.stringify(
         {
           compilerOptions: {
-            baseUrl: '.',
             paths: {
-              '@/*': ['src/*']
+              '@/*': ['./src/*']
             },
             strict: true
           },

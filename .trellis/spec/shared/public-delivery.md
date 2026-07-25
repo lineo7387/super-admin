@@ -66,7 +66,7 @@ Public docs must match the real repository and npm state.
 
 - Do not describe a command, CLI option, package, workflow, or release channel as available unless it exists in code and `package.json`.
 - Whenever starter quality behavior changes, update CLI help, root/package READMEs, generated README/AI context, validation scripts, and both docs locales together. State that standard is the default and `--minimal` is an opt-out; do not describe quality as an optional hidden preset.
-- Whenever the supported Node range or removable-slice contract changes, update root/CLI/generated package metadata, root/package READMEs, generated README/AI context, validation scripts, and both docs locales together. The current Node contract is `^20.19.0 || >=22.12.0`.
+- Whenever the supported Node range or removable-slice contract changes, update root/CLI/generated package metadata, root/package READMEs, generated README/AI context, validation scripts, and both docs locales together. The current Node contract is `^20.19.0 || >=22.13.0`.
 - Do not describe released npm packages as future work after they have been published.
 - When package publish state changes, review `README.md`, `SECURITY.md`, `CHANGELOG.md`, `docs/guide/open-source-workflow.md`, and `docs/guide/releasing.md`.
 - When GitHub public pages lag local commits, call out that `main` is ahead of `origin/main` before assuming the remote state is wrong.
@@ -103,6 +103,90 @@ Rules:
 - Do not force transitive major overrides inside release tooling just to clear an alert. If an override touches Changesets, npm publish helpers, package graph discovery, or release scripts, verify the relevant CLI commands such as `pnpm changeset status`, `pnpm release plan`, and `pnpm release commands` before keeping it.
 - If a security update is `update_not_possible` because the patched version is outside the latest resolvable range, record the dependency path and defer it to the relevant migration task instead of forcing an override by default.
 - Maintainer-only lockfiles under `.agents/`, `.trellis/`, `.codex/`, or similar tooling directories may be updated to reduce repository alerts, but those updates must not make maintainer tooling part of generated starter requirements. Validate the maintainer tool's own audit/build path separately from the public app and document any existing script-path limitations.
+
+## Scenario: Toolchain Major Compatibility
+
+### 1. Scope / Trigger
+
+- Trigger: a TypeScript, Vue Router, `@vue/tsconfig`, `vue-tsc`, or `@types/node` major update, including grouped Dependabot PRs.
+- Purpose: keep repository tooling, generated starters, and the declared Node runtime contract on versions that can actually work together.
+
+### 2. Signatures
+
+The compatibility gate uses the existing public commands:
+
+```bash
+pnpm typecheck
+pnpm --filter create-super-admin build
+pnpm validate:starter
+pnpm validate:publish
+```
+
+### 3. Contracts
+
+- TypeScript must remain inside the peer range supported by `typescript-eslint`, `vue-tsc`, `@vue/tsconfig`, and other compiler-API consumers.
+- Do not adopt a TypeScript major that lacks the programmatic compiler API required by Vue tooling. TypeScript 7 is deferred until the Vue/Volar toolchain officially supports it; TypeScript 6 is the current compatibility line.
+- TypeScript configs must not use removed compiler options. `baseUrl` is forbidden; path mappings are relative to the config/project root, for example `"@/*": ["./src/*"]`.
+- The `@types/node` major must match the minimum supported Node runtime major. While the runtime contract is `^20.19.0 || >=22.13.0`, use `@types/node@20`; newer runtime APIs must not leak into code that claims Node 20 support.
+- Dependabot may ignore automatic major updates for `typescript`, `@types/node`, and `vue-router`. Re-enable them only as part of an explicit compiler/runtime migration task.
+- A Vue Router major upgrade must be checked against the official migration guide, package and transitive dependency engines, and its Vue, Pinia, and Vite peer ranges before changing the generated starter floor.
+- Public starter dependency ranges must not resolve to packages whose `engines.node` excludes either minimum runtime in the CI matrix. Pin an exact compatible version when a patch release raises its Node floor.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+| --- | --- |
+| Compiler reports a removed option such as `TS5102` for `baseUrl` | Update repository and generated starter configs; do not suppress the error. |
+| TypeScript major is outside an ESLint/Vue tooling peer range | Keep the newest compatible TypeScript line and defer the major update. |
+| `@types/node` exposes a newer major than the minimum Node runtime | Pin the Node 20 type line and keep the major update under manual review. |
+| Router package installs with unmet Vue/Pinia/Vite peers | Raise the generated starter floors or defer the router upgrade. |
+| Router package or a transitive dependency requires a newer Node runtime | Defer the router upgrade until the public Node runtime contract is intentionally raised. |
+| A dependency patch raises its Node engine above the public runtime contract | Pin the last compatible patch and exclude the incompatible range from automated updates. |
+| Publishable package or CLI template inputs change | Add a changed Changeset covering every impacted publish candidate. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: use TypeScript 6 with compatible `typescript-eslint`, `vue-tsc`, and `@vue/tsconfig`; remove `baseUrl`; run packed starter validation.
+- Good: defer Vue Router 5 while its transitive build dependencies require a newer Node runtime than the generated starter advertises.
+- Good: run a real standard starter install with strict engine checks and build it on Node 20.19 and Node 22.13.
+- Base: a patch/minor update stays inside all existing peer ranges and passes the normal CI gate.
+- Bad: merge a green-looking grouped PR that combines an unsupported TypeScript major with Node types newer than the advertised runtime.
+- Bad: keep `baseUrl` and add an ignore/suppression only to make the compiler pass.
+
+### 6. Tests Required
+
+- CLI generator contract assertions for generated dependency ranges and `tsconfig.json`.
+- Workspace `pnpm typecheck`.
+- `create-super-admin` build plus a standard starter strict install/build on Node 20.19.0 and Node 22.13.0 CI jobs.
+- `pnpm validate:starter` for standard, multi-theme+i18n, ECharts, minimal, and post-prune variants.
+- `pnpm validate:publish` for the packed CLI and publish candidate graph.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
+```
+
+#### Correct
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
 
 ## Bug Fix Workflow Documentation
 
@@ -161,7 +245,7 @@ Root scripts should be directly runnable and named honestly.
 - `pnpm test:reference` is maintainer-only and validates optional reference API connectivity.
 - Do not place reference smoke tooling in generated starter output.
 - Registry CLI smoke commands that run without an interactive TTY must pass `--theme <id>` or `--themes <ids>` explicitly so validation cannot block on the theme selector.
-- CI keeps the full build/lint/format/typecheck/test/packed-starter/docs gate on Node 24 once. A separate lightweight matrix must run the `create-super-admin` build and tests on the exact supported minimums `20.19.0` and `22.12.0`; do not duplicate packed-starter validation in that matrix.
+- CI keeps the full build/lint/format/typecheck/test/packed-starter/docs gate on Node 24 once. A separate matrix must run the `create-super-admin` build/tests and a real standard starter strict install/build on the exact supported minimums `20.19.0` and `22.13.0`; do not duplicate the multi-variant packed-starter validation in that matrix.
 
 ## Scenario: Release Impact Changeset Guard
 

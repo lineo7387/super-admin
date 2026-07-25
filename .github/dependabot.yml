@@ -38,6 +38,23 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: 'chore(deps)'
+    ignore:
+      # TypeScript 7 does not yet expose the compiler API required by Vue tooling.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
+      # Keep Node globals aligned with the minimum supported Node 20 runtime.
+      - dependency-name: '@types/node'
+        update-types:
+          - version-update:semver-major
+      # Vue Router 5 currently pulls Node 22.18+ build-time dependencies.
+      - dependency-name: vue-router
+        update-types:
+          - version-update:semver-major
+      # vue-i18n 11.4.3+ requires Node 22; retain Node 20 starter support.
+      - dependency-name: vue-i18n
+        versions:
+          - '>=11.4.3'
     groups:
       vue-vite:
         patterns:

@@ -8,12 +8,12 @@ on:
 
 jobs:
   runtime-contract:
-    name: Node ${{ matrix.node-version }} CLI contract
+    name: Node ${{ matrix.node-version }} CLI and starter contract
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20.19.0, 22.12.0]
+        node-version: [20.19.0, 22.13.0]
 
     steps:
       - name: Checkout
@@ -36,6 +36,15 @@ jobs:
 
       - name: Test CLI
         run: pnpm --filter create-super-admin test
+
+      - name: Generate standard starter
+        run: node packages/cli/dist/cli.js "${{ runner.temp }}/super-admin-runtime-starter" --theme base --pm pnpm
+
+      - name: Install starter dependencies with strict engines
+        run: pnpm --dir "${{ runner.temp }}/super-admin-runtime-starter" install --engine-strict
+
+      - name: Build generated starter
+        run: pnpm --dir "${{ runner.temp }}/super-admin-runtime-starter" build
 
   checks:
     runs-on: ubuntu-latest
