@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 75
-- **Last Active**: 2026-07-25
+- **Total Sessions**: 76
+- **Last Active**: 2026-07-26
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~568 | Active |
+| `journal-2.md` | ~602 | Active |
 | `journal-1.md` | ~1987 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 76 | 2026-07-26 | 提升 Starter 质量与开源交付 | `9e74292`, `ac837e4` | `codex/quality-maintainability-open-source` |
 | 75 | 2026-07-25 | 依赖兼容性收口 | `986b969` | `codex/dependency-compatibility` |
 | 74 | 2026-07-25 | 依赖安全与发布门禁加固 | `9bb8a67` | `codex/delivery-hardening` |
 | 73 | 2026-07-25 | 提升 starter 可裁剪性与运行时契约 | `2c24821` | `codex/improve-starter-prunability-contracts` |
