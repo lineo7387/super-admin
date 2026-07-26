@@ -5,9 +5,12 @@ on:
     branches:
       - main
     paths:
+      - apps/admin/**
       - docs/**
+      - packages/**
       - package.json
       - pnpm-lock.yaml
+      - scripts/build-docs-site.mjs
       - .github/workflows/docs-pages.yml
   workflow_dispatch:
 

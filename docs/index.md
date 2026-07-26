@@ -7,6 +7,9 @@ hero:
   tagline: 用 UI primitives、示例模块、mock 数据和可替换 API 适配器创建你自己的 Vue admin 项目。
   actions:
     - theme: brand
+      text: 在线 Demo
+      link: https://lineo7387.github.io/super-admin/demo/
+    - theme: alt
       text: 创建 Starter
       link: /guide/getting-started
     - theme: alt
@@ -32,6 +35,8 @@ features:
 Super Admin 是一个前端优先的开源 admin 模板。公开文档的主路径是：通过 `npm create super-admin@latest` 创建你自己的 admin 项目，然后把示例数据和模块替换成你的业务工作流。
 
 默认 starter 有意保持 mock-backed。后端、数据库、auth、AI 和正式 API contract 都是可选集成面。
+
+![Cyberpunk dark profile 下的真实 Super Admin Users 页面](./public/super-admin-shell.png)
 
 ## 我应该走哪条路径？
 

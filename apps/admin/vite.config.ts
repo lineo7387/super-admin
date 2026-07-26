@@ -22,7 +22,10 @@ function hasDependencyPath(id: string, packageName: string, packagePath: string)
 }
 
 export default defineConfig({
+  base: process.env.SUPER_ADMIN_PUBLIC_BASE ?? '/',
   build: {
+    emptyOutDir: process.env.SUPER_ADMIN_PUBLIC_OUT_DIR ? true : undefined,
+    outDir: process.env.SUPER_ADMIN_PUBLIC_OUT_DIR,
     rolldownOptions: {
       output: {
         codeSplitting: {

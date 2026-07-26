@@ -7,6 +7,9 @@ hero:
   tagline: Create your own Vue admin project with UI primitives, examples, mock data, and replaceable API adapters.
   actions:
     - theme: brand
+      text: Live Demo
+      link: https://lineo7387.github.io/super-admin/demo/
+    - theme: alt
       text: Create a Starter
       link: /en/guide/getting-started
     - theme: alt
@@ -32,6 +35,8 @@ features:
 Super Admin is an open-source admin template focused on the frontend experience first. The primary public path is creating your own admin project with `npm create super-admin@latest`, then replacing the example data and modules with your business workflow.
 
 The default starter stays mock-backed on purpose. Backend, database, auth, AI, and formal API contracts remain optional integration surfaces.
+
+![Real Super Admin Users page using the Cyberpunk dark profile](../public/super-admin-shell.png)
 
 ## Which Path Should I Use?
 

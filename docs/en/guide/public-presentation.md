@@ -4,7 +4,7 @@ Use this checklist when polishing the GitHub repository, npm package pages, docs
 
 ## Current Public State
 
-As of 2026-07-18:
+As of 2026-07-25:
 
 - The repository is public at `lineo7387/super-admin`.
 - npm `latest` and `next` point to the smoke-verified release line:
@@ -17,7 +17,7 @@ As of 2026-07-18:
   - `@super-admin-org/theme-industrial@0.1.4`
   - `@super-admin-org/theme-newsprint@0.1.4`
   - `@super-admin-org/ui@0.1.6`
-- The GitHub Pages docs/demo URL is `https://lineo7387.github.io/super-admin/` after the docs deployment workflow succeeds.
+- The GitHub Pages docs URL is `https://lineo7387.github.io/super-admin/`, and the complete mock-backed admin demo is `https://lineo7387.github.io/super-admin/demo/`.
 - The public install path is available:
 
 ```bash
@@ -58,22 +58,26 @@ Use these link positions:
 - GitHub About website: `https://lineo7387.github.io/super-admin/` after deployment succeeds.
 - Release notes: link to README, Getting Started, Examples, API adapters, Themes and layouts, and Releasing.
 
-For a full interactive admin preview, run the local app:
+The public demo is a static build of canonical `apps/admin` and requires no backend, database, auth provider, or AI provider. Login credentials are shown on the page. Maintainers can run the same app locally:
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-## Screenshot And GIF Plan
+## Screenshot And Demo Assets
 
-Recommended assets for the first public preview:
+Delivered now:
 
-- `docs/public/super-admin-shell.png`: admin shell with workspace tabs and example modules.
+- `docs/public/super-admin-shell.png`: captured by the real Chromium journey in `scripts/admin-browser-smoke.mjs`, showing the Cyberpunk dark profile, Top header, workspace tabs, and mock-backed Users module.
+- `/demo/`: the complete static admin built into the GitHub Pages artifact by `pnpm docs:build`.
+
+Optional follow-ups:
+
 - `docs/public/super-admin-themes.gif`: short loop switching design profiles.
 - `docs/public/create-super-admin.gif`: terminal flow from `npm create super-admin@latest my-admin` to `npm run dev`.
 
-Capture at desktop width first, then add one mobile or narrow-width screenshot if the public page needs responsive proof. Do not commit dark, blurred, or purely atmospheric images; visitors should be able to inspect the actual product UI.
+Regenerate the screenshot with `ADMIN_SMOKE_SCREENSHOT_PATH=docs/public/super-admin-shell.png pnpm test:browser` and inspect it before committing. Add a mobile or narrow-width screenshot only if the public page needs responsive proof. Do not commit blurred or purely atmospheric images; visitors should be able to inspect the actual product UI.
 
 ## Release And Tag Copy
 

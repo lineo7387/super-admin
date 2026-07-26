@@ -6,6 +6,12 @@ This guide is for users who want to create their own admin project from Super Ad
 
 Super Admin currently requires Node.js `^20.19.0 || >=22.13.0`. The source workspace, the `create-super-admin` package, and every generated project declare the same range.
 
+## Live Preview
+
+[Open the complete backend-free admin demo](https://lineo7387.github.io/super-admin/demo/). It is a static build of canonical `apps/admin` with mock data and requires no database, auth provider, or AI provider. Login credentials are shown on the page.
+
+![Super Admin Users page with the Cyberpunk dark profile](../../public/super-admin-shell.png)
+
 ## Create Your Admin App
 
 Use the public npm starter:
@@ -33,6 +39,16 @@ pnpm dlx create-super-admin@latest my-admin --theme base --charts echarts --pm p
 ```
 
 Interactive setup asks whether to use ECharts. Selecting yes installs `echarts` and `vue-echarts` and generates a theme-adapted chart example page under Examples.
+
+Select English as the default locale and omit all demonstration modules during generation:
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --locale en-US --no-examples --pm pnpm
+```
+
+- `--locale zh-CN|en-US` selects the default locale; without `--i18n`, only that catalog is generated.
+- `--i18n --locale en-US` keeps both catalogs and the switcher while making `en-US` the default.
+- `--no-examples` removes the Examples registration, example pages, API adapters, mock data, charts, and matching AI context together. It cannot be combined with `--charts echarts`.
 
 The generated project is your application. It is intentionally smaller than this source repository and does not include release automation, maintainer AI workflow files, the docs site, or optional reference smoke tooling.
 
@@ -81,6 +97,7 @@ The default starter does not require:
 ## Remove Examples
 
 Examples is a removable feature slice, not an implicit shell, auth, or workspace dependency. See the [Examples guide](./examples.md#remove-examples-completely) for the complete removal recipe.
+New projects can use `--no-examples` to have the CLI apply the same complete pruning during generation.
 
 After removing the Examples registration:
 
