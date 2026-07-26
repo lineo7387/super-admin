@@ -225,12 +225,16 @@ The VitePress docs are bilingual.
 
 ## GitHub Pages Docs/Demo
 
-The first hosted docs/demo surface is the VitePress docs site deployed to GitHub Pages.
+The hosted public surface combines the VitePress docs site and a static build of the canonical admin app under the same GitHub Pages deployment.
 
 - Use `https://lineo7387.github.io/super-admin/` as the repository Website after the Pages deployment succeeds.
+- Use `https://lineo7387.github.io/super-admin/demo/` as the canonical live demo URL.
 - Keep `docs/.vitepress/config.ts` configured with `base: '/super-admin/'` while deploying as a GitHub Pages project site.
 - Keep the Pages workflow under `.github/workflows/docs-pages.yml`.
-- The Pages workflow should build with `pnpm docs:build` and deploy `docs/.vitepress/dist`.
+- `pnpm docs:build` must build VitePress and the admin app, set the demo base to `/super-admin/demo/`, and place the demo under `docs/.vitepress/dist/demo`.
+- The admin router must consume `import.meta.env.BASE_URL`; the Pages demo build must select hash history so refreshes and direct navigation remain inside `/super-admin/demo/`, while normal development and generated starters keep web history.
+- The demo remains frontend-first and mock-backed; it must not require the optional reference backend, auth provider, database, or AI provider.
+- Public README/docs screenshots must come from the maintained browser smoke flow and show the real current UI rather than a hand-built mock.
 - Do not copy the docs site, Pages workflow, or repository deployment config into generated starters.
 - If switching to a custom domain or another host later, update README, `docs/guide/public-presentation.md`, VitePress `base`, and this section together.
 
@@ -240,7 +244,9 @@ Root scripts should be directly runnable and named honestly.
 
 - `pnpm validate:starter` should validate generated starter behavior without requiring hidden positional arguments.
 - The normal CI workflow should run `pnpm validate:starter` so packed CLI/starter regressions fail before merge, not only during a later publish workflow.
-- Packed starter validation must cover default standard, multi-theme+i18n standard, ECharts standard, and minimal output. Standard variants run install/lint/test/typecheck/build; minimal runs install/typecheck/build and separately proves ESLint/Vitest files, dependencies, scripts, tests, and AI claims are absent. The default standard variant must then remove the complete Examples slice and rerun install/lint/test/typecheck/build/startup.
+- Packed starter validation must cover default standard, multi-theme+i18n standard, ECharts standard, minimal output, and a no-Examples English starter. Standard variants run install/lint/test/typecheck/build; minimal runs install/typecheck/build and separately proves ESLint/Vitest files, dependencies, scripts, tests, and AI claims are absent. The default standard variant must then remove the complete Examples slice and rerun install/lint/test/typecheck/build/startup.
+- The default packed consumer path must invoke the actual local tarball through `npm exec --package=<tarball> -- create-super-admin`, not a source import or unpacked-bin shortcut.
+- `pnpm test:browser` runs one Chromium mock-backed critical journey across login, navigation, Control Center preferences, locale switching, command palette, UI Kit, Users, screenshot capture, and logout; CI uploads `output/playwright/admin-smoke` when it fails.
 - `pnpm validate:publish` remains the full package publish readiness gate.
 - `pnpm test:reference` is maintainer-only and validates optional reference API connectivity.
 - Do not place reference smoke tooling in generated starter output.
@@ -276,7 +282,8 @@ pnpm release:impact --base "${{ github.event.pull_request.base.sha }}"
 - `scripts/build-cli-template.mjs` and `scripts/write-cli-package-version-ranges.mjs` impact `create-super-admin`.
 - `scripts/build-publish-package.mjs` impacts every core, UI, theme runtime, and theme profile package that consumes the shared builder.
 - Only `.changeset/*.md` files changed by the current diff may cover impact. Deleted Changesets are read from the base revision so Changesets version PRs remain valid.
-- A covered run exits `0`; an uncovered run exits non-zero and prints the missing package names.
+- A covered run exits `0`; an uncovered run exits non-zero and prints the missing package names, exact trigger paths, `pnpm changeset`, and ready-to-copy patch frontmatter.
+- Impact details and user-facing suggestions must derive from the same release-impact mapping result; do not maintain a second trigger-path mapping for diagnostics.
 
 ### 4. Validation & Error Matrix
 
@@ -285,18 +292,19 @@ pnpm release:impact --base "${{ github.event.pull_request.base.sha }}"
 | No base flag and no `GITHUB_BASE_SHA` | Throw `A comparison base is required` |
 | No release-impacting paths | Exit `0` with `no publishable package impact` |
 | Every impacted package appears in changed Changeset frontmatter | Exit `0` and list covered packages |
-| One or more impacted packages are absent | Exit non-zero with `release-impact-missing-changeset` |
+| One or more impacted packages are absent | Exit non-zero with `release-impact-missing-changeset`, missing package names, trigger paths, and a ready-to-copy Changeset suggestion |
 | A version PR deletes a covering Changeset | Read `<base>:<path>` and treat it as coverage |
 
 ### 5. Good/Base/Bad Cases
 
 - Good: `apps/admin/src/modules/users/UsersPage.vue` plus a changed patch Changeset for `create-super-admin`.
+- Good: missing coverage reports `create-super-admin`, the exact `apps/admin/src/**` trigger, `pnpm changeset`, and valid patch frontmatter in one actionable diagnostic.
 - Base: `apps/admin/src/modules/users/UsersPage.test.ts` only; no package release impact.
 - Bad: `packages/core/src/index.ts` with no changed Changeset, even if `main` already contains an unrelated pending core Changeset.
 
 ### 6. Tests Required
 
-- Unit-test package/starter path mapping, shared build inputs, test-only exclusions and starter-quality exceptions, Changeset frontmatter parsing, missing-package reporting, and both sides of renames.
+- Unit-test package/starter path mapping, shared build inputs, test-only exclusions and starter-quality exceptions, Changeset frontmatter parsing, exact trigger-path diagnostics, ready-to-copy suggestions, missing-package reporting, and both sides of renames.
 - Contract-test `.github/workflows/ci.yml` for full-history checkout and the PR-base command before the build gate.
 - Keep script tests under `scripts/*.test.mjs` so root `pnpm test` executes them.
 

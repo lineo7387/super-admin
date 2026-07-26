@@ -1,9 +1,14 @@
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
+import { dirname, join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { removeGeneratedExamples } from './prune-generated-starter-examples.mjs'
+import { validateGeneratedAiContext } from './starter-validation-ai-context.mjs'
+import * as generatedStarterValidator from './validate-generated-starter.mjs'
 import { validateGeneratedStarterStatic } from './validate-generated-starter.mjs'
+
+const scriptsDirectory = dirname(fileURLToPath(import.meta.url))
 
 async function writeText(root, filePath, content) {
   const target = join(root, filePath)
@@ -21,6 +26,31 @@ function createValidAgentsMd(imports = ['core', 'data-flow', 'extension-points']
 ${imports.map((name) => `@ai-context/${name}.md`).join('\n')}
 `
 }
+
+describe('generated starter validator architecture', () => {
+  it('keeps the command entrypoint as a thin facade over static and runtime validation', async () => {
+    const source = await readFile(resolve(scriptsDirectory, 'validate-generated-starter.mjs'), 'utf8')
+
+    expect(source).toContain("from './starter-validation-static.mjs'")
+    expect(source).toContain("from './starter-validation-runtime.mjs'")
+    expect(source.split('\n').length).toBeLessThan(180)
+    expect(validateGeneratedAiContext).toBeTypeOf('function')
+  })
+
+  it('rejects no-Examples and ECharts validation flags regardless of argument order', () => {
+    expect(generatedStarterValidator.parseGeneratedStarterArgs).toBeTypeOf('function')
+    if (typeof generatedStarterValidator.parseGeneratedStarterArgs !== 'function') {
+      return
+    }
+
+    expect(() => generatedStarterValidator.parseGeneratedStarterArgs(['generated-app', '--no-examples', '--charts', 'echarts'])).toThrow(
+      /--no-examples cannot be combined with --charts echarts/
+    )
+    expect(() => generatedStarterValidator.parseGeneratedStarterArgs(['generated-app', '--charts', 'echarts', '--no-examples'])).toThrow(
+      /--no-examples cannot be combined with --charts echarts/
+    )
+  })
+})
 
 function createValidCoreContext(quality = 'standard') {
   return `# Core Context
@@ -59,7 +89,7 @@ function createValidExtensionContext() {
 
 业务页面从 src/modules/ 扩展，API adapter 从 src/api/ 扩展。
 通用 app module registry 在 src/modules/app-module-registry.ts，app composition 在 src/modules/module-registry.ts。
-Examples registration 位于 src/modules/examples/examples.registration.ts；删除 Examples 时同时删除其 registration。
+Examples manifest 位于 src/modules/examples/examples.manifest.ts，registration 位于 src/modules/examples/examples.registration.ts；删除 Examples 时同时删除两者。
 Module manifest 通过 composeModuleManifest 组合。
 Layout registration 在 src/shell/layout-registry.ts，未知 id 使用 neutral fallback。
 Auth recipe 在 src/modules/auth/components/auth-recipe-registry.generated.ts，未知 profile 使用 neutral fallback。
@@ -203,7 +233,7 @@ async function createStarterFixture(overrides = {}) {
     'vite.config.ts',
     "import vue from '@vitejs/plugin-vue'\nimport { defineConfig } from 'vite'\n\nexport default defineConfig({ plugins: [vue()] })\n"
   )
-  await writeText(root, 'index.html', '<!doctype html><html lang="zh-CN"><body><div id="app"></div></body></html>\n')
+  await writeText(root, 'index.html', `<!doctype html><html lang="${overrides.indexLocale ?? 'zh-CN'}"><body><div id="app"></div></body></html>\n`)
   if (quality === 'standard') {
     await writeText(root, 'eslint.config.js', 'export default []\n')
     await writeText(root, 'vitest.config.ts', "import { defineConfig } from 'vitest/config'\nexport default defineConfig({})\n")
@@ -222,7 +252,12 @@ async function createStarterFixture(overrides = {}) {
     overrides.themeRegistry ??
       "import type { DesignProfile, DesignProfileId } from '@super-admin-org/core'\nimport { baseProfile } from '@super-admin-org/theme-base'\n\nexport const builtInDesignProfiles = [baseProfile] as const\n\nexport function getBuiltInDesignProfile(profileId: DesignProfileId): DesignProfile {\n  return builtInDesignProfiles.find((profile) => profile.id === profileId) ?? baseProfile\n}\n"
   )
-  await writeText(root, 'src/i18n/locales/zh-CN.ts', 'export default {}\n')
+  const locales = overrides.locales ?? ['zh-CN']
+  const defaultLocale = overrides.defaultLocale ?? locales[0] ?? 'zh-CN'
+  for (const locale of locales) {
+    await writeText(root, `src/i18n/locales/${locale}.ts`, 'export default {}\n')
+  }
+  await writeText(root, 'src/i18n/index.ts', `export const DEFAULT_LOCALE = '${defaultLocale}'\n`)
   await writeText(root, 'src/shell/preferences/GlobalPreferences.vue', overrides.preferences ?? '<template><div /></template>\n')
   await writeText(root, 'src/api/mock/users.mock.ts', 'export const mockUsers = []\n')
   await writeText(root, 'src/api/users.api.ts', "import { mockUsers } from './mock/users.mock'\nexport async function listUsers() { return mockUsers }\n")
@@ -243,6 +278,9 @@ async function createStarterFixture(overrides = {}) {
   await writeText(root, 'src/modules/examples/template-guide.manifest.ts', 'export const templateGuideManifest = {}\n')
   await writeText(root, 'src/modules/examples/examples.manifest.ts', createExamplesCompositionSource())
   await writeText(root, 'src/modules/examples/examples.registration.ts', 'export const examplesRegistration = {}\n')
+  await writeText(root, 'src/modules/app-module-registry.ts', 'export function createAppModuleRegistry() { return {} }\n')
+  await writeText(root, 'src/shell/layout-registry.ts', 'export const layoutRegistry = {}\n')
+  await writeText(root, 'src/modules/auth/components/auth-recipe-registry.generated.ts', 'export const authRecipeRegistry = {}\n')
   await writeText(
     root,
     'src/modules/module-registry.ts',
@@ -286,6 +324,35 @@ describe('generated starter validator', () => {
     const root = await createStarterFixture({ quality: 'minimal' })
 
     await expect(validateGeneratedStarterStatic(root, { quality: 'minimal', themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('accepts an explicit English-only default locale and rejects locale drift', async () => {
+    const englishRoot = await createStarterFixture({
+      coreContext: createValidCoreContext().replace('- locale: `zh-CN`', '- locale: `en-US`'),
+      defaultLocale: 'en-US',
+      indexLocale: 'en-US',
+      locales: ['en-US']
+    })
+    const mismatchedRoot = await createStarterFixture()
+    const contextDriftRoot = await createStarterFixture({
+      defaultLocale: 'en-US',
+      indexLocale: 'en-US',
+      locales: ['en-US']
+    })
+    const htmlDriftRoot = await createStarterFixture({
+      coreContext: createValidCoreContext().replace('- locale: `zh-CN`', '- locale: `en-US`'),
+      defaultLocale: 'en-US',
+      locales: ['en-US']
+    })
+
+    await expect(validateGeneratedStarterStatic(englishRoot, { locale: 'en-US', themes: ['base'] })).resolves.toEqual([])
+    expect(failureIds(await validateGeneratedStarterStatic(mismatchedRoot, { locale: 'en-US', themes: ['base'] }))).toEqual(
+      expect.arrayContaining(['locale-catalogs-match-selection', 'locale-default-match-selection'])
+    )
+    expect(failureIds(await validateGeneratedStarterStatic(contextDriftRoot, { locale: 'en-US', themes: ['base'] }))).toContain(
+      'ai-context-locale-default-match'
+    )
+    expect(failureIds(await validateGeneratedStarterStatic(htmlDriftRoot, { locale: 'en-US', themes: ['base'] }))).toContain('locale-html-lang-match-selection')
   })
 
   it('rejects generated starters without the supported Node runtime contract', async () => {
@@ -388,6 +455,49 @@ describe('generated starter validator', () => {
     })
 
     expect(failureIds(await validateGeneratedStarterStatic(root, { themes: ['base'] }))).toContain('ai-context-no-disabled-capability-files')
+  })
+
+  it('rejects dangling source references in generated AI context', async () => {
+    const root = await createStarterFixture({
+      extensionContext: `${createValidExtensionContext()}\nImplementation registry: \`src/shell/missing-registry.ts\`.\n`
+    })
+
+    expect(failureIds(await validateGeneratedStarterStatic(root, { themes: ['base'] }))).toContain('ai-context-source-paths-exist')
+  })
+
+  it('requires the Examples manifest contract and rejects stale Examples references after pruning', async () => {
+    const missingManifestContract = await createStarterFixture({
+      extensionContext: createValidExtensionContext().replace(
+        'Examples manifest 位于 src/modules/examples/examples.manifest.ts，registration 位于 ',
+        'Examples registration 位于 '
+      )
+    })
+    const prunedRoot = await createStarterFixture()
+    await removeGeneratedExamples(prunedRoot)
+    await writeText(
+      prunedRoot,
+      'ai-context/extension-points.md',
+      `${await readFile(join(prunedRoot, 'ai-context/extension-points.md'), 'utf8')}\nStale reference: \`src/modules/examples/examples.registration.ts\`.\n`
+    )
+
+    expect(failureIds(await validateGeneratedStarterStatic(missingManifestContract, { themes: ['base'] }))).toContain('ai-context-documents-starter-contract')
+    expect(failureIds(await validateGeneratedStarterStatic(prunedRoot, { examples: 'removed', themes: ['base'] }))).toContain('ai-context-source-paths-exist')
+  })
+
+  it('rejects maintainer workflow leakage in generated AI context', async () => {
+    const root = await createStarterFixture({
+      coreContext: `${createValidCoreContext()}\nRun the maintainer workflow from \`.trellis/\` before editing.\n`
+    })
+
+    expect(failureIds(await validateGeneratedStarterStatic(root, { themes: ['base'] }))).toContain('ai-context-no-maintainer-tooling')
+  })
+
+  it('rejects generated AI context that exceeds the context budget', async () => {
+    const root = await createStarterFixture({
+      dataFlowContext: `${createValidDataFlowContext()}\n${'context-budget-padding '.repeat(2_000)}`
+    })
+
+    expect(failureIds(await validateGeneratedStarterStatic(root, { themes: ['base'] }))).toContain('ai-context-budget')
   })
 
   it('rejects workspace dependency specifiers and monorepo path leaks', async () => {

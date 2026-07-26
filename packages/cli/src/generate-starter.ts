@@ -71,7 +71,7 @@ async function writeGeneratedRootFiles(outputRoot: string, input: NormalizedStar
   for (const aiContextFile of createAiContextFiles(input)) {
     await writeText(outputRoot, aiContextFile.filePath, aiContextFile.content)
   }
-  await writeText(outputRoot, 'index.html', createIndexHtml(input.projectName))
+  await writeText(outputRoot, 'index.html', createIndexHtml(input.projectName, input.i18n.default))
   await writeText(outputRoot, 'package.json', createPackageJson(input))
   await writeText(outputRoot, 'README.md', createReadme(input))
   await writeText(outputRoot, 'super-admin.config.ts', createSuperAdminConfig(input))
@@ -96,8 +96,14 @@ async function materializeOutput(tempDirectory: string, targetDirectory: string)
 export async function generateStarter(input: StarterGenerationInput, options: GenerateStarterOptions = {}): Promise<GenerateStarterResult> {
   const normalizedInput: NormalizedStarterGenerationInput = {
     ...input,
+    examples: input.examples ?? { included: true },
     quality: input.quality ?? 'standard'
   }
+
+  if (!normalizedInput.examples.included && normalizedInput.charts.provider === 'echarts') {
+    throw new Error('Examples cannot be omitted when the ECharts example is enabled.')
+  }
+
   const sourceAppDir = options.sourceRoot ? resolve(options.sourceRoot, 'apps/admin') : getDefaultSourceAppDir()
   const targetDirectory = normalizedInput.targetDirectory
   const tempDirectory = resolve(dirname(targetDirectory), `.${normalizedInput.projectName}.tmp-${Date.now()}-${process.pid}`)

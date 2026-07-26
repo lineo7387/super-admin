@@ -69,23 +69,30 @@ function isCanonicalStarterImpact(filePath) {
   return !relativePath.startsWith('api/reference/') && !isTestOnlyPath(relativePath)
 }
 
-export function getReleaseImpactPackageNames(changedFiles, candidates = publishCandidates) {
+export function getReleaseImpactDetails(changedFiles, candidates = publishCandidates) {
   const normalizedFiles = [...new Set(changedFiles.map(normalizeRepositoryPath))]
-  const impactedNames = new Set()
 
-  for (const candidate of candidates) {
-    const hasSharedBuildImpact = normalizedFiles.some((filePath) => sharedBuildImpactPackageNames.get(filePath)?.has(candidate.name))
+  return candidates.flatMap((candidate) => {
+    const triggerPaths = normalizedFiles.filter(
+      (filePath) =>
+        sharedBuildImpactPackageNames.get(filePath)?.has(candidate.name) ||
+        isPublishCandidateImpact(filePath, candidate.path) ||
+        (candidate.name === 'create-super-admin' && (isCanonicalStarterImpact(filePath) || cliBuildImpactPaths.has(filePath)))
+    )
 
-    if (hasSharedBuildImpact || normalizedFiles.some((filePath) => isPublishCandidateImpact(filePath, candidate.path))) {
-      impactedNames.add(candidate.name)
-    }
-  }
+    return triggerPaths.length > 0
+      ? [
+          {
+            packageName: candidate.name,
+            triggerPaths
+          }
+        ]
+      : []
+  })
+}
 
-  if (normalizedFiles.some((filePath) => isCanonicalStarterImpact(filePath) || cliBuildImpactPaths.has(filePath))) {
-    impactedNames.add('create-super-admin')
-  }
-
-  return candidates.filter((candidate) => impactedNames.has(candidate.name)).map((candidate) => candidate.name)
+export function getReleaseImpactPackageNames(changedFiles, candidates = publishCandidates) {
+  return getReleaseImpactDetails(changedFiles, candidates).map(({ packageName }) => packageName)
 }
 
 export function parseChangesetPackageNames(contents) {
@@ -120,19 +127,36 @@ export function getChangedFilePaths(changedEntries) {
   return changedEntries.flatMap(({ path, previousPath }) => (previousPath && previousPath !== path ? [previousPath, path] : [path]))
 }
 
-export function validateReleaseImpactChangesets({ changedChangesetContents = [], changedFiles = [] }) {
-  const impactedPackageNames = getReleaseImpactPackageNames(changedFiles)
-  const coveredPackageNames = new Set(changedChangesetContents.flatMap(parseChangesetPackageNames))
-  const missingPackageNames = impactedPackageNames.filter((packageName) => !coveredPackageNames.has(packageName))
+export function createChangesetSuggestion(impacts) {
+  const frontmatter = impacts.map(({ packageName }) => `"${packageName}": patch`).join('\n')
 
-  if (missingPackageNames.length === 0) {
+  return `Run \`pnpm changeset\` and use this patch-level starting point:
+---
+${frontmatter}
+---
+
+Describe the user-visible change and adjust bump levels when the API impact requires minor or major.`
+}
+
+export function validateReleaseImpactChangesets({ changedChangesetContents = [], changedFiles = [] }) {
+  const impacts = getReleaseImpactDetails(changedFiles)
+  const coveredPackageNames = new Set(changedChangesetContents.flatMap(parseChangesetPackageNames))
+  const missingImpacts = impacts.filter(({ packageName }) => !coveredPackageNames.has(packageName))
+
+  if (missingImpacts.length === 0) {
     return []
   }
+
+  const missingPackageNames = missingImpacts.map(({ packageName }) => packageName)
+  const triggerSummary = missingImpacts.map(({ packageName, triggerPaths }) => `${packageName} <- ${triggerPaths.join(', ')}`).join('\n- ')
+  const suggestion = createChangesetSuggestion(missingImpacts)
 
   return [
     {
       id: 'release-impact-missing-changeset',
-      message: `Release-impacting changes require changed Changesets for: ${missingPackageNames.join(', ')}.`
+      message: `Release-impacting changes require changed Changesets for: ${missingPackageNames.join(', ')}.\nTriggered by:\n- ${triggerSummary}\n${suggestion}`,
+      missingImpacts,
+      suggestion
     }
   ]
 }

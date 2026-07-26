@@ -15,6 +15,8 @@ Options:
   --charts echarts         Install ECharts and generate a theme-adapted chart example under Examples
   --no-charts              Keep the starter lightweight without chart example dependencies
   --i18n                   Include zh-CN and en-US locale catalogs and a language switcher
+  --locale <id>            Set the default locale: zh-CN or en-US
+  --no-examples            Omit the complete Examples slice and its mock/API modules
   --minimal                Omit ESLint, Vitest, and generated quality tests
   --pm <name>              Package manager for printed next steps: pnpm, npm, yarn, or bun
   --package-manager <name> Alias for --pm
@@ -25,13 +27,14 @@ Interactive theme selection:
   flag is provided. Use Space to toggle themes, Up/Down to move, and Enter to confirm.
 
 Generated starter:
-  The generated app is a single Vite app with zh-CN, mock data, ESLint and Vitest,
+  The generated app is a single Vite app with zh-CN by default, mock data, ESLint and Vitest,
   and no required backend or docs site. Use --minimal for the smaller core-only baseline.
 
 Examples:
   create-super-admin my-admin
   create-super-admin my-admin --theme base
   create-super-admin my-admin --themes base,cyberpunk --charts echarts --i18n --pm pnpm
+  create-super-admin my-admin --theme base --locale en-US --no-examples
   create-super-admin my-admin --theme base --minimal`
 
 const THEME_SELECTION_REQUIRED_MESSAGE = 'Theme selection is required. Use --theme <id>, --themes <ids>, or run create-super-admin in an interactive terminal.'
@@ -74,6 +77,10 @@ function hasThemeFlag(argv: string[]): boolean {
 
 function hasChartFlag(argv: string[]): boolean {
   return argv.includes('--charts') || argv.includes('--no-charts')
+}
+
+function hasNoExamplesFlag(argv: string[]): boolean {
+  return argv.includes('--no-examples')
 }
 
 function validateArgsBeforePrompt(argv: string[], cwd?: string): void {
@@ -306,6 +313,10 @@ export async function runCreateSuperAdmin(argv: string[], io: CreateSuperAdminIo
     if (!hasThemeFlag(normalizedArgv)) {
       const themes = await getPromptedThemes(io)
       normalizedArgv.push('--themes', themes.join(','))
+    }
+
+    if (hasNoExamplesFlag(normalizedArgv) && !hasChartFlag(normalizedArgv)) {
+      normalizedArgv.push('--no-charts')
     }
 
     if (!hasChartFlag(normalizedArgv) && isInteractive(io)) {

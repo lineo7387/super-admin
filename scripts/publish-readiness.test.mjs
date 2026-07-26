@@ -188,6 +188,7 @@ describe('publish readiness helpers', () => {
     expect(publishReadiness.localStarterValidationVariants).toEqual([
       expect.objectContaining({
         args: ['--theme', 'base'],
+        consumer: 'npm-exec',
         label: 'starter-default',
         quality: 'standard',
         validateWithoutExamples: true
@@ -205,6 +206,12 @@ describe('publish readiness helpers', () => {
         args: ['--theme', 'base', '--minimal'],
         label: 'starter-minimal',
         quality: 'minimal'
+      }),
+      expect.objectContaining({
+        args: ['--theme', 'base', '--no-examples', '--locale', 'en-US'],
+        examples: 'removed',
+        label: 'starter-no-examples-en',
+        locale: 'en-US'
       })
     ])
   })
@@ -215,6 +222,7 @@ describe('publish readiness helpers', () => {
         charts: 'none',
         examples: 'removed',
         i18n: false,
+        locale: 'en-US',
         quality: 'minimal',
         tarballs: [{ manifestPath: '/tmp/core/package.json' }, { manifestPath: '/tmp/cli/package.json' }],
         themes: ['base']
@@ -223,10 +231,41 @@ describe('publish readiness helpers', () => {
       charts: 'none',
       examples: 'removed',
       i18n: false,
+      locale: 'en-US',
       packageManager: 'pnpm',
       packageManifestPaths: ['/tmp/core/package.json', '/tmp/cli/package.json'],
       quality: 'minimal',
       themes: ['base']
+    })
+  })
+
+  it('builds a real npm exec command for the local creator tarball', () => {
+    expect(publishReadiness.createNpmExecStarterCommand).toBeTypeOf('function')
+    if (typeof publishReadiness.createNpmExecStarterCommand !== 'function') {
+      return
+    }
+
+    expect(
+      publishReadiness.createNpmExecStarterCommand({
+        args: ['--theme', 'base'],
+        packageManager: 'pnpm',
+        targetDir: '/tmp/starter-default',
+        tarballPath: '/tmp/tarballs/create-super-admin-0.2.0.tgz'
+      })
+    ).toEqual({
+      args: [
+        'exec',
+        '--yes',
+        '--package=/tmp/tarballs/create-super-admin-0.2.0.tgz',
+        '--',
+        'create-super-admin',
+        '/tmp/starter-default',
+        '--theme',
+        'base',
+        '--pm',
+        'pnpm'
+      ],
+      command: 'npm'
     })
   })
 })

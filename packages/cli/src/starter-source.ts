@@ -15,6 +15,8 @@ export const APP_SOURCE_TRANSFORM_PATHS = [
   'modules/auth/auth-session.ts',
   'modules/auth/components/auth-recipe-registry.generated.ts',
   'modules/examples/examples.manifest.ts',
+  'modules/module-registry.ts',
+  'router/index.ts',
   'shell/preferences/GlobalPreferences.vue',
   'shell/use-command-palette-items.ts',
   'styles/main.css',
@@ -55,6 +57,24 @@ export const GENERATOR_OWNED_OUTPUT_PATHS = [
 ] as const
 
 export const STARTER_QUALITY_SOURCE_PATHS = ['super-admin/starter-quality.test.ts'] as const
+
+const STARTER_EXAMPLE_SOURCE_PATHS = [
+  'api/access.api.ts',
+  'api/dashboard.api.ts',
+  'api/mock/access.mock.ts',
+  'api/mock/dashboard.mock.ts',
+  'api/mock/users.mock.ts',
+  'api/mock/workbench.mock.ts',
+  'api/users.api.ts',
+  'api/workbench.api.ts',
+  'modules/access',
+  'modules/charts',
+  'modules/dashboard',
+  'modules/examples',
+  'modules/users',
+  'modules/workbench',
+  'shared/charts'
+] as const
 
 function isInvariantExcludedPath(relativePath: string): boolean {
   if ((STARTER_QUALITY_SOURCE_PATHS as readonly string[]).includes(relativePath)) {
@@ -151,11 +171,51 @@ function transformCommandPalette(text: string, input: NormalizedStarterGeneratio
     .replace("    const locales: Locale[] = ['zh-CN', 'en-US']", `    const locales: Locale[] = [${localeList}]`)
 }
 
+function transformI18nIndex(text: string, input: NormalizedStarterGenerationInput): string {
+  const localeDefinitions = {
+    'en-US': {
+      identifier: 'enUS',
+      source: './locales/en-US'
+    },
+    'zh-CN': {
+      identifier: 'zhCN',
+      source: './locales/zh-CN'
+    }
+  } as const
+  const imports = input.i18n.installed.map((locale) => `import ${localeDefinitions[locale].identifier} from '${localeDefinitions[locale].source}'`).join('\n')
+  const messageEntries = input.i18n.installed.map((locale) => `  '${locale}': ${localeDefinitions[locale].identifier}`).join(',\n')
+
+  return replaceSourceSection(
+    replaceSourceSection(text, 'locale-imports', imports),
+    'locale-messages',
+    `export const messages = {\n${messageEntries}\n} as const`
+  ).replace(/export const DEFAULT_LOCALE = '[^']+'/, `export const DEFAULT_LOCALE = '${input.i18n.default}'`)
+}
+
+function transformModuleRegistry(text: string, input: NormalizedStarterGenerationInput): string {
+  if (input.examples.included) {
+    return text
+  }
+
+  const withoutImport = text.replace(/^import \{ examplesRegistration \} from ['"]\.\/examples\/examples\.registration['"]\n/m, '')
+  const withoutRegistration = withoutImport.replace(/^\s{4}examplesRegistration,\n/m, '')
+
+  if (withoutRegistration.includes('examplesRegistration')) {
+    throw new Error('Cannot safely omit Examples: src/modules/module-registry.ts contains an unsupported examplesRegistration reference.')
+  }
+
+  return withoutRegistration
+}
+
+function isExampleSourcePath(relativePath: string): boolean {
+  return STARTER_EXAMPLE_SOURCE_PATHS.some((examplePath) => relativePath === examplePath || relativePath.startsWith(`${examplePath}/`))
+}
+
 export function transformStarterSourceText(relativePath: string, text: string, input: NormalizedStarterGenerationInput): string {
   let transformed = replaceSourceSection(text, 'reference', '')
 
   if (relativePath === 'i18n/index.ts') {
-    transformed = replaceSourceSection(transformed, 'locale-en', input.i18n.installed.includes('en-US') ? null : '')
+    transformed = transformI18nIndex(transformed, input)
   }
 
   if (relativePath === 'shell/preferences/GlobalPreferences.vue') {
@@ -177,6 +237,15 @@ export function transformStarterSourceText(relativePath: string, text: string, i
 
   if (relativePath === 'modules/examples/examples.manifest.ts') {
     return replaceSourceSection(transformed, 'charts', input.charts.provider === 'none' ? '' : null)
+  }
+
+  if (relativePath === 'modules/module-registry.ts') {
+    return transformModuleRegistry(transformed, input)
+  }
+
+  if (relativePath === 'router/index.ts') {
+    transformed = replaceSourceSection(transformed, 'router-hash-import', '')
+    return replaceSourceSection(transformed, 'router-history', 'const history = createWebHistory(import.meta.env.BASE_URL)')
   }
 
   if (relativePath === 'styles/main.css') {
@@ -249,7 +318,12 @@ export function resolveStarterSourceAction(relativePath: string, input: Normaliz
     return { kind: 'exclude' }
   }
 
-  if (!input.i18n.switcher && relativePath === 'i18n/locales/en-US.ts') {
+  const localeCatalog = relativePath.match(/^i18n\/locales\/(zh-CN|en-US)\.ts$/)?.[1]
+  if (localeCatalog && !input.i18n.installed.some((installedLocale) => installedLocale === localeCatalog)) {
+    return { kind: 'exclude' }
+  }
+
+  if (!input.examples.included && isExampleSourcePath(relativePath)) {
     return { kind: 'exclude' }
   }
 

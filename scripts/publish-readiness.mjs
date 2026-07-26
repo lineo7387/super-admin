@@ -326,7 +326,25 @@ async function extractPackedCli(outputDir, tarballs) {
   return resolve(packedCliRoot, 'package/dist/cli.js')
 }
 
-async function generateStarter(cliBinPath, targetDir, args) {
+export function createNpmExecStarterCommand({ args, packageManager, targetDir, tarballPath }) {
+  return {
+    args: ['exec', '--yes', `--package=${tarballPath}`, '--', 'create-super-admin', targetDir, ...args, '--pm', packageManager],
+    command: 'npm'
+  }
+}
+
+async function generateStarter({ args, cliBinPath, cliTarballPath, consumer, targetDir }) {
+  if (consumer === 'npm-exec') {
+    const command = createNpmExecStarterCommand({
+      args,
+      packageManager: 'pnpm',
+      targetDir,
+      tarballPath: cliTarballPath
+    })
+    await runCommand(command.command, command.args, dirname(targetDir))
+    return
+  }
+
   await runCommand('node', [cliBinPath, targetDir, ...args, '--pm', 'pnpm'], repoRoot)
 }
 
@@ -337,11 +355,12 @@ async function rewriteStarterDependencies(projectDir, tarballs) {
   await writeJson(packageJsonPath, rewriteStarterPackageJson(packageJson, tarballDependencyMap))
 }
 
-export function createStarterValidationOptions({ charts, examples = 'present', i18n, quality, tarballs, themes }) {
+export function createStarterValidationOptions({ charts, examples = 'present', i18n, locale = 'zh-CN', quality, tarballs, themes }) {
   return {
     charts,
     examples,
     i18n,
+    locale,
     packageManager: 'pnpm',
     packageManifestPaths: tarballs.map((tarball) => tarball.manifestPath),
     quality,
@@ -353,9 +372,13 @@ async function validateStarterVariant({
   args,
   charts = 'none',
   cliBinPath,
+  cliTarballPath,
+  consumer = 'node',
+  examples = 'present',
   i18n,
   label,
   outputDir,
+  locale = 'zh-CN',
   quality = 'standard',
   tarballs,
   themes,
@@ -364,14 +387,22 @@ async function validateStarterVariant({
   const projectDir = resolve(outputDir, label ?? `starter-${themes.join('-')}${charts === 'echarts' ? '-echarts' : ''}${i18n ? '-i18n' : ''}`)
 
   await rm(projectDir, { force: true, recursive: true })
-  await generateStarter(cliBinPath, projectDir, args)
+  await generateStarter({
+    args,
+    cliBinPath,
+    cliTarballPath,
+    consumer,
+    targetDir: projectDir
+  })
   await rewriteStarterDependencies(projectDir, tarballs)
 
   const failures = await validateGeneratedStarter(
     projectDir,
     createStarterValidationOptions({
       charts,
+      examples,
       i18n,
+      locale,
       quality,
       tarballs,
       themes
@@ -391,6 +422,7 @@ async function validateStarterVariant({
         charts: 'none',
         examples: 'removed',
         i18n,
+        locale,
         quality,
         tarballs,
         themes
@@ -407,6 +439,7 @@ export const localStarterValidationVariants = [
   {
     args: ['--theme', 'base'],
     charts: 'none',
+    consumer: 'npm-exec',
     i18n: false,
     label: 'starter-default',
     quality: 'standard',
@@ -435,17 +468,33 @@ export const localStarterValidationVariants = [
     label: 'starter-minimal',
     quality: 'minimal',
     themes: ['base']
+  },
+  {
+    args: ['--theme', 'base', '--no-examples', '--locale', 'en-US'],
+    charts: 'none',
+    examples: 'removed',
+    i18n: false,
+    label: 'starter-no-examples-en',
+    locale: 'en-US',
+    quality: 'standard',
+    themes: ['base']
   }
 ]
 
 async function validateLocalStarters(outputDir, tarballs) {
   const starterRoot = await mkdtemp(resolve(tmpdir(), 'super-admin-starter-smoke-'))
   const cliBinPath = await extractPackedCli(outputDir, tarballs)
+  const cliTarballPath = tarballs.find((tarball) => tarball.name === 'create-super-admin')?.tarballPath
+
+  if (!cliTarballPath) {
+    throw new Error('create-super-admin tarball is required for npm consumer validation.')
+  }
 
   for (const variant of localStarterValidationVariants) {
     await validateStarterVariant({
       ...variant,
       cliBinPath,
+      cliTarballPath,
       outputDir: starterRoot,
       tarballs
     })

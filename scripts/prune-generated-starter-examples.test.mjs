@@ -74,6 +74,11 @@ export const appModuleRegistry = createAppModuleRegistry(
     await writeText(root, 'src/modules/ui-kit/ui-kit.manifest.ts', 'export const uiKitManifest = {}\n')
     await writeText(root, 'src/modules/auth/LoginPage.vue', '<template><div /></template>\n')
     await writeText(root, 'ai-context/charts.md', '# Charts\n')
+    await writeText(
+      root,
+      'ai-context/extension-points.md',
+      '- Examples registration：Examples 使用 `src/modules/examples/examples.manifest.ts` 与 `src/modules/examples/examples.registration.ts` 注册。\n- 删除 Examples：删除 Examples 聚合模块。\n'
+    )
     await writeText(root, 'AGENTS.md', '本项目是由 `create-super-admin` 生成的用户后台项目。\n@ai-context/core.md\n@ai-context/charts.md\n')
     await writeText(root, 'super-admin.config.ts', "export default { charts: { provider: 'echarts' } }\n")
 
@@ -83,6 +88,7 @@ export const appModuleRegistry = createAppModuleRegistry(
     const registry = await readFile(join(root, 'src/modules/module-registry.ts'), 'utf8')
     const agents = await readFile(join(root, 'AGENTS.md'), 'utf8')
     const config = await readFile(join(root, 'super-admin.config.ts'), 'utf8')
+    const extensionContext = await readFile(join(root, 'ai-context/extension-points.md'), 'utf8')
 
     expect(packageJson.dependencies).toEqual({
       vue: '^3.5.0'
@@ -91,6 +97,8 @@ export const appModuleRegistry = createAppModuleRegistry(
     expect(registry).toContain('uiKitManifest')
     expect(agents).not.toContain('@ai-context/charts.md')
     expect(config).toContain("provider: 'none'")
+    expect(extensionContext).toContain('生成时已省略')
+    expect(extensionContext).not.toContain('src/modules/examples/')
     await expect(pathExists(join(root, 'src/modules/examples'))).resolves.toBe(false)
     await expect(pathExists(join(root, 'src/modules/dashboard'))).resolves.toBe(false)
     await expect(pathExists(join(root, 'src/modules/charts'))).resolves.toBe(false)

@@ -1,20 +1,17 @@
 import { createI18n } from 'vue-i18n'
-// @starter-locale-en:start
+// @starter-locale-imports:start
 import enUS from './locales/en-US'
-// @starter-locale-en:end
 import zhCN from './locales/zh-CN'
+// @starter-locale-imports:end
 
 export const DEFAULT_LOCALE = 'zh-CN'
-// @starter-locale-en:start
-export const OPTIONAL_LOCALE = 'en-US'
-// @starter-locale-en:end
 
+// @starter-locale-messages:start
 export const messages = {
-  [DEFAULT_LOCALE]: zhCN,
-  // @starter-locale-en:start
-  [OPTIONAL_LOCALE]: enUS
-  // @starter-locale-en:end
+  'zh-CN': zhCN,
+  'en-US': enUS
 } as const
+// @starter-locale-messages:end
 
 export type Locale = keyof typeof messages
 export type LocaleCatalog = Record<string, unknown>

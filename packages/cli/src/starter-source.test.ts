@@ -22,6 +22,7 @@ const repositoryRoot = resolve(packageDirectory, '../..')
 function createInput(): NormalizedStarterGenerationInput {
   return {
     charts: { provider: 'none' },
+    examples: { included: true },
     i18n: { default: 'zh-CN', installed: ['zh-CN'], switcher: false },
     packageManager: 'pnpm',
     packageName: 'starter-policy-test',
@@ -37,23 +38,51 @@ describe('starter source derivation policy', () => {
     const templatesSource = await readFile(resolve(packageDirectory, 'src/templates.ts'), 'utf8')
     const sourceFile = ts.createSourceFile('templates.ts', templatesSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
     const exportedValues = sourceFile.statements
-      .filter(
-        (statement) => ts.canHaveModifiers(statement) && ts.getModifiers(statement)?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) === true
+      .filter((statement): statement is ts.ExportDeclaration => ts.isExportDeclaration(statement) && !statement.isTypeOnly)
+      .flatMap((statement) =>
+        statement.exportClause && ts.isNamedExports(statement.exportClause)
+          ? statement.exportClause.elements.filter((element) => !element.isTypeOnly).map((element) => element.name.text)
+          : []
       )
-      .flatMap((statement) => {
-        if (ts.isFunctionDeclaration(statement) || ts.isClassDeclaration(statement) || ts.isEnumDeclaration(statement)) {
-          return statement.name ? [statement.name.text] : []
-        }
-
-        if (ts.isVariableStatement(statement)) {
-          return statement.declarationList.declarations.flatMap((declaration) => (ts.isIdentifier(declaration.name) ? [declaration.name.text] : []))
-        }
-
-        return []
-      })
       .sort()
 
     expect(exportedValues).toEqual([...GENERATOR_OWNED_TEMPLATE_EXPORTS].sort())
+    expect(
+      sourceFile.statements.filter(
+        (statement) =>
+          ts.isFunctionDeclaration(statement) || ts.isClassDeclaration(statement) || ts.isVariableStatement(statement) || ts.isTypeAliasDeclaration(statement)
+      )
+    ).toHaveLength(0)
+
+    const templateModules = {
+      'template-ai-context.ts': ['createAgentsMd', 'createAiContextFiles', 'createClaudeMd'],
+      'template-app-config.ts': ['createIndexHtml', 'createSuperAdminConfig', 'createTsconfig', 'createViteConfig'],
+      'template-package.ts': ['createEslintConfig', 'createPackageJson', 'createVitestConfig'],
+      'template-public-docs.ts': ['createReadme']
+    }
+    for (const [fileName, expectedExports] of Object.entries(templateModules)) {
+      const moduleSource = await readFile(resolve(packageDirectory, `src/${fileName}`), 'utf8')
+      const moduleFile = ts.createSourceFile(fileName, moduleSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+      const moduleExports = moduleFile.statements
+        .filter(
+          (statement) =>
+            ts.canHaveModifiers(statement) && ts.getModifiers(statement)?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) === true
+        )
+        .flatMap((statement) => {
+          if (ts.isFunctionDeclaration(statement) || ts.isClassDeclaration(statement) || ts.isEnumDeclaration(statement)) {
+            return statement.name ? [statement.name.text] : []
+          }
+
+          if (ts.isVariableStatement(statement)) {
+            return statement.declarationList.declarations.flatMap((declaration) => (ts.isIdentifier(declaration.name) ? [declaration.name.text] : []))
+          }
+
+          return []
+        })
+        .sort()
+
+      expect(moduleExports).toEqual(expectedExports.sort())
+    }
     expect(GENERATOR_OWNED_TEMPLATE_EXPORTS).not.toContain('createPreferencesStore')
     expect(GENERATOR_OWNED_TEMPLATE_EXPORTS).not.toContain('createGlobalPreferences')
     expect(GENERATOR_OWNED_TEMPLATE_EXPORTS).not.toContain('createLoginPage')
@@ -120,6 +149,24 @@ describe('starter source derivation policy', () => {
     expect(globalPreferences).toContain('v-for="localeOption in localeOptions"')
   })
 
+  it('excludes unselected locale catalogs and the complete Examples slice', async () => {
+    const input = createInput()
+    input.examples.included = false
+    input.i18n = {
+      default: 'en-US',
+      installed: ['en-US'],
+      switcher: false
+    }
+
+    expect(resolveStarterSourceAction('i18n/locales/zh-CN.ts', input).kind).toBe('exclude')
+    expect(resolveStarterSourceAction('i18n/locales/en-US.ts', input).kind).toBe('copy')
+    expect(resolveStarterSourceAction('modules/examples/examples.registration.ts', input).kind).toBe('exclude')
+    expect(resolveStarterSourceAction('modules/users/UsersAllPage.vue', input).kind).toBe('exclude')
+    expect(resolveStarterSourceAction('api/mock/users.mock.ts', input).kind).toBe('exclude')
+    expect(resolveStarterSourceAction('modules/ui-kit/UiKitPage.vue', input).kind).toBe('copy')
+    expect(resolveStarterSourceAction('modules/module-registry.ts', input).kind).toBe('transform')
+  })
+
   it('derives the auth recipe registry and recipe files from installed themes', async () => {
     const input = createInput()
     const sourceRoot = resolve(repositoryRoot, 'apps/admin/src')
@@ -169,6 +216,7 @@ describe('starter source derivation policy', () => {
         'modules/auth/auth-session.ts',
         'modules/auth/components/auth-recipe-registry.generated.ts',
         'i18n/index.ts',
+        'router/index.ts',
         'shell/preferences/GlobalPreferences.vue',
         'super-admin/theme-registry.generated.ts'
       ])
