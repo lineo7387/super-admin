@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import {
   getChangedFilePaths,
+  getReleaseImpactDetails,
   getReleaseImpactPackageNames,
   parseChangesetPackageNames,
   parseGitNameStatus,
@@ -22,6 +23,19 @@ describe('release impact changeset guard', () => {
         'scripts/build-cli-template.mjs'
       ])
     ).toEqual(['@super-admin-org/core', '@super-admin-org/ui', 'create-super-admin'])
+  })
+
+  test('retains the exact trigger paths for every impacted package', () => {
+    expect(getReleaseImpactDetails(['packages/ui/src/button.ts', 'apps/admin/src/App.vue', 'docs/guide/intro.md'])).toEqual([
+      {
+        packageName: '@super-admin-org/ui',
+        triggerPaths: ['packages/ui/src/button.ts']
+      },
+      {
+        packageName: 'create-super-admin',
+        triggerPaths: ['apps/admin/src/App.vue']
+      }
+    ])
   })
 
   test('treats publishable package manifests as release impact but ignores generated release artifacts', () => {
@@ -93,22 +107,37 @@ R100\tpackages/ui/src/old.ts\tpackages/ui/src/new.ts
   })
 
   test('reports every impacted package without a changed changeset', () => {
-    expect(
-      validateReleaseImpactChangesets({
-        changedChangesetContents: [
-          `---
+    const failures = validateReleaseImpactChangesets({
+      changedChangesetContents: [
+        `---
 "@super-admin-org/core": patch
 ---
 `
-        ],
-        changedFiles: ['packages/core/src/index.ts', 'packages/ui/src/button.ts', 'apps/admin/src/App.vue']
-      })
-    ).toEqual([
-      {
+      ],
+      changedFiles: ['packages/core/src/index.ts', 'packages/ui/src/button.ts', 'apps/admin/src/App.vue']
+    })
+
+    expect(failures).toHaveLength(1)
+    expect(failures[0]).toEqual(
+      expect.objectContaining({
         id: 'release-impact-missing-changeset',
-        message: 'Release-impacting changes require changed Changesets for: @super-admin-org/ui, create-super-admin.'
-      }
-    ])
+        missingImpacts: [
+          {
+            packageName: '@super-admin-org/ui',
+            triggerPaths: ['packages/ui/src/button.ts']
+          },
+          {
+            packageName: 'create-super-admin',
+            triggerPaths: ['apps/admin/src/App.vue']
+          }
+        ],
+        suggestion: expect.stringContaining('pnpm changeset')
+      })
+    )
+    expect(failures[0].suggestion).toContain('"@super-admin-org/ui": patch')
+    expect(failures[0].suggestion).toContain('"create-super-admin": patch')
+    expect(failures[0].message).toContain('@super-admin-org/ui <- packages/ui/src/button.ts')
+    expect(failures[0].message).toContain('create-super-admin <- apps/admin/src/App.vue')
   })
 
   test('passes when changed changesets cover all release impact', () => {

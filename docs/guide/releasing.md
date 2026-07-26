@@ -44,7 +44,7 @@ PR 中的 release-impacting 文件必须由同一 PR 改动的 Changesets 覆盖
 pnpm release:impact --base origin/main
 ```
 
-检查范围包括 publishable package 的运行时/构建输入、共享 package builder、`apps/admin` 中会进入生成模板的 canonical starter source，以及 CLI template build scripts。普通 tests/test config、coverage、dist、generated changelog 和 optional reference API 不触发 package release；starter 自带的 quality contract test 是明确例外。检查只读取当前 diff 中新增、修改或删除的 Changesets，不能用 `main` 上已有的 pending changeset 替另一个 PR 兜底；`pnpm release version` 删除的 changeset 会从 base revision 读取，因此正常 version PR 仍可通过。
+检查范围包括 publishable package 的运行时/构建输入、共享 package builder、`apps/admin` 中会进入生成模板的 canonical starter source，以及 CLI template build scripts。普通 tests/test config、coverage、dist、generated changelog 和 optional reference API 不触发 package release；starter 自带的 quality contract test 是明确例外。检查只读取当前 diff 中新增、修改或删除的 Changesets，不能用 `main` 上已有的 pending changeset 替另一个 PR 兜底；`pnpm release version` 删除的 changeset 会从 base revision 读取，因此正常 version PR 仍可通过。缺失 Changeset 时，输出会按 package 列出触发路径，并给出 `pnpm changeset` 和 patch frontmatter 起点；package 影响映射仍只由 `scripts/release-impact.mjs` 计算，提示不会维护第二份发布清单。
 
 Publish candidates 不再使用固定 Changesets group。选择变更 package names，然后让 release planner 展开 internal dependents：
 

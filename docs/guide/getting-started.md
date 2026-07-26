@@ -6,6 +6,12 @@
 
 Super Admin 当前要求 Node.js `^20.19.0 || >=22.13.0`。这个范围同时写入源码仓库、`create-super-admin` 包和每个生成项目的 `package.json`。
 
+## 在线预览
+
+[打开无需后端的完整 Admin Demo](https://lineo7387.github.io/super-admin/demo/)。Demo 使用 canonical `apps/admin` 静态构建和 mock data，不要求数据库、auth provider 或 AI provider；登录信息直接显示在页面中。
+
+![Cyberpunk dark profile 下的 Super Admin Users 页面](../public/super-admin-shell.png)
+
 ## 创建你的 Admin App
 
 使用公开 npm starter：
@@ -33,6 +39,16 @@ pnpm dlx create-super-admin@latest my-admin --theme base --charts echarts --pm p
 ```
 
 交互式安装会询问是否使用 ECharts；选择后才会安装 `echarts`、`vue-echarts` 并在 Examples 下生成适配当前主题的图表案例页面。
+
+显式选择英文默认 locale，并在生成阶段省略全部示例：
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --locale en-US --no-examples --pm pnpm
+```
+
+- `--locale zh-CN|en-US` 选择默认 locale；不带 `--i18n` 时只保留所选 catalog。
+- `--i18n --locale en-US` 保留双语 catalog 与切换器，同时让 `en-US` 成为默认值。
+- `--no-examples` 同步裁剪 Examples registration、示例 pages、API adapters、mock data、charts 和对应 AI context；它不能与 `--charts echarts` 同时使用。
 
 生成出来的项目就是你的应用。它会比这个源码仓库更小，不包含发布自动化、维护者 AI workflow 文件、docs 站点或可选 reference smoke 工具。
 
@@ -81,6 +97,7 @@ Minimal 输出不会残留 ESLint/Vitest config、dependency、script 或 test f
 ## 删除 Examples
 
 Examples 是一个可整体删除的功能切片，不是 shell、auth 或 workspace 的隐式依赖。完整删除方法见[示例指南](./examples.md#完整删除-examples)。
+新项目也可以直接使用 `--no-examples`，让 CLI 在生成阶段执行同一完整裁剪。
 
 删除 Examples registration 后：
 

@@ -566,3 +566,37 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 76: 提升 Starter 质量与开源交付
+
+**Date**: 2026-07-26
+**Task**: 提升 Starter 质量与开源交付
+**Branch**: `codex/quality-maintainability-open-source`
+
+### Summary
+
+建立 browser/npm consumer 门禁，拆分 CLI 与 starter validator，强化 AI/release 契约，并交付 no-examples、locale 与静态 Demo。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9e74292` | (see git log) |
+| `ac837e4` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -89,5 +89,20 @@ jobs:
       - name: Validate packed starters
         run: pnpm validate:starter
 
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Validate mock-backed browser flow
+        run: pnpm test:browser
+        timeout-minutes: 5
+
+      - name: Upload browser smoke diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: admin-browser-smoke
+          path: output/playwright/admin-smoke
+          if-no-files-found: ignore
+
       - name: Build docs
         run: pnpm docs:build

@@ -23,6 +23,8 @@ Options:
 - `--charts echarts`: install ECharts and generate a theme-adapted chart example under Examples.
 - `--no-charts`: omit ECharts dependencies and chart example source.
 - `--i18n`: include `zh-CN` and `en-US` catalogs and a language switcher.
+- `--locale <id>`: select `zh-CN` or `en-US` as the default locale; without `--i18n`, only that catalog is generated.
+- `--no-examples`: omit the complete Examples registration, feature modules, API adapters, mock data, chart source, and capability context.
 - `--minimal`: omit the default ESLint/Vitest quality layer while retaining typecheck/build.
 - `--pm <name>`: print next steps for `pnpm`, `npm`, `yarn`, or `bun` (`--package-manager` is an alias).
 - `-h, --help`: show command guidance without generating files.
@@ -39,6 +41,14 @@ pnpm dlx create-super-admin@latest my-admin \
   --pm pnpm
 ```
 
+For an English-default application without demonstration modules:
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --locale en-US --no-examples --pm pnpm
+```
+
+`--no-examples` cannot be combined with `--charts echarts`, because the chart template is mounted under Examples.
+
 The CLI writes the starter atomically and does not install dependencies automatically. Follow the printed package-manager commands after generation.
 
 ## Programmatic API
@@ -50,7 +60,7 @@ const input = parseCreateSuperAdminArgs(['my-admin', '--theme', 'base'])
 await generateStarter(input)
 ```
 
-`StarterGenerationInput.quality` accepts `standard | minimal`. It remains optional for compatibility with earlier programmatic callers; an omitted value is normalized to `standard` at the generator boundary so scripts, dependencies, source tests, config, and AI context cannot drift into a mixed mode.
+`StarterGenerationInput.quality` accepts `standard | minimal`, and `StarterGenerationInput.examples.included` controls the Examples slice. Both remain optional for compatibility with earlier programmatic callers; omitted values normalize to `standard` and `{ included: true }` at the generator boundary so scripts, dependencies, source, config, docs, and AI context cannot drift.
 
 ## Quality Modes
 
@@ -76,7 +86,7 @@ Minimal output keeps `dev`, `typecheck`, `build`, and `preview`, but contains no
 
 ## Generated Architecture
 
-The starter is a single Vite app with `zh-CN`, mock data, removable examples, selected theme packages, and optional ECharts/i18n source.
+The starter is a single Vite app with a selectable `zh-CN`/`en-US` default, mock data, removable or generation-time-omitted examples, selected theme packages, and optional ECharts/i18n source.
 
 - Feature `*.manifest.ts` files define navigation, routes, route metadata, and permissions once; aggregate manifests mount and compose them.
 - `src/modules/app-module-registry.ts` validates app registrations, while each optional module owns its default entry and compatibility redirects in a module-local registration.

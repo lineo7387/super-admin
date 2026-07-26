@@ -53,6 +53,15 @@ function removeExamplesRegistration(registryText) {
   return withoutRegistration
 }
 
+function removeExamplesContext(contextText) {
+  return contextText
+    .replace(
+      /^- Examples (?:composition|registration)：.*\n/m,
+      '- Examples：生成时已省略；新增业务能力时直接注册独立 module manifest，不要恢复仅供演示的 Examples 聚合层。\n'
+    )
+    .replace(/^- 删除 Examples：.*\n/m, '')
+}
+
 export async function removeGeneratedExamples(projectDir) {
   const root = resolve(projectDir)
   const packageJsonPath = resolve(root, 'package.json')
@@ -86,6 +95,7 @@ export async function removeGeneratedExamples(projectDir) {
   )
   await writeFile(registryPath, nextRegistryText)
   await updateOptionalTextFile(resolve(root, 'AGENTS.md'), (text) => text.replace(/^@ai-context\/charts\.md\n/m, ''))
+  await updateOptionalTextFile(resolve(root, 'ai-context/extension-points.md'), removeExamplesContext)
   await updateOptionalTextFile(resolve(root, 'super-admin.config.ts'), (text) => text.replace("provider: 'echarts'", "provider: 'none'"))
 
   return {

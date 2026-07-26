@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 const zhNav = [
+  { text: '在线 Demo', link: 'https://lineo7387.github.io/super-admin/demo/' },
   { text: '使用 Super Admin', link: '/guide/getting-started' },
   { text: 'API 适配器', link: '/guide/api-adapters' },
   { text: '示例', link: '/guide/examples' },
@@ -16,6 +17,7 @@ const zhNav = [
 ]
 
 const enNav = [
+  { text: 'Live Demo', link: 'https://lineo7387.github.io/super-admin/demo/' },
   { text: 'Use Super Admin', link: '/en/guide/getting-started' },
   { text: 'API Adapters', link: '/en/guide/api-adapters' },
   { text: 'Examples', link: '/en/guide/examples' },

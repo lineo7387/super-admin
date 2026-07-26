@@ -1,9 +1,11 @@
 import { basename, resolve } from 'node:path'
 import {
   isStarterChartProvider,
+  isStarterLocaleId,
   isStarterPackageManager,
   isStarterThemeId,
   starterChartProviders,
+  starterLocaleIds,
   starterPackageManagers,
   starterThemeIds
 } from './theme-options.js'
@@ -28,11 +30,18 @@ export type StarterGenerationInput = {
   charts: {
     provider: StarterChartProvider
   }
+  /** Defaults to an included Examples slice for programmatic callers created before this option existed. */
+  examples?: {
+    included: boolean
+  }
   /** Defaults to `standard` for programmatic callers created before quality modes existed. */
   quality?: StarterQualityMode
 }
 
-export type NormalizedStarterGenerationInput = Omit<StarterGenerationInput, 'quality'> & {
+export type NormalizedStarterGenerationInput = Omit<StarterGenerationInput, 'examples' | 'quality'> & {
+  examples: {
+    included: boolean
+  }
   quality: StarterQualityMode
 }
 
@@ -46,8 +55,10 @@ type ParsedFlags = {
   themes?: string
   charts?: string
   noCharts: boolean
+  noExamples: boolean
   minimal: boolean
   i18n: boolean
+  locale?: string
   packageManager?: string
 }
 
@@ -65,7 +76,8 @@ function parseFlags(argv: string[]): ParsedFlags {
   const parsed: ParsedFlags = {
     i18n: false,
     minimal: false,
-    noCharts: false
+    noCharts: false,
+    noExamples: false
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -78,6 +90,17 @@ function parseFlags(argv: string[]): ParsedFlags {
 
     if (arg === '--minimal') {
       parsed.minimal = true
+      continue
+    }
+
+    if (arg === '--locale') {
+      parsed.locale = readFlagValue(argv, index, arg)
+      index += 1
+      continue
+    }
+
+    if (arg === '--no-examples') {
+      parsed.noExamples = true
       continue
     }
 
@@ -187,18 +210,37 @@ function normalizeCharts(charts: string | undefined, noCharts: boolean): Starter
   return charts
 }
 
+function normalizeLocale(locale?: string): StarterLocaleId {
+  if (!locale) {
+    return 'zh-CN'
+  }
+
+  if (!isStarterLocaleId(locale)) {
+    throw new Error(`Unsupported locale "${locale}". Supported locales: ${starterLocaleIds.join(', ')}`)
+  }
+
+  return locale
+}
+
 export function parseCreateSuperAdminArgs(argv: string[], options: ParseCreateSuperAdminArgsOptions = {}): NormalizedStarterGenerationInput {
   const cwd = options.cwd ?? process.cwd()
   const flags = parseFlags(argv)
 
   if (!flags.project) {
-    throw new Error('Usage: create-super-admin <project> [--theme base] [--themes base,cyberpunk] [--i18n] [--minimal] [--pm pnpm]')
+    throw new Error(
+      'Usage: create-super-admin <project> [--theme base] [--themes base,cyberpunk] [--locale zh-CN] [--i18n] [--no-examples] [--minimal] [--pm pnpm]'
+    )
   }
 
   const packageManager = normalizePackageManager(flags.packageManager)
   const themes = normalizeThemes(flags.theme, flags.themes)
   const charts = normalizeCharts(flags.charts, flags.noCharts)
+  const locale = normalizeLocale(flags.locale)
   const projectName = basename(flags.project)
+
+  if (flags.noExamples && charts === 'echarts') {
+    throw new Error('--no-examples cannot be combined with --charts echarts because charts are generated under Examples.')
+  }
 
   return {
     projectName,
@@ -210,12 +252,15 @@ export function parseCreateSuperAdminArgs(argv: string[], options: ParseCreateSu
       default: themes[0] ?? 'base'
     },
     i18n: {
-      installed: flags.i18n ? ['zh-CN', 'en-US'] : ['zh-CN'],
-      default: 'zh-CN',
+      installed: flags.i18n ? [...starterLocaleIds] : [locale],
+      default: locale,
       switcher: flags.i18n
     },
     charts: {
       provider: charts
+    },
+    examples: {
+      included: !flags.noExamples
     },
     quality: flags.minimal ? 'minimal' : 'standard'
   }

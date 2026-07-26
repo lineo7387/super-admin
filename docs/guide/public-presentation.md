@@ -4,7 +4,7 @@
 
 ## 当前公开状态
 
-截至 2026-07-18：
+截至 2026-07-25：
 
 - 仓库公开地址是 `lineo7387/super-admin`。
 - npm `latest` 与 `next` 已指向 smoke-verified release line：
@@ -17,7 +17,7 @@
   - `@super-admin-org/theme-industrial@0.1.4`
   - `@super-admin-org/theme-newsprint@0.1.4`
   - `@super-admin-org/ui@0.1.6`
-- GitHub Pages docs/demo URL 是 `https://lineo7387.github.io/super-admin/`。
+- GitHub Pages 文档 URL 是 `https://lineo7387.github.io/super-admin/`，完整 mock-backed admin demo 是 `https://lineo7387.github.io/super-admin/demo/`。
 - 公开安装路径可用：
 
 ```bash
@@ -58,22 +58,26 @@ GitHub Release badge 应使用 GitHub 提供的动态 latest release 状态，�
 - GitHub About website：部署成功后使用 `https://lineo7387.github.io/super-admin/`。
 - Release notes：链接到 README、Getting Started、Examples、API adapters、Themes and layouts 和 Releasing。
 
-完整交互 admin preview 请本地运行：
+公开 demo 由 canonical `apps/admin` 静态构建而来，不要求 backend、database、auth provider 或 AI provider。登录信息显示在页面中。维护者也可以本地运行同一 app：
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-## Screenshot And GIF Plan
+## Screenshot And Demo Assets
 
-首批公开预览资产建议：
+当前已交付：
 
-- `docs/public/super-admin-shell.png`：带 workspace tabs 和 example modules 的 admin shell。
+- `docs/public/super-admin-shell.png`：由 `scripts/admin-browser-smoke.mjs` 的真实 Chromium 用户链路捕获，展示 Cyberpunk dark profile、Top header、workspace tabs 和 mock-backed Users module。
+- `/demo/`：由 `pnpm docs:build` 同时构建到 GitHub Pages artifact 的完整静态 admin。
+
+后续可选资产：
+
 - `docs/public/super-admin-themes.gif`：切换 design profiles 的短循环。
 - `docs/public/create-super-admin.gif`：从 `npm create super-admin@latest my-admin` 到 `npm run dev` 的终端流程。
 
-先捕获 desktop 宽度；如果公开页面需要 responsive proof，再添加一张 mobile 或窄屏截图。不要提交暗、模糊或纯氛围图；访问者应该能看清真实产品 UI。
+重新生成截图时运行 `ADMIN_SMOKE_SCREENSHOT_PATH=docs/public/super-admin-shell.png pnpm test:browser`，并在提交前人工检查。若公开页面需要 responsive proof，再添加 mobile 或窄屏截图。不要提交模糊或纯氛围图；访问者应该能看清真实产品 UI。
 
 ## Release And Tag Copy
 

@@ -9,7 +9,9 @@ Frontend-first Vue admin template with reusable UI primitives, runtime design pr
 
 Super Admin is designed for teams who want a flexible admin-console foundation without being forced into a backend, database, auth provider, AI provider, or generated API schema on day one.
 
-[中文文档](https://lineo7387.github.io/super-admin/) · [English docs](https://lineo7387.github.io/super-admin/en/)
+[Live admin demo](https://lineo7387.github.io/super-admin/demo/) · [中文文档](https://lineo7387.github.io/super-admin/) · [English docs](https://lineo7387.github.io/super-admin/en/)
+
+![Super Admin Cyberpunk dark profile showing the mock-backed Users module](docs/public/super-admin-shell.png)
 
 ## Status
 
@@ -52,6 +54,14 @@ Want the optional ECharts example page during non-interactive setup:
 pnpm dlx create-super-admin@latest my-admin --theme base --charts echarts --pm pnpm
 ```
 
+Want an English-default app without the demonstration modules:
+
+```bash
+pnpm dlx create-super-admin@latest my-admin --theme base --locale en-US --no-examples --pm pnpm
+```
+
+`--locale` selects `zh-CN` or `en-US` as the default. Combine it with `--i18n` to keep both catalogs and the language switcher. `--no-examples` removes the complete Examples registration, pages, adapters, mock data, charts, and capability context during generation.
+
 This generated project is where you build your own admin app. It stays frontend-first and does not include this repository's release automation, docs site, optional reference backend validation, or maintainer AI workflow files.
 
 The default starter uses the `standard` quality baseline:
@@ -73,6 +83,7 @@ pnpm dlx create-super-admin@latest my-admin --theme base --minimal --pm pnpm
 Every generated project includes `AGENTS.md` and capability-aware files under `ai-context/`. They describe the selected quality mode, the frontend data flow, and the actual manifest/layout/auth registry extension points without requiring an AI provider or maintainer workflow.
 
 Examples is a removable feature slice. The [Examples guide](docs/en/guide/examples.md#remove-examples-completely) lists the exact module, adapter, mock, registration, chart, and AI-context cleanup; router, auth, and workspace fallbacks derive from the remaining app module registrations.
+Use `--no-examples` when you want the CLI to apply that complete removal during generation.
 
 ## Develop This Repository
 
@@ -110,8 +121,9 @@ pnpm build
 
 User docs:
 
-- [Hosted docs/demo 中文](https://lineo7387.github.io/super-admin/)
-- [Hosted docs/demo English](https://lineo7387.github.io/super-admin/en/)
+- [Live mock-backed admin demo](https://lineo7387.github.io/super-admin/demo/)
+- [Hosted docs 中文](https://lineo7387.github.io/super-admin/)
+- [Hosted docs English](https://lineo7387.github.io/super-admin/en/)
 - [Getting started](docs/guide/getting-started.md)
 - [Examples guide](docs/guide/examples.md)
 - [API adapters](docs/guide/api-adapters.md)
@@ -124,18 +136,13 @@ Maintainer docs:
 - [Releasing](docs/guide/releasing.md)
 - [Public presentation checklist](docs/guide/public-presentation.md)
 
-The hosted docs/demo is deployed from `docs/` through GitHub Pages. Use `pnpm dev` locally for the full interactive admin preview.
+The GitHub Pages workflow deploys the VitePress docs and the canonical mock-backed admin under `/demo/`. The demo requires no backend, database, auth provider, or AI provider. Use the credentials shown on its login screen.
 
-## Feature Preview Plan
+## Product Preview
 
-Recommended first public preview assets:
-
-- Admin shell with workspace tabs, command/search entry, and example modules.
-- Runtime theme/profile switching across Base, Crypto, Cyberpunk, Industrial, and Newsprint.
-- API adapter replacement flow: page -> query composable -> API adapter -> mock/user API.
-- A short GIF of `npm create super-admin@latest my-admin` followed by `npm run dev`.
-
-Store final assets under `docs/public/` or another stable docs asset path before embedding them in this README.
+- The committed screenshot above is captured from the real Chromium smoke after switching to the Cyberpunk dark profile, Top header layout, and English locale.
+- The [live demo](https://lineo7387.github.io/super-admin/demo/) exposes the same canonical admin app and mock-backed user journey.
+- Data remains on the readable `page -> query composable -> API adapter -> mock/user API` path.
 
 ## Source Repository Shape
 

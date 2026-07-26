@@ -222,6 +222,9 @@ describe('create-super-admin starter generation', () => {
     const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base'], { cwd })
 
     expect(input).toEqual({
+      examples: {
+        included: true
+      },
       i18n: {
         default: 'zh-CN',
         installed: ['zh-CN'],
@@ -271,6 +274,40 @@ describe('create-super-admin starter generation', () => {
     expect(parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--minimal'], { cwd: '/tmp' }).quality).toBe('minimal')
   })
 
+  it('supports explicit locale defaults and validates locale input', () => {
+    expect(parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--locale', 'en-US'], { cwd: '/tmp' }).i18n).toEqual({
+      default: 'en-US',
+      installed: ['en-US'],
+      switcher: false
+    })
+    expect(parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--i18n', '--locale', 'en-US'], { cwd: '/tmp' }).i18n).toEqual({
+      default: 'en-US',
+      installed: ['zh-CN', 'en-US'],
+      switcher: true
+    })
+    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--locale', 'fr-FR'], { cwd: '/tmp' })).toThrow(/Supported locales: zh-CN, en-US/)
+  })
+
+  it('supports opt-in example pruning and rejects chart examples without Examples', () => {
+    expect(parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--no-examples'], { cwd: '/tmp' }).examples).toEqual({
+      included: false
+    })
+    expect(() => parseCreateSuperAdminArgs(['demo', '--theme', 'base', '--no-examples', '--charts', 'echarts'], { cwd: '/tmp' })).toThrow(
+      /--no-examples cannot be combined with --charts echarts/
+    )
+  })
+
+  it('rejects chart examples without Examples at the programmatic generator boundary', async () => {
+    const tempRoot = await createTempRoot()
+    const input = parseCreateSuperAdminArgs(['programmatic-conflict', '--theme', 'base', '--charts', 'echarts'], { cwd: tempRoot })
+    input.examples = {
+      included: false
+    }
+
+    await expect(generateStarter(input, { sourceRoot: repoRoot })).rejects.toThrow(/Examples cannot be omitted when the ECharts example is enabled/)
+    await expect(generatedPathExists(input.targetDirectory, 'package.json')).resolves.toBe(false)
+  })
+
   it('generates the default single-theme starter and passes static validation', async () => {
     const tempRoot = await createTempRoot()
     const input = parseCreateSuperAdminArgs(['demo-admin', '--theme', 'base'], { cwd: tempRoot })
@@ -288,6 +325,7 @@ describe('create-super-admin starter generation', () => {
     const eslintConfig = await readGeneratedText(input.targetDirectory, 'eslint.config.js')
     const loginPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/LoginPage.vue')
     const registerPage = await readGeneratedText(input.targetDirectory, 'src/modules/auth/RegisterPage.vue')
+    const router = await readGeneratedText(input.targetDirectory, 'src/router/index.ts')
     const readme = await readGeneratedText(input.targetDirectory, 'README.md')
     const preferences = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferences.vue')
     const preferencesTrigger = await readGeneratedText(input.targetDirectory, 'src/shell/preferences/GlobalPreferencesTrigger.vue')
@@ -333,6 +371,7 @@ describe('create-super-admin starter generation', () => {
     expect(readme).toContain('AGENTS.md')
     expect(readme).toContain(SUPPORTED_NODE_RANGE)
     expect(readme).toContain('src/modules/examples/examples.registration.ts')
+    expect(readme).toContain('ai-context/extension-points.md')
     expect(readme).not.toContain('AI_CONTEXT.md')
     expect(claudeMd.trim()).toBe('@AGENTS.md')
     expect(agentsMd).toContain('# AGENTS.md')
@@ -414,7 +453,12 @@ describe('create-super-admin starter generation', () => {
     expect(loginPage).toContain('session.setSession(nextSession)')
     expect(loginPage).not.toContain('setReferenceSession')
     expect(registerPage).toContain(':required-label="t(\'validation.requiredLabel\')"')
+    expect(router).toContain('createWebHistory(import.meta.env.BASE_URL)')
+    expect(router).not.toContain('createWebHashHistory')
+    expect(router).not.toContain('VITE_SUPER_ADMIN_ROUTER_MODE')
+    expect(router).not.toContain('@starter-router')
     expect(extensionContext).toContain('src/modules/app-module-registry.ts')
+    expect(extensionContext).toContain('src/modules/examples/examples.manifest.ts')
     expect(extensionContext).toContain('src/modules/examples/examples.registration.ts')
     expect(extensionContext).toContain('删除 Examples')
 
@@ -473,6 +517,42 @@ describe('create-super-admin starter generation', () => {
     expect(agentsMd).not.toContain('@ai-context/charts.md')
     expect(config).toContain("provider: 'none'")
     await expect(validateGeneratedStarterStatic(input.targetDirectory, { examples: 'removed', themes: ['base'] })).resolves.toEqual([])
+  })
+
+  it('generates an English-default starter without the complete Examples slice', async () => {
+    const tempRoot = await createTempRoot()
+    const input = parseCreateSuperAdminArgs(['demo-no-examples', '--theme', 'base', '--no-examples', '--locale', 'en-US'], { cwd: tempRoot })
+
+    await generateStarter(input, { sourceRoot: repoRoot })
+
+    const moduleRegistry = await readGeneratedText(input.targetDirectory, 'src/modules/module-registry.ts')
+    const i18nIndex = await readGeneratedText(input.targetDirectory, 'src/i18n/index.ts')
+    const commandPaletteItems = await readGeneratedText(input.targetDirectory, 'src/shell/use-command-palette-items.ts')
+    const extensionContext = await readGeneratedText(input.targetDirectory, 'ai-context/extension-points.md')
+    const indexHtml = await readGeneratedText(input.targetDirectory, 'index.html')
+    const readme = await readGeneratedText(input.targetDirectory, 'README.md')
+    const config = await readGeneratedText(input.targetDirectory, 'super-admin.config.ts')
+
+    expect(moduleRegistry).not.toContain('examplesRegistration')
+    expect(moduleRegistry).toContain('uiKitManifest')
+    expect(i18nIndex).toContain("import enUS from './locales/en-US'")
+    expect(i18nIndex).not.toContain("import zhCN from './locales/zh-CN'")
+    expect(i18nIndex).toContain("export const DEFAULT_LOCALE = 'en-US'")
+    expect(commandPaletteItems).toContain("type Locale = 'en-US'")
+    expect(commandPaletteItems).toContain("const locales: Locale[] = ['en-US']")
+    expect(extensionContext).not.toContain('src/modules/examples/examples.registration.ts')
+    expect(extensionContext).not.toContain('src/modules/examples/examples.manifest.ts')
+    expect(indexHtml).toContain('<html lang="en-US">')
+    expect(readme).toContain('Examples were omitted')
+    expect(readme).not.toContain('## Remove Examples')
+    expect(config).toContain("defaultLocale: 'en-US'")
+    expect(config).toContain('included: false')
+    await expect(generatedPathExists(input.targetDirectory, 'src/i18n/locales/en-US.ts')).resolves.toBe(true)
+    await expect(generatedPathExists(input.targetDirectory, 'src/i18n/locales/zh-CN.ts')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/examples')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/modules/users')).resolves.toBe(false)
+    await expect(generatedPathExists(input.targetDirectory, 'src/api/mock')).resolves.toBe(false)
+    await expect(validateGeneratedStarterStatic(input.targetDirectory, { examples: 'removed', locale: 'en-US', themes: ['base'] })).resolves.toEqual([])
   })
 
   it('normalizes legacy programmatic generation input to the standard quality mode', async () => {
@@ -720,6 +800,8 @@ describe('create-super-admin starter generation', () => {
     expect(output.join('\n')).toContain('Usage: create-super-admin <project>')
     expect(output.join('\n')).toContain('--themes base,cyberpunk')
     expect(output.join('\n')).toContain('--minimal')
+    expect(output.join('\n')).toContain('--no-examples')
+    expect(output.join('\n')).toContain('--locale <id>')
     expect(output.join('\n')).toContain('ESLint and Vitest')
     await expect(readdir(tempRoot)).resolves.toEqual([])
   })
@@ -763,7 +845,8 @@ describe('create-super-admin starter generation', () => {
       ['--theme', 'base'],
       ['--theme', 'base', '--minimal'],
       ['--themes', 'base,cyberpunk', '--i18n'],
-      ['--theme', 'base', '--charts', 'echarts']
+      ['--theme', 'base', '--charts', 'echarts'],
+      ['--theme', 'base', '--no-examples', '--locale', 'en-US']
     ]
 
     for (const [index, flags] of variants.entries()) {
@@ -801,7 +884,11 @@ describe('create-super-admin starter generation', () => {
       { flags: ['--theme', 'base'], validation: { themes: ['base'] } },
       { flags: ['--theme', 'base', '--minimal'], validation: { quality: 'minimal', themes: ['base'] } },
       { flags: ['--themes', 'base,cyberpunk', '--i18n'], validation: { i18n: true, themes: ['base', 'cyberpunk'] } },
-      { flags: ['--theme', 'base', '--charts', 'echarts'], validation: { charts: 'echarts', themes: ['base'] } }
+      { flags: ['--theme', 'base', '--charts', 'echarts'], validation: { charts: 'echarts', themes: ['base'] } },
+      {
+        flags: ['--theme', 'base', '--no-examples', '--locale', 'en-US'],
+        validation: { examples: 'removed', locale: 'en-US', themes: ['base'] }
+      }
     ]
 
     for (const [index, variant] of variants.entries()) {
