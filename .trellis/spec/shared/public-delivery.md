@@ -104,6 +104,105 @@ Rules:
 - If a security update is `update_not_possible` because the patched version is outside the latest resolvable range, record the dependency path and defer it to the relevant migration task instead of forcing an override by default.
 - Maintainer-only lockfiles under `.agents/`, `.trellis/`, `.codex/`, or similar tooling directories may be updated to reduce repository alerts, but those updates must not make maintainer tooling part of generated starter requirements. Validate the maintainer tool's own audit/build path separately from the public app and document any existing script-path limitations.
 
+## Scenario: Deferred VitePress v1 Advisory Chain
+
+### 1. Scope / Trigger
+
+- Trigger: Dependabot alerts `#30`, `#31`, `#35`, or `#37`, or the known
+  `vitepress@1.6.4 -> vite@5.4.21 -> esbuild@0.21.5` documentation dependency
+  chain.
+- This is an explicit maintainer decision, not an unresolved question: wait for
+  VitePress v2 stable instead of forcing VitePress v1 onto an overridden Vite
+  major or adopting a VitePress prerelease.
+- The defer applies only to this known dev-only documentation chain. Triage new
+  or unrelated advisories normally.
+
+### 2. Signatures
+
+Use the npm `latest` dist-tag as the stable-release signal:
+
+```bash
+npm view vitepress dist-tags --json
+```
+
+Use the local dependency graph only to confirm that an alert still belongs to
+the deferred path:
+
+```bash
+pnpm why vitepress
+pnpm why vite
+pnpm why esbuild
+```
+
+### 3. Contracts
+
+- While `vitepress` npm `latest` is below `2.0.0`, keep the current stable
+  VitePress v1 dependency chain.
+- A v2 `next`, `alpha`, `beta`, or `rc` release is not a stable-release signal.
+- Do not add `vitepress>vite`, `vite>esbuild`, or equivalent scoped/global
+  overrides to clear these four alerts.
+- Do not upgrade this repository to a VitePress prerelease.
+- Leave alerts `#30`, `#31`, `#35`, and `#37` visible; do not dismiss them just
+  to make the alert count zero.
+- Do not ask the maintainer to choose again between waiting, overriding Vite,
+  or adopting VitePress prereleases. Cite this rule and continue unrelated
+  work.
+- Once npm `latest` is a non-prerelease VitePress version `>=2.0.0`, the chosen
+  direction is a dedicated VitePress v2 migration. Do not reopen the override
+  versus prerelease decision; follow the official stable migration path and
+  remove this defer scenario after the migration is merged.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+| --- | --- |
+| npm `latest` is VitePress 1.x | Keep the current dependency chain and do not escalate these four alerts again. |
+| VitePress v2 exists only under `next` or has a prerelease suffix | Treat v2 as unstable; do not upgrade or ask for the same decision. |
+| npm `latest` is a non-prerelease VitePress `>=2.0.0` | Open a focused v2 migration task and run the stable migration path. |
+| An alert resolves to a different package/path or is not one of `#30/#31/#35/#37` | Perform normal dependency-security triage; this defer does not apply. |
+| A future advisory changes this chain from dev-only docs exposure to shipped runtime/package exposure | Treat it as a new advisory with a new scope; do not silently reuse this defer. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: VitePress v2 remains alpha, so an AI cites this scenario, leaves the
+  four alerts open, and continues the user's actual task without another
+  confirmation prompt.
+- Good: VitePress v2 becomes npm `latest` stable, so a focused migration updates
+  docs config, builds the complete docs/demo output, and removes this defer.
+- Base: a new advisory affects root `vite@8` rather than the VitePress v1 path;
+  triage and patch it normally.
+- Bad: add a `vitepress>vite` override only to make Dependabot green.
+- Bad: repeatedly ask whether to accept the same override or alpha upgrade
+  while VitePress v2 is not stable.
+
+### 6. Tests Required
+
+- Before VitePress v2 stable: no dependency change is required; spec-only
+  updates run `pnpm format:check`.
+- During the future VitePress v2 migration: run `pnpm lint`,
+  `pnpm format:check`, `pnpm typecheck`, `pnpm test`, `pnpm build`, and
+  `pnpm docs:build`.
+- The future migration must verify the combined VitePress docs and
+  `/super-admin/demo/` output before removing this defer.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+VitePress v2 is still alpha.
+Add vitepress>vite=6.4.3, dismiss the remaining alerts, or ask the maintainer
+which workaround to choose.
+```
+
+#### Correct
+
+```text
+VitePress v2 is not npm latest stable.
+Keep VitePress v1 unchanged, leave alerts #30/#31/#35/#37 visible, cite the
+recorded defer decision, and do not ask again.
+```
+
 ## Scenario: Toolchain Major Compatibility
 
 ### 1. Scope / Trigger
