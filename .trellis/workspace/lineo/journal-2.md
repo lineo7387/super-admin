@@ -600,3 +600,36 @@ Added ESLint flat config, Prettier formatting, CI format checks, conflict guard,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 77: 记录 VitePress v2 告警延期规则
+
+**Date**: 2026-07-26
+**Task**: 记录 VitePress v2 告警延期规则
+**Branch**: `codex/vitepress-v2-defer-rule`
+
+### Summary
+
+记录 VitePress v1 文档链四个已知告警的延期决策：v2 stable 前不 override、不采用 prerelease、不重复询问；v2 成为 npm latest stable 后执行独立迁移。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b3c5314` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

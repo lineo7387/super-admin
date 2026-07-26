@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 76
+- **Total Sessions**: 77
 - **Last Active**: 2026-07-26
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~602 | Active |
+| `journal-2.md` | ~635 | Active |
 | `journal-1.md` | ~1987 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 77 | 2026-07-26 | 记录 VitePress v2 告警延期规则 | `b3c5314` | `codex/vitepress-v2-defer-rule` |
 | 76 | 2026-07-26 | 提升 Starter 质量与开源交付 | `9e74292`, `ac837e4` | `codex/quality-maintainability-open-source` |
 | 75 | 2026-07-25 | 依赖兼容性收口 | `986b969` | `codex/dependency-compatibility` |
 | 74 | 2026-07-25 | 依赖安全与发布门禁加固 | `9bb8a67` | `codex/delivery-hardening` |
